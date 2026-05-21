@@ -1,0 +1,16 @@
+products:
+  - id: work-organizer
+    name: Work Organizer
+    type: app
+    status: draft
+    promise: "Organize messy tasks, projects, and follow-ups into a daily operating rhythm."
+  - id: contactor
+    name: Contactor
+    type: app
+    status: draft
+    promise: "Help homeowners compare contractor bids and track project details."
+  - id: beauty-drop
+    name: Beauty Drop
+    type: validation
+    status: draft
+    promise: "Validate curated beauty drops before building the service."

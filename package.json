@@ -1,0 +1,27 @@
+{
+  "name": "site-factory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/website"
+  ],
+  "scripts": {
+    "dev": "npm --workspace @site-factory/website run dev",
+    "prebuild": "npm run sitemap:generate && npm run robots:generate",
+    "build": "npm --workspace @site-factory/website run build",
+    "typecheck": "tsc --noEmit -p tsconfig.json && npm --workspace @site-factory/website run typecheck",
+    "test": "vitest run",
+    "seo:audit": "tsx scripts/audit-seo.ts",
+    "sitemap:generate": "tsx scripts/generate-sitemap.ts",
+    "robots:generate": "tsx scripts/generate-robots.ts",
+    "wordpress:draft": "tsx scripts/generate-wordpress-draft.ts",
+    "content-calendar:generate": "tsx scripts/generate-content-calendar.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}

@@ -141,3 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Site Factory generated local outputs
+output/generated-pages/*
+output/seo-audits/*
+output/wordpress-drafts/*
+output/content-calendars/*
+!output/**/.gitkeep

@@ -1,0 +1,13 @@
+brands:
+  - id: site-factory
+    name: Site Factory
+    voice: "Practical, local-first, careful, and clear."
+  - id: work-organizer
+    name: Work Organizer
+    voice: "Calm, direct, and operational."
+  - id: contactor
+    name: Contactor
+    voice: "Helpful, plainspoken, and trust-building."
+  - id: gofunmotion
+    name: GoFunMotion
+    voice: "Polished, creative, and transparent about AI-generated model concepts."
