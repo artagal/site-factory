@@ -3,7 +3,11 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { getRepoRoot } from "../apps/website/src/lib/repo-root";
 import { absoluteUrl, canonicalUrlPlaceholder } from "../apps/website/src/lib/seo";
-import { getFactoryRoutes, type SitemapRoute } from "../apps/website/src/lib/site-routes";
+import {
+  getFactoryRoutes,
+  normalizeRoutePath,
+  type SitemapRoute
+} from "../apps/website/src/lib/site-routes";
 
 function escapeXml(value: string) {
   return value
@@ -18,7 +22,13 @@ export function buildSitemapXml(
   routes: SitemapRoute[],
   baseUrl = canonicalUrlPlaceholder
 ) {
-  const urls = routes
+  const normalizedRoutes = [...routes]
+    .map((route) => ({
+      ...route,
+      path: normalizeRoutePath(route.path)
+    }))
+    .sort((a, b) => a.path.localeCompare(b.path));
+  const urls = normalizedRoutes
     .map((route) => {
       const location = absoluteUrl(route.path, baseUrl);
 

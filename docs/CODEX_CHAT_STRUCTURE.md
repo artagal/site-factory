@@ -2,6 +2,8 @@
 
 Create these separate Codex chats so each one can stay focused.
 
+Each chat should read `docs/SITE_GENERATION_PLAYBOOK.md` before creating pages or changing shared templates.
+
 ## 01 Site Factory Architect
 
 Owns structure, reusable patterns, Next.js foundation, scripts, safety rules, and future prototype architecture.

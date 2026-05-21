@@ -1,6 +1,16 @@
 import Link from "next/link";
-import { ArrowRight, ClipboardList, FileText, LayoutDashboard, Search } from "lucide-react";
+import {
+  ArrowRight,
+  ClipboardList,
+  FileText,
+  LayoutDashboard,
+  Search,
+  ShieldCheck,
+  Sparkles
+} from "lucide-react";
 import { FactoryCard } from "@/components/FactoryCard";
+import { MetricStrip, ProcessStrip, SectionHeader } from "@/components/landing";
+import { getContentEntries } from "@/lib/content-files";
 import { getPreviewPages } from "@/lib/site-content";
 
 const workflowItems = [
@@ -28,6 +38,7 @@ const workflowItems = [
 
 export default function HomePage() {
   const previewPages = getPreviewPages();
+  const contentEntries = getContentEntries();
 
   return (
     <main>
@@ -61,8 +72,31 @@ export default function HomePage() {
                 <FileText aria-hidden="true" size={18} />
               </Link>
             </div>
+            <div className="mt-8 max-w-2xl">
+              <MetricStrip
+                items={[
+                  { label: "Previews", value: String(previewPages.length) },
+                  { label: "Drafts", value: String(contentEntries.length) },
+                  { label: "Live APIs", value: "0" }
+                ]}
+              />
+            </div>
           </div>
           <div className="grid content-center gap-4">
+            <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-soft">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <div className="flex size-11 items-center justify-center rounded-lg bg-coral/10 text-coral">
+                  <Sparkles aria-hidden="true" size={22} />
+                </div>
+                <span className="rounded-lg bg-paper px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-ink/60">
+                  Foundation
+                </span>
+              </div>
+              <h2 className="text-xl font-black text-ink">Generate, preview, review</h2>
+              <p className="mt-2 text-sm leading-6 text-ink/68">
+                This dashboard is the local staging area for page strategy, content structure, and metadata before anything touches a live system.
+              </p>
+            </div>
             {workflowItems.map((item) => {
               const Icon = item.icon;
 
@@ -81,6 +115,17 @@ export default function HomePage() {
                 </div>
               );
             })}
+            <div className="grid grid-cols-[44px_1fr] gap-4 rounded-lg border border-ink/10 bg-ink p-5 text-white shadow-soft">
+              <div className="flex size-11 items-center justify-center rounded-lg bg-white/10 text-white">
+                <ShieldCheck aria-hidden="true" size={22} />
+              </div>
+              <div>
+                <h2 className="text-base font-black">Safe by default</h2>
+                <p className="mt-1 text-sm leading-6 text-white/72">
+                  No Bluehost, WordPress, OpenAI, payments, or automatic deployment are connected.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -105,6 +150,36 @@ export default function HomePage() {
           {previewPages.map((page) => (
             <FactoryCard key={page.slug} page={page} />
           ))}
+        </div>
+      </section>
+      <section className="border-y border-ink/10 bg-white">
+        <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">
+          <SectionHeader
+            eyebrow="Generation workflow"
+            summary="Future Codex chats should reuse this sequence for landing pages, SEO drafts, model pages, validation pages, and WordPress-ready local exports."
+            title="How new pages move through the factory"
+            tone="skyline"
+          />
+          <ProcessStrip
+            steps={[
+              {
+                title: "Brief",
+                text: "Read the Codex context, brand data, target keyword, and template notes."
+              },
+              {
+                title: "Compose",
+                text: "Create or update local MDX, YAML, preview data, and metadata fields."
+              },
+              {
+                title: "Preview",
+                text: "Open the dashboard and check the page structure before generating exports."
+              },
+              {
+                title: "Audit",
+                text: "Run only the necessary local checks for types, build, tests, or SEO metadata."
+              }
+            ]}
+          />
         </div>
       </section>
     </main>

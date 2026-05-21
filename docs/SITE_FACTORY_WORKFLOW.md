@@ -14,7 +14,8 @@ Site Factory is a local-first Codex workspace for creating page drafts before an
 1. Pick the matching template from `templates/app-landing-page/` or `templates/validation-landing-page/`.
 2. Add or update the relevant Markdown or MDX file under `content/sites/`.
 3. Confirm title, meta description, canonical path placeholder, OpenGraph intent, and FAQ candidates.
-4. Preview in `apps/website` before moving toward publishing.
+4. Reuse landing primitives from `apps/website/src/components/landing/`.
+5. Preview in `apps/website` before moving toward publishing.
 
 ## SEO Blog Posts
 
@@ -22,6 +23,7 @@ Site Factory is a local-first Codex workspace for creating page drafts before an
 2. Draft the post in the site's `blog/` folder.
 3. Keep the answer useful before optimizing headings.
 4. Add FAQ frontmatter when the topic naturally has concise questions.
+5. Use `canonicalPath`, `targetKeyword`, `secondaryKeywords`, and optional dates in frontmatter.
 
 ## Model Portfolio Pages
 
@@ -29,6 +31,14 @@ Site Factory is a local-first Codex workspace for creating page drafts before an
 2. Draft under `content/sites/gofunmotion/models/`.
 3. Include AI disclosure language.
 4. Keep production notes separate from claims about a real person.
+5. Separate positioning, creative direction, brand fit, and production queue notes.
+
+## Validation Pages
+
+1. Use `templates/validation-landing-page/`.
+2. Define the audience, promise, primary signal, validation window, and decision rule.
+3. Keep collection systems offline unless the user explicitly asks to add them.
+4. Document what will be built later instead of wiring it now.
 
 ## WordPress Drafts
 

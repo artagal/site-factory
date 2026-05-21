@@ -8,18 +8,25 @@ const CONTENT_EXTENSIONS = new Set([".md", ".mdx"]);
 
 export type ContentEntry = {
   body: string;
+  canonicalPath: string;
   contentType: string;
   description: string;
+  excerpt: string;
   faqs: Faq[];
   filePath: string;
   href: string;
+  modifiedDate: string;
+  publishedDate: string;
   rawFrontmatter: Record<string, unknown>;
+  readingMinutes: number;
   segments: string[];
+  secondaryKeywords: string[];
   site: string;
   slug: string;
   status: string;
   targetKeyword: string;
   title: string;
+  wordCount: number;
 };
 
 function walkFiles(directory: string): string[] {
@@ -43,6 +50,16 @@ function asString(value: unknown, fallback: string) {
   return typeof value === "string" && value.trim() ? value : fallback;
 }
 
+function asStringArray(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter(
+    (item): item is string => typeof item === "string" && Boolean(item.trim())
+  );
+}
+
 function asFaqs(value: unknown): Faq[] {
   if (!Array.isArray(value)) {
     return [];
@@ -63,6 +80,27 @@ function asFaqs(value: unknown): Faq[] {
     .filter((item): item is Faq => Boolean(item));
 }
 
+export function calculateReadingMinutes(markdown: string) {
+  const words = markdown
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/[#>*_`[\]()-]/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  return Math.max(1, Math.ceil(words.length / 220));
+}
+
+export function createExcerpt(markdown: string, fallback: string) {
+  const firstParagraph =
+    markdown
+      .split(/\r?\n\r?\n/)
+      .map((block) => block.replace(/^#+\s*/, "").trim())
+      .find((block) => block && !block.startsWith("- ")) ?? fallback;
+
+  return firstParagraph.length > 180 ? `${firstParagraph.slice(0, 177).trim()}...` : firstParagraph;
+}
+
 export function getContentRoot() {
   return path.join(getRepoRoot(), "content", "sites");
 }
@@ -79,21 +117,33 @@ export function getContentEntries(): ContentEntry[] {
       const slug = segments.at(-1) ?? "draft";
       const title = asString(parsed.data.title, slug.replaceAll("-", " "));
       const site = asString(parsed.data.site, segments[0] ?? "site-factory");
+      const description = asString(parsed.data.description, "Local Site Factory content draft.");
+      const wordCount = parsed.body
+        .replace(/```[\s\S]*?```/g, " ")
+        .split(/\s+/)
+        .filter(Boolean).length;
 
       return {
         body: parsed.body,
+        canonicalPath: asString(parsed.data.canonicalPath, `/content/${segments.join("/")}`),
         contentType: asString(parsed.data.contentType, "draft"),
-        description: asString(parsed.data.description, "Local Site Factory content draft."),
+        description,
+        excerpt: createExcerpt(parsed.body, description),
         faqs: asFaqs(parsed.data.faqs),
         filePath,
         href: `/content/${segments.join("/")}`,
+        modifiedDate: asString(parsed.data.modifiedDate, ""),
+        publishedDate: asString(parsed.data.publishedDate, ""),
         rawFrontmatter: parsed.data,
+        readingMinutes: calculateReadingMinutes(parsed.body),
         segments,
+        secondaryKeywords: asStringArray(parsed.data.secondaryKeywords),
         site,
         slug,
         status: asString(parsed.data.status, "draft"),
         targetKeyword: asString(parsed.data.targetKeyword, ""),
-        title
+        title,
+        wordCount
       };
     })
     .sort((a, b) => a.href.localeCompare(b.href));

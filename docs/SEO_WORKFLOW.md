@@ -22,3 +22,15 @@
 - Canonical path is a placeholder or local route.
 - OpenGraph fields are produced by the shared SEO helper.
 - FAQ schema is only emitted when real FAQ entries exist.
+- Article schema is used for blog-style content.
+- Breadcrumb schema is used for local content previews.
+
+## Local SEO Audit
+
+Run:
+
+```powershell
+npm.cmd run seo:audit
+```
+
+The audit currently checks title length, description length, and root-relative canonical paths. Treat it as a first-pass guardrail, not a replacement for human review.

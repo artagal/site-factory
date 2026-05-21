@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, FlaskConical, MessageSquareText, MousePointerClick } from "lucide-react";
+import {
+  ArrowRight,
+  BarChart3,
+  FlaskConical,
+  MessageSquareText,
+  MousePointerClick,
+  TimerReset
+} from "lucide-react";
+import { FeatureGrid, ProcessStrip, SectionHeader } from "@/components/landing";
 import type { FactoryPreviewPage } from "@/lib/site-content";
 
 const validationIcons = [MousePointerClick, MessageSquareText, FlaskConical];
@@ -50,6 +58,68 @@ export function ValidationLandingPage({ page }: { page: FactoryPreviewPage }) {
                 );
               })}
             </div>
+          </div>
+        </div>
+      </section>
+      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8">
+        <SectionHeader
+          eyebrow="Validation template"
+          summary="The goal is to test page promise and audience fit before forms, analytics, checkout, or service operations are added."
+          title="What the first validation page should prove"
+          tone="coral"
+        />
+        <FeatureGrid
+          items={[
+            {
+              title: "Message clarity",
+              text: "Visitors should understand the offer without reading a long explanation.",
+              icon: MessageSquareText
+            },
+            {
+              title: "Action intent",
+              text: "The page should define the first signal to watch, even if capture stays manual for now.",
+              icon: MousePointerClick
+            },
+            {
+              title: "Decision rule",
+              text: "Every validation draft should say what result means continue, change, or stop.",
+              icon: BarChart3
+            }
+          ]}
+          tone="coral"
+        />
+      </section>
+      <section className="border-y border-ink/10 bg-white">
+        <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">
+          <SectionHeader
+            eyebrow="Safe test sequence"
+            title="Validate locally before building systems"
+            tone="skyline"
+          />
+          <ProcessStrip
+            steps={[
+              {
+                title: "Draft promise",
+                text: "State the offer, audience, and first conversion action."
+              },
+              {
+                title: "Preview page",
+                text: "Inspect layout and copy in the local dashboard."
+              },
+              {
+                title: "Choose signal",
+                text: "Document the metric to watch before wiring any collection tools."
+              },
+              {
+                title: "Decide later",
+                text: "Add forms, analytics, or services only after explicit approval."
+              }
+            ]}
+            tone="skyline"
+          />
+          <div className="mt-6 inline-flex items-center gap-3 rounded-lg border border-ink/10 bg-paper px-4 py-3 text-sm font-bold text-ink/70">
+            <TimerReset aria-hidden="true" size={18} />
+            Suggested first validation window: 14 days.
           </div>
         </div>
       </section>

@@ -3,6 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { getContentEntries } from "../apps/website/src/lib/content-files";
 import { getRepoRoot } from "../apps/website/src/lib/repo-root";
+import { validateSeoFields } from "../apps/website/src/lib/seo";
 import { getPreviewPages } from "../apps/website/src/lib/site-content";
 
 export type SeoAuditItem = {
@@ -14,19 +15,7 @@ export type SeoAuditItem = {
 };
 
 function auditItem(title: string, description: string, href: string): SeoAuditItem {
-  const issues: string[] = [];
-
-  if (title.length < 20 || title.length > 70) {
-    issues.push("Title should usually be between 20 and 70 characters.");
-  }
-
-  if (description.length < 80 || description.length > 170) {
-    issues.push("Meta description should usually be between 80 and 170 characters.");
-  }
-
-  if (!href.startsWith("/")) {
-    issues.push("Canonical path should be root-relative.");
-  }
+  const issues = validateSeoFields({ title, description, path: href });
 
   return {
     descriptionLength: description.length,
@@ -42,7 +31,7 @@ export function auditSeoEntries() {
     auditItem(page.seo.title, page.seo.description, page.href)
   );
   const contentItems = getContentEntries().map((entry) =>
-    auditItem(entry.title, entry.description, entry.href)
+    auditItem(entry.title, entry.description, entry.canonicalPath)
   );
 
   return [...previewItems, ...contentItems];

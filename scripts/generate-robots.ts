@@ -4,10 +4,14 @@ import { pathToFileURL } from "node:url";
 import { getRepoRoot } from "../apps/website/src/lib/repo-root";
 import { absoluteUrl, canonicalUrlPlaceholder } from "../apps/website/src/lib/seo";
 
-export function buildRobotsTxt(baseUrl = canonicalUrlPlaceholder) {
+export function buildRobotsTxt(
+  baseUrl = canonicalUrlPlaceholder,
+  disallow: string[] = ["/api/", "/drafts/"]
+) {
   return [
     "User-agent: *",
     "Allow: /",
+    ...disallow.map((path) => `Disallow: ${path}`),
     "",
     `Sitemap: ${absoluteUrl("/sitemap.xml", baseUrl)}`,
     ""

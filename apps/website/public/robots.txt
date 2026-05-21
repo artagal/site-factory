@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /drafts/
 
 Sitemap: https://example.com/sitemap.xml

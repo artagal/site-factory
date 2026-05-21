@@ -9,7 +9,7 @@ describe("generation scripts", () => {
         {
           changeFrequency: "weekly",
           lastModified: "2026-05-21T00:00:00.000Z",
-          path: "/",
+          path: "///",
           priority: 1
         }
       ],
@@ -21,8 +21,9 @@ describe("generation scripts", () => {
   });
 
   it("creates robots.txt with a sitemap pointer", () => {
-    expect(buildRobotsTxt("https://site-factory.test")).toContain(
-      "Sitemap: https://site-factory.test/sitemap.xml"
-    );
+    const robots = buildRobotsTxt("https://site-factory.test");
+
+    expect(robots).toContain("Disallow: /api/");
+    expect(robots).toContain("Sitemap: https://site-factory.test/sitemap.xml");
   });
 });

@@ -18,5 +18,7 @@ describe("Site Factory content", () => {
     );
     expect(hrefs).toContain("/content/gofunmotion/models/mia-carter");
     expect(entries.every((entry) => entry.title.length > 0)).toBe(true);
+    expect(entries.every((entry) => entry.readingMinutes >= 1)).toBe(true);
+    expect(entries.every((entry) => entry.canonicalPath.startsWith("/"))).toBe(true);
   });
 });

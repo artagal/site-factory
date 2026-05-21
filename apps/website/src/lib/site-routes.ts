@@ -12,6 +12,27 @@ export type SitemapRoute = {
 export const defaultLastModified =
   process.env.SITE_FACTORY_LASTMOD ?? "2026-05-21T00:00:00.000Z";
 
+export function normalizeRoutePath(pathname: string) {
+  if (!pathname || pathname === "/") {
+    return "/";
+  }
+
+  return `/${pathname.replace(/^\/+/, "").replace(/\/+$/, "")}`;
+}
+
+function uniqueRoutes(routes: SitemapRoute[]) {
+  const byPath = new Map<string, SitemapRoute>();
+
+  routes.forEach((route) => {
+    byPath.set(normalizeRoutePath(route.path), {
+      ...route,
+      path: normalizeRoutePath(route.path)
+    });
+  });
+
+  return [...byPath.values()].sort((a, b) => a.path.localeCompare(b.path));
+}
+
 export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRoute[] {
   const previewRoutes = getPreviewPages().map((page) => ({
     changeFrequency: "weekly" as const,
@@ -26,7 +47,7 @@ export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRou
     priority: entry.contentType.includes("seo") ? 0.65 : 0.55
   }));
 
-  return [
+  return uniqueRoutes([
     {
       changeFrequency: "weekly",
       lastModified,
@@ -41,7 +62,7 @@ export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRou
     },
     ...previewRoutes,
     ...contentRoutes
-  ];
+  ]);
 }
 
 export function getAbsoluteFactoryRoutes(baseUrl = canonicalUrlPlaceholder) {
