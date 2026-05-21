@@ -1,10 +1,12 @@
-# Initial SEO Strategy Map
+# Site Factory Initial SEO Intelligence Strategy
 
 Date: 2026-05-21
 
-Scope: Work Organizer, Contactor, GoFunMotion, and Beauty Drop validation page.
+Scope: Work Organizer, Contactor, GoFunMotion, and Beauty Drop validation.
 
-Source context:
+Role boundary: strategy, SEO structure, keyword planning, content planning, and site growth recommendations only. No app logic, Next.js architecture, external APIs, WordPress, Bluehost, or live publishing work.
+
+## Source Context
 
 - `docs/SEO_WORKFLOW.md`
 - `docs/CODEX_CHAT_STRUCTURE.md`
@@ -12,54 +14,68 @@ Source context:
 - `data/products.yml`
 - `data/brands.yml`
 - `data/seo-keywords.yml`
-- Existing local drafts under `content/sites/`
-- Existing local audit at `output/seo-audits/site-factory-seo-audit.md`
+- Existing content under `content/sites/`
+- Existing local SEO audit notes under `output/seo-audits/`
 
-Notes:
+## Current Content Inventory
 
-- This is an initial strategy map based on local project context and seed keywords, not live search-volume data.
-- Recommended content should stay draft/local until the publishing workflow is explicitly approved.
-- Early SEO should favor clear, useful pages that explain the product promise before chasing large generic keywords.
+### Work Organizer
 
-## Portfolio-Level Strategy
+Current local drafts:
 
-### Priority Order
+- `content/sites/work-organizer/blog/how-to-organize-work-without-another-spreadsheet.mdx`
+- `content/sites/work-organizer/blog/what-is-a-work-organizer-app.mdx`
+- `content/sites/work-organizer/blog/daily-work-planning-system.mdx`
+- `content/sites/work-organizer/blog/team-follow-up-tracker.mdx`
+- `content/sites/work-organizer/blog/task-tracking-spreadsheet-alternative.mdx`
 
-1. Work Organizer: strongest app-like informational niche and easiest to expand into practical workflow content.
-2. Contactor: strong homeowner education intent with clear checklist/comparison/search utility.
-3. Beauty Drop: validation page should test demand with a small number of focused pages before scaling content.
-4. GoFunMotion: useful as a portfolio/positioning property, but needs careful transparency language and should avoid implying real people or live talent inventory.
+Strategic read: Work Organizer now has the beginning of a real cornerstone cluster. The next move should be internal linking, one product landing page, and a small number of feature/use-case pages.
 
-### First Pages to Create Across the Portfolio
+### Contactor
 
-1. Work Organizer: `work organizer app` landing page.
-2. Work Organizer: `daily work planning system` landing page.
-3. Work Organizer: expand the existing spreadsheet-alternative blog into a stronger cornerstone article.
-4. Contactor: `contractor checklist` landing page.
-5. Contactor: `compare contractor bids` landing page.
-6. Contactor: expand the existing before-hiring blog into a cornerstone checklist article.
-7. Beauty Drop: refine the validation landing page around `beauty drop waitlist`.
-8. Beauty Drop: create a `curated beauty bundle` validation page.
-9. GoFunMotion: create an `AI model portfolio page` hub.
-10. GoFunMotion: create a transparent `fictional AI model concept` explainer page.
+Current local draft:
 
-### Internal Linking Principles
+- `content/sites/contactor/blog/what-to-track-before-hiring-a-home-service-contractor.mdx`
 
-- Each site should have one clear homepage or preview page that links to the highest-priority SEO pages.
-- Each product should have a small topic hub before adding many isolated posts.
-- Blog posts should link back to the most relevant product or landing page in the opening third and final section.
-- Landing pages should link to supporting blog posts that answer objections or comparison questions.
-- FAQ entries should be used only when the page has real question-and-answer content.
-- Avoid cross-site links until each property has enough standalone relevance, except where Site Factory intentionally links to portfolio examples.
+Strategic read: Contactor has a strong first informational page but needs the bid-comparison and checklist hubs next.
 
-### What Not to Create Yet
+### GoFunMotion
 
-- Do not create city/state local SEO pages until there is a real local targeting plan.
-- Do not create programmatic pages at scale.
-- Do not create thin glossary pages that only define terms.
-- Do not create comparison pages naming competitors until positioning and legal/review standards are clear.
-- Do not create transactional or checkout pages for validation concepts before demand is proven.
-- Do not create AI model pages that could be mistaken for real human talent profiles.
+Current local draft:
+
+- `content/sites/gofunmotion/models/mia-carter.mdx`
+
+Strategic read: GoFunMotion needs a transparent AI portfolio hub before adding more model profiles.
+
+### Beauty Drop
+
+Current local draft:
+
+- `content/sites/validation/beauty-drop/landing-page.mdx`
+
+Strategic read: Beauty Drop should stay validation-first. Add a tiny number of theme pages only after the core waitlist page is clear.
+
+## Portfolio Priority Order
+
+1. Work Organizer: strongest current cluster depth and clearest SaaS-style intent.
+2. Contactor: strong homeowner search intent and clear path to checklist/comparison pages.
+3. Beauty Drop: validation concept with useful testing opportunities, but keep the page set small.
+4. GoFunMotion: valuable portfolio property, but must lead with transparency and avoid implying real human profiles.
+
+## Page Priority Order
+
+1. Work Organizer product landing page for `work organizer app`.
+2. Work Organizer cluster hub for `daily work planning system`.
+3. Work Organizer feature/use-case page for `team follow up tracker`.
+4. Contactor landing page for `contractor checklist`.
+5. Contactor landing page for `compare contractor bids`.
+6. Contactor FAQ page for `questions to ask a contractor`.
+7. Beauty Drop validation page refinement for `beauty drop waitlist`.
+8. Beauty Drop explainer page for `curated beauty bundle`.
+9. GoFunMotion hub page for `AI model portfolio page`.
+10. GoFunMotion transparency page for `fictional AI model concept`.
+
+## Site Strategies
 
 ## Work Organizer
 
@@ -67,130 +83,125 @@ Brand voice: calm, direct, and operational.
 
 Product promise: organize messy tasks, projects, and follow-ups into a daily operating rhythm.
 
-Existing seed page:
-
-- `content/sites/work-organizer/blog/how-to-organize-work-without-another-spreadsheet.mdx`
-
 ### Target Audience
 
-- Solo operators, founders, consultants, and managers whose work lives across notes, spreadsheets, email, and chat.
-- Small teams that need a shared operating rhythm without adopting a heavyweight project-management system.
-- People responsible for follow-ups, recurring work, client tasks, and decision tracking.
-- Spreadsheet-heavy teams that feel the tracker has become another thing to manage.
+- Solo operators, founders, consultants, and managers who juggle notes, spreadsheets, email, chat, and recurring follow-ups.
+- Small teams that need operational clarity without heavyweight project-management software.
+- Service businesses and local operators who need follow-up discipline, task capture, and daily review.
+- Spreadsheet-heavy teams that are ready to move from tracking rows to managing actual work.
+
+### Primary SEO Positioning
+
+Work Organizer should own the practical middle ground between task lists, spreadsheets, and complex project management tools. The language should focus on daily clarity, next actions, owners, review dates, and follow-ups.
 
 ### Keyword Clusters
 
-#### Core Product
+Core product:
 
 - `work organizer app`
-- `daily work planning system`
-- `organize work without spreadsheets`
 - `work planning app`
+- `daily work planning system`
+- `simple work organizer`
 - `work management organizer`
 
-Search intent: product discovery, tool comparison, and practical workflow improvement.
+Spreadsheet alternative:
 
-#### Spreadsheet Alternative
-
+- `organize work without spreadsheets`
 - `task tracking spreadsheet alternative`
-- `organize tasks without spreadsheets`
 - `spreadsheet alternative for task tracking`
 - `replace task tracker spreadsheet`
 - `team tracker alternative`
 
-Search intent: users are feeling spreadsheet pain and are open to a simpler system.
-
-#### Follow-Up and Review Rhythm
+Follow-up management:
 
 - `team follow up tracker`
-- `daily follow up system`
-- `weekly work review template`
 - `track follow ups at work`
-- `how to stop losing follow ups`
+- `daily follow up system`
+- `client follow up tracker`
+- `open loop tracker`
 
-Search intent: users need a repeatable process more than a feature list.
-
-#### Small-Team Operations
+Small business operations:
 
 - `small team task tracking`
-- `simple work operating system`
-- `operations tracker for small business`
+- `field service task tracker`
+- `local service business organizer`
+- `simple operations tracker`
 - `daily operating rhythm`
-- `small business work organizer`
 
-Search intent: teams need structure but may not identify as project-management buyers.
+Scheduling and workflow adjacency:
 
-#### Decision and Priority Management
+- `contractor scheduling`
+- `field service scheduling`
+- `job follow up tracker`
+- `crew task tracker`
+- `service business workflow`
 
-- `track work decisions`
-- `daily priority planning`
-- `work priority system`
-- `decision tracker for teams`
-- `next action planning`
+### First 20 SEO Blog Ideas
 
-Search intent: users want clarity on what matters today.
+1. What is a work organizer app?
+2. How to organize work without another spreadsheet.
+3. How to build a daily work planning system.
+4. Task tracking spreadsheet alternative for messy work.
+5. Team follow-up tracker for open loops.
+6. Why task-tracking spreadsheets stop working for small teams.
+7. How to build a weekly work review that people actually use.
+8. What to track in a simple work organizer.
+9. How to turn scattered notes into a daily action list.
+10. How to track blockers without adding more meetings.
+11. Task list vs project management vs work organizer.
+12. How service businesses can track follow-ups without losing context.
+13. How to keep client follow-ups from falling through the cracks.
+14. When to replace a spreadsheet task tracker.
+15. How to organize recurring work without overbuilding the system.
+16. A simple owner, status, and next-action system for teams.
+17. How to run a 15-minute daily planning review.
+18. How to keep priorities visible when everything feels urgent.
+19. How to track decisions alongside tasks.
+20. How to clean up a messy project tracker.
 
-### First 20 Blog Topics
+### First 10 Landing, Feature, and SEO Pages
 
-1. How to organize work without another spreadsheet.
-2. Why task-tracking spreadsheets stop working for small teams.
-3. The daily work planning system for messy weeks.
-4. How to build a follow-up rhythm your team actually uses.
-5. What to track in a simple work organizer.
-6. How to turn scattered notes into a daily action list.
-7. A practical weekly work review for founders and small teams.
-8. How to track blockers without adding more meetings.
-9. The difference between a task list, a project plan, and a work organizer.
-10. How to keep client follow-ups from falling through the cracks.
-11. When to replace your task-tracking spreadsheet.
-12. How to organize recurring work without overbuilding the system.
-13. A simple owner-status-next action framework for team work.
-14. How to run a 15-minute daily planning review.
-15. How to keep priorities visible when everything feels urgent.
-16. What a calm work dashboard should show first.
-17. How to track decisions alongside tasks.
-18. How to clean up a messy project tracker.
-19. Why your team does not trust the tracker anymore.
-20. How to create a work operating rhythm before choosing tools.
+1. `/work-organizer/work-organizer-app` - primary product landing page.
+2. `/work-organizer/daily-work-planning-system` - daily review and planning hub.
+3. `/work-organizer/task-tracking-spreadsheet-alternative` - spreadsheet replacement use case.
+4. `/work-organizer/team-follow-up-tracker` - follow-up feature/use case.
+5. `/work-organizer/client-follow-up-tracker` - service business follow-up use case.
+6. `/work-organizer/small-team-task-tracking` - small team operational page.
+7. `/work-organizer/field-service-task-tracker` - future adjacent vertical test.
+8. `/work-organizer/recurring-work-tracker` - recurring work feature page.
+9. `/work-organizer/work-priority-system` - priority planning page.
+10. `/work-organizer/weekly-work-review-template` - template-style SEO page.
 
-### First 10 Landing and SEO Pages
+### Internal Linking
 
-1. `/work-organizer/work-organizer-app` - target `work organizer app`; explain the product promise and who it is for.
-2. `/work-organizer/daily-work-planning-system` - target `daily work planning system`; position the app as a daily review rhythm.
-3. `/work-organizer/spreadsheet-alternative` - target `task tracking spreadsheet alternative`; compare workflow pain points without naming competitors.
-4. `/work-organizer/team-follow-up-tracker` - target `team follow up tracker`; focus on owners, next actions, and review dates.
-5. `/work-organizer/small-team-task-tracking` - target `small team task tracking`; speak to founders and lightweight teams.
-6. `/work-organizer/work-priority-system` - target `work priority system`; focus on daily priorities and triage.
-7. `/work-organizer/recurring-work-tracker` - target `recurring work tracker`; explain recurring routines and reviews.
-8. `/work-organizer/decision-tracker` - target `decision tracker for teams`; connect decisions to tasks and follow-ups.
-9. `/work-organizer/client-follow-up-tracker` - target `client follow up tracker`; target service businesses and consultants.
-10. `/work-organizer/weekly-work-review-template` - target `weekly work review template`; combine useful template-style content with product positioning.
+- Link all five existing blog drafts to `/work-organizer/work-organizer-app` once the landing page exists.
+- Use `daily-work-planning-system` as the planning hub and link it to spreadsheet, follow-up, priority, and weekly review pages.
+- Use `task-tracking-spreadsheet-alternative` as the comparison-style hub for spreadsheet pain.
+- Use `team-follow-up-tracker` as the hub for open-loop, client follow-up, and local service follow-up content.
+- Add related links at the end of every Work Organizer article: one product page, one adjacent blog post, and one next-step workflow page.
 
-### Internal Linking Strategy
+### CTA Strategy
 
-- Link the homepage or preview page to the first three landing pages: `work organizer app`, `daily work planning system`, and `spreadsheet-alternative`.
-- Link every blog post about spreadsheet pain to `/work-organizer/spreadsheet-alternative`.
-- Link follow-up, blocker, and client-service posts to `/work-organizer/team-follow-up-tracker`.
-- Link planning and prioritization posts to `/work-organizer/daily-work-planning-system`.
-- Link template-style posts to the relevant workflow landing page, then back to the core product page.
-- Add a "Related workflows" section on each landing page with 3 links: one core page, one supporting blog, and one adjacent use case.
+- Primary CTA: `Try Work Organizer`.
+- Soft CTA for informational posts: `Build a calmer daily review rhythm`.
+- Feature CTA: `Track owners, next actions, and follow-ups in one place`.
+- Avoid aggressive productivity claims. Keep the tone practical and grounded.
 
-### Page Creation Priority
+### What to Create First
 
-1. Expand the existing `organize work without spreadsheets` article into a cornerstone post.
-2. Create `/work-organizer/work-organizer-app`.
-3. Create `/work-organizer/daily-work-planning-system`.
-4. Create `/work-organizer/spreadsheet-alternative`.
-5. Create `/work-organizer/team-follow-up-tracker`.
-6. Create supporting posts for daily review, weekly review, and blocker tracking.
+1. Product landing page for `work organizer app`.
+2. Internal links between the five existing Work Organizer blog drafts.
+3. Feature page for `team follow up tracker`.
+4. Use-case page for `task tracking spreadsheet alternative`.
+5. Template-style page for `weekly work review template`.
 
 ### What Not to Create Yet
 
-- Do not create broad `project management software` pages yet.
-- Do not create competitor comparison pages yet.
-- Do not create enterprise workflow pages until the product positioning supports enterprise use.
-- Do not create highly technical integration pages before integrations exist.
-- Do not create template-download pages unless there is an actual local template asset or page plan.
+- Broad `project management software` pages.
+- Competitor comparison pages.
+- Enterprise workflow pages.
+- Integration pages for tools that do not exist.
+- Large local SEO sets before local-service positioning is validated.
 
 ## Contactor
 
@@ -198,30 +209,28 @@ Brand voice: helpful, plainspoken, and trust-building.
 
 Product promise: help homeowners compare contractor bids and track project details.
 
-Existing seed page:
-
-- `content/sites/contactor/blog/what-to-track-before-hiring-a-home-service-contractor.mdx`
-
 ### Target Audience
 
 - Homeowners planning repairs, remodels, maintenance, or service projects.
-- People comparing multiple contractor bids and unsure which details matter.
-- First-time homeowners who need checklists, questions, and plain-English guidance.
-- Homeowners who want organized project records before signing or paying.
+- People comparing contractor bids and unsure which estimate is actually complete.
+- First-time homeowners who need practical checklists and plain-language guidance.
+- Homeowners who want organized records before, during, and after a project.
+
+### Primary SEO Positioning
+
+Contactor should become a homeowner decision-support site first, then a project tracking product. The strongest early SEO surface is contractor hiring education: checklists, bid comparison, questions, documents, change orders, and payment schedules.
 
 ### Keyword Clusters
 
-#### Contractor Hiring Preparation
+Contractor hiring:
 
-- `what to track before hiring a contractor`
 - `contractor checklist`
+- `what to track before hiring a contractor`
 - `questions to ask a contractor`
 - `before hiring a contractor checklist`
 - `home contractor hiring checklist`
 
-Search intent: homeowners want a practical pre-hiring checklist and confidence.
-
-#### Bid Comparison
+Bid comparison:
 
 - `compare contractor bids`
 - `contractor bid comparison`
@@ -229,39 +238,31 @@ Search intent: homeowners want a practical pre-hiring checklist and confidence.
 - `contractor quote comparison`
 - `compare home repair estimates`
 
-Search intent: users have bids or soon will and need a consistent comparison method.
-
-#### Project Planning
+Project planning:
 
 - `home service project planning`
 - `home improvement project checklist`
-- `home repair planning checklist`
-- `remodel project tracker`
 - `contractor project tracker`
+- `remodel project tracker`
+- `home project file`
 
-Search intent: users are organizing scope, timelines, payments, and decisions.
+HVAC and service verticals:
 
-#### Trust and Risk Reduction
+- `HVAC estimate checklist`
+- `compare HVAC quotes`
+- `HVAC contractor questions`
+- `HVAC replacement estimate checklist`
+- `home service business estimate`
 
-- `contractor license insurance checklist`
+Risk reduction:
+
 - `contractor red flags`
+- `contractor license insurance checklist`
 - `contractor payment schedule`
 - `contractor warranty questions`
 - `contractor change order process`
 
-Search intent: users want to avoid bad hires, surprise costs, and unclear scope.
-
-#### Homeowner Records
-
-- `track home repair projects`
-- `home maintenance records`
-- `contractor document checklist`
-- `home project file`
-- `home service records`
-
-Search intent: users need durable records before, during, and after the job.
-
-### First 20 Blog Topics
+### First 20 SEO Blog Ideas
 
 1. What to track before hiring a home service contractor.
 2. How to compare contractor bids without choosing the wrong estimate.
@@ -280,198 +281,163 @@ Search intent: users need durable records before, during, and after the job.
 15. What homeowners should save after a contractor finishes.
 16. How to prepare for a home repair estimate appointment.
 17. How to compare warranties in contractor bids.
-18. A simple home project planning checklist for first-time homeowners.
-19. How to keep contractor communication organized.
+18. HVAC estimate checklist for homeowners.
+19. How to compare HVAC quotes before replacing a system.
 20. What to do when a contractor estimate is missing details.
 
-### First 10 Landing and SEO Pages
+### First 10 Landing, Feature, and SEO Pages
 
-1. `/contactor/contractor-checklist` - target `contractor checklist`; broad checklist hub.
-2. `/contactor/compare-contractor-bids` - target `compare contractor bids`; core comparison landing page.
-3. `/contactor/questions-to-ask-a-contractor` - target `questions to ask a contractor`; useful pre-hire page.
-4. `/contactor/home-service-project-planning` - target `home service project planning`; product-positioning page.
-5. `/contactor/contractor-bid-comparison-template` - target `contractor bid comparison`; template-style SEO page.
-6. `/contactor/contractor-red-flags` - target `contractor red flags`; trust-building education.
-7. `/contactor/contractor-document-checklist` - target `contractor document checklist`; records and proof page.
-8. `/contactor/contractor-payment-schedule` - target `contractor payment schedule`; money and milestones page.
-9. `/contactor/home-project-tracker` - target `home project tracker`; product use-case page.
-10. `/contactor/change-order-tracker` - target `contractor change order process`; during-project organization page.
+1. `/contactor/contractor-checklist` - main checklist hub.
+2. `/contactor/compare-contractor-bids` - bid comparison hub.
+3. `/contactor/questions-to-ask-a-contractor` - FAQ-style educational page.
+4. `/contactor/home-service-project-planning` - project planning landing page.
+5. `/contactor/contractor-bid-comparison-template` - template-style page.
+6. `/contactor/contractor-document-checklist` - documents and proof page.
+7. `/contactor/contractor-red-flags` - risk reduction page.
+8. `/contactor/contractor-payment-schedule` - payment milestone page.
+9. `/contactor/hvac-estimate-checklist` - first vertical test page.
+10. `/contactor/home-project-tracker` - product use-case page.
 
-### Internal Linking Strategy
+### Internal Linking
 
-- Link the homepage or preview page to `/contactor/contractor-checklist` and `/contactor/compare-contractor-bids` first.
-- Use `/contactor/contractor-checklist` as the main educational hub, with sections linking to questions, documents, payments, red flags, and bid comparison.
-- Link every bid-related blog post to `/contactor/compare-contractor-bids`.
-- Link risk-related posts to `/contactor/contractor-red-flags` and `/contactor/contractor-document-checklist`.
-- Link project tracking posts to `/contactor/home-project-tracker`.
-- Add a clear final CTA on educational pages that frames Contactor as a way to keep bids, notes, documents, and decisions in one place.
+- Use `/contactor/contractor-checklist` as the main hub.
+- Link bid-related posts to `/contactor/compare-contractor-bids`.
+- Link risk and proof posts to `/contactor/contractor-document-checklist`.
+- Link HVAC content to checklist and bid comparison pages.
+- Link every educational article back to the Contactor preview/product page with a practical record-keeping CTA.
 
-### Page Creation Priority
+### CTA Strategy
 
-1. Expand the existing `what to track before hiring a contractor` article into a cornerstone post.
+- Primary CTA: `Organize your project details`.
+- Blog CTA: `Compare bids with the same checklist`.
+- Risk-reduction CTA: `Keep documents, notes, and payment details together`.
+- Avoid legal-advice framing. Use plain homeowner guidance.
+
+### What to Create First
+
+1. Expand the existing pre-hiring blog into a stronger cornerstone article.
 2. Create `/contactor/contractor-checklist`.
 3. Create `/contactor/compare-contractor-bids`.
 4. Create `/contactor/questions-to-ask-a-contractor`.
-5. Create `/contactor/home-service-project-planning`.
-6. Create supporting posts on bid assumptions, red flags, proof, and payment schedules.
+5. Create `/contactor/hvac-estimate-checklist` as the first vertical SEO experiment.
 
 ### What Not to Create Yet
 
-- Do not create city pages like `contractor checklist Los Angeles` until there is a real local SEO plan.
-- Do not create contractor directory pages.
-- Do not create legal advice pages or contract interpretation pages.
-- Do not create contractor review/rating pages without a product feature and moderation plan.
-- Do not create aggressive "best contractor" pages that imply rankings the site does not have.
+- City pages before local targeting exists.
+- Contractor directory pages.
+- Legal contract interpretation pages.
+- Contractor ratings, reviews, or rankings.
+- Broad home improvement articles that do not connect to bids, records, or project decisions.
 
 ## GoFunMotion
 
 Brand voice: polished, creative, and transparent about AI-generated model concepts.
 
-Current local content:
-
-- `content/sites/gofunmotion/models/mia-carter.mdx`
-
 ### Target Audience
 
-- Brand owners, creators, and marketers exploring AI model concepts for campaign visuals.
-- Creative teams who need fictional, brand-safe model profiles for concept development.
-- People searching for examples of AI influencer profile structure.
-- Internal Site Factory collaborators planning transparent AI portfolio pages.
+- Brand owners and marketers exploring AI creator concepts.
+- Creative teams planning fictional AI model portfolios for campaign ideas.
+- People searching for AI influencer profile examples and disclosure language.
+- Internal Site Factory users building transparent portfolio structures.
+
+### Primary SEO Positioning
+
+GoFunMotion should own transparent AI model and AI creator portfolio structure, not simulated real-person talent. Every SEO page should make the fictional nature of the concept clear.
 
 ### Keyword Clusters
 
-#### AI Model Portfolio Structure
+AI model portfolios:
 
 - `AI model portfolio page`
-- `AI model portfolio`
 - `AI model profile`
-- `AI model bio`
 - `AI generated model portfolio`
+- `AI model bio`
+- `AI model concept examples`
 
-Search intent: users want examples, templates, or inspiration for AI model pages.
+AI creators:
 
-#### AI Influencer Profiles
-
+- `AI creators`
+- `AI creator profile`
 - `AI influencer profile`
 - `virtual influencer profile`
-- `AI influencer portfolio`
-- `fictional influencer profile`
-- `digital model profile`
+- `digital creator concept`
 
-Search intent: users are researching presentation and positioning for virtual personas.
-
-#### Fictional and Transparent Concepts
+Transparency and brand safety:
 
 - `fictional AI model concept`
 - `brand-safe AI model portfolio`
-- `transparent AI model page`
+- `transparent AI influencer profile`
 - `AI character portfolio`
 - `fictional model profile`
 
-Search intent: users want clarity, safety, and disclosure language.
-
-#### Brand Campaign Fit
+Campaign planning:
 
 - `AI model for brand campaign`
 - `virtual model campaign concept`
-- `AI creator concept`
+- `AI creator campaign concept`
 - `brand-safe virtual talent`
 - `AI model content concept`
 
-Search intent: users are thinking about creative use cases, not live booking yet.
+### First 10 Portfolio and SEO Pages
 
-#### Portfolio Examples
+1. `/gofunmotion/ai-model-portfolio-page` - main SEO hub.
+2. `/gofunmotion/ai-creator-profile` - AI creator profile structure.
+3. `/gofunmotion/ai-influencer-profile` - influencer-style profile guidance.
+4. `/gofunmotion/fictional-ai-model-concept` - transparency-first explainer.
+5. `/gofunmotion/brand-safe-ai-model-portfolio` - brand safety and campaign fit.
+6. `/gofunmotion/ai-model-profile-template` - template-style SEO page.
+7. `/gofunmotion/ai-lifestyle-model-concepts` - future category page.
+8. `/gofunmotion/ai-fashion-model-concepts` - future category page.
+9. `/gofunmotion/virtual-influencer-profile-examples` - examples page.
+10. `/gofunmotion/models/mia-carter` - strengthen the existing sample model page.
 
-- `AI lifestyle model concept`
-- `AI fashion model concept`
-- `AI wellness model concept`
-- `AI travel model concept`
-- `AI model concept examples`
+### Internal Linking
 
-Search intent: users want concrete examples of persona direction and brand fit.
+- Link every model profile to the main AI model portfolio hub.
+- Link every model profile and examples page to the fictional AI model concept page.
+- Link category pages only after at least two relevant model profiles exist.
+- Link template pages to the Mia Carter sample as the first concrete example.
 
-### First 20 Blog Topics
+### CTA Strategy
 
-1. What an AI model portfolio page should include.
-2. How to write a transparent AI influencer profile.
-3. Why fictional AI model concepts need clear disclosure language.
-4. How to position an AI model for brand-safe campaigns.
-5. The difference between an AI model, virtual influencer, and fictional character.
-6. How to structure an AI model bio without implying a real person.
-7. What brands should look for in an AI model concept.
-8. How to create campaign-fit notes for an AI model portfolio.
-9. AI model profile examples for lifestyle campaigns.
-10. AI model profile examples for wellness brands.
-11. AI model profile examples for fashion concepts.
-12. AI model profile examples for travel and hospitality campaigns.
-13. How to describe visual direction for an AI model page.
-14. How to keep AI model pages honest and useful.
-15. What to avoid on AI influencer portfolio pages.
-16. How fictional model pages can support creative pre-production.
-17. How to write brand-fit sections for AI model concepts.
-18. How to plan a small AI model portfolio collection.
-19. What an AI model FAQ should answer.
-20. How GoFunMotion can organize fictional model concepts.
+- Primary CTA: `Explore the AI portfolio concept`.
+- Page CTA: `Review a transparent fictional model profile`.
+- Avoid booking, hiring, or marketplace CTAs until that product direction exists.
 
-### First 10 Landing and SEO Pages
+### What to Create First
 
-1. `/gofunmotion/ai-model-portfolio-page` - target `AI model portfolio page`; main hub.
-2. `/gofunmotion/ai-influencer-profile` - target `AI influencer profile`; explain profile structure and disclosure.
-3. `/gofunmotion/fictional-ai-model-concept` - target `fictional AI model concept`; transparency-first page.
-4. `/gofunmotion/brand-safe-ai-model-portfolio` - target `brand-safe AI model portfolio`; risk and positioning page.
-5. `/gofunmotion/ai-model-profile-template` - target `AI model profile`; template-style page for structure.
-6. `/gofunmotion/ai-lifestyle-model-concepts` - target `AI lifestyle model concept`; category page.
-7. `/gofunmotion/ai-fashion-model-concepts` - target `AI fashion model concept`; category page.
-8. `/gofunmotion/ai-wellness-model-concepts` - target `AI wellness model concept`; category page.
-9. `/gofunmotion/virtual-influencer-profile-examples` - target `virtual influencer profile`; examples page.
-10. `/gofunmotion/ai-model-faq` - target `AI model FAQ`; answers disclosure and concept questions.
-
-### Internal Linking Strategy
-
-- Link the homepage or preview page to `/gofunmotion/ai-model-portfolio-page` and the Mia Carter profile.
-- Link every model profile back to the main portfolio hub and to the transparency page.
-- Link category pages to relevant model profiles only when those profiles exist.
-- Link disclosure-focused posts to `/gofunmotion/fictional-ai-model-concept`.
-- Link template and examples pages to `/gofunmotion/ai-model-profile-template`.
-- Use consistent language on every profile: fictional, AI-generated concept, not a real person.
-
-### Page Creation Priority
-
-1. Create `/gofunmotion/ai-model-portfolio-page`.
-2. Strengthen the existing Mia Carter profile with more structured brand-fit and disclosure sections later.
-3. Create `/gofunmotion/fictional-ai-model-concept`.
-4. Create `/gofunmotion/ai-influencer-profile`.
-5. Create `/gofunmotion/brand-safe-ai-model-portfolio`.
-6. Add category pages only after at least two relevant model profiles exist.
+1. Create the `AI model portfolio page` hub.
+2. Create `fictional AI model concept`.
+3. Strengthen Mia Carter with clearer portfolio sections and disclosure.
+4. Create `AI creator profile`.
+5. Create `brand-safe AI model portfolio`.
 
 ### What Not to Create Yet
 
-- Do not create pages that suggest the fictional model is a real person.
-- Do not create booking, hiring, or talent marketplace pages yet.
-- Do not create large sets of thin model profiles.
-- Do not create deep category pages until supporting profiles exist.
-- Do not create pages around celebrity likeness, impersonation, or real-person lookalikes.
+- Pages that imply real human identity.
+- Booking or talent marketplace pages.
+- Celebrity lookalike or impersonation content.
+- Large batches of thin model profiles.
+- Category pages without enough profiles to support them.
 
-## Beauty Drop Validation Page
-
-Brand context: Beauty Drop is a validation concept, not a built service.
+## Beauty Drop Validation
 
 Product promise: validate curated beauty drops before building the service.
 
-Existing local content:
-
-- `content/sites/validation/beauty-drop/landing-page.mdx`
-
 ### Target Audience
 
-- Beauty-curious shoppers who like product discovery but feel overwhelmed by large marketplaces.
-- Shoppers interested in seasonal, themed, or routine-based beauty bundles.
-- Early waitlist visitors who need to understand the concept quickly.
-- Potential validation traffic from social, email, or lightweight search pages.
+- Beauty-curious shoppers who want guided discovery rather than endless browsing.
+- People interested in seasonal, themed, or routine-based beauty bundles.
+- Early waitlist visitors evaluating whether the concept is understandable and appealing.
+- Possible future users seeking beauty appointment discovery, but only if the concept pivots.
+
+### Primary SEO Positioning
+
+Beauty Drop should stay a validation page ecosystem. The SEO goal is not to rank for every beauty term; it is to learn which offer language and drop themes create interest.
 
 ### Keyword Clusters
 
-#### Validation and Waitlist
+Validation and waitlist:
 
 - `beauty drop waitlist`
 - `beauty product validation page`
@@ -479,19 +445,15 @@ Existing local content:
 - `beauty waitlist page`
 - `curated beauty waitlist`
 
-Search intent: early-stage validation and interest capture.
-
-#### Curated Beauty Bundles
+Curated bundles:
 
 - `curated beauty bundle`
 - `beauty product bundle`
 - `beauty discovery box`
-- `curated skincare bundle`
 - `beauty routine bundle`
+- `curated skincare bundle`
 
-Search intent: users are interested in guided product discovery.
-
-#### Drop-Based Shopping
+Drop-based shopping:
 
 - `beauty drop`
 - `limited beauty drop`
@@ -499,152 +461,259 @@ Search intent: users are interested in guided product discovery.
 - `themed beauty drop`
 - `beauty product drop`
 
-Search intent: users respond to timely, limited, or themed product releases.
+Beauty appointments adjacency:
 
-#### Routine and Theme Pages
+- `beauty appointments`
+- `book beauty appointments`
+- `beauty appointment app`
+- `salon appointment reminder`
+- `beauty service booking`
 
-- `glow routine bundle`
-- `travel beauty bundle`
-- `skincare starter bundle`
-- `clean beauty bundle`
-- `summer beauty bundle`
+Note: beauty appointments are an adjacency, not the current core Beauty Drop promise. Treat them as a future validation lane, not part of the first page set.
 
-Search intent: users want a specific use case or theme.
+### First 10 Validation SEO Pages
 
-#### Buyer Objections
+1. `/validation/beauty-drop` - primary waitlist validation page.
+2. `/validation/beauty-drop/curated-beauty-bundle` - bundle concept page.
+3. `/validation/beauty-drop/how-beauty-drops-work` - explainer page.
+4. `/validation/beauty-drop/beauty-subscription-alternative` - subscription-alternative positioning.
+5. `/validation/beauty-drop/travel-beauty-bundle` - first theme test.
+6. `/validation/beauty-drop/skincare-starter-bundle` - second theme test.
+7. `/validation/beauty-drop/glow-routine-bundle` - benefit-led theme test.
+8. `/validation/beauty-drop/seasonal-beauty-drop` - seasonal intent test.
+9. `/validation/beauty-drop/beauty-drop-waitlist` - waitlist copy test only if needed.
+10. `/validation/beauty-drop/beauty-appointments` - future pivot test, not first build.
 
-- `how curated beauty boxes work`
-- `are beauty bundles worth it`
-- `how to choose beauty products`
-- `beauty subscription alternative`
-- `curated beauty without subscription`
+### Internal Linking
 
-Search intent: users need reassurance before joining or buying.
+- Keep the structure shallow: main validation page, how-it-works page, and two theme tests first.
+- Link all theme pages back to the primary validation page.
+- Link objection posts back to the waitlist page.
+- Do not add broad beauty content unless it tests a specific offer angle.
 
-### First 20 Blog Topics
+### CTA Strategy
 
-1. What is a beauty drop?
-2. How curated beauty bundles make product discovery easier.
-3. Beauty drops versus beauty subscriptions.
-4. What should be included in a curated beauty bundle?
-5. How to choose a beauty bundle theme.
-6. Why smaller beauty drops can feel better than endless product browsing.
-7. What a glow routine beauty drop could include.
-8. What a travel beauty bundle could include.
-9. What a skincare starter beauty bundle could include.
-10. How to build a seasonal beauty routine from a drop.
-11. What shoppers want to know before joining a beauty waitlist.
-12. How Beauty Drop should validate product interest before launch.
-13. How to explain a beauty waitlist page clearly.
-14. Questions shoppers ask about curated beauty bundles.
-15. How themed beauty drops can reduce decision fatigue.
-16. Beauty bundle pricing questions to answer before launch.
-17. What makes a beauty product drop feel trustworthy.
-18. How to test beauty drop themes before sourcing products.
-19. What to avoid on a beauty validation landing page.
-20. How to turn beauty drop feedback into the next offer.
+- Primary CTA: `Join the Beauty Drop waitlist`.
+- Theme CTA: `Vote for this drop`.
+- Research CTA: `Tell us what drop you want next`.
+- Avoid checkout, shipping, or subscription CTAs until the service is real.
 
-### First 10 Landing and SEO Pages
+### What to Create First
 
-1. `/validation/beauty-drop` - target `beauty drop waitlist`; primary validation page.
-2. `/validation/beauty-drop/curated-beauty-bundle` - target `curated beauty bundle`; explain the bundle concept.
-3. `/validation/beauty-drop/beauty-drop-waitlist` - target `beauty drop waitlist`; waitlist-focused variant if testing separate copy.
-4. `/validation/beauty-drop/beauty-subscription-alternative` - target `beauty subscription alternative`; position against ongoing subscription fatigue.
-5. `/validation/beauty-drop/seasonal-beauty-drop` - target `seasonal beauty drop`; test seasonal theme intent.
-6. `/validation/beauty-drop/travel-beauty-bundle` - target `travel beauty bundle`; test a practical bundle theme.
-7. `/validation/beauty-drop/skincare-starter-bundle` - target `skincare starter bundle`; test beginner-routine intent.
-8. `/validation/beauty-drop/glow-routine-bundle` - target `glow routine bundle`; test benefit-led theme.
-9. `/validation/beauty-drop/clean-beauty-bundle` - target `clean beauty bundle`; test ingredient/value-led theme carefully.
-10. `/validation/beauty-drop/how-beauty-drops-work` - target `how curated beauty boxes work`; explain the model without pretending operations exist yet.
-
-### Internal Linking Strategy
-
-- Link the main validation page to no more than three theme pages at first.
-- Link every theme page back to the primary validation page and one explanatory page about how drops work.
-- Use blog posts to answer objections, then link back to the waitlist page.
-- Keep navigation shallow: primary validation page, how-it-works page, and tested theme pages.
-- Track which page themes are worth future product work through waitlist or manual interest signals.
-
-### Page Creation Priority
-
-1. Refine the existing Beauty Drop landing page around `beauty drop waitlist`.
-2. Create `/validation/beauty-drop/curated-beauty-bundle`.
-3. Create `/validation/beauty-drop/how-beauty-drops-work`.
-4. Create two theme pages only: `travel beauty bundle` and `skincare starter bundle`.
-5. Write supporting posts for beauty drops versus subscriptions and what curated bundles include.
-6. Delay additional theme pages until the first themes show interest.
+1. Refine the primary validation page.
+2. Create `curated beauty bundle`.
+3. Create `how beauty drops work`.
+4. Create two theme pages: `travel beauty bundle` and `skincare starter bundle`.
+5. Delay appointment-related pages until the bundle concept has a signal.
 
 ### What Not to Create Yet
 
-- Do not create checkout, inventory, shipping, or order-status pages.
-- Do not create product review pages before real products and review standards exist.
-- Do not create medical, dermatology, or treatment-claim content.
-- Do not create many theme pages before the validation page proves the offer.
-- Do not create subscription pages unless the concept intentionally becomes a subscription.
+- Checkout, inventory, shipping, or order pages.
+- Product review pages.
+- Medical, dermatology, or treatment-claim content.
+- Large theme libraries.
+- Beauty appointment booking pages unless Beauty Drop intentionally pivots.
 
-## Recommended 30-Day Content Sequence
+## Requested Cross-Site Keyword Clusters
 
-### Week 1
+Detailed keyword maps live in `output/keyword-clusters/site-factory-keyword-clusters.md`.
 
-- Work Organizer: expand the spreadsheet-alternative cornerstone article.
-- Work Organizer: draft `/work-organizer/work-organizer-app`.
-- Contactor: expand the pre-hiring contractor tracking article.
-- Contactor: draft `/contactor/contractor-checklist`.
+Recommended ownership:
 
-### Week 2
+- HVAC: Contactor first, Work Organizer later for service operations.
+- Field service business: Work Organizer first, Contactor only for homeowner-facing records.
+- Contractor scheduling: Work Organizer if business-facing, Contactor if homeowner-facing.
+- Beauty appointments: hold as a future validation lane for Beauty Drop.
+- AI creators: GoFunMotion.
+- AI models: GoFunMotion.
+- Local service businesses: Work Organizer for operations, Contactor for homeowner projects.
 
-- Work Organizer: draft `/work-organizer/daily-work-planning-system`.
-- Work Organizer: draft blog post on daily planning review.
-- Contactor: draft `/contactor/compare-contractor-bids`.
-- Contactor: draft blog post on why contractor bids look different.
+## Content Cluster Architecture
 
-### Week 3
+### Landing Pages
 
-- Beauty Drop: refine primary validation landing page.
-- Beauty Drop: draft `/validation/beauty-drop/curated-beauty-bundle`.
-- GoFunMotion: draft `/gofunmotion/ai-model-portfolio-page`.
-- GoFunMotion: draft `/gofunmotion/fictional-ai-model-concept`.
+- Work Organizer: product, daily planning, spreadsheet alternative, team follow-up tracker.
+- Contactor: contractor checklist, compare contractor bids, home service project planning.
+- GoFunMotion: AI model portfolio hub, fictional AI model concept, brand-safe AI portfolio.
+- Beauty Drop: waitlist, curated beauty bundle, how beauty drops work.
 
-### Week 4
+### Blog Topics
 
-- Work Organizer: draft `/work-organizer/team-follow-up-tracker`.
-- Contactor: draft `/contactor/questions-to-ask-a-contractor`.
-- Beauty Drop: draft `/validation/beauty-drop/how-beauty-drops-work`.
-- GoFunMotion: draft blog post on transparent AI influencer profiles.
+- Work Organizer: practical workflows, spreadsheet pain, daily review, follow-ups, service operations.
+- Contactor: checklists, bid comparison, homeowner questions, HVAC estimates, documents, payments.
+- GoFunMotion: transparent AI creator structure, portfolio examples, disclosure, brand fit.
+- Beauty Drop: validation lessons, curated bundles, drop themes, subscription alternatives.
 
-## Metadata Patterns
+### Local SEO Pages
+
+- Do not create local SEO pages yet.
+- Future Work Organizer local test: local service business operations pages by business type, not by city first.
+- Future Contactor local test: city pages only after there is a clear local market and real localized copy.
+- Future Beauty Drop local test: local beauty appointment pages only if the concept pivots toward services.
+
+### Feature Pages
+
+- Work Organizer: capture queue, daily review, follow-up tracker, recurring work, priority review.
+- Contactor: bid comparison, document tracker, payment tracker, change order tracker, project notes.
+- GoFunMotion: profile template, disclosure block, brand-fit sections, portfolio categories.
+- Beauty Drop: waitlist, drop voting, theme interest capture, feedback prompts.
+
+### FAQ Pages
+
+- Work Organizer: work organizer app FAQ, spreadsheet alternative FAQ, follow-up tracker FAQ.
+- Contactor: contractor checklist FAQ, bid comparison FAQ, questions to ask contractors.
+- GoFunMotion: AI model portfolio FAQ, fictional AI model disclosure FAQ.
+- Beauty Drop: beauty drop waitlist FAQ, curated beauty bundle FAQ.
+
+### Comparison Pages
+
+- Work Organizer: spreadsheet vs work organizer, task list vs work organizer.
+- Contactor: contractor bids vs estimates, cheapest bid vs complete bid.
+- GoFunMotion: AI model vs virtual influencer vs fictional character.
+- Beauty Drop: beauty drops vs subscriptions, curated bundle vs marketplace browsing.
+
+Avoid competitor-name comparisons until positioning, factual review standards, and legal comfort are clearer.
+
+## Internal Linking Recommendations
+
+1. Build a hub-and-spoke structure for each site before adding more posts.
+2. Link every informational post to one product or validation page.
+3. Link every landing page to two supporting articles and one FAQ page.
+4. Use descriptive anchor text that matches the destination intent.
+5. Keep cross-site links rare and purposeful.
+6. Add "next useful page" links at the bottom of each draft.
+7. Re-audit internal links after each batch of five pages.
+
+## CTA Recommendations
 
 ### Work Organizer
 
-- Title pattern: `[Workflow/Use Case] | Work Organizer`
-- Description pattern: `A practical guide to [outcome] so [audience] can [benefit] without [pain].`
-- Example: `Daily Work Planning System | Work Organizer`
-- Example description: `A calm daily planning system for teams that need clear priorities, owners, and follow-ups without another spreadsheet.`
+- Main CTA: `Try Work Organizer`.
+- Secondary CTA: `Start with one daily review queue`.
+- Best placement: after the direct answer, near the midpoint after the pain section, and at the end.
 
 ### Contactor
 
-- Title pattern: `[Homeowner Task] | Contactor`
-- Description pattern: `Learn how to [task] before hiring or managing a contractor, with clear details to track and compare.`
-- Example: `Compare Contractor Bids | Contactor`
-- Example description: `Learn how to compare contractor bids by scope, materials, timeline, payment terms, and exclusions before you choose.`
+- Main CTA: `Organize your contractor project`.
+- Secondary CTA: `Compare bids with a clear checklist`.
+- Best placement: after checklist sections and after any bid-comparison examples.
 
 ### GoFunMotion
 
-- Title pattern: `[AI Portfolio Topic] | GoFunMotion`
-- Description pattern: `A transparent guide to [topic] for fictional AI model concepts and brand-safe creative planning.`
-- Example: `AI Model Portfolio Page | GoFunMotion`
-- Example description: `A transparent AI model portfolio structure for fictional model concepts, brand-fit notes, and campaign planning.`
+- Main CTA: `Explore the AI portfolio concept`.
+- Secondary CTA: `View a transparent fictional profile`.
+- Best placement: after disclosure, after brand-fit examples, and at the end.
 
 ### Beauty Drop
 
-- Title pattern: `[Theme or Offer] | Beauty Drop`
-- Description pattern: `Explore a validation concept for [theme/offer] and help shape future curated beauty drops before launch.`
-- Example: `Curated Beauty Bundle | Beauty Drop`
-- Example description: `Explore a curated beauty bundle validation concept and help shape future themed beauty drops before launch.`
+- Main CTA: `Join the Beauty Drop waitlist`.
+- Secondary CTA: `Vote for this drop idea`.
+- Best placement: hero, after the how-it-works section, and after theme examples.
 
-## Measurement Notes for Later
+## Publishing Frequency
 
-- For local drafts, use `npm.cmd run seo:audit` after pages are created.
-- For validation pages, evaluate intent clarity before adding more pages.
-- For blog clusters, prioritize useful internal links and clear metadata before volume.
-- For future live measurement, track indexed pages, impressions by cluster, click-through rate, and waitlist or contact actions by page.
+Recommended cadence while the sites are draft/local:
+
+- Work Organizer: 1 new or improved page per week until the first cluster has 8 to 10 strong pages.
+- Contactor: 1 new page per week, alternating checklist pages and blog explanations.
+- GoFunMotion: 1 page every 2 weeks, with quality and transparency more important than volume.
+- Beauty Drop: 1 validation page or copy test every 2 weeks, only if it tests a different offer angle.
+
+Recommended live cadence later:
+
+- Publish in batches of 2 to 4 pages only after metadata, internal links, and CTAs are reviewed.
+- Do not publish thin placeholder pages.
+- Re-run the local SEO audit after each batch.
+
+## SEO Experiments
+
+### Experiment 1: Work Organizer Service-Business Angle
+
+Hypothesis: Work Organizer can expand beyond generic productivity by targeting local service operations.
+
+Test pages:
+
+- `field service task tracker`
+- `client follow up tracker`
+- `local service business organizer`
+
+Success signal: the pages naturally connect to Work Organizer features without feeling like a separate product.
+
+### Experiment 2: Contactor HVAC Vertical
+
+Hypothesis: HVAC estimate comparison is a strong first vertical because homeowners often compare expensive quotes.
+
+Test pages:
+
+- `HVAC estimate checklist`
+- `compare HVAC quotes`
+- `questions to ask HVAC contractor`
+
+Success signal: HVAC pages strengthen the bid-comparison hub rather than becoming isolated local-service content.
+
+### Experiment 3: Beauty Drop Theme Validation
+
+Hypothesis: theme-specific drop pages will reveal which offer framing is clearest.
+
+Test pages:
+
+- `travel beauty bundle`
+- `skincare starter bundle`
+- `glow routine bundle`
+
+Success signal: visitors understand the concept and take a waitlist or vote action.
+
+### Experiment 4: GoFunMotion Transparency-Led SEO
+
+Hypothesis: transparency and brand safety can differentiate GoFunMotion from generic AI influencer content.
+
+Test pages:
+
+- `fictional AI model concept`
+- `brand-safe AI model portfolio`
+- `AI creator profile`
+
+Success signal: pages can support AI portfolio discovery without implying real people or live booking.
+
+## Near-Term Execution Plan
+
+### Week 1
+
+- Add or refine Work Organizer internal links between existing drafts.
+- Draft `/work-organizer/work-organizer-app`.
+- Draft `/contactor/contractor-checklist`.
+
+### Week 2
+
+- Draft `/work-organizer/team-follow-up-tracker` as a feature/use-case page.
+- Draft `/contactor/compare-contractor-bids`.
+- Create the first Contactor FAQ outline.
+
+### Week 3
+
+- Refine Beauty Drop validation page and CTA language.
+- Draft `/validation/beauty-drop/curated-beauty-bundle`.
+- Draft `/gofunmotion/ai-model-portfolio-page`.
+
+### Week 4
+
+- Draft `/contactor/hvac-estimate-checklist`.
+- Draft `/gofunmotion/fictional-ai-model-concept`.
+- Draft `/validation/beauty-drop/how-beauty-drops-work`.
+
+## What Not to Create Yet
+
+- Large generated page sets.
+- City/state local SEO pages.
+- Competitor comparison pages.
+- Live publishing workflows.
+- WordPress or Bluehost integrations.
+- External keyword APIs or automation.
+- Legal, medical, or financial advice pages.
+- Pages that imply unbuilt product capabilities.
+
+## Light Check Notes
+
+- This strategy is based on local project data and existing drafts, not external search-volume tooling.
+- The existing local audit file showed no metadata issues for the pages it covered, but it should be refreshed after the newest planning batch becomes actual content.
+- No app code checks are required for this planning-only update.
