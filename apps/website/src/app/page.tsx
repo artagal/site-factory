@@ -8,7 +8,7 @@ import {
   ShieldCheck,
   Sparkles
 } from "lucide-react";
-import { FactoryCard } from "@/components/FactoryCard";
+import { FactoryCard } from "@/components/factory-card";
 import {
   ChecklistPanel,
   ContentBand,

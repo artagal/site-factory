@@ -5,7 +5,7 @@ import {
   AppLandingPage,
   ValidationLandingPage
 } from "@/components/templates";
-import { SeoJsonLd } from "@/components/SeoJsonLd";
+import { SeoJsonLd } from "@/components/seo-json-ld";
 import {
   buildSeoMetadata,
   createFaqSchema,

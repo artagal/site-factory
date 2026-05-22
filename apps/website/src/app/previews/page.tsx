@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { FactoryCard } from "@/components/FactoryCard";
+import { FactoryCard } from "@/components/factory-card";
 import { buildSeoMetadata } from "@/lib/seo";
 import { getPreviewPages } from "@/lib/site-content";
 

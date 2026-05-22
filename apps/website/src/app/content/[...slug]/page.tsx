@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Clock3, FileText, Search } from "lucide-react";
-import { MarkdownPreview } from "@/components/MarkdownPreview";
-import { SeoJsonLd } from "@/components/SeoJsonLd";
+import { MarkdownPreview } from "@/components/markdown-preview";
+import { SeoJsonLd } from "@/components/seo-json-ld";
 import {
   buildSeoMetadata,
   createArticleSchema,

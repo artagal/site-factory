@@ -8,4 +8,4 @@ export {
   MetricStrip,
   ProcessStrip,
   SectionHeader
-} from "./LandingComponents";
+} from "./landing-components";
