@@ -6,7 +6,13 @@ import {
   ValidationLandingPage
 } from "@/components/templates";
 import { SeoJsonLd } from "@/components/SeoJsonLd";
-import { buildSeoMetadata, createFaqSchema } from "@/lib/seo";
+import {
+  buildSeoMetadata,
+  createFaqSchema,
+  createProfilePageSchema,
+  createSchemaGraph,
+  createWebPageSchema
+} from "@/lib/seo";
 import { getPreviewPage, getPreviewPages } from "@/lib/site-content";
 
 type PreviewRouteProps = {
@@ -47,10 +53,24 @@ export default async function PreviewPage({ params }: PreviewRouteProps) {
   }
 
   const faqSchema = createFaqSchema(page.faqs);
+  const webPageSchema = createWebPageSchema({
+    description: page.seo.description,
+    path: page.href,
+    title: page.seo.title
+  });
+  const profileSchema =
+    page.template === "ai-model-portfolio-page"
+      ? createProfilePageSchema({
+          description: page.seo.description,
+          name: page.name,
+          path: page.href
+        })
+      : null;
+  const schemaGraph = createSchemaGraph([webPageSchema, profileSchema, faqSchema]);
 
   return (
     <>
-      <SeoJsonLd id={`${page.slug}-faq-schema`} data={faqSchema} />
+      <SeoJsonLd id={`${page.slug}-schema-graph`} data={schemaGraph} />
       {page.template === "ai-model-portfolio-page" ? (
         <AiModelPortfolioPage page={page} />
       ) : page.template === "validation-landing-page" ? (

@@ -2,10 +2,10 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { getRepoRoot } from "../apps/website/src/lib/repo-root";
-import { absoluteUrl, canonicalUrlPlaceholder } from "../apps/website/src/lib/seo";
+import { absoluteUrl, getCanonicalBaseUrl } from "../apps/website/src/lib/seo";
 
 export function buildRobotsTxt(
-  baseUrl = canonicalUrlPlaceholder,
+  baseUrl = getCanonicalBaseUrl(),
   disallow: string[] = ["/api/", "/drafts/"]
 ) {
   return [
@@ -20,7 +20,7 @@ export function buildRobotsTxt(
 
 export function generateRobots() {
   const repoRoot = getRepoRoot();
-  const baseUrl = process.env.SITE_FACTORY_BASE_URL ?? canonicalUrlPlaceholder;
+  const baseUrl = getCanonicalBaseUrl();
   const body = buildRobotsTxt(baseUrl);
   const publicDirectory = path.join(repoRoot, "apps", "website", "public");
   const outputDirectory = path.join(repoRoot, "output", "generated-pages");

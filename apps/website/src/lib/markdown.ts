@@ -5,6 +5,17 @@ export type ParsedMarkdown = {
   data: Record<string, unknown>;
 };
 
+export function slugifyHeading(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export function parseFrontmatter(source: string): ParsedMarkdown {
   if (!source.startsWith("---")) {
     return {

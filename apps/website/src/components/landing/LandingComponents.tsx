@@ -26,6 +26,12 @@ type FeatureItem = {
   title: string;
 };
 
+type LaneItem = {
+  label: string;
+  text: string;
+  title: string;
+};
+
 type SectionHeaderProps = {
   eyebrow?: string;
   summary?: string;
@@ -58,10 +64,10 @@ const toneClasses: Record<Tone, { accent: string; bg: string; text: string }> = 
 
 function actionClassName(variant: Action["variant"] = "primary") {
   if (variant === "secondary") {
-    return "inline-flex min-h-11 items-center gap-2 rounded-lg border border-ink/15 bg-white px-5 py-3 text-sm font-bold text-ink";
+    return "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-ink/15 bg-white px-5 py-3 text-sm font-bold text-ink sm:w-auto";
   }
 
-  return "inline-flex min-h-11 items-center gap-2 rounded-lg bg-ink px-5 py-3 text-sm font-bold text-white shadow-soft";
+  return "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-ink px-5 py-3 text-sm font-bold text-white shadow-soft sm:w-auto";
 }
 
 export function LandingHero({
@@ -74,12 +80,12 @@ export function LandingHero({
 }: LandingHeroProps) {
   return (
     <section className="border-b border-ink/10 bg-paper">
-      <div className="mx-auto grid min-h-[540px] max-w-7xl gap-10 px-5 py-12 md:grid-cols-[1.06fr_0.94fr] md:px-8 md:py-16">
+      <div className="mx-auto grid min-h-[auto] max-w-7xl gap-10 px-5 py-10 md:min-h-[540px] md:grid-cols-[1.06fr_0.94fr] md:px-8 md:py-16">
         <div className="flex flex-col justify-center">
           <p className={`mb-4 text-sm font-bold uppercase tracking-[0.16em] ${toneClasses[tone].accent}`}>
             {eyebrow}
           </p>
-          <h1 className="max-w-4xl text-5xl font-black leading-[1.01] text-ink md:text-7xl">
+          <h1 className="max-w-4xl text-4xl font-black leading-[1.03] text-ink sm:text-5xl md:text-7xl">
             {title}
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-ink/72">{summary}</p>
@@ -215,5 +221,67 @@ export function InsightPanel({
         ))}
       </ul>
     </aside>
+  );
+}
+
+export function ContentBand({
+  children,
+  className = "bg-white"
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={`border-y border-ink/10 ${className}`}>
+      <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">{children}</div>
+    </section>
+  );
+}
+
+export function ChecklistPanel({
+  items,
+  title,
+  tone = "mint"
+}: {
+  items: string[];
+  title: string;
+  tone?: Tone;
+}) {
+  return (
+    <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-soft">
+      <p className={`text-sm font-bold uppercase tracking-[0.16em] ${toneClasses[tone].accent}`}>
+        {title}
+      </p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {items.map((item) => (
+          <div key={item} className="flex gap-3 rounded-lg bg-paper p-3 text-sm font-bold leading-6 text-ink/70">
+            <CheckCircle2 aria-hidden="true" className={`mt-0.5 shrink-0 ${toneClasses[tone].text}`} size={18} />
+            <span>{item}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function GenerationLaneGrid({
+  items,
+  tone = "skyline"
+}: {
+  items: LaneItem[];
+  tone?: Tone;
+}) {
+  return (
+    <div className="grid gap-4 lg:grid-cols-3">
+      {items.map((item) => (
+        <article key={item.title} className="rounded-lg border border-ink/10 bg-white p-5 shadow-soft">
+          <p className={`text-xs font-black uppercase tracking-[0.14em] ${toneClasses[tone].accent}`}>
+            {item.label}
+          </p>
+          <h3 className="mt-3 text-xl font-black text-ink">{item.title}</h3>
+          <p className="mt-2 text-sm leading-6 text-ink/68">{item.text}</p>
+        </article>
+      ))}
+    </div>
   );
 }

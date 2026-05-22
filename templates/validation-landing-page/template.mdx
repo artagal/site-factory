@@ -10,6 +10,14 @@ validationWindow: "{{Timebox, such as 14 days}}"
 faqs:
   - question: "{{Validation question}}"
     answer: "{{Short answer}}"
+generation:
+  sourceFolder: "content/sites/validation/{{concept-slug}}/"
+  previewTemplate: "validation-landing-page"
+  requiredSections:
+    - promise
+    - audience
+    - validation signals
+    - decision rule
 ---
 
 # {{Concept Name}}
@@ -37,3 +45,9 @@ faqs:
 ## Build Later
 
 {{Name the systems intentionally not connected yet.}}
+
+## Responsive Review
+
+- Confirm the validation action is framed as future or local-only.
+- Confirm no form, payment, checkout, analytics, or live collection is implied.
+- Confirm the decision rule is specific enough for the next Codex chat.

@@ -2,7 +2,10 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { getRepoRoot } from "../apps/website/src/lib/repo-root";
-import { absoluteUrl, canonicalUrlPlaceholder } from "../apps/website/src/lib/seo";
+import {
+  absoluteUrl,
+  getCanonicalBaseUrl
+} from "../apps/website/src/lib/seo";
 import {
   getFactoryRoutes,
   normalizeRoutePath,
@@ -20,7 +23,7 @@ function escapeXml(value: string) {
 
 export function buildSitemapXml(
   routes: SitemapRoute[],
-  baseUrl = canonicalUrlPlaceholder
+  baseUrl = getCanonicalBaseUrl()
 ) {
   const normalizedRoutes = [...routes]
     .map((route) => ({
@@ -53,7 +56,7 @@ export function buildSitemapXml(
 
 export function generateSitemap() {
   const repoRoot = getRepoRoot();
-  const baseUrl = process.env.SITE_FACTORY_BASE_URL ?? canonicalUrlPlaceholder;
+  const baseUrl = getCanonicalBaseUrl();
   const routes = getFactoryRoutes();
   const xml = buildSitemapXml(routes, baseUrl);
   const publicDirectory = path.join(repoRoot, "apps", "website", "public");

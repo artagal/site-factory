@@ -1,5 +1,5 @@
 import { getContentEntries } from "./content-files";
-import { absoluteUrl, canonicalUrlPlaceholder } from "./seo";
+import { absoluteUrl, getCanonicalBaseUrl } from "./seo";
 import { getPreviewPages } from "./site-content";
 
 export type SitemapRoute = {
@@ -65,7 +65,7 @@ export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRou
   ]);
 }
 
-export function getAbsoluteFactoryRoutes(baseUrl = canonicalUrlPlaceholder) {
+export function getAbsoluteFactoryRoutes(baseUrl = getCanonicalBaseUrl()) {
   return getFactoryRoutes().map((route) => ({
     ...route,
     url: absoluteUrl(route.path, baseUrl)

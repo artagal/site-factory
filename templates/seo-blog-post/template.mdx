@@ -12,6 +12,14 @@ modifiedDate: "{{YYYY-MM-DD}}"
 faqs:
   - question: "{{FAQ question}}"
     answer: "{{FAQ answer}}"
+generation:
+  sourceFolder: "content/sites/{{site}}/blog/"
+  previewTemplate: "seo-blog-post"
+  requiredSections:
+    - direct answer
+    - practical steps
+    - example or comparison
+    - FAQ
 ---
 
 # {{Search-intent headline}}
@@ -39,3 +47,8 @@ faqs:
 ### {{Question}}
 
 {{Answer.}}
+
+## Internal Links To Add
+
+- `{{Related landing page}}`
+- `{{Related SEO draft}}`

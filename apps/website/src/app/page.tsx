@@ -9,7 +9,14 @@ import {
   Sparkles
 } from "lucide-react";
 import { FactoryCard } from "@/components/FactoryCard";
-import { MetricStrip, ProcessStrip, SectionHeader } from "@/components/landing";
+import {
+  ChecklistPanel,
+  ContentBand,
+  GenerationLaneGrid,
+  MetricStrip,
+  ProcessStrip,
+  SectionHeader
+} from "@/components/landing";
 import { getContentEntries } from "@/lib/content-files";
 import { getPreviewPages } from "@/lib/site-content";
 
@@ -152,36 +159,73 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-      <section className="border-y border-ink/10 bg-white">
-        <div className="mx-auto max-w-7xl px-5 py-12 md:px-8">
-          <SectionHeader
-            eyebrow="Generation workflow"
-            summary="Future Codex chats should reuse this sequence for landing pages, SEO drafts, model pages, validation pages, and WordPress-ready local exports."
-            title="How new pages move through the factory"
-            tone="skyline"
-          />
-          <ProcessStrip
-            steps={[
-              {
-                title: "Brief",
-                text: "Read the Codex context, brand data, target keyword, and template notes."
-              },
-              {
-                title: "Compose",
-                text: "Create or update local MDX, YAML, preview data, and metadata fields."
-              },
-              {
-                title: "Preview",
-                text: "Open the dashboard and check the page structure before generating exports."
-              },
-              {
-                title: "Audit",
-                text: "Run only the necessary local checks for types, build, tests, or SEO metadata."
-              }
-            ]}
-          />
-        </div>
+      <ContentBand>
+        <SectionHeader
+          eyebrow="Generation workflow"
+          summary="Future Codex chats should reuse this sequence for landing pages, SEO drafts, model pages, validation pages, and WordPress-ready local exports."
+          title="How new pages move through the factory"
+          tone="skyline"
+        />
+        <ProcessStrip
+          steps={[
+            {
+              title: "Brief",
+              text: "Read the Codex context, brand data, target keyword, and template notes."
+            },
+            {
+              title: "Compose",
+              text: "Create or update local MDX, YAML, preview data, and metadata fields."
+            },
+            {
+              title: "Preview",
+              text: "Open the dashboard and check the page structure before generating exports."
+            },
+            {
+              title: "Audit",
+              text: "Run only the necessary local checks for types, build, tests, or SEO metadata."
+            }
+          ]}
+        />
+      </ContentBand>
+      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8">
+        <SectionHeader
+          eyebrow="Factory lanes"
+          summary="Each lane has a clear source folder, template, and safety boundary so future site generation stays predictable."
+          title="Reusable paths for the next pages"
+          tone="brass"
+        />
+        <GenerationLaneGrid
+          items={[
+            {
+              label: "Landing",
+              title: "Product and validation pages",
+              text: "Use shared landing sections, preview routes, and local MDX before creating any live collection path."
+            },
+            {
+              label: "SEO",
+              title: "Blog and local search drafts",
+              text: "Use keyword data, canonical paths, FAQ schema, and draft outlines for reviewable content."
+            },
+            {
+              label: "Portfolio",
+              title: "AI model profile pages",
+              text: "Keep fictional disclosure, creative direction, and production notes visible in every generated page."
+            }
+          ]}
+          tone="brass"
+        />
       </section>
+      <ContentBand className="bg-paper">
+        <ChecklistPanel
+          title="Vercel-ready, not deployed"
+          items={[
+            "Root build command stays npm.cmd run build locally and npm run build on Vercel.",
+            "Canonical URL can use SITE_FACTORY_BASE_URL or Vercel URL environment variables.",
+            "No WordPress, Bluehost, payment, or external API integration is connected."
+          ]}
+          tone="mint"
+        />
+      </ContentBand>
     </main>
   );
 }

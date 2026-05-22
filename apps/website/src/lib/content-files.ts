@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
-import { parseFrontmatter } from "./markdown";
+import { parseFrontmatter, slugifyHeading } from "./markdown";
 import { getRepoRoot } from "./repo-root";
 import type { Faq } from "./seo";
 
@@ -14,6 +14,7 @@ export type ContentEntry = {
   excerpt: string;
   faqs: Faq[];
   filePath: string;
+  headings: ContentHeading[];
   href: string;
   modifiedDate: string;
   publishedDate: string;
@@ -27,6 +28,12 @@ export type ContentEntry = {
   targetKeyword: string;
   title: string;
   wordCount: number;
+};
+
+export type ContentHeading = {
+  depth: 2 | 3;
+  id: string;
+  title: string;
 };
 
 function walkFiles(directory: string): string[] {
@@ -101,6 +108,32 @@ export function createExcerpt(markdown: string, fallback: string) {
   return firstParagraph.length > 180 ? `${firstParagraph.slice(0, 177).trim()}...` : firstParagraph;
 }
 
+export function extractContentHeadings(markdown: string): ContentHeading[] {
+  const headingCounts = new Map<string, number>();
+
+  return markdown
+    .split(/\r?\n/)
+    .map((line) => {
+      const match = /^(##|###)\s+(.+)$/.exec(line.trim());
+
+      if (!match) {
+        return null;
+      }
+
+      const title = match[2].replace(/[*_`]/g, "").trim();
+      const baseId = slugifyHeading(title);
+      const currentCount = headingCounts.get(baseId) ?? 0;
+      headingCounts.set(baseId, currentCount + 1);
+
+      return {
+        depth: match[1] === "##" ? 2 : 3,
+        id: currentCount ? `${baseId}-${currentCount + 1}` : baseId,
+        title
+      } satisfies ContentHeading;
+    })
+    .filter((heading): heading is ContentHeading => Boolean(heading));
+}
+
 export function getContentRoot() {
   return path.join(getRepoRoot(), "content", "sites");
 }
@@ -131,6 +164,7 @@ export function getContentEntries(): ContentEntry[] {
         excerpt: createExcerpt(parsed.body, description),
         faqs: asFaqs(parsed.data.faqs),
         filePath,
+        headings: extractContentHeadings(parsed.body),
         href: `/content/${segments.join("/")}`,
         modifiedDate: asString(parsed.data.modifiedDate, ""),
         publishedDate: asString(parsed.data.publishedDate, ""),

@@ -8,7 +8,10 @@ import {
   buildSeoMetadata,
   createArticleSchema,
   createBreadcrumbSchema,
-  createFaqSchema
+  createFaqSchema,
+  createProfilePageSchema,
+  createSchemaGraph,
+  createWebPageSchema
 } from "@/lib/seo";
 import { getContentEntries, getContentEntryBySegments } from "@/lib/content-files";
 
@@ -42,7 +45,11 @@ export async function generateMetadata({
     modifiedTime: entry.modifiedDate || undefined,
     path: entry.href,
     publishedTime: entry.publishedDate || undefined,
-    type: entry.contentType.includes("blog") ? "article" : "website"
+    type: entry.contentType.includes("blog")
+      ? "article"
+      : entry.contentType.includes("model")
+        ? "profile"
+        : "website"
   });
 }
 
@@ -64,17 +71,34 @@ export default async function ContentPreviewPage({ params }: ContentRouteProps) 
         title: entry.title
       })
     : null;
+  const profileSchema = entry.contentType.includes("model")
+    ? createProfilePageSchema({
+        description: entry.description,
+        name: entry.title,
+        path: entry.canonicalPath
+      })
+    : null;
+  const webPageSchema = createWebPageSchema({
+    description: entry.description,
+    path: entry.canonicalPath,
+    title: entry.title
+  });
   const breadcrumbSchema = createBreadcrumbSchema([
     { name: "Home", path: "/" },
     { name: "Content", path: "/previews" },
     { name: entry.title, path: entry.href }
   ]);
+  const schemaGraph = createSchemaGraph([
+    webPageSchema,
+    articleSchema,
+    profileSchema,
+    faqSchema,
+    breadcrumbSchema
+  ]);
 
   return (
     <main className="mx-auto max-w-6xl px-5 py-10 md:px-8">
-      <SeoJsonLd id={`${entry.slug}-faq-schema`} data={faqSchema} />
-      <SeoJsonLd id={`${entry.slug}-article-schema`} data={articleSchema} />
-      <SeoJsonLd id={`${entry.slug}-breadcrumb-schema`} data={breadcrumbSchema} />
+      <SeoJsonLd id={`${entry.slug}-schema-graph`} data={schemaGraph} />
       <Link
         href="/previews"
         className="inline-flex items-center gap-2 rounded-lg border border-ink/15 bg-white px-4 py-2 text-sm font-bold text-ink"
@@ -145,6 +169,25 @@ export default async function ContentPreviewPage({ params }: ContentRouteProps) 
                 ))}
               </div>
             </div>
+          ) : null}
+          {entry.headings.length ? (
+            <nav className="mt-5 border-t border-ink/10 pt-5" aria-label="Draft outline">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-ink/54">
+                Outline
+              </p>
+              <ol className="mt-3 space-y-2">
+                {entry.headings.map((heading) => (
+                  <li key={heading.id} className={heading.depth === 3 ? "pl-3" : ""}>
+                    <a
+                      href={`#${heading.id}`}
+                      className="block rounded-lg px-2 py-1 text-sm font-bold leading-5 text-ink/66 hover:bg-paper hover:text-ink"
+                    >
+                      {heading.title}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
           ) : null}
         </aside>
       </div>

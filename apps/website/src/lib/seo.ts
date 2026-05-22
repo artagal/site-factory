@@ -37,12 +37,34 @@ function uniqueValues(values: string[]) {
 
 export function absoluteUrl(pathname: string, baseUrl = canonicalUrlPlaceholder) {
   const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
-  return new URL(normalizedPath, baseUrl).toString();
+  return new URL(normalizedPath, normalizeBaseUrl(baseUrl)).toString();
+}
+
+export function normalizeBaseUrl(baseUrl = canonicalUrlPlaceholder) {
+  const trimmed = baseUrl.trim().replace(/\/+$/, "");
+  if (!trimmed) {
+    return canonicalUrlPlaceholder;
+  }
+
+  const withProtocol = /^https?:\/\//.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+  return withProtocol;
+}
+
+export function getCanonicalBaseUrl(
+  env: Record<string, string | undefined> = process.env
+) {
+  return normalizeBaseUrl(
+    env.SITE_FACTORY_BASE_URL ??
+      env.VERCEL_PROJECT_PRODUCTION_URL ??
+      env.VERCEL_URL ??
+      canonicalUrlPlaceholder
+  );
 }
 
 export function buildSeoMetadata({
   authors = [],
-  canonicalBaseUrl = canonicalUrlPlaceholder,
+  canonicalBaseUrl = getCanonicalBaseUrl(),
   canonicalPath,
   description,
   image = defaultOgImage,
@@ -172,6 +194,60 @@ export function createArticleSchema({
     dateModified,
     datePublished,
     mainEntityOfPage: absoluteUrl(path)
+  };
+}
+
+export function createWebPageSchema({
+  description,
+  path,
+  title
+}: {
+  description: string;
+  path: string;
+  title: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title,
+    description,
+    url: absoluteUrl(path)
+  };
+}
+
+export function createProfilePageSchema({
+  description,
+  name,
+  path
+}: {
+  description: string;
+  name: string;
+  path: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    name,
+    description,
+    url: absoluteUrl(path),
+    about: {
+      "@type": "Thing",
+      name,
+      description: "Fictional AI model concept."
+    }
+  };
+}
+
+export function createSchemaGraph(items: Array<Record<string, unknown> | null>) {
+  const graph = items.filter((item): item is Record<string, unknown> => Boolean(item));
+
+  if (graph.length === 0) {
+    return null;
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": graph.map(({ "@context": _context, ...item }) => item)
   };
 }
 

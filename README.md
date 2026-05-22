@@ -22,3 +22,7 @@ npm.cmd test
 npm.cmd run seo:audit
 npm.cmd run sitemap:generate
 ```
+
+## Deployment Status
+
+The repository includes Vercel-ready build configuration, but deployment is intentionally manual and not connected.

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { slugifyHeading } from "@/lib/markdown";
 
 function safeHref(href: string) {
   if (
@@ -55,6 +56,7 @@ function parseInline(text: string): ReactNode[] {
 export function MarkdownPreview({ markdown }: { markdown: string }) {
   const blocks: ReactNode[] = [];
   const listItems: string[] = [];
+  const headingCounts = new Map<string, number>();
   let listType: "ol" | "ul" | null = null;
   let codeFence: string[] = [];
   let isInCodeFence = false;
@@ -95,6 +97,14 @@ export function MarkdownPreview({ markdown }: { markdown: string }) {
         <code>{code}</code>
       </pre>
     );
+  };
+
+  const headingId = (title: string) => {
+    const baseId = slugifyHeading(title.replace(/[*_`]/g, ""));
+    const currentCount = headingCounts.get(baseId) ?? 0;
+    headingCounts.set(baseId, currentCount + 1);
+
+    return currentCount ? `${baseId}-${currentCount + 1}` : baseId;
   };
 
   markdown
@@ -162,36 +172,40 @@ export function MarkdownPreview({ markdown }: { markdown: string }) {
       }
 
       if (trimmed.startsWith("#### ")) {
+        const title = trimmed.slice(5);
         blocks.push(
-          <h4 key={trimmed} className="mt-7 text-xl font-black text-ink">
-            {parseInline(trimmed.slice(5))}
+          <h4 id={headingId(title)} key={trimmed} className="mt-7 scroll-mt-24 text-xl font-black text-ink">
+            {parseInline(title)}
           </h4>
         );
         return;
       }
 
       if (trimmed.startsWith("### ")) {
+        const title = trimmed.slice(4);
         blocks.push(
-          <h3 key={trimmed} className="mt-8 text-2xl font-black text-ink">
-            {parseInline(trimmed.slice(4))}
+          <h3 id={headingId(title)} key={trimmed} className="mt-8 scroll-mt-24 text-2xl font-black text-ink">
+            {parseInline(title)}
           </h3>
         );
         return;
       }
 
       if (trimmed.startsWith("## ")) {
+        const title = trimmed.slice(3);
         blocks.push(
-          <h2 key={trimmed} className="mt-10 text-3xl font-black text-ink">
-            {parseInline(trimmed.slice(3))}
+          <h2 id={headingId(title)} key={trimmed} className="mt-10 scroll-mt-24 text-3xl font-black text-ink">
+            {parseInline(title)}
           </h2>
         );
         return;
       }
 
       if (trimmed.startsWith("# ")) {
+        const title = trimmed.slice(2);
         blocks.push(
-          <h2 key={trimmed} className="mt-10 text-3xl font-black text-ink">
-            {parseInline(trimmed.slice(2))}
+          <h2 id={headingId(title)} key={trimmed} className="mt-10 scroll-mt-24 text-3xl font-black text-ink">
+            {parseInline(title)}
           </h2>
         );
         return;

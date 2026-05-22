@@ -24,6 +24,14 @@ sections:
 faqs:
   - question: "{{Question visitors are likely to ask}}"
     answer: "{{Short factual answer}}"
+generation:
+  sourceFolder: "content/sites/{{site}}/pages/"
+  previewTemplate: "app-landing-page"
+  requiredSections:
+    - hero
+    - audience
+    - offer
+    - proof plan
 ---
 
 # {{Product Name}}
@@ -57,3 +65,9 @@ faqs:
 - Primary keyword: `{{Primary SEO phrase}}`
 - Canonical path: `/{{slug}}`
 - Internal links to add later: `{{Related page}}`, `{{Related post}}`
+
+## Responsive Review
+
+- Confirm hero actions stack cleanly on mobile.
+- Confirm cards stay readable at narrow widths.
+- Confirm the page does not imply live signup, payment, publishing, or integrations.

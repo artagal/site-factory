@@ -2,7 +2,7 @@
 
 Create these separate Codex chats so each one can stay focused.
 
-Each chat should read `docs/SITE_GENERATION_PLAYBOOK.md` before creating pages or changing shared templates.
+Each chat should read `docs/SITE_GENERATION_PLAYBOOK.md` and `docs/FILE_ORGANIZATION.md` before creating pages or changing shared templates.
 
 ## 01 Site Factory Architect
 
