@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 const navItems = [
+  { href: "/beauty-drop", label: "BeautyDrop" },
   { href: "/previews", label: "Previews" },
   {
     href: "/content/work-organizer/blog/how-to-organize-work-without-another-spreadsheet",

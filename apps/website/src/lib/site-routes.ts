@@ -12,6 +12,27 @@ export type SitemapRoute = {
 export const defaultLastModified =
   process.env.SITE_FACTORY_LASTMOD ?? "2026-05-21T00:00:00.000Z";
 
+const staticFactoryRoutes: SitemapRoute[] = [
+  {
+    changeFrequency: "weekly",
+    lastModified: defaultLastModified,
+    path: "/beauty-drop",
+    priority: 0.9
+  },
+  {
+    changeFrequency: "weekly",
+    lastModified: defaultLastModified,
+    path: "/beauty-drop/deals",
+    priority: 0.8
+  },
+  {
+    changeFrequency: "weekly",
+    lastModified: defaultLastModified,
+    path: "/beauty-drop/pros",
+    priority: 0.75
+  }
+];
+
 export function normalizeRoutePath(pathname: string) {
   if (!pathname || pathname === "/") {
     return "/";
@@ -60,6 +81,10 @@ export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRou
       path: "/previews",
       priority: 0.85
     },
+    ...staticFactoryRoutes.map((route) => ({
+      ...route,
+      lastModified
+    })),
     ...previewRoutes,
     ...contentRoutes
   ]);

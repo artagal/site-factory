@@ -1,12 +1,15 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BadgeDollarSign,
+  CalendarClock,
   ClipboardList,
   FileText,
   LayoutDashboard,
   Search,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  UserRoundCheck
 } from "lucide-react";
 import { FactoryCard } from "../components/factory-card";
 import {
@@ -40,6 +43,30 @@ const workflowItems = [
     icon: ClipboardList,
     label: "Ship Later",
     text: "Deployment and publishing workflows stay documented, manual, and separate."
+  }
+];
+
+const beautyDropLinks = [
+  {
+    href: "/beauty-drop",
+    icon: Sparkles,
+    label: "Landing",
+    text: "Premium validation page for the BeautyDrop marketplace concept.",
+    title: "BeautyDrop landing"
+  },
+  {
+    href: "/beauty-drop/deals",
+    icon: BadgeDollarSign,
+    label: "Customer",
+    text: "Static sample deal cards for same-day and next-day beauty openings.",
+    title: "Deals prototype"
+  },
+  {
+    href: "/beauty-drop/pros",
+    icon: UserRoundCheck,
+    label: "Pro",
+    text: "Mock open-slot submission form for beauty professionals.",
+    title: "Pro submission prototype"
   }
 ];
 
@@ -134,6 +161,52 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8">
+        <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-[0.16em] text-rose-500">
+              BeautyDrop validation
+            </p>
+            <h2 className="mt-2 text-3xl font-black text-ink">First real marketplace prototype</h2>
+          </div>
+          <Link
+            href="/beauty-drop"
+            className="inline-flex w-fit items-center gap-2 rounded-lg border border-ink/15 bg-white px-4 py-2 text-sm font-bold text-ink"
+          >
+            Open BeautyDrop
+            <CalendarClock aria-hidden="true" size={17} />
+          </Link>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {beautyDropLinks.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-lg border border-ink/10 bg-white p-5 shadow-soft"
+              >
+                <div className="mb-5 flex items-center justify-between gap-3">
+                  <div className="flex size-11 items-center justify-center rounded-lg bg-rose-50 text-rose-500">
+                    <Icon aria-hidden="true" size={22} />
+                  </div>
+                  <span className="rounded-lg bg-paper px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-ink/56">
+                    {item.label}
+                  </span>
+                </div>
+                <h3 className="text-xl font-black text-ink">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-ink/68">{item.text}</p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-ink">
+                  Open page
+                  <ArrowRight aria-hidden="true" size={17} />
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

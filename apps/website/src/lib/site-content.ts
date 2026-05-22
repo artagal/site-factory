@@ -194,41 +194,57 @@ const previewPages: FactoryPreviewPage[] = [
     templateLabel: "Model portfolio"
   },
   {
-    contentHref: "/content/validation/beauty-drop/landing-page",
+    contentHref: "/content/validation/beauty-drop/beauty-drop-validation",
     faqs: [
       {
-        question: "Does Beauty Drop collect real customer data yet?",
+        question: "Does BeautyDrop collect real customer or provider data yet?",
         answer:
-          "No. This is a validation landing page draft only. Any forms, analytics, or live collection should be added later by explicit request."
+          "No. The current version is static and local. Any forms, analytics, live booking, or payments should be added later by explicit request."
       }
     ],
     hero: {
-      eyebrow: "Beauty Drop validation",
+      eyebrow: "BeautyDrop validation",
       summary:
-        "A validation page draft for testing a beauty offer, promise, and waitlist-style positioning before building the service.",
-      title: "Validate a beauty drop concept before building the product"
+        "A validation direction for a last-minute beauty appointment marketplace that connects discounted open slots with nearby customers.",
+      title: "Validate last-minute beauty deals before building the app"
     },
     highlights: [
       {
-        title: "Offer clarity",
-        text: "Define the promise, audience, and first conversion action in one lightweight page."
+        title: "Customer-side demand",
+        text: "Test whether customers click into discounted same-day and next-day beauty appointment cards."
       },
       {
-        title: "Signal capture later",
-        text: "Keep the first version local until forms and analytics are intentionally selected."
+        title: "Provider-side supply",
+        text: "Test whether beauty professionals understand and want to post cancellations, slow-hour deals, and model-needed slots."
       },
       {
-        title: "Repeatable tests",
-        text: "Use the same structure for beauty organizer and future validation concepts."
+        title: "Narrow launch scope",
+        text: "Keep the first test focused on one local market and a few high-intent beauty categories."
       }
     ],
     href: "/previews/beauty-drop",
-    name: "Beauty Drop",
-    sections: [],
+    name: "BeautyDrop",
+    sections: [
+      {
+        label: "Audience",
+        title: "Customers and local beauty pros",
+        text: "The marketplace needs both discounted appointment demand and real provider openings in the same city."
+      },
+      {
+        label: "First offer",
+        title: "Last-minute beauty slots",
+        text: "Nails, lashes, brows, and hair openings are concrete enough to test price, timing, and category interest."
+      },
+      {
+        label: "Next validation",
+        title: "Manual matching before app logic",
+        text: "Use the prototype to learn request behavior before adding booking workflows, payments, or provider accounts."
+      }
+    ],
     seo: {
       description:
-        "Preview a local validation landing page draft for the Beauty Drop concept before any live forms, checkout, or publishing.",
-      title: "Beauty Drop Validation Landing Page Preview"
+        "Preview a local validation page direction for BeautyDrop, a marketplace for last-minute discounted beauty appointment openings.",
+      title: "BeautyDrop Validation Landing Page Preview"
     },
     slug: "beauty-drop",
     summary: "Validation-page preview for testing a beauty product concept.",
