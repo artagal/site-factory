@@ -7,10 +7,12 @@ Site Factory is prepared for a future Vercel project, but it is not deployed aut
 - `vercel.json` keeps the project explicit for a workspace-style repository.
 - Install command: `npm install`
 - Build command: `npm run build`
-- Output directory: `apps/website/.next`
+- Output directory: `.next`
 - Framework preset: `nextjs`
 
 Vercel can auto-detect many frontend frameworks and lets projects customize build commands, install commands, and output directories. For monorepos, Vercel projects can be connected to a repository with project-specific build settings. See the official Vercel builds docs: <https://docs.vercel.com/docs/builds>.
+
+This configuration assumes the Vercel project root directory is `apps/website`. With that root, `.next` resolves to `/vercel/path0/apps/website/.next`.
 
 ## Environment Variables
 
