@@ -5,11 +5,13 @@ import {
   BeautyDropBenefitGrid,
   BeautyDropCategoryPills,
   BeautyDropHeroPreview,
+  BeautyDropImageBand,
   BeautyDropPrimaryLink,
   BeautyDropSecondaryLink,
   BeautyDropSection,
   BeautyDropSectionHeader,
-  BeautyDropShell
+  BeautyDropShell,
+  beautyDropHeroImage
 } from "../../components/beauty-drop/beauty-drop-components";
 import { SeoJsonLd } from "../../components/seo-json-ld";
 import {
@@ -31,6 +33,7 @@ export const metadata: Metadata = buildSeoMetadata({
   description:
     "Find same-day and next-day beauty deals from local nail techs, hair stylists, lash artists, brow artists, and beauty professionals.",
   path: "/beauty-drop",
+  image: beautyDropHeroImage,
   keywords: [
     "last-minute beauty appointments",
     "discount beauty appointments",
@@ -72,16 +75,16 @@ export default function BeautyDropPage() {
   return (
     <BeautyDropShell>
       <SeoJsonLd id="beauty-drop-schema" data={schemaGraph} />
-      <section className="border-b border-rose-100/80">
-        <div className="mx-auto grid min-h-[620px] max-w-7xl gap-10 px-5 py-12 md:grid-cols-[1.06fr_0.94fr] md:px-8 md:py-16">
+      <section className="overflow-hidden border-b border-[#e9c9c3]">
+        <div className="mx-auto grid min-h-[660px] max-w-7xl gap-10 px-5 py-10 md:grid-cols-[1.02fr_0.98fr] md:px-8 md:py-16">
           <div className="flex flex-col justify-center">
-            <p className="mb-4 text-sm font-black uppercase tracking-[0.16em] text-rose-500">
-              BeautyDrop validation prototype
+            <p className="mb-4 w-fit rounded-full border border-[#e9c9c3] bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#b94a67] shadow-sm">
+              Beauty marketplace validation
             </p>
-            <h1 className="max-w-4xl text-4xl font-black leading-[1.02] text-ink sm:text-5xl md:text-7xl">
+            <h1 className="max-w-4xl text-4xl font-black leading-[1.02] text-[#241018] sm:text-6xl md:text-7xl">
               Last-minute beauty appointments at a discount.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-ink/72">
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-[#241018]/72">
               Find same-day and next-day beauty deals from local nail techs, hair stylists, lash artists, brow artists, and beauty pros.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -94,9 +97,9 @@ export default function BeautyDropPage() {
                 ["Today", "open slots"],
                 ["Local", "beauty pros"]
               ].map(([value, label]) => (
-                <div key={label} className="rounded-lg border border-white/80 bg-white/82 p-4 shadow-sm backdrop-blur">
-                  <p className="text-2xl font-black text-ink">{value}</p>
-                  <p className="mt-1 text-xs font-black uppercase tracking-[0.14em] text-ink/52">{label}</p>
+                <div key={label} className="rounded-lg border border-[#e9c9c3] bg-white/86 p-4 shadow-sm backdrop-blur">
+                  <p className="text-2xl font-black text-[#3a1323]">{value}</p>
+                  <p className="mt-1 text-xs font-black uppercase tracking-[0.14em] text-[#3a1323]/56">{label}</p>
                 </div>
               ))}
             </div>
@@ -108,26 +111,30 @@ export default function BeautyDropPage() {
       </section>
 
       <BeautyDropSection>
-        <div className="grid gap-4 md:grid-cols-2">
-          <article className="rounded-lg border border-rose-100 bg-white/88 p-6 shadow-soft">
-            <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-rose-50 text-rose-500">
+        <div className="grid gap-4 md:grid-cols-[0.85fr_1.15fr]">
+          <article className="rounded-lg border border-[#e9c9c3] bg-white/90 p-6 shadow-soft">
+            <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-[#fff0ec] text-[#b94a67]">
               <CalendarClock aria-hidden="true" size={24} />
             </div>
-            <h2 className="text-2xl font-black text-ink">The problem</h2>
+            <h2 className="text-2xl font-black text-[#3a1323]">The problem</h2>
             <p className="mt-3 text-base leading-7 text-ink/70">
               Beauty pros lose money when appointments cancel or slow hours stay empty. Customers want affordable beauty services without booking weeks in advance.
             </p>
           </article>
-          <article className="rounded-lg border border-emerald-100 bg-white/88 p-6 shadow-soft">
-            <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+          <article className="rounded-lg border border-[#d9eadf] bg-white/90 p-6 shadow-soft">
+            <div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-[#d9f7ea] text-[#176f55]">
               <Sparkles aria-hidden="true" size={24} />
             </div>
-            <h2 className="text-2xl font-black text-ink">The solution</h2>
+            <h2 className="text-2xl font-black text-[#3a1323]">The solution</h2>
             <p className="mt-3 text-base leading-7 text-ink/70">
               BeautyDrop connects open beauty slots with customers nearby, making discounted last-minute availability easy to find and easy to request.
             </p>
           </article>
         </div>
+      </BeautyDropSection>
+
+      <BeautyDropSection className="pt-0">
+        <BeautyDropImageBand />
       </BeautyDropSection>
 
       <BeautyDropSection className="pt-0">
@@ -147,8 +154,8 @@ export default function BeautyDropPage() {
         />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {proBenefits.map((benefit) => (
-            <article key={benefit.title} className="rounded-lg border border-ink/10 bg-white p-5 shadow-soft">
-              <div className="mb-4 flex size-11 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+            <article key={benefit.title} className="rounded-lg border border-[#d9eadf] bg-white p-5 shadow-soft">
+              <div className="mb-4 flex size-11 items-center justify-center rounded-lg bg-[#d9f7ea] text-[#176f55]">
                 <UserRoundCheck aria-hidden="true" size={22} />
               </div>
               <h3 className="text-lg font-black text-ink">{benefit.title}</h3>
@@ -174,8 +181,8 @@ export default function BeautyDropPage() {
         />
         <div className="grid gap-4 md:grid-cols-4">
           {howItWorks.map((step, index) => (
-            <article key={step.title} className="rounded-lg border border-rose-100 bg-white p-5 shadow-soft">
-              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-rose-50 text-sm font-black text-rose-600">
+            <article key={step.title} className="rounded-lg border border-[#e9c9c3] bg-white p-5 shadow-soft">
+              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-[#fff0ec] text-sm font-black text-[#b94a67]">
                 {index + 1}
               </div>
               <h3 className="text-lg font-black text-ink">{step.title}</h3>
@@ -186,7 +193,7 @@ export default function BeautyDropPage() {
       </BeautyDropSection>
 
       <BeautyDropSection className="pt-0">
-        <div className="grid gap-6 rounded-lg border border-ink/10 bg-ink p-6 text-white shadow-soft md:grid-cols-[0.9fr_1.1fr] md:p-8">
+        <div className="grid gap-6 rounded-lg border border-[#3a1323]/10 bg-[#3a1323] p-6 text-white shadow-soft md:grid-cols-[0.9fr_1.1fr] md:p-8">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.16em] text-rose-200">
               Model needed
@@ -215,9 +222,9 @@ export default function BeautyDropPage() {
           summary="These calls to action point to static prototypes for now. They are ready for later analytics or form capture when the validation plan requires it."
         />
         <div className="grid gap-4 md:grid-cols-2">
-          <Link href="/beauty-drop/deals" className="group rounded-lg border border-rose-100 bg-white p-6 shadow-soft">
-            <BadgeDollarSign aria-hidden="true" className="text-rose-500" size={30} />
-            <h3 className="mt-4 text-2xl font-black text-ink">I want beauty deals</h3>
+          <Link href="/beauty-drop/deals" className="group rounded-lg border border-[#e9c9c3] bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(58,19,35,0.14)]">
+            <BadgeDollarSign aria-hidden="true" className="text-[#b94a67]" size={30} />
+            <h3 className="mt-4 text-2xl font-black text-[#3a1323]">I want beauty deals</h3>
             <p className="mt-2 text-sm leading-6 text-ink/68">
               Preview discounted appointments and test customer intent around same-day beauty discovery.
             </p>
@@ -225,9 +232,9 @@ export default function BeautyDropPage() {
               Browse prototype deals <ArrowRight aria-hidden="true" size={17} />
             </span>
           </Link>
-          <Link href="/beauty-drop/pros" className="group rounded-lg border border-emerald-100 bg-white p-6 shadow-soft">
-            <MapPin aria-hidden="true" className="text-emerald-700" size={30} />
-            <h3 className="mt-4 text-2xl font-black text-ink">I am a beauty professional</h3>
+          <Link href="/beauty-drop/pros" className="group rounded-lg border border-[#d9eadf] bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(23,111,85,0.14)]">
+            <MapPin aria-hidden="true" className="text-[#176f55]" size={30} />
+            <h3 className="mt-4 text-2xl font-black text-[#3a1323]">I am a beauty professional</h3>
             <p className="mt-2 text-sm leading-6 text-ink/68">
               Preview the open-slot submission flow for cancellations, slow hours, and model-needed sessions.
             </p>
@@ -251,11 +258,11 @@ export default function BeautyDropPage() {
       </BeautyDropSection>
 
       <BeautyDropSection className="pt-0">
-        <div className="rounded-lg border border-rose-100 bg-white p-6 text-center shadow-soft md:p-10">
-          <p className="text-sm font-black uppercase tracking-[0.16em] text-rose-500">
+        <div className="rounded-lg border border-[#e9c9c3] bg-white p-6 text-center shadow-soft md:p-10">
+          <p className="text-sm font-black uppercase tracking-[0.16em] text-[#b94a67]">
             Ready for validation
           </p>
-          <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-black leading-tight text-ink md:text-5xl">
+          <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-black leading-tight text-[#3a1323] md:text-5xl">
             Test demand before building the full BeautyDrop app
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-ink/68">

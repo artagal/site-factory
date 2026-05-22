@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import {
   BeautyDropDealCard,
   BeautyDropPrimaryLink,
   BeautyDropSecondaryLink,
   BeautyDropSection,
   BeautyDropSectionHeader,
-  BeautyDropShell
+  BeautyDropShell,
+  beautyDropHeroImage
 } from "../../../components/beauty-drop/beauty-drop-components";
 import { SeoJsonLd } from "../../../components/seo-json-ld";
 import { beautyDropDeals } from "../../../lib/beauty-drop";
@@ -16,6 +18,7 @@ export const metadata: Metadata = buildSeoMetadata({
   description:
     "Browse sample same-day and next-day beauty deal cards for BeautyDrop, a local validation prototype for discounted beauty appointment openings.",
   path: "/beauty-drop/deals",
+  image: beautyDropHeroImage,
   keywords: [
     "same-day beauty deals",
     "discount nail appointments",
@@ -38,25 +41,36 @@ export default function BeautyDropDealsPage() {
     <BeautyDropShell>
       <SeoJsonLd id="beauty-drop-deals-schema" data={schemaGraph} />
       <BeautyDropSection>
-        <div className="grid gap-8 md:grid-cols-[0.9fr_1.1fr] md:items-end">
+        <div className="grid gap-8 md:grid-cols-[0.82fr_1.18fr] md:items-center">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.16em] text-rose-500">
+            <p className="text-sm font-black uppercase tracking-[0.16em] text-[#b94a67]">
               Customer prototype
             </p>
-            <h1 className="mt-3 max-w-3xl text-4xl font-black leading-tight text-ink md:text-6xl">
+            <h1 className="mt-3 max-w-3xl text-4xl font-black leading-tight text-[#3a1323] md:text-6xl">
               Same-day and next-day beauty deals near you
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-ink/72">
               These static cards show the first customer-facing validation flow: browse a discounted opening, compare the original price, and request the slot.
             </p>
           </div>
-          <div className="rounded-lg border border-rose-100 bg-white/88 p-5 shadow-soft">
-            <p className="text-sm font-black uppercase tracking-[0.16em] text-ink/54">
-              Prototype status
-            </p>
-            <p className="mt-3 text-base leading-7 text-ink/70">
-              No backend, payments, maps, provider accounts, or live reservations are connected. Buttons are intentionally static until validation capture is selected.
-            </p>
+          <div className="relative min-h-[320px] overflow-hidden rounded-lg border border-[#e9c9c3] bg-white shadow-soft">
+            <Image
+              alt="BeautyDrop deal feed visual"
+              src={beautyDropHeroImage}
+              fill
+              priority
+              sizes="(min-width: 768px) 58vw, 100vw"
+              className="object-cover object-[64%_50%]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#3a1323]/78 via-[#3a1323]/12 to-transparent" />
+            <div className="absolute bottom-4 left-4 right-4 rounded-lg bg-white/92 p-4 shadow-soft backdrop-blur">
+              <p className="text-sm font-black uppercase tracking-[0.16em] text-[#b94a67]">
+                Prototype status
+              </p>
+              <p className="mt-3 text-sm leading-6 text-ink/70">
+                No backend, payments, maps, provider accounts, or live reservations are connected. Buttons are intentionally static until validation capture is selected.
+              </p>
+            </div>
           </div>
         </div>
       </BeautyDropSection>
@@ -75,7 +89,7 @@ export default function BeautyDropDealsPage() {
       </BeautyDropSection>
 
       <BeautyDropSection className="pt-0">
-        <div className="rounded-lg border border-ink/10 bg-ink p-6 text-white shadow-soft md:p-8">
+        <div className="rounded-lg border border-[#3a1323]/10 bg-[#3a1323] p-6 text-white shadow-soft md:p-8">
           <h2 className="max-w-3xl text-3xl font-black leading-tight md:text-5xl">
             Need more supply before testing customer traffic?
           </h2>
