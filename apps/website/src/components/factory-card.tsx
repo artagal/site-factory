@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, FileText } from "lucide-react";
-import type { FactoryPreviewPage } from "@/lib/site-content";
+import type { FactoryPreviewPage } from "../lib/site-content";
 
 export function FactoryCard({ page }: { page: FactoryPreviewPage }) {
   return (

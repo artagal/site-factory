@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { slugifyHeading } from "@/lib/markdown";
+import { slugifyHeading } from "../lib/markdown";
 
 function safeHref(href: string) {
   if (

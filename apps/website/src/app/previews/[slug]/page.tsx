@@ -4,16 +4,16 @@ import {
   AiModelPortfolioPage,
   AppLandingPage,
   ValidationLandingPage
-} from "@/components/templates";
-import { SeoJsonLd } from "@/components/seo-json-ld";
+} from "../../../components/templates";
+import { SeoJsonLd } from "../../../components/seo-json-ld";
 import {
   buildSeoMetadata,
   createFaqSchema,
   createProfilePageSchema,
   createSchemaGraph,
   createWebPageSchema
-} from "@/lib/seo";
-import { getPreviewPage, getPreviewPages } from "@/lib/site-content";
+} from "../../../lib/seo";
+import { getPreviewPage, getPreviewPages } from "../../../lib/site-content";
 
 type PreviewRouteProps = {
   params: Promise<{

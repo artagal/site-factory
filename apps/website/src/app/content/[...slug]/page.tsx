@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Clock3, FileText, Search } from "lucide-react";
-import { MarkdownPreview } from "@/components/markdown-preview";
-import { SeoJsonLd } from "@/components/seo-json-ld";
+import { MarkdownPreview } from "../../../components/markdown-preview";
+import { SeoJsonLd } from "../../../components/seo-json-ld";
 import {
   buildSeoMetadata,
   createArticleSchema,
@@ -12,8 +12,8 @@ import {
   createProfilePageSchema,
   createSchemaGraph,
   createWebPageSchema
-} from "@/lib/seo";
-import { getContentEntries, getContentEntryBySegments } from "@/lib/content-files";
+} from "../../../lib/seo";
+import { getContentEntries, getContentEntryBySegments } from "../../../lib/content-files";
 
 type ContentRouteProps = {
   params: Promise<{

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Camera, Clapperboard, Palette, ShieldCheck, Sparkles } from "lucide-react";
-import { FeatureGrid, MetricStrip, SectionHeader } from "@/components/landing";
-import type { FactoryPreviewPage } from "@/lib/site-content";
+import { FeatureGrid, MetricStrip, SectionHeader } from "../landing";
+import type { FactoryPreviewPage } from "../../lib/site-content";
 
 export function AiModelPortfolioPage({ page }: { page: FactoryPreviewPage }) {
   return (

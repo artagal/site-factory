@@ -7,8 +7,8 @@ import {
   MousePointerClick,
   TimerReset
 } from "lucide-react";
-import { FeatureGrid, ProcessStrip, SectionHeader } from "@/components/landing";
-import type { FactoryPreviewPage } from "@/lib/site-content";
+import { FeatureGrid, ProcessStrip, SectionHeader } from "../landing";
+import type { FactoryPreviewPage } from "../../lib/site-content";
 
 const validationIcons = [MousePointerClick, MessageSquareText, FlaskConical];
 

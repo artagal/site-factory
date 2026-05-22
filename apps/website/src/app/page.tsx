@@ -8,7 +8,7 @@ import {
   ShieldCheck,
   Sparkles
 } from "lucide-react";
-import { FactoryCard } from "@/components/factory-card";
+import { FactoryCard } from "../components/factory-card";
 import {
   ChecklistPanel,
   ContentBand,
@@ -16,9 +16,9 @@ import {
   MetricStrip,
   ProcessStrip,
   SectionHeader
-} from "@/components/landing";
-import { getContentEntries } from "@/lib/content-files";
-import { getPreviewPages } from "@/lib/site-content";
+} from "../components/landing";
+import { getContentEntries } from "../lib/content-files";
+import { getPreviewPages } from "../lib/site-content";
 
 const workflowItems = [
   {

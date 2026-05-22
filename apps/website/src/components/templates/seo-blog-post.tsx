@@ -1,5 +1,5 @@
-import { MarkdownPreview } from "@/components/markdown-preview";
-import type { ContentEntry } from "@/lib/content-files";
+import { MarkdownPreview } from "../markdown-preview";
+import type { ContentEntry } from "../../lib/content-files";
 
 export function SeoBlogPost({ entry }: { entry: ContentEntry }) {
   return (

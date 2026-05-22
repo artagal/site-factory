@@ -6,8 +6,8 @@ import {
   MetricStrip,
   ProcessStrip,
   SectionHeader
-} from "@/components/landing";
-import type { FactoryPreviewPage } from "@/lib/site-content";
+} from "../landing";
+import type { FactoryPreviewPage } from "../../lib/site-content";
 
 export function AppLandingPage({ page }: { page: FactoryPreviewPage }) {
   const sectionItems = page.sections.map((section) => ({
