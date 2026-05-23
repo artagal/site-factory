@@ -2,12 +2,13 @@
 
 import { useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Clock3, MapPin, Radio, Sparkles, Volume2, VolumeX, WandSparkles } from "lucide-react";
+import { ArrowRight, Clock3, MapPin, Radio, WandSparkles } from "lucide-react";
 import { generateChallenge } from "../../lib/challengeEngine";
 import { challengeCategories, challengeTemplates } from "../../lib/challenges";
 import type { Challenge, ChallengeFilters } from "../../types/challenge";
 import { Button } from "./Button";
 import { ChallengeCard } from "./ChallengeCard";
+import { MissionMachine } from "./MissionMachine";
 
 const times = [2, 5, 15, 30, 60] as const;
 const intensities = ["easy", "medium", "bold", "crazy but safe"] as const;
@@ -56,17 +57,6 @@ const presets: Array<{ description: string; filters: ChallengeFilters; label: st
     filters: { category: "Move", intensity: "medium", location: "outside", mood: "motivated", timeAvailable: 15 },
     label: "Move fast"
   }
-];
-
-const slotTitles = [
-  "Touch Grass Sprint",
-  "Tiny Courage Mission",
-  "Sunset Reset",
-  "No-Phone Walk",
-  "Text the Friend",
-  "City Side Quest",
-  "Confidence Spark",
-  "Creative Blink"
 ];
 
 const delightMessages = [
@@ -125,6 +115,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
   const categoryOptions = useMemo(() => ["Random", ...challengeCategories] as const, []);
   const selectedFeeling = moodOptions.find((option) => option.filters.mood === filters.mood && option.filters.category === filters.category)?.label ?? filters.mood;
   const delightMessage = delightMessages[spinRound % delightMessages.length];
+  const hasSpun = spinRound > 0;
 
   function updateFilter<Key extends keyof ChallengeFilters>(key: Key, value: ChallengeFilters[Key]) {
     setFilters((current) => ({ ...current, [key]: value }));
@@ -136,6 +127,9 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
     }
 
     setIsSpinning(true);
+    if (window.innerWidth < 768) {
+      window.setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 30);
+    }
     window.setTimeout(
       () => {
         const next = generateChallenge(nextFilters, recentIds);
@@ -143,11 +137,8 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
         setRecentIds((current) => [...current.slice(-2), next.id]);
         setSpinRound((current) => current + 1);
         setIsSpinning(false);
-        if (window.innerWidth < 768) {
-          window.setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
-        }
       },
-      reduceMotion ? 80 : 900
+      reduceMotion ? 80 : 1180
     );
   }
 
@@ -192,10 +183,10 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
           </div>
         ))}
       </div>
-      <div className="grid gap-6 md:grid-cols-[0.82fr_1.18fr]">
+      <div className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
         <motion.div
           animate={{ opacity: 1, x: 0 }}
-          className="rounded-[2rem] border border-white/10 bg-white/[0.075] p-5 shadow-[0_24px_90px_rgba(0,0,0,0.25)] backdrop-blur-2xl md:p-6"
+          className="rounded-[2rem] border border-white/10 bg-white/[0.075] p-4 shadow-[0_24px_90px_rgba(0,0,0,0.25)] backdrop-blur-2xl md:p-6"
           initial={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.4 }}
         >
@@ -205,7 +196,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
           <p className="mt-3 text-base font-semibold leading-7 text-white/70">
             Tap the feeling closest to now. The rest should take seconds.
           </p>
-          <div className="mt-5 grid gap-2 lg:grid-cols-2">
+          <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             {moodOptions.map((option) => {
               const active = selectedFeeling === option.label;
               return (
@@ -225,7 +216,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
               );
             })}
           </div>
-          <div className="mt-5 grid gap-3 lg:grid-cols-2">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {presets.map((preset) => (
               <button
                 className="group rounded-2xl border border-white/10 bg-black/24 p-4 text-left transition hover:border-lime-300/40 hover:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-lime-300"
@@ -261,57 +252,23 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
                 </span>
               </div>
             </div>
-            <Button className="w-full" disabled={isSpinning} onClick={() => generateNext()}>
-              <Radio aria-hidden="true" size={18} />
-              {isSpinning ? "Spinning..." : "Spin the Challenge"}
-            </Button>
+            <div className="sticky bottom-3 z-20 rounded-[1.35rem] border border-lime-300/20 bg-[#070816]/78 p-2 shadow-[0_16px_55px_rgba(0,0,0,0.42)] backdrop-blur-2xl lg:static lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
+              <Button className="min-h-14 w-full text-base shadow-[0_0_55px_rgba(190,242,100,0.2)]" disabled={isSpinning} onClick={() => generateNext()}>
+                <Radio aria-hidden="true" size={18} />
+                {isSpinning ? "Shuffling..." : hasSpun ? "Spin Again" : "Spin the Challenge"}
+              </Button>
+            </div>
           </div>
         </motion.div>
         <div className="scroll-mt-20 grid gap-4" ref={resultRef}>
-          <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-black/32 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.28)]">
-            <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(247,37,133,0.14),rgba(0,212,255,0.12),rgba(190,242,100,0.1))]" />
-            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-lime-200">
-                  <Sparkles aria-hidden="true" size={15} />
-                  Spin the Challenge
-                </p>
-                <p className="mt-2 text-sm font-bold text-white/58">Watch the mission lock in, then do it before the scroll loop wins.</p>
-              </div>
-              <button
-                aria-label={soundEnabled ? "Turn sound off" : "Turn sound on"}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-white/70 transition hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-lime-300"
-                onClick={() => setSoundEnabled((current) => !current)}
-                type="button"
-              >
-                {soundEnabled ? <Volume2 aria-hidden="true" size={15} /> : <VolumeX aria-hidden="true" size={15} />}
-                {soundEnabled ? "Sound ready" : "Sound off"}
-              </button>
-              <div className="relative h-16 min-w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-black/44 px-4 py-2">
-                <motion.div
-                  animate={isSpinning && !reduceMotion ? { y: ["0%", "-72%", "-18%"] } : { y: `${-(spinRound % slotTitles.length) * 2.5}rem` }}
-                  className="grid gap-3"
-                  transition={isSpinning ? { duration: 0.85, ease: [0.18, 0.9, 0.22, 1] } : { duration: 0.35 }}
-                >
-                  {[...slotTitles, ...slotTitles].map((title, index) => (
-                    <p className="h-7 whitespace-nowrap text-lg font-black text-white" key={`${title}-${index}`}>
-                      {title}
-                    </p>
-                  ))}
-                </motion.div>
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-black to-transparent" />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-black to-transparent" />
-              </div>
-            </div>
-            <motion.p
-              animate={{ opacity: [0.62, 1, 0.72] }}
-              className="relative mt-4 rounded-2xl bg-black/30 px-4 py-3 text-sm font-black text-white/76"
-              key={delightMessage}
-              transition={{ duration: 0.8 }}
-            >
-              {delightMessage}
-            </motion.p>
-          </div>
+          <MissionMachine
+            challenge={challenge}
+            delightMessage={delightMessage}
+            isSpinning={isSpinning}
+            onSoundToggle={() => setSoundEnabled((current) => !current)}
+            soundEnabled={soundEnabled}
+            spinRound={spinRound}
+          />
           <AnimatePresence mode="wait">
             <ChallengeCard challenge={challenge} isRevealing={isSpinning} key={challenge.id} onGenerateAnother={() => generateNext()} />
           </AnimatePresence>

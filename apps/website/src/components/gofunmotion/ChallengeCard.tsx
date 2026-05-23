@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bookmark, CheckCircle2, Clock, Copy, Quote, Share2, Sparkles, Trophy, Zap } from "lucide-react";
+import { Bookmark, CheckCircle2, Clock, Copy, Play, Quote, RotateCw, Share2, Sparkles, Trophy, Zap } from "lucide-react";
 import { createShareText } from "../../lib/challengeEngine";
 import { completeChallengeWithSync, saveChallengeWithSync } from "../../lib/progressActions";
 import { getRarityXpBonus } from "../../lib/rarity";
@@ -154,9 +154,14 @@ export function ChallengeCard({
             <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-black">
               Live mission
             </span>
-            <span className={`rounded-full bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] ${rarityStyle.text}`}>
+            <motion.span
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              className={`rounded-full bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] ${rarityStyle.text}`}
+              initial={{ opacity: 0, scale: 0.82, y: -6 }}
+              transition={{ delay: 0.18, duration: 0.35, ease: [0.18, 0.9, 0.22, 1] }}
+            >
               {rarity}
-            </span>
+            </motion.span>
             <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-white/72">
               {challenge.category}
             </span>
@@ -237,11 +242,13 @@ export function ChallengeCard({
             disabled={busyAction === "complete" || completed}
             onClick={handleComplete}
           >
+            {!started ? <Play aria-hidden="true" size={18} /> : null}
             {completed ? "Completed" : busyAction === "complete" ? "Saving..." : started ? "Complete" : "Start"}
           </Button>
           {onGenerateAnother ? (
             <Button className="w-full" onClick={onGenerateAnother} variant="ghost">
-              Another
+              <RotateCw aria-hidden="true" size={18} />
+              Spin Again
             </Button>
           ) : null}
           <Button
@@ -277,10 +284,15 @@ export function ChallengeCard({
             initial={{ opacity: 0, y: 8 }}
           >
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <span className="inline-flex items-center gap-2 text-base text-white">
-                <Zap aria-hidden="true" size={18} />
+              <motion.span
+                animate={{ opacity: 1, scale: [0.92, 1.1, 1], y: 0 }}
+                className="inline-flex items-center gap-2 text-2xl font-black text-white"
+                initial={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.45, ease: [0.18, 0.9, 0.22, 1] }}
+              >
+                <Zap aria-hidden="true" size={22} />
                 Momentum +{completionProgress?.completedChallenges[0]?.xpEarned ?? totalXpReward}
-              </span>
+              </motion.span>
               <span className="rounded-full bg-black/28 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-lime-100">
                 Streak {completionProgress?.streak ?? 1}
               </span>
