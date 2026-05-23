@@ -11,12 +11,14 @@ const waitlistKey = "gofunmotion:waitlist";
 
 const defaultProgress: GoFunMotionUserProgress = {
   badges: [],
+  categoryStats: [],
   completedChallenges: [],
   displayName: "Motion Rookie",
   favoriteCategories: [],
   level: 1,
   momentumScore: 0,
   preferredCategories: [],
+  recentActivity: [],
   savedChallenges: [],
   savedChallengeIds: [],
   streak: 0,
@@ -64,23 +66,70 @@ export function getLocalProgress() {
   const streak = calculateStreak(progress.completedChallenges);
   const badges = calculateBadges(progress.completedChallenges, streak);
   const xp = progress.completedChallenges.reduce((total, completion) => total + completion.xpEarned, 0);
-  const categoryCounts = progress.completedChallenges.reduce<Record<string, number>>((counts, completion) => {
-    counts[completion.category] = (counts[completion.category] ?? 0) + 1;
-    return counts;
-  }, {});
-  const favoriteCategories = Object.entries(categoryCounts)
-    .sort((a, b) => b[1] - a[1])
+  const categoryStats = Object.values(
+    progress.completedChallenges.reduce<Record<string, { category: Challenge["category"]; count: number; xp: number }>>((counts, completion) => {
+      const current = counts[completion.category] ?? { category: completion.category, count: 0, xp: 0 };
+      counts[completion.category] = {
+        ...current,
+        count: current.count + 1,
+        xp: current.xp + completion.xpEarned
+      };
+      return counts;
+    }, {})
+  ).sort((a, b) => b.count - a.count || b.xp - a.xp);
+  const favoriteCategories = categoryStats
     .slice(0, 4)
-    .map(([category]) => category as GoFunMotionUserProgress["favoriteCategories"][number]);
+    .map((stat) => stat.category);
+  const completionActivity = progress.completedChallenges.slice(0, 8).map((completion) => ({
+    category: completion.category,
+    createdAt: completion.completedAt,
+    detail: `${completion.rarity} mission completed`,
+    id: `completed-${completion.challengeId}-${completion.completedAt}`,
+    title: completion.title,
+    type: "completed" as const,
+    xp: completion.xpEarned
+  }));
+  const latestProgressDate = progress.completedChallenges[0]?.completedAt ?? new Date().toISOString();
+  const badgeActivity = badges.slice(-4).reverse().map((badge, index) => ({
+    createdAt: progress.completedChallenges[index]?.completedAt ?? latestProgressDate,
+    detail: badge.description,
+    id: `badge-${badge.id}`,
+    title: badge.name,
+    type: "badge" as const
+  }));
+  const savedActivity = (progress.savedChallenges ?? []).slice(0, 3).map((challenge, index) => ({
+    category: challenge.category,
+    createdAt: progress.completedChallenges[index]?.completedAt ?? latestProgressDate,
+    detail: `${challenge.rarity} mission saved for later`,
+    id: `saved-${challenge.id}`,
+    title: challenge.title,
+    type: "saved" as const,
+    xp: challenge.xpReward + getRarityXpBonus(challenge.rarity)
+  }));
+  const activityPriority = {
+    badge: 2,
+    completed: 3,
+    saved: 1
+  };
+  const recentActivity = [...completionActivity, ...badgeActivity, ...savedActivity]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() ||
+        activityPriority[b.type] - activityPriority[a.type]
+    )
+    .slice(0, 10);
 
   return {
     ...defaultProgress,
     ...progress,
     badges,
+    categoryStats,
     favoriteCategories,
     level: getLevelFromXp(xp),
     momentumScore: Math.min(100, Math.round(streak * 12 + progress.completedChallenges.length * 4 + xp / 40)),
+    recentActivity,
     savedChallenges: progress.savedChallenges ?? [],
+    savedChallengeIds: progress.savedChallengeIds ?? [],
     streak,
     totalChallengesCompleted: progress.completedChallenges.length,
     xp

@@ -27,6 +27,7 @@ export async function ensureUserProfile(user: User) {
     doc(db, "users", user.uid),
     {
       createdAt: serverTimestamp(),
+      categoryStats: [],
       displayName: user.displayName ?? "Motion Rookie",
       email: user.email,
       favoriteCategories: [],
@@ -35,6 +36,7 @@ export async function ensureUserProfile(user: User) {
       level: 1,
       photoURL: user.photoURL,
       preferredCategories: [],
+      recentActivity: [],
       streak: 0,
       totalChallengesCompleted: 0,
       xp: 0
@@ -125,10 +127,12 @@ export async function syncUserProgressSummaryToFirestore(userId: string, progres
     doc(db, "users", userId),
     {
       badges: progress.badges.map((badge) => badge.id),
+      categoryStats: progress.categoryStats,
       favoriteCategories: progress.favoriteCategories,
       lastProgressSyncAt: serverTimestamp(),
       level: progress.level,
       momentumScore: progress.momentumScore,
+      recentActivity: progress.recentActivity,
       savedChallengeIds: progress.savedChallengeIds,
       streak: progress.streak,
       totalChallengesCompleted: progress.totalChallengesCompleted,
