@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Bookmark, CheckCircle2, Clock, Copy, Quote, Share2, Sparkles, Trophy } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Bookmark, CheckCircle2, Clock, Copy, Quote, Share2, Sparkles, Trophy, Zap } from "lucide-react";
 import { completeChallengeLocally, saveChallengeLocally } from "../../lib/localStorage";
 import { createShareText } from "../../lib/challengeEngine";
 import { formatMinutes } from "../../lib/utils";
@@ -11,9 +11,11 @@ import { Button } from "./Button";
 
 export function ChallengeCard({
   challenge,
+  isRevealing = false,
   onGenerateAnother
 }: {
   challenge: Challenge;
+  isRevealing?: boolean;
   onGenerateAnother?: () => void;
 }) {
   const [completed, setCompleted] = useState(false);
@@ -34,19 +36,40 @@ export function ChallengeCard({
 
   return (
     <motion.article
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(145deg,rgba(255,255,255,0.12),rgba(255,255,255,0.055))] p-5 shadow-[0_28px_100px_rgba(0,0,0,0.42)] backdrop-blur-2xl md:p-6"
-      initial={{ opacity: 0, scale: 0.96, y: 16 }}
-      key={challenge.id}
-      transition={{ duration: 0.35 }}
+      animate={{ opacity: 1, rotateX: 0, scale: 1, y: 0 }}
+      className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(145deg,rgba(255,255,255,0.14),rgba(255,255,255,0.05))] p-5 shadow-[0_28px_110px_rgba(0,0,0,0.46)] backdrop-blur-2xl md:p-6"
+      exit={{ opacity: 0, rotateX: -6, scale: 0.96, y: 20 }}
+      initial={{ opacity: 0, rotateX: 8, scale: 0.94, y: 28 }}
+      transition={{ duration: 0.45, ease: [0.18, 0.9, 0.22, 1] }}
     >
       <div className="absolute -right-14 -top-14 h-48 w-48 rounded-full bg-fuchsia-500/28 blur-3xl" />
       <div className="absolute -bottom-16 left-10 h-52 w-52 rounded-full bg-cyan-400/14 blur-3xl" />
+      <motion.div
+        aria-hidden="true"
+        animate={isRevealing ? { opacity: [0.2, 0.9, 0.25], scale: [0.94, 1.03, 1] } : { opacity: 0.35, scale: 1 }}
+        className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(190,242,100,0.18),transparent_34%),linear-gradient(120deg,transparent,rgba(255,255,255,0.08),transparent)]"
+        transition={{ duration: 0.9, ease: "easeInOut" }}
+      />
+      <AnimatePresence>
+        {isRevealing ? (
+          <motion.div
+            animate={{ opacity: [0, 1, 0], scale: [0.92, 1.04, 1.1] }}
+            className="absolute inset-0 z-20 flex items-center justify-center bg-black/38 backdrop-blur-sm"
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            transition={{ duration: 0.85 }}
+          >
+            <div className="rounded-full border border-lime-300/40 bg-lime-300 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-black shadow-[0_0_80px_rgba(190,242,100,0.42)]">
+              Mission incoming
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
       <div className="relative">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-black">
-              Mission card
+              Live mission
             </span>
             <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-white/72">
               {challenge.category}
@@ -57,7 +80,7 @@ export function ChallengeCard({
             {challenge.xpReward} XP
           </span>
         </div>
-        <div className="mt-5 rounded-[1.7rem] border border-white/10 bg-black/28 p-5">
+        <div className="mt-5 rounded-[1.7rem] border border-white/10 bg-black/28 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div className="flex size-10 items-center justify-center rounded-2xl bg-white text-black">
               <Quote aria-hidden="true" size={19} />
@@ -128,13 +151,28 @@ export function ChallengeCard({
         </div>
       </div>
       {completed ? (
-        <motion.div
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-5 rounded-2xl border border-lime-300/30 bg-lime-300/12 p-4 text-sm font-bold leading-6 text-lime-100"
-          initial={{ opacity: 0, y: 8 }}
-        >
-          Mission complete. XP added locally. Next: write one sentence about how it felt in your profile.
-        </motion.div>
+        <div className="relative">
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((dot) => (
+            <motion.span
+              aria-hidden="true"
+              animate={{ opacity: [0, 1, 0], scale: [0.6, 1, 0.8], x: (dot - 3.5) * 18, y: [-4, -42 - (dot % 3) * 10] }}
+              className="absolute left-1/2 top-2 size-2 rounded-full bg-lime-300"
+              key={dot}
+              transition={{ duration: 0.95, ease: "easeOut" }}
+            />
+          ))}
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-5 rounded-2xl border border-lime-300/30 bg-lime-300/12 p-4 text-sm font-bold leading-6 text-lime-100"
+            initial={{ opacity: 0, y: 8 }}
+          >
+            <span className="inline-flex items-center gap-2">
+              <Zap aria-hidden="true" size={16} />
+              Mission complete. XP added locally.
+            </span>
+            <span className="mt-1 block text-lime-100/72">Next: write one sentence about how it felt in your profile.</span>
+          </motion.div>
+        </div>
       ) : null}
     </motion.article>
   );

@@ -1,15 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Clock3, MapPin, WandSparkles } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, Clock3, MapPin, Radio, Sparkles, WandSparkles } from "lucide-react";
 import { generateChallenge } from "../../lib/challengeEngine";
 import { challengeCategories, challengeTemplates } from "../../lib/challenges";
 import type { Challenge, ChallengeFilters } from "../../types/challenge";
 import { Button } from "./Button";
 import { ChallengeCard } from "./ChallengeCard";
 
-const moods = ["bored", "tired", "lonely", "anxious", "adventurous", "social", "lazy", "romantic", "motivated"] as const;
 const times = [2, 5, 15, 30, 60] as const;
 const intensities = ["easy", "medium", "bold", "crazy but safe"] as const;
 const locations = ["at home", "outside", "in the city", "with friends", "with partner", "anywhere"] as const;
@@ -23,6 +22,17 @@ const defaults: ChallengeFilters = {
 };
 
 const initialChallenge = challengeTemplates.find((challenge) => challenge.id === "move-01") ?? challengeTemplates[0];
+
+const moodOptions: Array<{ caption: string; filters: Partial<ChallengeFilters>; label: string }> = [
+  { caption: "Get me unstuck.", filters: { category: "Anti-Doomscroll", mood: "bored", timeAvailable: 5 }, label: "bored" },
+  { caption: "Make the day feel warmer.", filters: { category: "Social", mood: "lonely", timeAvailable: 15 }, label: "lonely" },
+  { caption: "Give me a calm reset.", filters: { category: "Mind Reset", mood: "anxious", intensity: "easy" }, label: "anxious" },
+  { caption: "Low-energy, still real.", filters: { category: "Move", mood: "tired", timeAvailable: 5 }, label: "tired" },
+  { caption: "Send me somewhere.", filters: { category: "Explore", mood: "adventurous", location: "outside" }, label: "adventurous" },
+  { caption: "Tiny first step.", filters: { category: "Anti-Doomscroll", mood: "lazy", intensity: "easy" }, label: "unmotivated" },
+  { caption: "Give me people energy.", filters: { category: "Social", mood: "social", location: "anywhere" }, label: "social" },
+  { caption: "Small courage rep.", filters: { category: "Confidence", mood: "adventurous", intensity: "medium" }, label: "need confidence" }
+];
 
 const presets: Array<{ description: string; filters: ChallengeFilters; label: string }> = [
   {
@@ -45,6 +55,17 @@ const presets: Array<{ description: string; filters: ChallengeFilters; label: st
     filters: { category: "Move", intensity: "medium", location: "outside", mood: "motivated", timeAvailable: 15 },
     label: "Move fast"
   }
+];
+
+const slotTitles = [
+  "Touch Grass Sprint",
+  "Tiny Courage Mission",
+  "Sunset Reset",
+  "No-Phone Walk",
+  "Text the Friend",
+  "City Side Quest",
+  "Confidence Spark",
+  "Creative Blink"
 ];
 
 function PillGroup<T extends string | number>({
@@ -82,27 +103,46 @@ function PillGroup<T extends string | number>({
 }
 
 export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
+  const reduceMotion = useReducedMotion();
   const [filters, setFilters] = useState<ChallengeFilters>(defaults);
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const [challenge, setChallenge] = useState<Challenge>(initialChallenge);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [spinRound, setSpinRound] = useState(0);
 
   const categoryOptions = useMemo(() => ["Random", ...challengeCategories] as const, []);
+  const selectedFeeling = moodOptions.find((option) => option.filters.mood === filters.mood && option.filters.category === filters.category)?.label ?? filters.mood;
 
   function updateFilter<Key extends keyof ChallengeFilters>(key: Key, value: ChallengeFilters[Key]) {
     setFilters((current) => ({ ...current, [key]: value }));
   }
 
-  function generateNext() {
-    const next = generateChallenge(filters, recentIds);
-    setChallenge(next);
-    setRecentIds((current) => [...current.slice(-2), next.id]);
+  function generateNext(nextFilters = filters) {
+    if (isSpinning) {
+      return;
+    }
+
+    setIsSpinning(true);
+    window.setTimeout(
+      () => {
+        const next = generateChallenge(nextFilters, recentIds);
+        setChallenge(next);
+        setRecentIds((current) => [...current.slice(-2), next.id]);
+        setSpinRound((current) => current + 1);
+        setIsSpinning(false);
+      },
+      reduceMotion ? 80 : 900
+    );
   }
 
   function applyPreset(nextFilters: ChallengeFilters) {
-    const next = generateChallenge(nextFilters, recentIds);
     setFilters(nextFilters);
-    setChallenge(next);
-    setRecentIds((current) => [...current.slice(-2), next.id]);
+    generateNext(nextFilters);
+  }
+
+  function chooseFeeling(partialFilters: Partial<ChallengeFilters>) {
+    const nextFilters = { ...filters, ...partialFilters };
+    setFilters(nextFilters);
   }
 
   return (
@@ -110,13 +150,13 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
       <div className="mb-6 max-w-3xl">
         <p className="inline-flex items-center gap-2 rounded-full bg-cyan-300/10 px-3 py-2 text-sm font-black uppercase tracking-[0.18em] text-cyan-200">
           <WandSparkles aria-hidden="true" size={16} />
-          Try it now
+          Interactive mission draw
         </p>
         <h2 className="mt-4 text-4xl font-black leading-tight text-white md:text-6xl">
-          Pull a mission in under 10 seconds.
+          How are you feeling right now?
         </h2>
         <p className="mt-4 text-lg font-semibold leading-8 text-white/68">
-          The generator gives one clear action, not a list of chores. Pick your mood, time, and setting, then go do something real.
+          GoFunMotion starts with the emotional state, then spins one safe real-life mission that matches your time, place, and energy.
         </p>
       </div>
       <div className="mb-6 grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.05] p-4 backdrop-blur-2xl md:grid-cols-4">
@@ -134,7 +174,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
           </div>
         ))}
       </div>
-      <div className="grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
+      <div className="grid gap-6 md:grid-cols-[0.82fr_1.18fr]">
         <motion.div
           animate={{ opacity: 1, x: 0 }}
           className="rounded-[2rem] border border-white/10 bg-white/[0.075] p-5 shadow-[0_24px_90px_rgba(0,0,0,0.25)] backdrop-blur-2xl md:p-6"
@@ -145,9 +185,29 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
             What do you need right now?
           </h3>
           <p className="mt-3 text-base font-semibold leading-7 text-white/70">
-            Start with a preset or tune the mission yourself.
+            Tap the feeling closest to now, or use a fast preset.
           </p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="mt-5 grid gap-2 lg:grid-cols-2">
+            {moodOptions.map((option) => {
+              const active = selectedFeeling === option.label;
+              return (
+                <button
+                  className={`group rounded-2xl border p-4 text-left transition duration-300 focus:outline-none focus:ring-2 focus:ring-lime-300 ${
+                    active
+                      ? "border-lime-300/60 bg-lime-300 text-black shadow-[0_0_42px_rgba(190,242,100,0.22)]"
+                      : "border-white/10 bg-white/[0.055] text-white hover:-translate-y-0.5 hover:border-cyan-300/40 hover:bg-white/[0.09]"
+                  }`}
+                  key={option.label}
+                  onClick={() => chooseFeeling(option.filters)}
+                  type="button"
+                >
+                  <span className="text-base font-black capitalize">{option.label}</span>
+                  <span className={`mt-1 block text-xs font-bold leading-5 ${active ? "text-black/60" : "text-white/48"}`}>{option.caption}</span>
+                </button>
+              );
+            })}
+          </div>
+          <div className="mt-5 grid gap-3 lg:grid-cols-2">
             {presets.map((preset) => (
               <button
                 className="group rounded-2xl border border-white/10 bg-black/24 p-4 text-left transition hover:border-lime-300/40 hover:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-lime-300"
@@ -164,7 +224,6 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
             ))}
           </div>
           <div className="mt-7 grid gap-6">
-            <PillGroup label="Mood" onChange={(value) => updateFilter("mood", value)} options={moods} value={filters.mood} />
             <PillGroup label="Time available" onChange={(value) => updateFilter("timeAvailable", value)} options={times} value={filters.timeAvailable} />
             <PillGroup label="Challenge type" onChange={(value) => updateFilter("category", value)} options={categoryOptions} value={filters.category} />
             <PillGroup label="Intensity" onChange={(value) => updateFilter("intensity", value)} options={intensities} value={filters.intensity} />
@@ -172,7 +231,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
             <div className="rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
               <p className="text-xs font-black uppercase tracking-[0.16em] text-lime-200">Mission setup</p>
               <div className="mt-3 flex flex-wrap gap-2 text-sm font-black text-white">
-                <span className="rounded-full bg-black/28 px-3 py-2 capitalize">{filters.mood}</span>
+                <span className="rounded-full bg-black/28 px-3 py-2 capitalize">{selectedFeeling}</span>
                 <span className="inline-flex items-center gap-2 rounded-full bg-black/28 px-3 py-2">
                   <Clock3 aria-hidden="true" size={15} />
                   {filters.timeAvailable} min
@@ -184,12 +243,44 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
                 </span>
               </div>
             </div>
-            <Button className="w-full" onClick={generateNext}>
-              Generate My Challenge
+            <Button className="w-full" disabled={isSpinning} onClick={() => generateNext()}>
+              <Radio aria-hidden="true" size={18} />
+              {isSpinning ? "Spinning..." : "Spin the Challenge"}
             </Button>
           </div>
         </motion.div>
-        <ChallengeCard challenge={challenge} onGenerateAnother={generateNext} />
+        <div className="grid gap-4">
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-black/32 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.28)]">
+            <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(247,37,133,0.14),rgba(0,212,255,0.12),rgba(190,242,100,0.1))]" />
+            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-lime-200">
+                  <Sparkles aria-hidden="true" size={15} />
+                  Spin the Challenge
+                </p>
+                <p className="mt-2 text-sm font-bold text-white/58">Watch the mission lock in, then do it before the scroll loop wins.</p>
+              </div>
+              <div className="relative h-16 min-w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-black/44 px-4 py-2">
+                <motion.div
+                  animate={isSpinning && !reduceMotion ? { y: ["0%", "-72%", "-18%"] } : { y: `${-(spinRound % slotTitles.length) * 2.5}rem` }}
+                  className="grid gap-3"
+                  transition={isSpinning ? { duration: 0.85, ease: [0.18, 0.9, 0.22, 1] } : { duration: 0.35 }}
+                >
+                  {[...slotTitles, ...slotTitles].map((title, index) => (
+                    <p className="h-7 whitespace-nowrap text-lg font-black text-white" key={`${title}-${index}`}>
+                      {title}
+                    </p>
+                  ))}
+                </motion.div>
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-black to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-black to-transparent" />
+              </div>
+            </div>
+          </div>
+          <AnimatePresence mode="wait">
+            <ChallengeCard challenge={challenge} isRevealing={isSpinning} key={challenge.id} onGenerateAnother={() => generateNext()} />
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );
