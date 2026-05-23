@@ -86,6 +86,35 @@ In Firebase Console:
 3. Start in production mode.
 4. Pick the closest region to the primary audience.
 
+Optional seed document for the daily mission:
+
+```text
+dailyChallenges/2026-05-23
+```
+
+Example fields:
+
+```json
+{
+  "acceptedCount": 1284,
+  "category": "Mind Reset",
+  "completedCount": 719,
+  "date": "2026-05-23",
+  "description": "Step outside for 10 minutes before sunset. Take one photo. Do not post it immediately. Just enjoy it first.",
+  "difficulty": "easy",
+  "id": "daily-sunset-reset",
+  "intensity": "low",
+  "locationType": ["outside", "anywhere"],
+  "moodTags": ["tired", "bored", "anxious"],
+  "rarity": "Rare",
+  "safetyNote": "Choose a safe public or private place. Do not look at the sun directly.",
+  "timeEstimateMinutes": 10,
+  "title": "Today's Mission: Sunset Reset",
+  "whyItHelps": "Pausing before posting turns a digital impulse into an actual memory.",
+  "xpReward": 50
+}
+```
+
 ## Deploy Rules and Indexes
 
 ```powershell

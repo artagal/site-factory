@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getFirestore,
   serverTimestamp,
   setDoc,
@@ -11,7 +12,7 @@ import {
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { getFirebaseApp } from "./firebase";
-import type { Challenge, ChallengeCompletion } from "../types/challenge";
+import type { Challenge, ChallengeCompletion, DailyChallengeRecord } from "../types/challenge";
 import type { GoFunMotionUserProgress } from "../types/user";
 
 export function getGoFunMotionDb() {
@@ -148,6 +149,19 @@ export async function incrementGlobalStats(db: Firestore, field: "challengesGene
     [field]: increment(1),
     updatedAt: serverTimestamp()
   });
+}
+
+export async function getDailyChallengeFromFirestore(dateId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  const snapshot = await getDoc(doc(db, "dailyChallenges", dateId));
+  if (!snapshot.exists()) return null;
+
+  return {
+    date: dateId,
+    ...snapshot.data()
+  } as DailyChallengeRecord;
 }
 
 export async function addWaitlistEntry(email: string, interests: string[], source = "website") {

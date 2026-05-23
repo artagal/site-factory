@@ -4,9 +4,9 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Share2, SunMedium, Timer, Trophy } from "lucide-react";
 import { createShareText } from "../../lib/challengeEngine";
+import { dailyChallenge } from "../../lib/dailyChallenge";
 import { completeChallengeWithSync } from "../../lib/progressActions";
 import { Button } from "./Button";
-import { dailyChallenge } from "./DailyChallenge";
 
 export function DailyMissionBanner() {
   const [accepted, setAccepted] = useState(false);

@@ -30,6 +30,12 @@ export type Challenge = {
   xpReward: number;
 };
 
+export type DailyChallengeRecord = Challenge & {
+  acceptedCount: number;
+  completedCount: number;
+  date: string;
+};
+
 export type ChallengeFilters = {
   category: ChallengeCategory | "Random";
   intensity: "easy" | "medium" | "bold" | "crazy but safe";
