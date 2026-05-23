@@ -61,13 +61,15 @@ function calculateStreak(completions: ChallengeCompletion[]) {
   return streak || 1;
 }
 
-export function getLocalProgress() {
-  const progress = safeRead<GoFunMotionUserProgress>(progressKey, defaultProgress);
-  const streak = calculateStreak(progress.completedChallenges);
-  const badges = calculateBadges(progress.completedChallenges, streak);
-  const xp = progress.completedChallenges.reduce((total, completion) => total + completion.xpEarned, 0);
+function normalizeProgress(progress: GoFunMotionUserProgress): GoFunMotionUserProgress {
+  const completedChallenges = progress.completedChallenges ?? [];
+  const savedChallenges = progress.savedChallenges ?? [];
+  const savedChallengeIds = progress.savedChallengeIds ?? [];
+  const streak = calculateStreak(completedChallenges);
+  const badges = calculateBadges(completedChallenges, streak);
+  const xp = completedChallenges.reduce((total, completion) => total + completion.xpEarned, 0);
   const categoryStats = Object.values(
-    progress.completedChallenges.reduce<Record<string, { category: Challenge["category"]; count: number; xp: number }>>((counts, completion) => {
+    completedChallenges.reduce<Record<string, { category: Challenge["category"]; count: number; xp: number }>>((counts, completion) => {
       const current = counts[completion.category] ?? { category: completion.category, count: 0, xp: 0 };
       counts[completion.category] = {
         ...current,
@@ -80,7 +82,7 @@ export function getLocalProgress() {
   const favoriteCategories = categoryStats
     .slice(0, 4)
     .map((stat) => stat.category);
-  const completionActivity = progress.completedChallenges.slice(0, 8).map((completion) => ({
+  const completionActivity = completedChallenges.slice(0, 8).map((completion) => ({
     category: completion.category,
     createdAt: completion.completedAt,
     detail: `${completion.rarity} mission completed`,
@@ -89,17 +91,17 @@ export function getLocalProgress() {
     type: "completed" as const,
     xp: completion.xpEarned
   }));
-  const latestProgressDate = progress.completedChallenges[0]?.completedAt ?? new Date().toISOString();
+  const latestProgressDate = completedChallenges[0]?.completedAt ?? new Date().toISOString();
   const badgeActivity = badges.slice(-4).reverse().map((badge, index) => ({
-    createdAt: progress.completedChallenges[index]?.completedAt ?? latestProgressDate,
+    createdAt: completedChallenges[index]?.completedAt ?? latestProgressDate,
     detail: badge.description,
     id: `badge-${badge.id}`,
     title: badge.name,
     type: "badge" as const
   }));
-  const savedActivity = (progress.savedChallenges ?? []).slice(0, 3).map((challenge, index) => ({
+  const savedActivity = savedChallenges.slice(0, 3).map((challenge, index) => ({
     category: challenge.category,
-    createdAt: progress.completedChallenges[index]?.completedAt ?? latestProgressDate,
+    createdAt: completedChallenges[index]?.completedAt ?? latestProgressDate,
     detail: `${challenge.rarity} mission saved for later`,
     id: `saved-${challenge.id}`,
     title: challenge.title,
@@ -124,23 +126,28 @@ export function getLocalProgress() {
     ...progress,
     badges,
     categoryStats,
+    completedChallenges,
     favoriteCategories,
     level: getLevelFromXp(xp),
-    momentumScore: Math.min(100, Math.round(streak * 12 + progress.completedChallenges.length * 4 + xp / 40)),
+    momentumScore: Math.min(100, Math.round(streak * 12 + completedChallenges.length * 4 + xp / 40)),
     recentActivity,
-    savedChallenges: progress.savedChallenges ?? [],
-    savedChallengeIds: progress.savedChallengeIds ?? [],
+    savedChallenges,
+    savedChallengeIds,
     streak,
-    totalChallengesCompleted: progress.completedChallenges.length,
+    totalChallengesCompleted: completedChallenges.length,
     xp
   };
+}
+
+export function getLocalProgress() {
+  return normalizeProgress(safeRead<GoFunMotionUserProgress>(progressKey, defaultProgress));
 }
 
 export function saveChallengeLocally(challenge: Challenge) {
   const progress = getLocalProgress();
   const savedChallengeIds = [...new Set([...progress.savedChallengeIds, challenge.id])];
   const savedChallenges = [challenge, ...progress.savedChallenges.filter((saved) => saved.id !== challenge.id)].slice(0, 30);
-  const next = { ...progress, savedChallengeIds, savedChallenges };
+  const next = normalizeProgress({ ...progress, savedChallengeIds, savedChallenges });
   safeWrite(progressKey, next);
   return next;
 }
@@ -163,8 +170,9 @@ export function completeChallengeLocally(challenge: Challenge, reflection = "", 
     ...progress,
     completedChallenges: [completion, ...progress.completedChallenges]
   };
-  safeWrite(progressKey, nextProgress);
-  return getLocalProgress();
+  const next = normalizeProgress(nextProgress);
+  safeWrite(progressKey, next);
+  return next;
 }
 
 export function addWaitlistEntryLocally(email: string, interests: string[]) {
