@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Share2, SunMedium } from "lucide-react";
-import { completeChallengeLocally } from "../../lib/localStorage";
+import { createShareText } from "../../lib/challengeEngine";
+import { completeChallengeWithSync } from "../../lib/progressActions";
 import type { Challenge } from "../../types/challenge";
 import { Button } from "./Button";
 
@@ -27,6 +28,35 @@ export const dailyChallenge: Challenge = {
 export function DailyChallengeCard({ large = false }: { large?: boolean }) {
   const [accepted, setAccepted] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState("");
+
+  async function completeDailyChallenge() {
+    if (completed || busy) return;
+
+    setBusy(true);
+    const result = await completeChallengeWithSync(dailyChallenge, "", "daily");
+    setCompleted(true);
+    setStatus(
+      result.error ??
+        (result.synced
+          ? "Daily mission synced to Firebase."
+          : "Daily mission saved locally. Sign in to sync streaks across devices.")
+    );
+    setBusy(false);
+  }
+
+  async function shareDailyChallenge() {
+    const text = createShareText(dailyChallenge);
+
+    if (navigator.share) {
+      await navigator.share({ text, title: dailyChallenge.title, url: "https://gofunmotion.com/daily" });
+      return;
+    }
+
+    await navigator.clipboard.writeText(text);
+    setStatus("Daily mission copied.");
+  }
 
   return (
     <motion.article
@@ -51,19 +81,22 @@ export function DailyChallengeCard({ large = false }: { large?: boolean }) {
         <div className="mt-5 flex flex-wrap gap-3">
           <Button onClick={() => setAccepted(true)}>{accepted ? "Accepted" : "Accept challenge"}</Button>
           <Button
-            onClick={() => {
-              completeChallengeLocally(dailyChallenge, "", "daily");
-              setCompleted(true);
-            }}
+            disabled={busy || completed}
+            onClick={completeDailyChallenge}
             variant="secondary"
           >
-            {completed ? "Completed +50 XP" : "Mark complete"}
+            {completed ? "Completed +60 XP" : busy ? "Saving..." : "Mark complete"}
           </Button>
-          <Button variant="ghost">
+          <Button onClick={shareDailyChallenge} variant="ghost">
             <Share2 aria-hidden="true" size={18} />
             Share
           </Button>
         </div>
+        {status ? (
+          <p className="mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4 text-sm font-bold text-lime-50">
+            {status}
+          </p>
+        ) : null}
       </div>
     </motion.article>
   );

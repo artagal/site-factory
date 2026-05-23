@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, CheckCircle2, Clock, Copy, Quote, Share2, Sparkles, Trophy, Zap } from "lucide-react";
-import { completeChallengeLocally, saveChallengeLocally } from "../../lib/localStorage";
 import { createShareText } from "../../lib/challengeEngine";
+import { completeChallengeWithSync, saveChallengeWithSync } from "../../lib/progressActions";
+import { getRarityXpBonus } from "../../lib/rarity";
 import { formatMinutes } from "../../lib/utils";
 import type { Challenge, ChallengeRarity } from "../../types/challenge";
 import type { GoFunMotionUserProgress } from "../../types/user";
@@ -47,10 +48,12 @@ export function ChallengeCard({
   const [copied, setCopied] = useState(false);
   const [reflection, setReflection] = useState("");
   const [saved, setSaved] = useState(false);
-  const [showSavePrompt, setShowSavePrompt] = useState(false);
+  const [syncMessage, setSyncMessage] = useState("");
+  const [busyAction, setBusyAction] = useState<"complete" | "save" | null>(null);
   const [started, setStarted] = useState(false);
   const rarity = challenge.rarity;
   const rarityStyle = rarityStyles[rarity];
+  const totalXpReward = challenge.xpReward + getRarityXpBonus(rarity);
 
   async function shareChallenge() {
     const text = createShareText(challenge);
@@ -63,6 +66,46 @@ export function ChallengeCard({
     await navigator.clipboard.writeText(text);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
+  }
+
+  async function handleSave() {
+    if (busyAction) return;
+
+    setBusyAction("save");
+    const result = await saveChallengeWithSync(challenge);
+    setSaved(true);
+    setSyncMessage(
+      result.error ??
+        (result.synced
+          ? "Saved to your Firebase momentum profile."
+          : "Saved locally. Sign in to sync this mission across devices.")
+    );
+    window.setTimeout(() => setSyncMessage(""), 3400);
+    setBusyAction(null);
+  }
+
+  async function handleComplete() {
+    if (!started) {
+      setStarted(true);
+      setSyncMessage("Mission started. Do the real thing, then come back and mark it complete.");
+      window.setTimeout(() => setSyncMessage(""), 2600);
+      return;
+    }
+
+    if (completed || busyAction) return;
+
+    setBusyAction("complete");
+    const result = await completeChallengeWithSync(challenge, reflection);
+    setCompletionProgress(result.progress);
+    setCompleted(true);
+    setSyncMessage(
+      result.error ??
+        (result.synced
+          ? "Completion synced to Firebase."
+          : "Completion saved locally. Sign in to keep your momentum across devices.")
+    );
+    window.setTimeout(() => setSyncMessage(""), 4200);
+    setBusyAction(null);
   }
 
   return (
@@ -119,7 +162,7 @@ export function ChallengeCard({
           </div>
           <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-white/72">
             <Trophy aria-hidden="true" size={15} />
-            Momentum +{challenge.xpReward}
+            Momentum +{totalXpReward}
           </span>
         </div>
         <div className="mt-5 rounded-[1.7rem] border border-white/10 bg-black/28 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
@@ -162,21 +205,38 @@ export function ChallengeCard({
         <div className="mt-5 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4 text-sm font-semibold leading-6 text-lime-50">
           Scrolling interrupted. {challenge.safetyNote}
         </div>
+        <AnimatePresence>
+          {started && !completed ? (
+            <motion.div
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-5 rounded-[1.35rem] border border-cyan-300/20 bg-cyan-300/10 p-4"
+              exit={{ opacity: 0, y: -8 }}
+              initial={{ opacity: 0, y: 8 }}
+            >
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Mission active</p>
+              <p className="mt-2 text-sm font-semibold leading-6 text-white/72">
+                Finish the mission in real life, then add one quick note before completing it.
+              </p>
+              <label className="mt-4 block text-xs font-black uppercase tracking-[0.14em] text-white/42" htmlFor={`reflection-${challenge.id}`}>
+                How did it feel?
+              </label>
+              <textarea
+                className="mt-2 min-h-20 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-semibold text-white outline-none placeholder:text-white/32 focus:border-cyan-300/40"
+                id={`reflection-${challenge.id}`}
+                onChange={(event) => setReflection(event.target.value)}
+                placeholder="Optional. One sentence is enough."
+                value={reflection}
+              />
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Button
             className="w-full"
-            onClick={() => {
-              if (!started) {
-                setStarted(true);
-                return;
-              }
-
-              const progress = completeChallengeLocally(challenge, reflection);
-              setCompletionProgress(progress);
-              setCompleted(true);
-            }}
+            disabled={busyAction === "complete" || completed}
+            onClick={handleComplete}
           >
-            {completed ? "Completed" : started ? "Complete" : "Start"}
+            {completed ? "Completed" : busyAction === "complete" ? "Saving..." : started ? "Complete" : "Start"}
           </Button>
           {onGenerateAnother ? (
             <Button className="w-full" onClick={onGenerateAnother} variant="ghost">
@@ -186,15 +246,12 @@ export function ChallengeCard({
           <Button
             aria-label="Save challenge"
             className="w-full"
-            onClick={() => {
-              saveChallengeLocally(challenge);
-              setSaved(true);
-              setShowSavePrompt(true);
-            }}
+            disabled={busyAction === "save"}
+            onClick={handleSave}
             variant="ghost"
           >
             <Bookmark aria-hidden="true" size={18} />
-            {saved ? "Saved" : "Save"}
+            {busyAction === "save" ? "Saving..." : saved ? "Saved" : "Save"}
           </Button>
           <Button aria-label="Share challenge" className="w-full" onClick={shareChallenge} variant="ghost">
             {copied ? <Copy aria-hidden="true" size={18} /> : <Share2 aria-hidden="true" size={18} />}
@@ -221,42 +278,38 @@ export function ChallengeCard({
             <div className="flex flex-wrap items-center justify-between gap-4">
               <span className="inline-flex items-center gap-2 text-base text-white">
                 <Zap aria-hidden="true" size={18} />
-                Momentum +{completionProgress?.completedChallenges[0]?.xpEarned ?? challenge.xpReward}
+                Momentum +{completionProgress?.completedChallenges[0]?.xpEarned ?? totalXpReward}
               </span>
               <span className="rounded-full bg-black/28 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-lime-100">
                 Streak {completionProgress?.streak ?? 1}
               </span>
             </div>
             <p className="mt-3 text-lime-100/82">You did one real thing. That counts. Scrolling interrupted.</p>
-            <label className="mt-4 block text-xs font-black uppercase tracking-[0.14em] text-lime-100/62" htmlFor={`reflection-${challenge.id}`}>
-              How did it feel?
-            </label>
-            <textarea
-              className="mt-2 min-h-20 w-full rounded-2xl border border-lime-300/20 bg-black/30 px-4 py-3 text-sm font-semibold text-white outline-none placeholder:text-white/32"
-              id={`reflection-${challenge.id}`}
-              onChange={(event) => setReflection(event.target.value)}
-              placeholder="One sentence is enough."
-              value={reflection}
-            />
+            {reflection ? (
+              <div className="mt-4 rounded-2xl border border-lime-300/20 bg-black/26 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-lime-100/52">Reflection</p>
+                <p className="mt-2 text-sm font-semibold text-white/76">{reflection}</p>
+              </div>
+            ) : null}
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <Button onClick={shareChallenge} variant="secondary">
                 <Share2 aria-hidden="true" size={18} />
                 Share win
               </Button>
-              <Button onClick={() => saveChallengeLocally(challenge)} variant="ghost">
-                Save to history
+              <Button disabled={busyAction === "save"} onClick={handleSave} variant="ghost">
+                {saved ? "Mission saved" : "Save mission"}
               </Button>
             </div>
           </motion.div>
         </div>
       ) : null}
-      {showSavePrompt ? (
+      {syncMessage ? (
         <motion.div
           animate={{ opacity: 1, y: 0 }}
           className="relative mt-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4 text-sm font-bold leading-6 text-cyan-50"
           initial={{ opacity: 0, y: 8 }}
         >
-          Want to keep your momentum? Sign in to save your missions across devices.
+          {syncMessage}
         </motion.div>
       ) : null}
     </motion.article>

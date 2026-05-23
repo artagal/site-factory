@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createEmailAccount, signInEmail, signInGoogle, signInGuest } from "../../lib/auth";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import { ensureUserProfile } from "../../lib/firestore";
+import { syncLocalProgressToFirebase } from "../../lib/progressActions";
 import { Button } from "../../components/gofunmotion/Button";
 
 export default function LoginPage() {
@@ -15,6 +16,7 @@ export default function LoginPage() {
     const result = await signInGuest();
     if (result?.user) {
       await ensureUserProfile(result.user);
+      await syncLocalProgressToFirebase();
     }
     setStatus(result ? "Signed in anonymously." : "Firebase is not configured yet. Keep using local progress.");
   }
@@ -23,6 +25,7 @@ export default function LoginPage() {
     const result = await signInGoogle();
     if (result?.user) {
       await ensureUserProfile(result.user);
+      await syncLocalProgressToFirebase();
     }
     setStatus(result ? "Google sign-in connected. Save your momentum with one click." : "Firebase is not configured yet. Add env vars before live login.");
   }
@@ -37,6 +40,7 @@ export default function LoginPage() {
       mode === "signup" ? await createEmailAccount(email, password) : await signInEmail(email, password);
     if (result?.user) {
       await ensureUserProfile(result.user);
+      await syncLocalProgressToFirebase();
     }
     setStatus(result ? "Firebase auth connected." : "Firebase is not configured yet. No secrets are hardcoded.");
   }

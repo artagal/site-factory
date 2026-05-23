@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getLocalProgress } from "../../lib/localStorage";
+import { progressUpdatedEvent } from "../../lib/progressActions";
 import { getCurrentLevelProgress } from "../../lib/xp";
 import type { GoFunMotionUserProgress } from "../../types/user";
 import { BadgeGrid } from "./BadgeGrid";
@@ -12,7 +13,12 @@ export function ProfileStats() {
   const [progress, setProgress] = useState<GoFunMotionUserProgress | null>(null);
 
   useEffect(() => {
-    setProgress(getLocalProgress());
+    const refreshProgress = () => setProgress(getLocalProgress());
+
+    refreshProgress();
+    window.addEventListener(progressUpdatedEvent, refreshProgress);
+
+    return () => window.removeEventListener(progressUpdatedEvent, refreshProgress);
   }, []);
 
   if (!progress) {

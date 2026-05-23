@@ -11,7 +11,8 @@ import {
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { getFirebaseApp } from "./firebase";
-import type { Challenge } from "../types/challenge";
+import type { Challenge, ChallengeCompletion } from "../types/challenge";
+import type { GoFunMotionUserProgress } from "../types/user";
 
 export function getGoFunMotionDb() {
   const app = getFirebaseApp();
@@ -66,7 +67,9 @@ export async function saveChallengeToFirestore(userId: string, challenge: Challe
 export async function completeChallengeInFirestore(
   userId: string,
   challenge: Challenge,
-  reflection = ""
+  reflection = "",
+  source: ChallengeCompletion["source"] = "generator",
+  xpEarned = challenge.xpReward
 ) {
   const db = getGoFunMotionDb();
   if (!db) return null;
@@ -78,9 +81,28 @@ export async function completeChallengeInFirestore(
     difficulty: challenge.difficulty,
     rarity: challenge.rarity,
     reflection,
-    source: "generator",
+    source,
     title: challenge.title,
-    xpEarned: challenge.xpReward
+    xpEarned
+  });
+}
+
+export async function saveCompletionToFirestore(userId: string, completion: ChallengeCompletion) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  const completionId = `${completion.challengeId}-${completion.completedAt}`.replace(/[^a-zA-Z0-9_-]/g, "-");
+
+  return setDoc(doc(db, "users", userId, "completedChallenges", completionId), {
+    category: completion.category,
+    challengeId: completion.challengeId,
+    completedAt: completion.completedAt,
+    difficulty: completion.difficulty,
+    rarity: completion.rarity,
+    reflection: completion.reflection ?? "",
+    source: completion.source ?? "generator",
+    title: completion.title,
+    xpEarned: completion.xpEarned
   });
 }
 
@@ -93,6 +115,27 @@ export async function updateUserProgressInFirestore(userId: string, xpEarned: nu
     totalChallengesCompleted: increment(1),
     xp: increment(xpEarned)
   });
+}
+
+export async function syncUserProgressSummaryToFirestore(userId: string, progress: GoFunMotionUserProgress) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  return setDoc(
+    doc(db, "users", userId),
+    {
+      badges: progress.badges.map((badge) => badge.id),
+      favoriteCategories: progress.favoriteCategories,
+      lastProgressSyncAt: serverTimestamp(),
+      level: progress.level,
+      momentumScore: progress.momentumScore,
+      savedChallengeIds: progress.savedChallengeIds,
+      streak: progress.streak,
+      totalChallengesCompleted: progress.totalChallengesCompleted,
+      xp: progress.xp
+    },
+    { merge: true }
+  );
 }
 
 export async function incrementGlobalStats(db: Firestore, field: "challengesGenerated" | "challengesCompleted" | "peopleMovingToday" | "touchGrassCount") {

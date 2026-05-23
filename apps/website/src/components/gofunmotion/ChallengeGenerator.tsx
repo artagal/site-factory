@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Clock3, MapPin, Radio, Sparkles, Volume2, VolumeX, WandSparkles } from "lucide-react";
 import { generateChallenge } from "../../lib/challengeEngine";
@@ -120,6 +120,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [spinRound, setSpinRound] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const categoryOptions = useMemo(() => ["Random", ...challengeCategories] as const, []);
   const selectedFeeling = moodOptions.find((option) => option.filters.mood === filters.mood && option.filters.category === filters.category)?.label ?? filters.mood;
@@ -142,6 +143,9 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
         setRecentIds((current) => [...current.slice(-2), next.id]);
         setSpinRound((current) => current + 1);
         setIsSpinning(false);
+        if (window.innerWidth < 768) {
+          window.setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
+        }
       },
       reduceMotion ? 80 : 900
     );
@@ -261,7 +265,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
             </Button>
           </div>
         </motion.div>
-        <div className="grid gap-4">
+        <div className="scroll-mt-20 grid gap-4" ref={resultRef}>
           <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-black/32 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.28)]">
             <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(247,37,133,0.14),rgba(0,212,255,0.12),rgba(190,242,100,0.1))]" />
             <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
