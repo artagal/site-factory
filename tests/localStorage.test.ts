@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { completeChallengeLocally, getLocalProgress, saveChallengeLocally } from "../apps/website/src/lib/localStorage";
-import type { Challenge } from "../apps/website/src/types/challenge";
+import { completeChallengeLocally, getLocalProgress, mergeLocalProgress, saveChallengeLocally } from "../apps/website/src/lib/localStorage";
+import type { Challenge, ChallengeCompletion } from "../apps/website/src/types/challenge";
+import type { GoFunMotionUserProgress } from "../apps/website/src/types/user";
 
 const progressKey = "gofunmotion:progress";
 
@@ -18,6 +19,25 @@ const challenge: Challenge = {
   title: "Mood Video",
   whyItHelps: "Creative output turns passive feeling into active expression.",
   xpReward: 30
+};
+
+const remoteChallenge: Challenge = {
+  ...challenge,
+  category: "Move",
+  id: "move-remote",
+  title: "Remote Walk",
+  xpReward: 40
+};
+
+const remoteCompletion: ChallengeCompletion = {
+  category: "Move",
+  challengeId: "move-remote",
+  completedAt: "2026-05-22T12:00:00.000Z",
+  difficulty: "easy",
+  rarity: "Common",
+  source: "generator",
+  title: "Remote Walk",
+  xpEarned: 40
 };
 
 function installLocalStorageMock() {
@@ -84,5 +104,36 @@ describe("GoFunMotion local progress", () => {
     expect(progress.completedChallenges).toHaveLength(1);
     expect(stored.savedChallengeIds).toEqual(["creative-test"]);
     expect(stored.xp).toBe(30);
+  });
+
+  it("merges remote Firestore progress into local progress without losing local completions", () => {
+    completeChallengeLocally(challenge);
+
+    const remoteProgress: GoFunMotionUserProgress = {
+      badges: [],
+      categoryStats: [],
+      completedChallenges: [remoteCompletion],
+      displayName: "Remote Player",
+      favoriteCategories: [],
+      level: 1,
+      momentumScore: 0,
+      preferredCategories: ["Move"],
+      recentActivity: [],
+      savedChallenges: [remoteChallenge],
+      savedChallengeIds: [remoteChallenge.id],
+      streak: 0,
+      totalChallengesCompleted: 1,
+      xp: 40
+    };
+
+    const merged = mergeLocalProgress(remoteProgress);
+    const stored = JSON.parse(globalThis.localStorage.getItem(progressKey) ?? "{}");
+
+    expect(merged.displayName).toBe("Remote Player");
+    expect(merged.completedChallenges).toHaveLength(2);
+    expect(merged.savedChallengeIds).toContain("move-remote");
+    expect(merged.xp).toBe(70);
+    expect(stored.xp).toBe(70);
+    expect(stored.totalChallengesCompleted).toBe(2);
   });
 });

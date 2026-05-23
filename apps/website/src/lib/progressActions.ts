@@ -2,13 +2,13 @@
 
 import { getGoFunMotionAuth } from "./auth";
 import {
-  completeChallengeInFirestore,
   ensureUserProfile,
+  readUserProgressFromFirestore,
   saveCompletionToFirestore,
   saveChallengeToFirestore,
   syncUserProgressSummaryToFirestore
 } from "./firestore";
-import { completeChallengeLocally, getLocalProgress, saveChallengeLocally } from "./localStorage";
+import { completeChallengeLocally, getLocalProgress, mergeLocalProgress, saveChallengeLocally } from "./localStorage";
 import type { Challenge, ChallengeCompletion } from "../types/challenge";
 import type { GoFunMotionUserProgress } from "../types/user";
 
@@ -100,13 +100,9 @@ export async function completeChallengeWithSync(
 
   try {
     await ensureUserProfile(user);
-    await completeChallengeInFirestore(
-      user.uid,
-      challenge,
-      reflection,
-      source,
-      latestCompletion?.xpEarned ?? challenge.xpReward
-    );
+    if (latestCompletion) {
+      await saveCompletionToFirestore(user.uid, latestCompletion);
+    }
     await syncUserProgressSummaryToFirestore(user.uid, localProgress);
 
     return {
@@ -138,13 +134,15 @@ export async function syncLocalProgressToFirebase(): Promise<ProgressActionResul
 
   try {
     await ensureUserProfile(user);
-    await Promise.all(progress.savedChallenges.map((challenge) => saveChallengeToFirestore(user.uid, challenge)));
-    await Promise.all(progress.completedChallenges.map((completion) => saveCompletionToFirestore(user.uid, completion)));
-    await syncUserProgressSummaryToFirestore(user.uid, progress);
-    emitProgressUpdate(progress);
+    const remoteProgress = await readUserProgressFromFirestore(user.uid);
+    const mergedProgress = remoteProgress ? mergeLocalProgress(remoteProgress) : progress;
+    await Promise.all(mergedProgress.savedChallenges.map((challenge) => saveChallengeToFirestore(user.uid, challenge)));
+    await Promise.all(mergedProgress.completedChallenges.map((completion) => saveCompletionToFirestore(user.uid, completion)));
+    await syncUserProgressSummaryToFirestore(user.uid, mergedProgress);
+    emitProgressUpdate(mergedProgress);
 
     return {
-      progress,
+      progress: mergedProgress,
       requiresLogin: false,
       synced: true
     };

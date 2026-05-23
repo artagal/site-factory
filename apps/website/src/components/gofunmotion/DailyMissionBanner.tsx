@@ -1,33 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Share2, SunMedium, Timer, Trophy } from "lucide-react";
+import { trackEvent } from "../../lib/analytics";
 import { createShareText } from "../../lib/challengeEngine";
-import { dailyChallenge } from "../../lib/dailyChallenge";
+import { acceptDailyChallengeLocally, completeDailyChallengeLocally, dailyChallenge, getDailyDateId, getDailyStatus } from "../../lib/dailyChallenge";
 import { completeChallengeWithSync } from "../../lib/progressActions";
 import { Button } from "./Button";
 
 export function DailyMissionBanner() {
-  const [accepted, setAccepted] = useState(false);
-  const [completed, setCompleted] = useState(false);
+  const dateId = useMemo(() => getDailyDateId(), []);
+  const [dailyStatus, setDailyStatus] = useState(() => getDailyStatus(dateId));
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
 
+  function acceptMission() {
+    setDailyStatus(acceptDailyChallengeLocally(dateId));
+    trackEvent("challenge_started", {
+      category: dailyChallenge.category,
+      challengeId: dailyChallenge.id,
+      date: dateId,
+      placement: "home_daily_banner",
+      rarity: dailyChallenge.rarity,
+      title: dailyChallenge.title
+    });
+    setStatus("Accepted. Finish it today to keep your streak signal moving.");
+  }
+
   async function completeMission() {
-    if (busy || completed) return;
+    if (busy || dailyStatus.completed) return;
 
     setBusy(true);
     const result = await completeChallengeWithSync(dailyChallenge, "", "daily");
-    setCompleted(true);
+    setDailyStatus(completeDailyChallengeLocally(dateId));
     setStatus(result.synced ? "Synced to your profile." : "Saved locally. Sign in later to sync.");
+    trackEvent("challenge_completed", {
+      category: dailyChallenge.category,
+      challengeId: dailyChallenge.id,
+      date: dateId,
+      placement: "home_daily_banner",
+      rarity: dailyChallenge.rarity,
+      synced: result.synced,
+      title: dailyChallenge.title,
+      totalCompleted: result.progress.totalChallengesCompleted,
+      xpEarned: result.progress.completedChallenges[0]?.xpEarned ?? dailyChallenge.xpReward
+    });
     setBusy(false);
   }
 
   async function shareMission() {
     const text = createShareText(dailyChallenge);
+    const canUseNativeShare = "share" in navigator;
+    const method = canUseNativeShare ? "web_share" : "clipboard";
 
-    if (navigator.share) {
+    trackEvent("challenge_shared", {
+      category: dailyChallenge.category,
+      challengeId: dailyChallenge.id,
+      date: dateId,
+      method,
+      placement: "home_daily_banner",
+      rarity: dailyChallenge.rarity,
+      title: dailyChallenge.title
+    });
+
+    if (canUseNativeShare) {
       await navigator.share({ text, title: dailyChallenge.title, url: "https://gofunmotion.com/daily" });
       return;
     }
@@ -68,8 +105,8 @@ export function DailyMissionBanner() {
                 719 completed
               </span>
             </div>
-            <Button onClick={() => setAccepted(true)} variant={accepted ? "secondary" : "primary"}>
-              {accepted ? (
+            <Button onClick={acceptMission} variant={dailyStatus.accepted ? "secondary" : "primary"}>
+              {dailyStatus.accepted ? (
                 <>
                   <CheckCircle2 aria-hidden="true" size={18} />
                   Accepted
@@ -79,8 +116,8 @@ export function DailyMissionBanner() {
               )}
             </Button>
             <div className="flex gap-2">
-              <Button disabled={busy || completed} onClick={completeMission} variant="secondary">
-                {completed ? "Complete" : busy ? "Saving..." : "Done"}
+              <Button disabled={busy || dailyStatus.completed} onClick={completeMission} variant="secondary">
+                {dailyStatus.completed ? "Completed" : busy ? "Saving..." : "Done"}
               </Button>
               <Button aria-label="Share daily mission" onClick={shareMission} variant="ghost">
                 <Share2 aria-hidden="true" size={18} />

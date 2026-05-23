@@ -3,11 +3,12 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   getFirestore,
+  increment,
   serverTimestamp,
   setDoc,
   updateDoc,
-  increment,
   type Firestore
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
@@ -36,9 +37,11 @@ export async function ensureUserProfile(user: User) {
       isAnonymous: user.isAnonymous,
       lastLoginAt: serverTimestamp(),
       level: 1,
+      momentumScore: 0,
       photoURL: user.photoURL,
       preferredCategories: [],
       recentActivity: [],
+      savedChallengeIds: [],
       streak: 0,
       totalChallengesCompleted: 0,
       xp: 0
@@ -58,10 +61,15 @@ export async function saveChallengeToFirestore(userId: string, challenge: Challe
     challengeId: challenge.id,
     description: challenge.description,
     difficulty: challenge.difficulty,
+    intensity: challenge.intensity,
+    locationType: challenge.locationType,
+    moodTags: challenge.moodTags,
     rarity: challenge.rarity,
     savedAt: serverTimestamp(),
+    safetyNote: challenge.safetyNote ?? "",
     timeEstimateMinutes: challenge.timeEstimateMinutes,
     title: challenge.title,
+    whyItHelps: challenge.whyItHelps,
     xpReward: challenge.xpReward
   });
 
@@ -142,6 +150,82 @@ export async function syncUserProgressSummaryToFirestore(userId: string, progres
     },
     { merge: true }
   );
+}
+
+function toIsoString(value: unknown) {
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object" && "toDate" in value && typeof value.toDate === "function") {
+    return value.toDate().toISOString();
+  }
+
+  return new Date().toISOString();
+}
+
+function challengeFromSavedData(id: string, data: Record<string, unknown>): Challenge {
+  return {
+    category: (data.category as Challenge["category"]) ?? "Anti-Doomscroll",
+    description: String(data.description ?? "Saved GoFunMotion mission."),
+    difficulty: (data.difficulty as Challenge["difficulty"]) ?? "easy",
+    id: String(data.challengeId ?? id),
+    intensity: (data.intensity as Challenge["intensity"]) ?? "low",
+    locationType: Array.isArray(data.locationType) ? data.locationType.map(String) : ["anywhere"],
+    moodTags: Array.isArray(data.moodTags) ? data.moodTags.map(String) : ["bored"],
+    rarity: (data.rarity as Challenge["rarity"]) ?? "Common",
+    safetyNote: String(data.safetyNote ?? "Keep it safe, legal, respectful, and optional."),
+    timeEstimateMinutes: Number(data.timeEstimateMinutes ?? 5),
+    title: String(data.title ?? "Saved Mission"),
+    whyItHelps: String(data.whyItHelps ?? "This mission helps interrupt passive scrolling with one real action."),
+    xpReward: Number(data.xpReward ?? 30)
+  };
+}
+
+function completionFromData(id: string, data: Record<string, unknown>): ChallengeCompletion {
+  return {
+    category: (data.category as ChallengeCompletion["category"]) ?? "Anti-Doomscroll",
+    challengeId: String(data.challengeId ?? id),
+    completedAt: toIsoString(data.completedAt),
+    difficulty: (data.difficulty as ChallengeCompletion["difficulty"]) ?? "easy",
+    reflection: String(data.reflection ?? ""),
+    rarity: (data.rarity as ChallengeCompletion["rarity"]) ?? "Common",
+    source: (data.source as ChallengeCompletion["source"]) ?? "generator",
+    title: String(data.title ?? "Completed Mission"),
+    xpEarned: Number(data.xpEarned ?? 30)
+  };
+}
+
+export async function readUserProgressFromFirestore(userId: string): Promise<GoFunMotionUserProgress | null> {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  const userSnapshot = await getDoc(doc(db, "users", userId));
+  if (!userSnapshot.exists()) return null;
+
+  const userData = userSnapshot.data();
+  const [savedSnapshot, completedSnapshot] = await Promise.all([
+    getDocs(collection(db, "users", userId, "savedChallenges")),
+    getDocs(collection(db, "users", userId, "completedChallenges"))
+  ]);
+  const savedChallenges = savedSnapshot.docs.map((savedDoc) => challengeFromSavedData(savedDoc.id, savedDoc.data()));
+  const completedChallenges = completedSnapshot.docs
+    .map((completionDoc) => completionFromData(completionDoc.id, completionDoc.data()))
+    .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+
+  return {
+    badges: [],
+    categoryStats: [],
+    completedChallenges,
+    displayName: String(userData.displayName ?? "Motion Rookie"),
+    favoriteCategories: [],
+    level: Number(userData.level ?? 1),
+    momentumScore: Number(userData.momentumScore ?? 0),
+    preferredCategories: Array.isArray(userData.preferredCategories) ? userData.preferredCategories : [],
+    recentActivity: [],
+    savedChallenges,
+    savedChallengeIds: savedChallenges.map((challenge) => challenge.id),
+    streak: Number(userData.streak ?? 0),
+    totalChallengesCompleted: completedChallenges.length,
+    xp: Number(userData.xp ?? 0)
+  };
 }
 
 export async function incrementGlobalStats(db: Firestore, field: "challengesGenerated" | "challengesCompleted" | "peopleMovingToday" | "touchGrassCount") {
