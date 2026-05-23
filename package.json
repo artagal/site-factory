@@ -16,10 +16,16 @@
     "sitemap:generate": "tsx scripts/generate-sitemap.ts",
     "robots:generate": "tsx scripts/generate-robots.ts",
     "wordpress:draft": "tsx scripts/generate-wordpress-draft.ts",
-    "content-calendar:generate": "tsx scripts/generate-content-calendar.ts"
+    "content-calendar:generate": "tsx scripts/generate-content-calendar.ts",
+    "firebase:login": "firebase login --no-localhost",
+    "firebase:login:list": "firebase login:list",
+    "firebase:projects": "firebase projects:list",
+    "firebase:use": "firebase use",
+    "firebase:deploy:firestore": "firebase deploy --only firestore:rules,firestore:indexes"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "firebase-tools": "^15.18.0",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
     "vitest": "^3.2.0"
