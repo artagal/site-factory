@@ -1,12 +1,37 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { SiteHeader } from "../components/site-header";
+import { Footer } from "../components/gofunmotion/Footer";
+import { MotionBackground } from "../components/gofunmotion/MotionBackground";
+import { Navbar } from "../components/gofunmotion/Navbar";
 import { buildSeoMetadata } from "../lib/seo";
 
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta"
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk"
+});
+
 export const metadata: Metadata = buildSeoMetadata({
-  title: "Site Factory Dashboard",
+  title: "GoFunMotion — AI Real-Life Challenges That Get You Moving",
   description:
-    "A local dashboard for previewing landing pages, SEO drafts, AI model portfolio pages, and WordPress-ready content.",
+    "Replace scrolling with real life. Generate fun AI-powered challenges for movement, confidence, social connection, city exploration, couples, friends, and anti-doomscrolling.",
+  image: "/og/gofunmotion-og.svg",
+  keywords: [
+    "real life challenges",
+    "anti doomscrolling",
+    "fun things to do",
+    "AI challenge generator",
+    "social challenges",
+    "confidence challenges",
+    "movement challenges",
+    "bored ideas",
+    "things to do instead of scrolling"
+  ],
   path: "/"
 });
 
@@ -17,9 +42,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <SiteHeader />
+      <body className={`${plusJakarta.variable} ${spaceGrotesk.variable}`}>
+        <MotionBackground />
+        <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

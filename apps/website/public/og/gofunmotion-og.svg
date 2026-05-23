@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="GoFunMotion">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#070816"/>
+      <stop offset="0.48" stop-color="#151640"/>
+      <stop offset="1" stop-color="#05060f"/>
+    </linearGradient>
+    <linearGradient id="motion" x1="0" x2="1">
+      <stop offset="0" stop-color="#f72585"/>
+      <stop offset="0.5" stop-color="#00d4ff"/>
+      <stop offset="1" stop-color="#bef264"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="190" cy="110" r="180" fill="#f72585" opacity="0.24"/>
+  <circle cx="980" cy="140" r="190" fill="#00d4ff" opacity="0.18"/>
+  <circle cx="760" cy="520" r="170" fill="#bef264" opacity="0.16"/>
+  <path d="M96 438 C290 302 414 496 596 354 C742 240 854 312 1110 190" fill="none" stroke="url(#motion)" stroke-width="18" stroke-linecap="round" opacity="0.92"/>
+  <text x="90" y="170" fill="#ffffff" font-family="Arial, sans-serif" font-size="56" font-weight="900">GoFunMotion</text>
+  <text x="90" y="288" fill="#ffffff" font-family="Arial, sans-serif" font-size="82" font-weight="900">Replace scrolling</text>
+  <text x="90" y="382" fill="#ffffff" font-family="Arial, sans-serif" font-size="82" font-weight="900">with real life.</text>
+  <text x="94" y="486" fill="#dbeafe" font-family="Arial, sans-serif" font-size="31" font-weight="700">AI-powered real-life challenges that get you moving.</text>
+</svg>

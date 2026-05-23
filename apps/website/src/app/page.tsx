@@ -1,304 +1,214 @@
-import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeDollarSign,
-  CalendarClock,
-  ClipboardList,
-  FileText,
-  LayoutDashboard,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  UserRoundCheck
-} from "lucide-react";
-import { FactoryCard } from "../components/factory-card";
-import {
-  ChecklistPanel,
-  ContentBand,
-  GenerationLaneGrid,
-  MetricStrip,
-  ProcessStrip,
-  SectionHeader
-} from "../components/landing";
-import { getContentEntries } from "../lib/content-files";
-import { getPreviewPages } from "../lib/site-content";
+import type { Metadata } from "next";
+import { Brain, Flame, Map, ShieldCheck, Smartphone, Trophy, Users, Zap } from "lucide-react";
+import { BlogCard } from "../components/gofunmotion/BlogCard";
+import { CategoryCard } from "../components/gofunmotion/CategoryCard";
+import { ChallengeGenerator } from "../components/gofunmotion/ChallengeGenerator";
+import { DailyChallengeCard } from "../components/gofunmotion/DailyChallenge";
+import { Hero } from "../components/gofunmotion/Hero";
+import { HowItWorks } from "../components/gofunmotion/HowItWorks";
+import { LeaderboardPreview } from "../components/gofunmotion/Leaderboard";
+import { LinkButton } from "../components/gofunmotion/Button";
+import { WaitlistForm } from "../components/gofunmotion/WaitlistForm";
+import { blogPosts } from "../lib/blog";
+import { challengeCategories } from "../lib/challenges";
+import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSchema } from "../lib/seo";
+import { SeoJsonLd } from "../components/seo-json-ld";
 
-const workflowItems = [
-  {
-    icon: LayoutDashboard,
-    label: "Preview",
-    text: "Inspect local page drafts before anything is published."
-  },
-  {
-    icon: Search,
-    label: "SEO",
-    text: "Keep titles, descriptions, keywords, and FAQ schema prompts close to the content."
-  },
-  {
-    icon: FileText,
-    label: "Drafts",
-    text: "Turn Markdown or MDX into WordPress-ready local files."
-  },
-  {
-    icon: ClipboardList,
-    label: "Ship Later",
-    text: "Deployment and publishing workflows stay documented, manual, and separate."
-  }
+export const metadata: Metadata = buildSeoMetadata({
+  title: "GoFunMotion — AI Real-Life Challenges That Get You Moving",
+  description:
+    "Replace scrolling with real life. Generate fun AI-powered challenges for movement, confidence, social connection, city exploration, couples, friends, and anti-doomscrolling.",
+  image: "/og/gofunmotion-og.svg",
+  keywords: [
+    "real life challenges",
+    "anti doomscrolling",
+    "fun things to do",
+    "AI challenge generator",
+    "social challenges",
+    "confidence challenges",
+    "movement challenges",
+    "bored ideas",
+    "things to do instead of scrolling"
+  ],
+  path: "/"
+});
+
+const whyCards = [
+  { icon: Zap, title: "Break the boredom loop", text: "When your brain says scroll, GoFunMotion says move." },
+  { icon: Flame, title: "Build real momentum", text: "One tiny challenge can change the whole mood of your day." },
+  { icon: Users, title: "Create connection", text: "Small social prompts help lonely moments turn into contact." },
+  { icon: Map, title: "Discover your city", text: "Make familiar streets feel like a playable world." },
+  { icon: Brain, title: "Reset your attention", text: "Step out of the feed and back into your senses." },
+  { icon: Trophy, title: "Earn XP for life", text: "Streaks, badges, and levels make real-world action rewarding." }
 ];
 
-const beautyDropLinks = [
-  {
-    href: "/beauty-drop",
-    icon: Sparkles,
-    label: "Landing",
-    text: "Premium validation page for the BeautyDrop marketplace concept.",
-    title: "BeautyDrop landing"
-  },
-  {
-    href: "/beauty-drop/deals",
-    icon: BadgeDollarSign,
-    label: "Customer",
-    text: "Static sample deal cards for same-day and next-day beauty openings.",
-    title: "Deals prototype"
-  },
-  {
-    href: "/beauty-drop/pros",
-    icon: UserRoundCheck,
-    label: "Pro",
-    text: "Mock open-slot submission form for beauty professionals.",
-    title: "Pro submission prototype"
-  }
+const communityMoments = [
+  "I opened it because I was bored. 20 minutes later I was outside watching the sunset.",
+  "This turned a random Friday night into an adventure.",
+  "It feels like Duolingo for real life."
 ];
 
 export default function HomePage() {
-  const previewPages = getPreviewPages();
-  const contentEntries = getContentEntries();
+  const schema = createSchemaGraph([
+    createWebPageSchema({
+      description:
+        "GoFunMotion is an AI-powered real-life challenges platform that helps people replace scrolling with movement, confidence, connection, and adventure.",
+      path: "/",
+      title: "GoFunMotion"
+    }),
+    createFaqSchema([
+      {
+        question: "Do I need an app to use GoFunMotion?",
+        answer: "No. GoFunMotion works in the browser now. The iOS and Android app is planned for later."
+      },
+      {
+        question: "Does the challenge generator require signup?",
+        answer: "No. You can generate challenges immediately. Accounts and Firebase can be connected later for saved progress."
+      }
+    ])
+  ]);
 
   return (
     <main>
-      <section className="border-b border-ink/10 bg-paper">
-        <div className="mx-auto grid min-h-[520px] max-w-7xl gap-10 px-5 py-12 md:grid-cols-[1.1fr_0.9fr] md:px-8 md:py-16">
-          <div className="flex flex-col justify-center">
-            <p className="mb-4 text-sm font-bold uppercase tracking-[0.16em] text-mint">
-              Local-first Site Factory
-            </p>
-            <h1 className="max-w-3xl text-5xl font-black leading-[0.98] text-ink md:text-7xl">
-              Site Factory dashboard and preview workspace
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-ink/72">
-              A Codex-driven foundation for creating landing pages, SEO pages,
-              blog drafts, AI model portfolio pages, validation pages, and
-              WordPress-ready content without connecting to live publishing systems.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/previews"
-                className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-ink px-5 py-3 text-sm font-bold text-white shadow-soft"
-              >
-                Open previews
-                <ArrowRight aria-hidden="true" size={18} />
-              </Link>
-              <Link
-                href="/content/work-organizer/blog/how-to-organize-work-without-another-spreadsheet"
-                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-ink/15 bg-white px-5 py-3 text-sm font-bold text-ink"
-              >
-                View sample draft
-                <FileText aria-hidden="true" size={18} />
-              </Link>
-            </div>
-            <div className="mt-8 max-w-2xl">
-              <MetricStrip
-                items={[
-                  { label: "Previews", value: String(previewPages.length) },
-                  { label: "Drafts", value: String(contentEntries.length) },
-                  { label: "Live APIs", value: "0" }
-                ]}
-              />
-            </div>
-          </div>
-          <div className="grid content-center gap-4">
-            <div className="rounded-lg border border-ink/10 bg-white p-5 shadow-soft">
-              <div className="mb-5 flex items-center justify-between gap-3">
-                <div className="flex size-11 items-center justify-center rounded-lg bg-coral/10 text-coral">
-                  <Sparkles aria-hidden="true" size={22} />
-                </div>
-                <span className="rounded-lg bg-paper px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-ink/60">
-                  Foundation
-                </span>
-              </div>
-              <h2 className="text-xl font-black text-ink">Generate, preview, review</h2>
-              <p className="mt-2 text-sm leading-6 text-ink/68">
-                This dashboard is the local staging area for page strategy, content structure, and metadata before anything touches a live system.
-              </p>
-            </div>
-            {workflowItems.map((item) => {
-              const Icon = item.icon;
+      <SeoJsonLd data={schema} id="gofunmotion-home-schema" />
+      <Hero />
+      <ChallengeGenerator />
 
-              return (
-                <div
-                  key={item.label}
-                  className="grid grid-cols-[44px_1fr] gap-4 rounded-lg border border-ink/10 bg-white p-5 shadow-soft"
-                >
-                  <div className="flex size-11 items-center justify-center rounded-lg bg-mint/10 text-mint">
-                    <Icon aria-hidden="true" size={22} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-black text-ink">{item.label}</h2>
-                    <p className="mt-1 text-sm leading-6 text-ink/68">{item.text}</p>
-                  </div>
-                </div>
-              );
-            })}
-            <div className="grid grid-cols-[44px_1fr] gap-4 rounded-lg border border-ink/10 bg-ink p-5 text-white shadow-soft">
-              <div className="flex size-11 items-center justify-center rounded-lg bg-white/10 text-white">
-                <ShieldCheck aria-hidden="true" size={22} />
-              </div>
-              <div>
-                <h2 className="text-base font-black">Safe by default</h2>
-                <p className="mt-1 text-sm leading-6 text-white/72">
-                  No Bluehost, WordPress, OpenAI, payments, or automatic deployment are connected.
-                </p>
-              </div>
-            </div>
-          </div>
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="max-w-3xl">
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-fuchsia-300">Built for real-life momentum</p>
+          <h2 className="mt-3 text-4xl font-black leading-tight text-white md:text-6xl">
+            Not another habit tracker. Not another feed.
+          </h2>
+          <p className="mt-4 text-lg leading-8 text-white/62">
+            GoFunMotion is a tiny push toward movement, courage, connection, and adventure.
+          </p>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8">
-        <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-rose-500">
-              BeautyDrop validation
-            </p>
-            <h2 className="mt-2 text-3xl font-black text-ink">First real marketplace prototype</h2>
-          </div>
-          <Link
-            href="/beauty-drop"
-            className="inline-flex w-fit items-center gap-2 rounded-lg border border-ink/15 bg-white px-4 py-2 text-sm font-bold text-ink"
-          >
-            Open BeautyDrop
-            <CalendarClock aria-hidden="true" size={17} />
-          </Link>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {beautyDropLinks.map((item) => {
-            const Icon = item.icon;
-
+        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {whyCards.map((card) => {
+            const Icon = card.icon;
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-lg border border-ink/10 bg-white p-5 shadow-soft"
-              >
-                <div className="mb-5 flex items-center justify-between gap-3">
-                  <div className="flex size-11 items-center justify-center rounded-lg bg-rose-50 text-rose-500">
-                    <Icon aria-hidden="true" size={22} />
-                  </div>
-                  <span className="rounded-lg bg-paper px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-ink/56">
-                    {item.label}
-                  </span>
+              <article className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-5 backdrop-blur-2xl" key={card.title}>
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-white text-black">
+                  <Icon aria-hidden="true" size={23} />
                 </div>
-                <h3 className="text-xl font-black text-ink">{item.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-ink/68">{item.text}</p>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-ink">
-                  Open page
-                  <ArrowRight aria-hidden="true" size={17} />
-                </span>
-              </Link>
+                <h3 className="mt-5 text-2xl font-black text-white">{card.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-white/60">{card.text}</p>
+              </article>
             );
           })}
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8">
-        <div className="mb-6 flex flex-col justify-between gap-3 md:flex-row md:items-end">
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-coral">
-              Active previews
-            </p>
-            <h2 className="mt-2 text-3xl font-black text-ink">Starter sites</h2>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Challenge modes</p>
+            <h2 className="mt-3 text-4xl font-black text-white md:text-6xl">Pick the kind of life you want today</h2>
           </div>
-          <Link
-            href="/previews"
-            className="inline-flex w-fit items-center gap-2 rounded-lg border border-ink/15 bg-white px-4 py-2 text-sm font-bold text-ink"
-          >
-            Browse all
-            <ArrowRight aria-hidden="true" size={17} />
-          </Link>
+          <LinkButton href="/categories" variant="ghost">All categories</LinkButton>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {previewPages.map((page) => (
-            <FactoryCard key={page.slug} page={page} />
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {challengeCategories.slice(0, 6).map((category) => (
+            <CategoryCard category={category} key={category} />
           ))}
         </div>
       </section>
-      <ContentBand>
-        <SectionHeader
-          eyebrow="Generation workflow"
-          summary="Future Codex chats should reuse this sequence for landing pages, SEO drafts, model pages, validation pages, and WordPress-ready local exports."
-          title="How new pages move through the factory"
-          tone="skyline"
-        />
-        <ProcessStrip
-          steps={[
-            {
-              title: "Brief",
-              text: "Read the Codex context, brand data, target keyword, and template notes."
-            },
-            {
-              title: "Compose",
-              text: "Create or update local MDX, YAML, preview data, and metadata fields."
-            },
-            {
-              title: "Preview",
-              text: "Open the dashboard and check the page structure before generating exports."
-            },
-            {
-              title: "Audit",
-              text: "Run only the necessary local checks for types, build, tests, or SEO metadata."
-            }
-          ]}
-        />
-      </ContentBand>
-      <section className="mx-auto max-w-7xl px-5 py-12 md:px-8">
-        <SectionHeader
-          eyebrow="Factory lanes"
-          summary="Each lane has a clear source folder, template, and safety boundary so future site generation stays predictable."
-          title="Reusable paths for the next pages"
-          tone="brass"
-        />
-        <GenerationLaneGrid
-          items={[
-            {
-              label: "Landing",
-              title: "Product and validation pages",
-              text: "Use shared landing sections, preview routes, and local MDX before creating any live collection path."
-            },
-            {
-              label: "SEO",
-              title: "Blog and local search drafts",
-              text: "Use keyword data, canonical paths, FAQ schema, and draft outlines for reviewable content."
-            },
-            {
-              label: "Portfolio",
-              title: "AI model profile pages",
-              text: "Keep fictional disclosure, creative direction, and production notes visible in every generated page."
-            }
-          ]}
-          tone="brass"
-        />
+
+      <HowItWorks />
+
+      <section className="mx-auto grid max-w-7xl gap-5 px-4 py-14 md:px-8 md:py-20 lg:grid-cols-[1.1fr_0.9fr]">
+        <DailyChallengeCard />
+        <LeaderboardPreview />
       </section>
-      <ContentBand className="bg-paper">
-        <ChecklistPanel
-          title="Vercel-ready, not deployed"
-          items={[
-            "Root build command stays npm.cmd run build locally and npm run build on Vercel.",
-            "Canonical URL can use SITE_FACTORY_BASE_URL or Vercel URL environment variables.",
-            "No WordPress, Bluehost, payment, or external API integration is connected."
-          ]}
-          tone="mint"
-        />
-      </ContentBand>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Gamification</p>
+            <h2 className="mt-3 text-4xl font-black leading-tight text-white md:text-6xl">
+              Make real life feel playable.
+            </h2>
+            <p className="mt-4 text-lg leading-8 text-white/62">
+              XP, streaks, badges, challenge history, and personal momentum scores are already structured locally, with Firebase-ready architecture for the full app.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {["First Step", "Touch Grass", "Social Spark", "Explorer", "No Scroll Hero", "Courage Mode"].map((badge) => (
+              <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-white" key={badge}>
+                <ShieldCheck aria-hidden="true" className="text-lime-300" size={20} />
+                <p className="mt-3 font-black">{badge}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="grid gap-4 md:grid-cols-3">
+          {communityMoments.map((quote) => (
+            <figure className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-2xl" key={quote}>
+              <blockquote className="text-xl font-black leading-tight text-white">“{quote}”</blockquote>
+              <figcaption className="mt-4 text-sm font-bold text-white/42">Community moment placeholder</figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-2xl">
+            <Smartphone aria-hidden="true" className="text-cyan-300" size={34} />
+            <h2 className="mt-5 text-4xl font-black leading-tight text-white md:text-6xl">
+              GoFunMotion is coming to iOS and Android.
+            </h2>
+            <p className="mt-4 text-lg leading-8 text-white/62">
+              Daily streaks, friend challenges, location-based adventures, an AI coach, real-life quests, and social leaderboards are planned next.
+            </p>
+          </div>
+          <WaitlistForm />
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(247,37,133,0.16),rgba(124,58,237,0.16),rgba(190,242,100,0.08))] p-6 backdrop-blur-2xl md:p-8">
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Premium coming soon</p>
+          <h2 className="mt-3 max-w-4xl text-4xl font-black leading-tight text-white md:text-6xl">
+            Future packs for couples, friends, city adventures, creators, and AI coaching.
+          </h2>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              "Unlimited AI challenges",
+              "Advanced challenge packs",
+              "Couples and friends mode",
+              "City adventure mode",
+              "Streak protection",
+              "AI personal coach",
+              "Private groups",
+              "Creator packs"
+            ].map((feature) => (
+              <div className="rounded-2xl bg-black/24 p-4 text-sm font-black text-white/78" key={feature}>
+                {feature}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-fuchsia-300">SEO idea engine</p>
+            <h2 className="mt-3 text-4xl font-black text-white md:text-6xl">Read before you scroll again</h2>
+          </div>
+          <LinkButton href="/blog" variant="ghost">Open blog</LinkButton>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {blogPosts.slice(0, 3).map((post) => (
+            <BlogCard {...post} key={post.slug} />
+          ))}
+        </div>
+      </section>
     </main>
   );
 }

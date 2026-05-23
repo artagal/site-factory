@@ -1,6 +1,5 @@
-import { getContentEntries } from "./content-files";
+import { blogPosts } from "./blog";
 import { absoluteUrl, getCanonicalBaseUrl } from "./seo";
-import { getPreviewPages } from "./site-content";
 
 export type SitemapRoute = {
   changeFrequency: "daily" | "monthly" | "weekly" | "yearly";
@@ -10,34 +9,25 @@ export type SitemapRoute = {
 };
 
 export const defaultLastModified =
-  process.env.SITE_FACTORY_LASTMOD ?? "2026-05-21T00:00:00.000Z";
+  process.env.SITE_FACTORY_LASTMOD ?? "2026-05-23T00:00:00.000Z";
 
-const staticFactoryRoutes: SitemapRoute[] = [
-  {
-    changeFrequency: "weekly",
-    lastModified: defaultLastModified,
-    path: "/beauty-drop",
-    priority: 0.9
-  },
-  {
-    changeFrequency: "weekly",
-    lastModified: defaultLastModified,
-    path: "/beauty-drop/deals",
-    priority: 0.8
-  },
-  {
-    changeFrequency: "weekly",
-    lastModified: defaultLastModified,
-    path: "/beauty-drop/pros",
-    priority: 0.75
-  }
+const appRoutes = [
+  "/",
+  "/challenge",
+  "/daily",
+  "/categories",
+  "/profile",
+  "/leaderboard",
+  "/waitlist",
+  "/about",
+  "/blog",
+  "/login",
+  "/privacy",
+  "/terms"
 ];
 
 export function normalizeRoutePath(pathname: string) {
-  if (!pathname || pathname === "/") {
-    return "/";
-  }
-
+  if (!pathname || pathname === "/") return "/";
   return `/${pathname.replace(/^\/+/, "").replace(/\/+$/, "")}`;
 }
 
@@ -55,39 +45,21 @@ function uniqueRoutes(routes: SitemapRoute[]) {
 }
 
 export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRoute[] {
-  const previewRoutes = getPreviewPages().map((page) => ({
-    changeFrequency: "weekly" as const,
+  const routes: SitemapRoute[] = appRoutes.map((path) => ({
+    changeFrequency: path === "/" || path === "/daily" ? "daily" : "weekly",
     lastModified,
-    path: page.href,
-    priority: 0.7
-  }));
-  const contentRoutes = getContentEntries().map((entry) => ({
-    changeFrequency: "monthly" as const,
-    lastModified,
-    path: entry.href,
-    priority: entry.contentType.includes("seo") ? 0.65 : 0.55
+    path,
+    priority: path === "/" ? 1 : path === "/challenge" ? 0.95 : 0.75
   }));
 
-  return uniqueRoutes([
-    {
-      changeFrequency: "weekly",
-      lastModified,
-      path: "/",
-      priority: 1
-    },
-    {
-      changeFrequency: "weekly",
-      lastModified,
-      path: "/previews",
-      priority: 0.85
-    },
-    ...staticFactoryRoutes.map((route) => ({
-      ...route,
-      lastModified
-    })),
-    ...previewRoutes,
-    ...contentRoutes
-  ]);
+  const blogRoutes = blogPosts.map((post) => ({
+    changeFrequency: "monthly" as const,
+    lastModified,
+    path: `/blog/${post.slug}`,
+    priority: 0.68
+  }));
+
+  return uniqueRoutes([...routes, ...blogRoutes]);
 }
 
 export function getAbsoluteFactoryRoutes(baseUrl = getCanonicalBaseUrl()) {

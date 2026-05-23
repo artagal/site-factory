@@ -23,7 +23,7 @@ export type SeoInput = {
 };
 
 export const canonicalUrlPlaceholder = "https://example.com";
-export const defaultOgImage = "/og/site-factory-preview.svg";
+export const defaultOgImage = "/og/gofunmotion-og.svg";
 
 export const faqSchemaPlaceholder = {
   "@context": "https://schema.org",
@@ -92,7 +92,7 @@ export function buildSeoMetadata({
       title,
       description,
       url: canonical,
-      siteName: "Site Factory",
+      siteName: "GoFunMotion",
       type: openGraphType,
       images: [
         {

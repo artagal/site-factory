@@ -2,110 +2,110 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://example.com/</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://example.com/beauty-drop</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.90</priority>
-  </url>
-  <url>
-    <loc>https://example.com/beauty-drop/deals</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
-  </url>
-  <url>
-    <loc>https://example.com/beauty-drop/pros</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
+    <loc>https://example.com/about</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/content/contactor/blog/what-to-track-before-hiring-a-home-service-contractor</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
-  </url>
-  <url>
-    <loc>https://example.com/content/gofunmotion/models/mia-carter</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.55</priority>
-  </url>
-  <url>
-    <loc>https://example.com/content/validation/beauty-drop/beauty-drop-validation</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.55</priority>
-  </url>
-  <url>
-    <loc>https://example.com/content/validation/beauty-drop/landing-page</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.55</priority>
-  </url>
-  <url>
-    <loc>https://example.com/content/work-organizer/blog/daily-work-planning-system</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
-  </url>
-  <url>
-    <loc>https://example.com/content/work-organizer/blog/how-to-organize-work-without-another-spreadsheet</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
-  </url>
-  <url>
-    <loc>https://example.com/content/work-organizer/blog/task-tracking-spreadsheet-alternative</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
-  </url>
-  <url>
-    <loc>https://example.com/content/work-organizer/blog/team-follow-up-tracker</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
-  </url>
-  <url>
-    <loc>https://example.com/content/work-organizer/blog/what-is-a-work-organizer-app</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.65</priority>
-  </url>
-  <url>
-    <loc>https://example.com/previews</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
+    <loc>https://example.com/blog</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
+    <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/previews/beauty-drop</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.70</priority>
+    <loc>https://example.com/blog/fun-things-to-do-when-you-are-bored</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://example.com/previews/contactor</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.70</priority>
+    <loc>https://example.com/blog/how-to-make-weekends-feel-longer</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://example.com/previews/gofunmotion</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.70</priority>
+    <loc>https://example.com/blog/simple-social-challenges-for-shy-people</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://example.com/previews/work-organizer</loc>
-    <lastmod>2026-05-21T00:00:00.000Z</lastmod>
+    <loc>https://example.com/blog/small-real-life-challenges-build-confidence</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://example.com/blog/things-to-do-instead-of-doomscrolling</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://example.com/blog/why-movement-changes-your-mood</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://example.com/categories</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.70</priority>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://example.com/challenge</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://example.com/daily</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://example.com/leaderboard</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://example.com/login</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://example.com/privacy</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://example.com/profile</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://example.com/terms</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://example.com/waitlist</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
   </url>
 </urlset>

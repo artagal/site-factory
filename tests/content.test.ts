@@ -1,33 +1,33 @@
 import { describe, expect, it } from "vitest";
-import { getContentEntries } from "../apps/website/src/lib/content-files";
+import { generateChallenge } from "../apps/website/src/lib/challengeEngine";
+import { challengeTemplates } from "../apps/website/src/lib/challenges";
 import { getFactoryRoutes } from "../apps/website/src/lib/site-routes";
-import { getPreviewPages } from "../apps/website/src/lib/site-content";
 
-describe("Site Factory content", () => {
-  it("registers the requested preview pages", () => {
-    const slugs = getPreviewPages().map((page) => page.slug);
-
-    expect(slugs).toEqual(["work-organizer", "contactor", "gofunmotion", "beauty-drop"]);
+describe("GoFunMotion product content", () => {
+  it("ships at least 100 safe challenge templates", () => {
+    expect(challengeTemplates.length).toBeGreaterThanOrEqual(100);
+    expect(challengeTemplates.every((challenge) => challenge.safetyNote)).toBe(true);
   });
 
-  it("loads sample MDX content", () => {
-    const entries = getContentEntries();
-    const hrefs = entries.map((entry) => entry.href);
+  it("generates a challenge from filters", () => {
+    const challenge = generateChallenge({
+      category: "Anti-Doomscroll",
+      mood: "bored",
+      timeAvailable: 5
+    });
 
-    expect(hrefs).toContain(
-      "/content/work-organizer/blog/how-to-organize-work-without-another-spreadsheet"
-    );
-    expect(hrefs).toContain("/content/gofunmotion/models/mia-carter");
-    expect(entries.every((entry) => entry.title.length > 0)).toBe(true);
-    expect(entries.every((entry) => entry.readingMinutes >= 1)).toBe(true);
-    expect(entries.every((entry) => entry.canonicalPath.startsWith("/"))).toBe(true);
+    expect(challenge.title.length).toBeGreaterThan(0);
+    expect(challenge.timeEstimateMinutes).toBeLessThanOrEqual(5);
   });
 
-  it("registers BeautyDrop routes for sitemap generation", () => {
+  it("registers GoFunMotion routes for sitemap generation", () => {
     const routes = getFactoryRoutes().map((route) => route.path);
 
-    expect(routes).toContain("/beauty-drop");
-    expect(routes).toContain("/beauty-drop/deals");
-    expect(routes).toContain("/beauty-drop/pros");
+    expect(routes).toContain("/");
+    expect(routes).toContain("/challenge");
+    expect(routes).toContain("/daily");
+    expect(routes).toContain("/categories");
+    expect(routes).toContain("/waitlist");
+    expect(routes).toContain("/blog/things-to-do-instead-of-doomscrolling");
   });
 });
