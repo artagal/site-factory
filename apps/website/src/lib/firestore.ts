@@ -13,6 +13,7 @@ import {
 import type { User } from "firebase/auth";
 import { getFirebaseApp } from "./firebase";
 import type { Challenge, ChallengeCompletion, DailyChallengeRecord } from "../types/challenge";
+import type { LeaderboardSnapshot } from "./leaderboard";
 import type { GoFunMotionUserProgress } from "../types/user";
 
 export function getGoFunMotionDb() {
@@ -162,6 +163,19 @@ export async function getDailyChallengeFromFirestore(dateId: string) {
     date: dateId,
     ...snapshot.data()
   } as DailyChallengeRecord;
+}
+
+export async function getLeaderboardSnapshotFromFirestore(periodId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  const snapshot = await getDoc(doc(db, "leaderboards", periodId));
+  if (!snapshot.exists()) return null;
+
+  return {
+    periodId,
+    ...snapshot.data()
+  } as LeaderboardSnapshot;
 }
 
 export async function addWaitlistEntry(email: string, interests: string[], source = "website") {

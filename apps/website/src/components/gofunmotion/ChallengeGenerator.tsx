@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Clock3, MapPin, Radio, WandSparkles } from "lucide-react";
+import { trackEvent } from "../../lib/analytics";
 import { generateChallenge } from "../../lib/challengeEngine";
 import { challengeCategories, challengeTemplates } from "../../lib/challenges";
 import type { Challenge, ChallengeFilters } from "../../types/challenge";
@@ -85,7 +86,7 @@ function PillGroup<T extends string | number>({
       <div className="flex flex-wrap gap-2">
         {options.map((option) => (
           <button
-            className={`rounded-full px-4 py-2 text-sm font-black capitalize transition focus:outline-none focus:ring-2 focus:ring-lime-300 ${
+            className={`min-h-11 rounded-full px-4 py-2.5 text-sm font-black capitalize transition focus:outline-none focus:ring-2 focus:ring-lime-300 ${
               value === option
                 ? "bg-lime-300 text-black shadow-[0_0_28px_rgba(190,242,100,0.24)]"
                 : "border border-white/10 bg-white/[0.075] text-white/82 hover:bg-white/14"
@@ -121,7 +122,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
     setFilters((current) => ({ ...current, [key]: value }));
   }
 
-  function generateNext(nextFilters = filters) {
+  function generateNext(nextFilters = filters, source = spinRound > 0 ? "spin_again" : "generator") {
     if (isSpinning) {
       return;
     }
@@ -137,6 +138,17 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
         setRecentIds((current) => [...current.slice(-2), next.id]);
         setSpinRound((current) => current + 1);
         setIsSpinning(false);
+        trackEvent("challenge_generated", {
+          category: next.category,
+          challengeId: next.id,
+          difficulty: next.difficulty,
+          filters: nextFilters,
+          rarity: next.rarity,
+          source,
+          timeEstimateMinutes: next.timeEstimateMinutes,
+          title: next.title,
+          xpReward: next.xpReward
+        });
       },
       reduceMotion ? 80 : 1180
     );
@@ -144,7 +156,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
 
   function applyPreset(nextFilters: ChallengeFilters) {
     setFilters(nextFilters);
-    generateNext(nextFilters);
+    generateNext(nextFilters, "preset");
   }
 
   function chooseFeeling(partialFilters: Partial<ChallengeFilters>) {
@@ -154,19 +166,19 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
 
   return (
     <section className={compact ? "" : "mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16"} id="generator">
-      <div className="mb-6 max-w-3xl">
+      <div className={compact ? "mb-4 max-w-3xl md:mb-6" : "mb-5 max-w-3xl md:mb-6"}>
         <p className="inline-flex items-center gap-2 rounded-full bg-cyan-300/10 px-3 py-2 text-sm font-black uppercase tracking-[0.18em] text-cyan-200">
           <WandSparkles aria-hidden="true" size={16} />
           Core product loop
         </p>
-        <h2 className="mt-4 text-4xl font-black leading-tight text-white md:text-6xl">
+        <h2 className={compact ? "mt-4 text-3xl font-black leading-tight text-white md:text-6xl" : "mt-4 text-4xl font-black leading-tight text-white md:text-6xl"}>
           How are you feeling right now?
         </h2>
-        <p className="mt-4 text-lg font-semibold leading-8 text-white/68">
+        <p className={compact ? "mt-2 text-sm font-semibold leading-6 text-white/68 md:mt-4 md:text-lg md:leading-8" : "mt-3 text-base font-semibold leading-7 text-white/68 md:mt-4 md:text-lg md:leading-8"}>
           Pick your mood, get one mission, start it, complete it, then earn XP and keep your streak alive.
         </p>
       </div>
-      <div className="mb-6 grid gap-3 rounded-[2rem] border border-white/10 bg-white/[0.05] p-3 backdrop-blur-2xl sm:grid-cols-2 lg:grid-cols-6">
+      <div className={`${compact ? "mb-6 hidden md:grid" : "mb-5 flex md:mb-6 md:grid"} gap-2 overflow-x-auto rounded-[1.5rem] border border-white/10 bg-white/[0.05] p-2 backdrop-blur-2xl md:gap-3 md:overflow-visible md:rounded-[2rem] md:p-3 lg:grid-cols-6`}>
         {[
           ["1", "Mood"],
           ["2", "Mission"],
@@ -175,8 +187,8 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
           ["5", "XP + streak"],
           ["6", "Save/share"]
         ].map(([number, label]) => (
-          <div className="flex items-center gap-3 rounded-2xl bg-black/24 p-3" key={number}>
-            <span className="flex size-9 items-center justify-center rounded-full bg-white text-sm font-black text-black">
+          <div className="flex min-w-[132px] items-center gap-3 rounded-2xl bg-black/24 p-3 md:min-w-0" key={number}>
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-black text-black">
               {number}
             </span>
             <span className="text-sm font-black leading-tight text-white">{label}</span>
@@ -186,22 +198,22 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
       <div className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
         <motion.div
           animate={{ opacity: 1, x: 0 }}
-          className="rounded-[2rem] border border-white/10 bg-white/[0.075] p-4 shadow-[0_24px_90px_rgba(0,0,0,0.25)] backdrop-blur-2xl md:p-6"
+          className="rounded-[1.75rem] border border-white/10 bg-white/[0.075] p-3 shadow-[0_24px_90px_rgba(0,0,0,0.25)] backdrop-blur-2xl md:rounded-[2rem] md:p-6"
           initial={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.4 }}
         >
           <h3 className="text-2xl font-black leading-tight text-white md:text-3xl">
             What do you need right now?
           </h3>
-          <p className="mt-3 text-base font-semibold leading-7 text-white/70">
+          <p className="mt-2 text-sm font-semibold leading-6 text-white/70 md:mt-3 md:text-base md:leading-7">
             Tap the feeling closest to now. The rest should take seconds.
           </p>
-          <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+          <div className="mt-4 grid grid-cols-2 gap-2 md:mt-5 lg:grid-cols-1 xl:grid-cols-2">
             {moodOptions.map((option) => {
               const active = selectedFeeling === option.label;
               return (
                 <button
-                  className={`group rounded-2xl border p-4 text-left transition duration-300 focus:outline-none focus:ring-2 focus:ring-lime-300 ${
+                  className={`group min-h-[76px] rounded-2xl border p-3 text-left transition duration-300 focus:outline-none focus:ring-2 focus:ring-lime-300 md:p-4 ${
                     active
                       ? "border-lime-300/60 bg-lime-300 text-black shadow-[0_0_42px_rgba(190,242,100,0.22)]"
                       : "border-white/10 bg-white/[0.055] text-white hover:-translate-y-0.5 hover:border-cyan-300/40 hover:bg-white/[0.09]"
@@ -216,7 +228,42 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
               );
             })}
           </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 md:hidden">
+            <Button className="min-h-14 w-full text-base shadow-[0_0_55px_rgba(190,242,100,0.24)]" disabled={isSpinning} onClick={() => generateNext(filters, "mobile_quick_cta")}>
+              <Radio aria-hidden="true" size={18} />
+              {isSpinning ? "Shuffling..." : hasSpun ? "Spin Again" : "Generate My Mission"}
+            </Button>
+          </div>
+
+          <details className="mt-4 rounded-2xl border border-white/10 bg-black/24 p-3 md:hidden">
+            <summary className="cursor-pointer list-none text-sm font-black text-white">
+              Tune mission: time, mode, intensity
+            </summary>
+            <div className="mt-4 grid gap-5">
+              <div className="grid gap-3">
+                {presets.map((preset) => (
+                  <button
+                    className="group min-h-[72px] rounded-2xl border border-white/10 bg-white/[0.055] p-4 text-left transition hover:border-lime-300/40 hover:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-lime-300"
+                    key={`mobile-${preset.label}`}
+                    onClick={() => applyPreset(preset.filters)}
+                    type="button"
+                  >
+                    <span className="flex items-center justify-between gap-3 text-sm font-black text-white">
+                      {preset.label}
+                      <ArrowRight aria-hidden="true" className="text-lime-300 transition group-hover:translate-x-1" size={16} />
+                    </span>
+                    <span className="mt-2 block text-xs font-semibold leading-5 text-white/54">{preset.description}</span>
+                  </button>
+                ))}
+              </div>
+              <PillGroup label="Time available" onChange={(value) => updateFilter("timeAvailable", value)} options={times} value={filters.timeAvailable} />
+              <PillGroup label="Challenge type" onChange={(value) => updateFilter("category", value)} options={categoryOptions} value={filters.category} />
+              <PillGroup label="Intensity" onChange={(value) => updateFilter("intensity", value)} options={intensities} value={filters.intensity} />
+              <PillGroup label="Location" onChange={(value) => updateFilter("location", value)} options={locations} value={filters.location} />
+            </div>
+          </details>
+
+          <div className="mt-5 hidden gap-3 md:grid md:grid-cols-2">
             {presets.map((preset) => (
               <button
                 className="group rounded-2xl border border-white/10 bg-black/24 p-4 text-left transition hover:border-lime-300/40 hover:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-lime-300"
@@ -232,7 +279,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
               </button>
             ))}
           </div>
-          <div className="mt-7 grid gap-6">
+          <div className="mt-7 hidden gap-6 md:grid">
             <PillGroup label="Time available" onChange={(value) => updateFilter("timeAvailable", value)} options={times} value={filters.timeAvailable} />
             <PillGroup label="Challenge type" onChange={(value) => updateFilter("category", value)} options={categoryOptions} value={filters.category} />
             <PillGroup label="Intensity" onChange={(value) => updateFilter("intensity", value)} options={intensities} value={filters.intensity} />
@@ -253,7 +300,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
               </div>
             </div>
             <div className="sticky bottom-3 z-20 rounded-[1.35rem] border border-lime-300/20 bg-[#070816]/78 p-2 shadow-[0_16px_55px_rgba(0,0,0,0.42)] backdrop-blur-2xl lg:static lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
-              <Button className="min-h-14 w-full text-base shadow-[0_0_55px_rgba(190,242,100,0.2)]" disabled={isSpinning} onClick={() => generateNext()}>
+              <Button className="min-h-14 w-full text-base shadow-[0_0_55px_rgba(190,242,100,0.2)]" disabled={isSpinning} onClick={() => generateNext(filters, "sticky_generator_cta")}>
                 <Radio aria-hidden="true" size={18} />
                 {isSpinning ? "Shuffling..." : hasSpun ? "Spin Again" : "Spin the Challenge"}
               </Button>
@@ -270,7 +317,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
             spinRound={spinRound}
           />
           <AnimatePresence mode="wait">
-            <ChallengeCard challenge={challenge} isRevealing={isSpinning} key={challenge.id} onGenerateAnother={() => generateNext()} />
+            <ChallengeCard challenge={challenge} isRevealing={isSpinning} key={challenge.id} onGenerateAnother={() => generateNext(filters, "spin_again")} />
           </AnimatePresence>
         </div>
       </div>

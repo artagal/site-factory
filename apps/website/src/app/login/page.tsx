@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackEvent } from "../../lib/analytics";
 import { createEmailAccount, signInEmail, signInGoogle, signInGuest } from "../../lib/auth";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import { ensureUserProfile } from "../../lib/firestore";
@@ -13,6 +14,10 @@ export default function LoginPage() {
   const [status, setStatus] = useState("Firebase is optional. Local progress works without login.");
 
   async function handleGuest() {
+    trackEvent("login_clicked", {
+      firebaseConfigured: isFirebaseConfigured(),
+      provider: "anonymous"
+    });
     const result = await signInGuest();
     if (result?.user) {
       await ensureUserProfile(result.user);
@@ -22,6 +27,10 @@ export default function LoginPage() {
   }
 
   async function handleGoogle() {
+    trackEvent("login_clicked", {
+      firebaseConfigured: isFirebaseConfigured(),
+      provider: "google"
+    });
     const result = await signInGoogle();
     if (result?.user) {
       await ensureUserProfile(result.user);
@@ -31,6 +40,11 @@ export default function LoginPage() {
   }
 
   async function handleEmail(mode: "login" | "signup") {
+    trackEvent("login_clicked", {
+      firebaseConfigured: isFirebaseConfigured(),
+      mode,
+      provider: "email"
+    });
     if (!email || password.length < 6) {
       setStatus("Add an email and a password with at least 6 characters.");
       return;

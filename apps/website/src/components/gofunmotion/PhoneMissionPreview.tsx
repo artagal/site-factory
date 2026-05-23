@@ -78,10 +78,10 @@ export function PhoneMissionPreview() {
   return (
     <motion.div
       animate={reduceMotion ? undefined : { rotate: [0, 1.8, -1.2, 0], y: [0, -8, 5, 0] }}
-      className="absolute left-1/2 top-1/2 z-10 w-[min(92vw,390px)] -translate-x-1/2 -translate-y-1/2 rounded-[2.5rem] border border-white/15 bg-black/58 p-4 shadow-[0_40px_140px_rgba(124,58,237,0.48)] backdrop-blur-2xl"
+      className="absolute left-1/2 top-1/2 z-10 w-[min(80vw,300px)] -translate-x-1/2 -translate-y-1/2 rounded-[2rem] border border-white/15 bg-black/58 p-2.5 shadow-[0_30px_100px_rgba(124,58,237,0.42)] backdrop-blur-2xl sm:w-[min(84vw,340px)] sm:p-3 md:w-[min(92vw,390px)] md:rounded-[2.5rem] md:p-4 md:shadow-[0_40px_140px_rgba(124,58,237,0.48)]"
       transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
     >
-      <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.035))] p-4">
+      <div className="overflow-hidden rounded-[1.55rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.035))] p-3 sm:rounded-[1.8rem] md:rounded-[2rem] md:p-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.14em] text-white/42">GoFunMotion</p>
@@ -93,8 +93,8 @@ export function PhoneMissionPreview() {
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-[1fr_auto] gap-3">
-          <div className="rounded-3xl bg-white p-4 text-black shadow-2xl">
+        <div className="mt-4 grid grid-cols-[1fr_auto] gap-2 md:mt-5 md:gap-3">
+          <div className="rounded-[1.35rem] bg-white p-3 text-black shadow-2xl md:rounded-3xl md:p-4">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-purple-700">Progress ring</p>
             <div className="mt-3 flex items-center justify-between gap-3">
               <div>
@@ -112,10 +112,10 @@ export function PhoneMissionPreview() {
             </div>
           </div>
           <div className="grid gap-2">
-            <div className="flex size-14 items-center justify-center rounded-3xl bg-cyan-300 text-black">
+            <div className="flex size-11 items-center justify-center rounded-2xl bg-cyan-300 text-black md:size-14 md:rounded-3xl">
               <Sparkles aria-hidden="true" size={20} />
             </div>
-            <div className="flex size-14 items-center justify-center rounded-3xl bg-fuchsia-300 text-black">
+            <div className="flex size-11 items-center justify-center rounded-2xl bg-fuchsia-300 text-black md:size-14 md:rounded-3xl">
               <Trophy aria-hidden="true" size={20} />
             </div>
           </div>
@@ -124,7 +124,7 @@ export function PhoneMissionPreview() {
         <AnimatePresence mode="wait">
           <motion.div
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            className="mt-4 rounded-3xl bg-white p-5 text-black shadow-2xl"
+            className="mt-3 rounded-[1.35rem] bg-white p-3.5 text-black shadow-2xl md:mt-4 md:rounded-3xl md:p-5"
             exit={{ opacity: 0, x: -26, scale: 0.98 }}
             initial={{ opacity: 0, x: 26, scale: 0.98 }}
             key={mission.title}
@@ -136,11 +136,11 @@ export function PhoneMissionPreview() {
               </p>
               <p className="text-xs font-black uppercase tracking-[0.12em] text-black/38">live preview</p>
             </div>
-            <h2 className="mt-3 text-3xl font-black leading-tight">{mission.title}</h2>
-            <p className="mt-3 text-sm font-bold leading-6 text-black/68">{mission.description}</p>
+            <h2 className="mt-3 text-2xl font-black leading-tight md:text-3xl">{mission.title}</h2>
+            <p className="mt-2 text-xs font-bold leading-5 text-black/68 md:mt-3 md:text-sm md:leading-6">{mission.description}</p>
             <div className="mt-4 grid grid-cols-3 gap-2">
               {["Start", "Complete", "Reward"].map((item, itemIndex) => (
-                <div className="rounded-2xl bg-black/[0.06] p-2 text-center text-xs font-black text-black/72" key={item}>
+                <div className="rounded-2xl bg-black/[0.06] p-2 text-center text-[0.68rem] font-black text-black/72 md:text-xs" key={item}>
                   {itemIndex < index + 1 ? <CheckCircle2 aria-hidden="true" className="mx-auto mb-1 text-lime-600" size={15} /> : null}
                   {item}
                 </div>

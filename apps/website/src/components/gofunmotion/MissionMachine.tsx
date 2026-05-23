@@ -59,7 +59,7 @@ export function MissionMachine({
         </div>
         <button
           aria-label={soundEnabled ? "Turn sound off" : "Turn sound on"}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-white/70 transition hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-lime-300"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-white/70 transition hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-lime-300"
           onClick={onSoundToggle}
           type="button"
         >

@@ -32,6 +32,21 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /leaderboards/{periodId} {
+      allow read: if true;
+      allow write: if false;
+
+      match /entries/{entryId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+
+    match /categoryLeaderboards/{category}/periods/{periodId}/entries/{entryId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     match /waitlist/{entryId} {
       allow create: if true;
       allow read, update, delete: if false;

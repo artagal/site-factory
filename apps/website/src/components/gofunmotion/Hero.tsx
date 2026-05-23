@@ -2,17 +2,18 @@
 
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion } from "framer-motion";
 import { ArrowDown, CheckCircle2, MousePointer2, Sparkles } from "lucide-react";
+import { trackEvent } from "../../lib/analytics";
 import { LinkButton } from "./Button";
 import { PhoneMissionPreview } from "./PhoneMissionPreview";
 import { StatsStrip } from "./StatsStrip";
 
 const floatingCards = [
-  { label: "Sunset Reset", meta: "10 min", position: "left-[1%] top-[7%]" },
-  { label: "Text the friend", meta: "Social", position: "right-[2%] top-[14%]" },
-  { label: "Find something blue", meta: "Explore", position: "left-[5%] top-[48%]" },
-  { label: "Walk no phone", meta: "Move", position: "right-[0%] top-[58%]" },
-  { label: "Tiny Courage Mission", meta: "60 XP", position: "left-[18%] bottom-[5%]" },
-  { label: "Compliment someone", meta: "Bold", position: "right-[16%] bottom-[12%]" }
+  { label: "Sunset Reset", meta: "10 min", mobile: true, position: "left-[1%] top-[7%]" },
+  { label: "Text the friend", meta: "Social", mobile: false, position: "right-[2%] top-[14%]" },
+  { label: "Find something blue", meta: "Explore", mobile: true, position: "left-[3%] top-[48%]" },
+  { label: "Walk no phone", meta: "Move", mobile: true, position: "right-[0%] top-[58%]" },
+  { label: "Tiny Courage Mission", meta: "60 XP", mobile: false, position: "left-[18%] bottom-[5%]" },
+  { label: "Compliment someone", meta: "Bold", mobile: false, position: "right-[16%] bottom-[12%]" }
 ];
 
 const energyStreaks = [
@@ -44,7 +45,7 @@ export function Hero() {
 
   return (
     <section
-      className="relative overflow-hidden px-4 pb-12 pt-10 md:px-8 md:pb-16 md:pt-16"
+      className="relative overflow-hidden px-4 pb-8 pt-8 md:px-8 md:pb-16 md:pt-16"
       onPointerMove={(event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         cursorX.set(((event.clientX - rect.left) / rect.width) * 100);
@@ -72,7 +73,7 @@ export function Hero() {
           </linearGradient>
         </defs>
       </svg>
-      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[0.95fr_1.05fr] md:items-center">
+      <div className="mx-auto grid max-w-7xl gap-7 md:grid-cols-[0.95fr_1.05fr] md:items-center md:gap-10">
         <div className="relative z-10">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-lime-300/20 bg-lime-300/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-lime-200 backdrop-blur">
             <Sparkles aria-hidden="true" size={16} />
@@ -87,13 +88,23 @@ export function Hero() {
           <p className="mt-5 max-w-2xl text-2xl font-black leading-tight text-white md:text-3xl lg:text-4xl">
             Your next real-life adventure starts now.
           </p>
-          <p className="mt-5 grid max-w-2xl gap-1 text-lg font-semibold leading-8 text-white/74 md:text-xl">
+          <p className="mt-5 grid max-w-2xl gap-1 text-base font-semibold leading-7 text-white/74 md:text-xl md:leading-8">
             <span>Choose your mood.</span>
             <span>Get one mission.</span>
             <span>Start, complete, earn XP, and keep your streak alive.</span>
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <LinkButton className="min-w-36 whitespace-nowrap shadow-[0_20px_80px_rgba(247,37,133,0.38)]" href="#generator">
+            <LinkButton
+              className="min-w-36 whitespace-nowrap shadow-[0_20px_80px_rgba(247,37,133,0.38)]"
+              href="#generator"
+              onClick={() =>
+                trackEvent("hero_cta_click", {
+                  cta: "generate_my_mission",
+                  destination: "#generator",
+                  placement: "hero"
+                })
+              }
+            >
               Generate My Mission
             </LinkButton>
             <LinkButton href="/categories" variant="ghost">See Challenge Modes</LinkButton>
@@ -119,13 +130,13 @@ export function Hero() {
             The shortest path: mood - mission - start - complete.
           </p>
         </div>
-        <div className="relative z-10 min-h-[560px] md:min-h-[620px]">
+        <div className="relative z-10 min-h-[430px] overflow-hidden rounded-[2rem] md:min-h-[620px] md:overflow-visible md:rounded-none">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_48%_46%,rgba(255,255,255,0.08),transparent_28rem)]" />
           {energyStreaks.map((streak, index) => (
             <motion.span
               aria-hidden="true"
               animate={reduceMotion ? undefined : { opacity: [0.12, 0.62, 0.18], scaleX: [0.72, 1.12, 0.82] }}
-              className={`absolute h-px rounded-full bg-gradient-to-r from-transparent via-lime-200/80 to-transparent ${streak}`}
+              className={`absolute hidden h-px rounded-full bg-gradient-to-r from-transparent via-lime-200/80 to-transparent sm:block ${streak}`}
               key={streak}
               transition={{ delay: index * 0.35, duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
             />
@@ -142,7 +153,7 @@ export function Hero() {
           <PhoneMissionPreview />
           <motion.div
             animate={reduceMotion ? undefined : { scale: [1, 1.04, 1], y: [0, -6, 0] }}
-            className="absolute bottom-8 left-4 z-20 rounded-3xl border border-lime-300/20 bg-black/72 p-4 text-white shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl md:left-12"
+            className="absolute bottom-5 left-3 z-20 rounded-3xl border border-lime-300/20 bg-black/72 p-3 text-white shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl md:bottom-8 md:left-12 md:p-4"
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
             <div className="flex items-center gap-3">
@@ -165,7 +176,7 @@ export function Hero() {
                       rotate: [index - 3, index % 2 ? index + 1 : index - 1, index - 3]
                     }
               }
-              className={`absolute z-0 rounded-2xl border border-white/12 bg-white/[0.09] px-4 py-3 text-sm font-black text-white shadow-[0_18px_60px_rgba(0,0,0,0.25)] backdrop-blur-xl ${card.position}`}
+              className={`absolute z-0 max-w-[150px] rounded-2xl border border-white/12 bg-white/[0.09] px-3 py-2 text-xs font-black text-white shadow-[0_18px_60px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:max-w-none sm:px-4 sm:py-3 sm:text-sm ${card.mobile ? "" : "hidden sm:block"} ${card.position}`}
               key={card.label}
               transition={{ duration: 4 + index * 0.25, repeat: Infinity, ease: "easeInOut" }}
             >

@@ -115,6 +115,34 @@ Example fields:
 }
 ```
 
+Optional weekly leaderboard structure:
+
+```text
+leaderboards/2026-W21
+leaderboards/2026-W21/entries/{userId}
+categoryLeaderboards/{category}/periods/2026-W21/entries/{userId}
+```
+
+Recommended `leaderboards/{periodId}` fields:
+
+```json
+{
+  "mode": "live",
+  "periodId": "2026-W21",
+  "updatedAt": "2026-05-23T12:00:00.000Z",
+  "communityStats": [
+    { "label": "weekly XP earned", "value": "18420" },
+    { "label": "missions completed", "value": "1284" },
+    { "label": "active streaks", "value": "231" }
+  ],
+  "weeklyXpLeaders": [],
+  "streakLeaders": [],
+  "categoryLeaders": []
+}
+```
+
+Leaderboard writes are blocked from the public client. Later, a Cloud Function should rebuild weekly XP, streak leaders, category leaders, and completed challenge counts from trusted completion events.
+
 ## Deploy Rules and Indexes
 
 ```powershell

@@ -22,7 +22,7 @@ export type SeoInput = {
   type?: SeoPageType;
 };
 
-export const canonicalUrlPlaceholder = "https://example.com";
+export const canonicalUrlPlaceholder = "https://gofunmotion.com";
 export const defaultOgImage = "/og/gofunmotion-og.svg";
 
 export const faqSchemaPlaceholder = {
@@ -169,6 +169,7 @@ export function createBreadcrumbSchema(
 
 export function createArticleSchema({
   author = "Site Factory",
+  baseUrl = getCanonicalBaseUrl(),
   dateModified,
   datePublished,
   description,
@@ -176,6 +177,7 @@ export function createArticleSchema({
   title
 }: {
   author?: string;
+  baseUrl?: string;
   dateModified?: string;
   datePublished?: string;
   description: string;
@@ -193,7 +195,7 @@ export function createArticleSchema({
     },
     dateModified,
     datePublished,
-    mainEntityOfPage: absoluteUrl(path)
+    mainEntityOfPage: absoluteUrl(path, baseUrl)
   };
 }
 

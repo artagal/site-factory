@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bookmark, CheckCircle2, Clock, Copy, Play, Quote, RotateCw, Share2, Sparkles, Trophy, Zap } from "lucide-react";
+import { trackEvent } from "../../lib/analytics";
 import { createShareText } from "../../lib/challengeEngine";
 import { completeChallengeWithSync, saveChallengeWithSync } from "../../lib/progressActions";
 import { getRarityXpBonus } from "../../lib/rarity";
@@ -58,8 +59,18 @@ export function ChallengeCard({
 
   async function shareChallenge() {
     const text = createShareText(challenge);
+    const canUseNativeShare = "share" in navigator;
+    const method = canUseNativeShare ? "web_share" : "clipboard";
 
-    if (navigator.share) {
+    trackEvent("challenge_shared", {
+      category: challenge.category,
+      challengeId: challenge.id,
+      method,
+      rarity: challenge.rarity,
+      title: challenge.title
+    });
+
+    if (canUseNativeShare) {
       await navigator.share({ text, title: challenge.title, url: "https://gofunmotion.com" });
       return;
     }
@@ -75,6 +86,13 @@ export function ChallengeCard({
     setBusyAction("save");
     const result = await saveChallengeWithSync(challenge);
     setSaved(true);
+    trackEvent("challenge_saved", {
+      category: challenge.category,
+      challengeId: challenge.id,
+      rarity: challenge.rarity,
+      synced: result.synced,
+      title: challenge.title
+    });
     setSyncMessage(
       result.error ??
         (result.synced
@@ -88,6 +106,13 @@ export function ChallengeCard({
   async function handleComplete() {
     if (!started) {
       setStarted(true);
+      trackEvent("challenge_started", {
+        category: challenge.category,
+        challengeId: challenge.id,
+        difficulty: challenge.difficulty,
+        rarity: challenge.rarity,
+        title: challenge.title
+      });
       setSyncMessage("Mission started. Do the real thing, then come back and mark it complete.");
       window.setTimeout(() => setSyncMessage(""), 2600);
       return;
@@ -99,6 +124,16 @@ export function ChallengeCard({
     const result = await completeChallengeWithSync(challenge, reflection);
     setCompletionProgress(result.progress);
     setCompleted(true);
+    trackEvent("challenge_completed", {
+      category: challenge.category,
+      challengeId: challenge.id,
+      rarity: challenge.rarity,
+      reflectionLength: reflection.length,
+      synced: result.synced,
+      title: challenge.title,
+      totalCompleted: result.progress.totalChallengesCompleted,
+      xpEarned: result.progress.completedChallenges[0]?.xpEarned ?? totalXpReward
+    });
     setSyncMessage(
       result.error ??
         (result.synced
@@ -324,7 +359,18 @@ export function ChallengeCard({
               <Button disabled={busyAction === "save"} onClick={handleSave} variant="ghost">
                 {saved ? "Mission saved" : "Save mission"}
               </Button>
-              <LinkButton className="min-h-12" href="/login" showArrow={false} variant="ghost">
+              <LinkButton
+                className="min-h-12"
+                href="/login"
+                onClick={() =>
+                  trackEvent("login_clicked", {
+                    placement: "completion_card",
+                    provider: "unknown"
+                  })
+                }
+                showArrow={false}
+                variant="ghost"
+              >
                 Sign in
               </LinkButton>
             </div>

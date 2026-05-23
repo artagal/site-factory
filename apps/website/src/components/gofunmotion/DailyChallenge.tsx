@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { CalendarDays, CheckCircle2, Flame, Share2, Sparkles, SunMedium, Timer, Trophy, Users, Zap } from "lucide-react";
+import { trackEvent } from "../../lib/analytics";
 import { createShareText } from "../../lib/challengeEngine";
 import {
   acceptDailyChallengeLocally,
@@ -66,6 +67,14 @@ export function DailyChallengeCard({ large = false }: { large?: boolean }) {
     if (!status.accepted) {
       setRecord((current) => ({ ...current, acceptedCount: current.acceptedCount + 1 }));
     }
+    trackEvent("challenge_started", {
+      category: record.category,
+      challengeId: record.id,
+      date: record.date,
+      placement: "daily_challenge",
+      rarity: record.rarity,
+      title: record.title
+    });
     setStatus(acceptDailyChallengeLocally(dateId));
     setMessage("Accepted. Keep the streak alive by completing it today.");
   }
@@ -88,13 +97,36 @@ export function DailyChallengeCard({ large = false }: { large?: boolean }) {
           ? "Daily mission complete. XP, streak, and history synced."
           : "Daily mission complete. XP, streak, and history saved locally.")
     );
+    trackEvent("challenge_completed", {
+      category: record.category,
+      challengeId: record.id,
+      date: record.date,
+      placement: "daily_challenge",
+      rarity: record.rarity,
+      synced: result.synced,
+      title: record.title,
+      totalCompleted: result.progress.totalChallengesCompleted,
+      xpEarned: result.progress.completedChallenges[0]?.xpEarned ?? totalXp
+    });
     setBusy(false);
   }
 
   async function shareDailyChallenge() {
     const text = `${createShareText(record)} Today's global mission resets in ${resetCopy}.`;
+    const canUseNativeShare = "share" in navigator;
+    const method = canUseNativeShare ? "web_share" : "clipboard";
 
-    if (navigator.share) {
+    trackEvent("challenge_shared", {
+      category: record.category,
+      challengeId: record.id,
+      date: record.date,
+      method,
+      placement: "daily_challenge",
+      rarity: record.rarity,
+      title: record.title
+    });
+
+    if (canUseNativeShare) {
       await navigator.share({ text, title: record.title, url: "https://gofunmotion.com/daily" });
       return;
     }

@@ -11,7 +11,7 @@ const links = [
 
 export function Logo() {
   return (
-    <Link aria-label="GoFunMotion home" className="group inline-flex items-center gap-2 text-lg font-black" href="/">
+    <Link aria-label="GoFunMotion home" className="group inline-flex min-h-11 items-center gap-2 text-lg font-black" href="/">
       <span>Go</span>
       <span className="bg-gradient-to-r from-fuchsia-400 via-cyan-300 to-lime-300 bg-clip-text text-transparent">
         Fun
@@ -41,10 +41,10 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <Link className="hidden rounded-full px-4 py-2 text-sm font-bold text-white/70 hover:text-white sm:inline-flex" href="/profile">
+          <Link className="hidden min-h-11 items-center rounded-full px-4 py-2 text-sm font-bold text-white/70 hover:text-white sm:inline-flex" href="/profile">
             Profile
           </Link>
-          <LinkButton className="min-h-10 rounded-full px-4 py-2" href="/challenge">
+          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/challenge">
             Try it
           </LinkButton>
         </div>

@@ -11,13 +11,13 @@ export const metadata: Metadata = buildSeoMetadata({
 
 export default function ChallengePage() {
   return (
-    <main className="mx-auto max-w-7xl px-4 py-12 md:px-8 md:py-20">
-      <div className="mb-8 max-w-3xl">
+    <main className="mx-auto max-w-7xl px-4 py-5 md:px-8 md:py-20">
+      <div className="mb-5 max-w-3xl md:mb-8">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Challenge generator</p>
-        <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-7xl">
-          Bored? Good. That means it’s time for motion.
+        <h1 className="mt-3 text-3xl font-black leading-tight text-white sm:text-4xl md:text-7xl">
+          Bored? Good. That means it is time for motion.
         </h1>
-        <p className="mt-5 text-lg leading-8 text-white/62">
+        <p className="mt-3 text-sm leading-6 text-white/62 md:mt-5 md:text-lg md:leading-8">
           Pick the current mood and get one safe, real-world mission you can start today.
         </p>
       </div>

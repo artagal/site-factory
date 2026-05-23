@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Footer } from "../components/gofunmotion/Footer";
+import { MobileBottomCTA } from "../components/gofunmotion/MobileBottomCTA";
 import { MotionBackground } from "../components/gofunmotion/MotionBackground";
 import { Navbar } from "../components/gofunmotion/Navbar";
 import { buildSeoMetadata } from "../lib/seo";
@@ -17,13 +18,16 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "GoFunMotion - AI Real-Life Challenges That Get You Moving",
+  title: "GoFunMotion - Replace Scrolling With Real Life",
   description:
-    "Replace scrolling with real life. Generate fun AI-powered challenges for movement, confidence, social connection, city exploration, couples, friends, and anti-doomscrolling.",
+    "Find fun things to do instead of scrolling. GoFunMotion generates AI-powered real-life challenges for boredom, movement, confidence, and connection.",
   image: "/og/gofunmotion-og.svg",
   keywords: [
     "real life challenges",
     "anti doomscrolling",
+    "what to do instead of scrolling",
+    "fun things to do when bored",
+    "things to do instead of doomscrolling",
     "fun things to do",
     "AI challenge generator",
     "social challenges",
@@ -47,6 +51,7 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+        <MobileBottomCTA />
       </body>
     </html>
   );

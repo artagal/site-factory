@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -12,6 +12,7 @@ type LinkButtonProps = {
   children: ReactNode;
   className?: string;
   href: string;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
   showArrow?: boolean;
   variant?: "primary" | "secondary" | "ghost";
 };
@@ -42,6 +43,7 @@ export function LinkButton({
   children,
   className,
   href,
+  onClick,
   showArrow = true,
   variant = "primary"
 }: LinkButtonProps) {
@@ -53,6 +55,7 @@ export function LinkButton({
         className
       )}
       href={href}
+      onClick={onClick}
     >
       {children}
       {showArrow ? <ArrowRight aria-hidden="true" size={18} /> : null}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackEvent } from "../../lib/analytics";
 import { addWaitlistEntry } from "../../lib/firestore";
 import { addWaitlistEntryLocally } from "../../lib/localStorage";
 import { Button } from "./Button";
@@ -23,6 +24,13 @@ export function WaitlistForm() {
       addWaitlistEntryLocally(email, selected);
     }
 
+    trackEvent("waitlist_submitted", {
+      emailDomain: email.split("@")[1]?.toLowerCase() ?? "unknown",
+      interestCount: selected.length,
+      interests: selected,
+      source: "website",
+      synced: Boolean(firestoreResult)
+    });
     setStatus("You are on the list. Mobile app momentum incoming.");
     setEmail("");
   }
@@ -37,7 +45,7 @@ export function WaitlistForm() {
       <div className="mt-5 flex flex-wrap gap-2">
         {interests.map((interest) => (
           <button
-            className={`rounded-full px-3 py-2 text-xs font-black transition ${
+            className={`min-h-11 rounded-full px-3 py-2 text-xs font-black transition ${
               selected.includes(interest) ? "bg-lime-300 text-black" : "bg-white/8 text-white/62"
             }`}
             key={interest}

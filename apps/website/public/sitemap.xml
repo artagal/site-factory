@@ -1,109 +1,181 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://example.com/</loc>
+    <loc>https://gofunmotion.com/</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.00</priority>
   </url>
   <url>
-    <loc>https://example.com/about</loc>
+    <loc>https://gofunmotion.com/about</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/blog</loc>
+    <loc>https://gofunmotion.com/blog</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/blog/fun-things-to-do-when-you-are-bored</loc>
+    <loc>https://gofunmotion.com/blog/ai-challenge-generator-for-real-life</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://example.com/blog/how-to-make-weekends-feel-longer</loc>
+    <loc>https://gofunmotion.com/blog/daily-challenge-ideas-for-real-life</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://example.com/blog/simple-social-challenges-for-shy-people</loc>
+    <loc>https://gofunmotion.com/blog/fun-challenges-to-do-with-friends</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://example.com/blog/small-real-life-challenges-build-confidence</loc>
+    <loc>https://gofunmotion.com/blog/fun-things-to-do-when-you-are-bored</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://example.com/blog/things-to-do-instead-of-doomscrolling</loc>
+    <loc>https://gofunmotion.com/blog/how-to-build-an-anti-doomscroll-habit</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://example.com/blog/why-movement-changes-your-mood</loc>
+    <loc>https://gofunmotion.com/blog/how-to-make-weekends-feel-longer</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://example.com/categories</loc>
+    <loc>https://gofunmotion.com/blog/how-to-stop-doomscrolling-at-night</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/low-energy-things-to-do-instead-of-scrolling</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/quick-mood-reset-ideas</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/real-life-challenge-ideas-for-creators</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/simple-social-challenges-for-shy-people</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/small-city-adventure-ideas</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/small-real-life-challenges-build-confidence</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/spontaneous-date-ideas-for-couples</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/things-to-do-instead-of-doomscrolling</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/things-to-do-when-bored-at-home</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/touch-grass-ideas-that-actually-help</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/blog/why-movement-changes-your-mood</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.68</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/categories</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/challenge</loc>
+    <loc>https://gofunmotion.com/challenge</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://example.com/daily</loc>
+    <loc>https://gofunmotion.com/daily</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/leaderboard</loc>
+    <loc>https://gofunmotion.com/leaderboard</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/login</loc>
+    <loc>https://gofunmotion.com/login</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/privacy</loc>
+    <loc>https://gofunmotion.com/privacy</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/profile</loc>
+    <loc>https://gofunmotion.com/profile</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/terms</loc>
+    <loc>https://gofunmotion.com/terms</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://example.com/waitlist</loc>
+    <loc>https://gofunmotion.com/waitlist</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>

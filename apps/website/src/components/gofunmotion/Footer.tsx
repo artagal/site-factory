@@ -23,13 +23,13 @@ export function Footer() {
         </div>
         <div className="grid grid-cols-2 gap-3 text-sm font-bold text-white/64 sm:grid-cols-3">
           {footerLinks.map((link) => (
-            <Link className="hover:text-white" href={link.href} key={link.href}>
+            <Link className="inline-flex min-h-11 items-center hover:text-white" href={link.href} key={link.href}>
               {link.label}
             </Link>
           ))}
-          <span className="text-white/35">TikTok</span>
-          <span className="text-white/35">Instagram</span>
-          <span className="text-white/35">YouTube</span>
+          <span className="inline-flex min-h-11 items-center text-white/35">TikTok</span>
+          <span className="inline-flex min-h-11 items-center text-white/35">Instagram</span>
+          <span className="inline-flex min-h-11 items-center text-white/35">YouTube</span>
         </div>
       </div>
     </footer>

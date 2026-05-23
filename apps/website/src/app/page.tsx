@@ -20,13 +20,16 @@ import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSche
 import { SeoJsonLd } from "../components/seo-json-ld";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "GoFunMotion - AI Real-Life Challenges That Get You Moving",
+  title: "GoFunMotion - Replace Scrolling With Real Life",
   description:
-    "Replace scrolling with real life. Generate fun AI-powered challenges for movement, confidence, social connection, city exploration, couples, friends, and anti-doomscrolling.",
+    "GoFunMotion helps you find fun things to do instead of scrolling with AI-powered real-life challenges for boredom, movement, confidence, and connection.",
   image: "/og/gofunmotion-og.svg",
   keywords: [
     "real life challenges",
     "anti doomscrolling",
+    "what to do instead of scrolling",
+    "fun things to do when bored",
+    "things to do instead of doomscrolling",
     "fun things to do",
     "AI challenge generator",
     "social challenges",
