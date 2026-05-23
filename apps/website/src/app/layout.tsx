@@ -17,7 +17,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "GoFunMotion — AI Real-Life Challenges That Get You Moving",
+  title: "GoFunMotion - AI Real-Life Challenges That Get You Moving",
   description:
     "Replace scrolling with real life. Generate fun AI-powered challenges for movement, confidence, social connection, city exploration, couples, friends, and anti-doomscrolling.",
   image: "/og/gofunmotion-og.svg",

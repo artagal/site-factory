@@ -15,7 +15,7 @@ import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSche
 import { SeoJsonLd } from "../components/seo-json-ld";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "GoFunMotion — AI Real-Life Challenges That Get You Moving",
+  title: "GoFunMotion - AI Real-Life Challenges That Get You Moving",
   description:
     "Replace scrolling with real life. Generate fun AI-powered challenges for movement, confidence, social connection, city exploration, couples, friends, and anti-doomscrolling.",
   image: "/og/gofunmotion-og.svg",
@@ -148,8 +148,8 @@ export default function HomePage() {
         <div className="grid gap-4 md:grid-cols-3">
           {communityMoments.map((quote) => (
             <figure className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-2xl" key={quote}>
-              <blockquote className="text-xl font-black leading-tight text-white">“{quote}”</blockquote>
-              <figcaption className="mt-4 text-sm font-bold text-white/42">Community moment placeholder</figcaption>
+              <blockquote className="text-xl font-black leading-tight text-white">&quot;{quote}&quot;</blockquote>
+              <figcaption className="mt-4 text-sm font-bold text-white/42">Early community story</figcaption>
             </figure>
           ))}
         </div>
