@@ -5,6 +5,7 @@ import { CategoryCard } from "../components/gofunmotion/CategoryCard";
 import { ChallengeGenerator } from "../components/gofunmotion/ChallengeGenerator";
 import { CoreLoop } from "../components/gofunmotion/CoreLoop";
 import { DailyChallengeCard } from "../components/gofunmotion/DailyChallenge";
+import { DailyMissionBanner } from "../components/gofunmotion/DailyMissionBanner";
 import { Hero } from "../components/gofunmotion/Hero";
 import { HowItWorks } from "../components/gofunmotion/HowItWorks";
 import { LeaderboardPreview } from "../components/gofunmotion/Leaderboard";
@@ -76,6 +77,7 @@ export default function HomePage() {
     <main>
       <SeoJsonLd data={schema} id="gofunmotion-home-schema" />
       <Hero />
+      <DailyMissionBanner />
       <CoreLoop />
       <ChallengeGenerator />
       <LivePulse />
@@ -83,12 +85,12 @@ export default function HomePage() {
 
       <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
         <div className="max-w-3xl">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-fuchsia-300">Built for real-life momentum</p>
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-fuchsia-300">Why it works</p>
           <h2 className="mt-3 text-4xl font-black leading-tight text-white md:text-6xl">
-            Your couch is comfortable. Your life is outside.
+            Tiny missions beat endless scrolling.
           </h2>
           <p className="mt-4 text-lg leading-8 text-white/62">
-            This is not another feed. It is a tiny push toward movement, courage, connection, and the next memory you almost skipped.
+            One clear prompt. One small action. Real momentum you can feel.
           </p>
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">

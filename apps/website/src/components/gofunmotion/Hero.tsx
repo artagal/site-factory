@@ -1,16 +1,33 @@
 "use client";
 
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion } from "framer-motion";
-import { ArrowDown, CheckCircle2, MousePointer2, Play, Sparkles, Trophy, Zap } from "lucide-react";
+import { ArrowDown, CheckCircle2, MousePointer2, Sparkles } from "lucide-react";
 import { LinkButton } from "./Button";
+import { PhoneMissionPreview } from "./PhoneMissionPreview";
 import { StatsStrip } from "./StatsStrip";
 
 const floatingCards = [
-  { label: "Sunset Reset", meta: "10 min", position: "left-[2%] top-[8%]" },
-  { label: "Text the friend", meta: "Social", position: "right-[3%] top-[16%]" },
+  { label: "Sunset Reset", meta: "10 min", position: "left-[1%] top-[7%]" },
+  { label: "Text the friend", meta: "Social", position: "right-[2%] top-[14%]" },
   { label: "Find something blue", meta: "Explore", position: "left-[5%] top-[48%]" },
   { label: "Walk no phone", meta: "Move", position: "right-[0%] top-[58%]" },
-  { label: "Tiny Courage Mission", meta: "60 XP", position: "left-[18%] bottom-[5%]" }
+  { label: "Tiny Courage Mission", meta: "60 XP", position: "left-[18%] bottom-[5%]" },
+  { label: "Compliment someone", meta: "Bold", position: "right-[16%] bottom-[12%]" }
+];
+
+const energyStreaks = [
+  "left-[8%] top-[22%] w-24 rotate-[18deg]",
+  "right-[8%] top-[40%] w-28 -rotate-[14deg]",
+  "left-[14%] bottom-[28%] w-20 -rotate-[8deg]",
+  "right-[22%] bottom-[26%] w-24 rotate-[10deg]"
+];
+
+const sparkPoints = [
+  "left-[12%] top-[34%]",
+  "left-[44%] top-[12%]",
+  "right-[12%] top-[32%]",
+  "right-[30%] bottom-[18%]",
+  "left-[32%] bottom-[10%]"
 ];
 
 const heroProof = [
@@ -77,7 +94,7 @@ export function Hero() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <LinkButton className="min-w-36 whitespace-nowrap shadow-[0_20px_80px_rgba(247,37,133,0.38)]" href="#generator">
-              Spin Now
+              Generate My Mission
             </LinkButton>
             <LinkButton href="/categories" variant="ghost">See Challenge Modes</LinkButton>
           </div>
@@ -103,55 +120,26 @@ export function Hero() {
           </p>
         </div>
         <div className="relative z-10 min-h-[560px] md:min-h-[620px]">
-          <motion.div
-            animate={reduceMotion ? undefined : { rotate: [0, 2.5, -1.5, 0], y: [0, -10, 6, 0] }}
-            className="absolute left-1/2 top-1/2 z-10 w-[min(92vw,380px)] -translate-x-1/2 -translate-y-1/2 rounded-[2.5rem] border border-white/15 bg-black/55 p-4 shadow-[0_40px_140px_rgba(124,58,237,0.48)] backdrop-blur-2xl"
-            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.14),rgba(255,255,255,0.035))] p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-white/42">GoFunMotion</p>
-                  <p className="mt-1 text-sm font-black text-white">Mission draw</p>
-                </div>
-                <div className="flex size-11 items-center justify-center rounded-2xl bg-lime-300 text-black">
-                  <Trophy aria-hidden="true" size={19} />
-                </div>
-              </div>
-              <motion.div
-                animate={reduceMotion ? undefined : { boxShadow: ["0 18px 60px rgba(255,255,255,0.08)", "0 28px 90px rgba(190,242,100,0.22)", "0 18px 60px rgba(255,255,255,0.08)"] }}
-                className="mt-6 rounded-3xl bg-white p-5 text-black shadow-2xl"
-                transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-purple-700">Your next 7 minutes</p>
-                <h2 className="mt-3 text-3xl font-black leading-tight">Touch Grass Sprint</h2>
-                <p className="mt-3 text-sm font-bold leading-6 text-black/68">
-                  Step outside with your phone in your pocket. Walk until you notice 3 details you usually miss.
-                </p>
-                <div className="mt-4 grid grid-cols-3 gap-2">
-                  {["40 XP", "7 min", "Move"].map((item) => (
-                    <div className="rounded-2xl bg-black/[0.06] p-2 text-center text-xs font-black text-black/72" key={item}>
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {["Mood", "Time", "Mission"].map((item, index) => (
-                  <div className="rounded-2xl bg-white/10 p-3 text-center" key={item}>
-                    <p className="mx-auto flex size-7 items-center justify-center rounded-full bg-white text-xs font-black text-black">
-                      {index + 1}
-                    </p>
-                    <p className="mt-2 text-xs font-black text-white">{item}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-lime-300 p-3 text-center text-sm font-black text-black">
-                <Play aria-hidden="true" size={16} />
-                Start - Complete - +40 XP
-              </div>
-            </div>
-          </motion.div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_48%_46%,rgba(255,255,255,0.08),transparent_28rem)]" />
+          {energyStreaks.map((streak, index) => (
+            <motion.span
+              aria-hidden="true"
+              animate={reduceMotion ? undefined : { opacity: [0.12, 0.62, 0.18], scaleX: [0.72, 1.12, 0.82] }}
+              className={`absolute h-px rounded-full bg-gradient-to-r from-transparent via-lime-200/80 to-transparent ${streak}`}
+              key={streak}
+              transition={{ delay: index * 0.35, duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+            />
+          ))}
+          {sparkPoints.map((point, index) => (
+            <motion.span
+              aria-hidden="true"
+              animate={reduceMotion ? undefined : { opacity: [0.18, 0.85, 0.2], y: [0, index % 2 ? 12 : -12, 0] }}
+              className={`absolute size-1.5 rounded-[2px] bg-cyan-200 shadow-[0_0_18px_rgba(0,212,255,0.55)] ${point}`}
+              key={point}
+              transition={{ delay: index * 0.22, duration: 3.1, repeat: Infinity, ease: "easeInOut" }}
+            />
+          ))}
+          <PhoneMissionPreview />
           <motion.div
             animate={reduceMotion ? undefined : { scale: [1, 1.04, 1], y: [0, -6, 0] }}
             className="absolute bottom-8 left-4 z-20 rounded-3xl border border-lime-300/20 bg-black/72 p-4 text-white shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-xl md:left-12"

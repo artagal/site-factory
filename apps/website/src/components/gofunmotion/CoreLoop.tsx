@@ -50,7 +50,7 @@ export function CoreLoop() {
               One short loop. One real action.
             </h2>
             <p className="mt-3 max-w-xl text-base font-semibold leading-7 text-white/70">
-              The product is not the page count. The product is the moment someone replaces one scroll with one real thing.
+              Open it bored. Leave with a mission.
             </p>
             <div className="mt-5">
               <LinkButton href="#generator">Start the loop</LinkButton>
