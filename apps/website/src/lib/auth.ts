@@ -3,9 +3,11 @@
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInAnonymously,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   type User
 } from "firebase/auth";
@@ -26,6 +28,14 @@ export async function signInEmail(email: string, password: string) {
   const auth = getGoFunMotionAuth();
   if (!auth) return null;
   return signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function signInGoogle() {
+  const auth = getGoFunMotionAuth();
+  if (!auth) return null;
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  return signInWithPopup(auth, provider);
 }
 
 export async function createEmailAccount(email: string, password: string) {

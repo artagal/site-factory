@@ -6,10 +6,11 @@ import { Bookmark, CheckCircle2, Clock, Copy, Quote, Share2, Sparkles, Trophy, Z
 import { completeChallengeLocally, saveChallengeLocally } from "../../lib/localStorage";
 import { createShareText } from "../../lib/challengeEngine";
 import { formatMinutes } from "../../lib/utils";
-import type { Challenge } from "../../types/challenge";
+import type { Challenge, ChallengeRarity } from "../../types/challenge";
+import type { GoFunMotionUserProgress } from "../../types/user";
 import { Button } from "./Button";
 
-const rarityStyles = {
+const rarityStyles: Record<ChallengeRarity, { glow: string; ring: string; text: string }> = {
   Common: {
     glow: "shadow-[0_0_70px_rgba(255,255,255,0.08)]",
     ring: "from-white/18 via-white/4 to-white/18",
@@ -30,23 +31,7 @@ const rarityStyles = {
     ring: "from-cyan-300/70 via-white/10 to-cyan-300/70",
     text: "text-cyan-100"
   }
-} as const;
-
-function getRarity(challenge: Challenge): keyof typeof rarityStyles {
-  if (challenge.xpReward >= 120) {
-    return "Legendary";
-  }
-
-  if (challenge.difficulty === "medium") {
-    return challenge.timeEstimateMinutes >= 15 ? "Epic" : "Rare";
-  }
-
-  if (challenge.timeEstimateMinutes >= 15) {
-    return "Rare";
-  }
-
-  return "Common";
-}
+};
 
 export function ChallengeCard({
   challenge,
@@ -58,8 +43,13 @@ export function ChallengeCard({
   onGenerateAnother?: () => void;
 }) {
   const [completed, setCompleted] = useState(false);
+  const [completionProgress, setCompletionProgress] = useState<GoFunMotionUserProgress | null>(null);
   const [copied, setCopied] = useState(false);
-  const rarity = getRarity(challenge);
+  const [reflection, setReflection] = useState("");
+  const [saved, setSaved] = useState(false);
+  const [showSavePrompt, setShowSavePrompt] = useState(false);
+  const [started, setStarted] = useState(false);
+  const rarity = challenge.rarity;
   const rarityStyle = rarityStyles[rarity];
 
   async function shareChallenge() {
@@ -176,11 +166,17 @@ export function ChallengeCard({
           <Button
             className="w-full"
             onClick={() => {
-              completeChallengeLocally(challenge);
+              if (!started) {
+                setStarted(true);
+                return;
+              }
+
+              const progress = completeChallengeLocally(challenge, reflection);
+              setCompletionProgress(progress);
               setCompleted(true);
             }}
           >
-            {completed ? "Completed +" + challenge.xpReward + " XP" : "Start"}
+            {completed ? "Completed" : started ? "Complete" : "Start"}
           </Button>
           {onGenerateAnother ? (
             <Button className="w-full" onClick={onGenerateAnother} variant="ghost">
@@ -190,11 +186,15 @@ export function ChallengeCard({
           <Button
             aria-label="Save challenge"
             className="w-full"
-            onClick={() => saveChallengeLocally(challenge)}
+            onClick={() => {
+              saveChallengeLocally(challenge);
+              setSaved(true);
+              setShowSavePrompt(true);
+            }}
             variant="ghost"
           >
             <Bookmark aria-hidden="true" size={18} />
-            Save
+            {saved ? "Saved" : "Save"}
           </Button>
           <Button aria-label="Share challenge" className="w-full" onClick={shareChallenge} variant="ghost">
             {copied ? <Copy aria-hidden="true" size={18} /> : <Share2 aria-hidden="true" size={18} />}
@@ -215,16 +215,49 @@ export function ChallengeCard({
           ))}
           <motion.div
             animate={{ opacity: 1, y: 0 }}
-            className="mt-5 rounded-2xl border border-lime-300/30 bg-lime-300/12 p-4 text-sm font-bold leading-6 text-lime-100"
+            className="mt-5 rounded-[1.5rem] border border-lime-300/30 bg-lime-300/12 p-5 text-sm font-bold leading-6 text-lime-100"
             initial={{ opacity: 0, y: 8 }}
           >
-            <span className="inline-flex items-center gap-2">
-              <Zap aria-hidden="true" size={16} />
-              Mission complete. XP added locally.
-            </span>
-            <span className="mt-1 block text-lime-100/72">Next: write one sentence about how it felt in your profile.</span>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <span className="inline-flex items-center gap-2 text-base text-white">
+                <Zap aria-hidden="true" size={18} />
+                Momentum +{completionProgress?.completedChallenges[0]?.xpEarned ?? challenge.xpReward}
+              </span>
+              <span className="rounded-full bg-black/28 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-lime-100">
+                Streak {completionProgress?.streak ?? 1}
+              </span>
+            </div>
+            <p className="mt-3 text-lime-100/82">You did one real thing. That counts. Scrolling interrupted.</p>
+            <label className="mt-4 block text-xs font-black uppercase tracking-[0.14em] text-lime-100/62" htmlFor={`reflection-${challenge.id}`}>
+              How did it feel?
+            </label>
+            <textarea
+              className="mt-2 min-h-20 w-full rounded-2xl border border-lime-300/20 bg-black/30 px-4 py-3 text-sm font-semibold text-white outline-none placeholder:text-white/32"
+              id={`reflection-${challenge.id}`}
+              onChange={(event) => setReflection(event.target.value)}
+              placeholder="One sentence is enough."
+              value={reflection}
+            />
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <Button onClick={shareChallenge} variant="secondary">
+                <Share2 aria-hidden="true" size={18} />
+                Share win
+              </Button>
+              <Button onClick={() => saveChallengeLocally(challenge)} variant="ghost">
+                Save to history
+              </Button>
+            </div>
           </motion.div>
         </div>
+      ) : null}
+      {showSavePrompt ? (
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="relative mt-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4 text-sm font-bold leading-6 text-cyan-50"
+          initial={{ opacity: 0, y: 8 }}
+        >
+          Want to keep your momentum? Sign in to save your missions across devices.
+        </motion.div>
       ) : null}
     </motion.article>
   );

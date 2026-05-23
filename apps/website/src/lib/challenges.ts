@@ -1,4 +1,5 @@
 import type { Challenge, ChallengeCategory } from "../types/challenge";
+import { getRarityFromChallenge } from "./rarity";
 
 const safetyNote =
   "Keep it safe, legal, respectful, and optional. Skip anything that does not fit your body, location, or situation.";
@@ -12,12 +13,19 @@ const xpByDifficulty = {
 } as const;
 
 function challenge(category: ChallengeCategory, index: number, seed: Seed): Challenge {
+  const xpReward = xpByDifficulty[seed.difficulty];
+
   return {
     ...seed,
     category,
     id: `${category.toLowerCase().replaceAll(" ", "-")}-${String(index + 1).padStart(2, "0")}`,
+    rarity: getRarityFromChallenge({
+      difficulty: seed.difficulty,
+      timeEstimateMinutes: seed.timeEstimateMinutes,
+      xpReward
+    }),
     safetyNote,
-    xpReward: xpByDifficulty[seed.difficulty]
+    xpReward
   };
 }
 

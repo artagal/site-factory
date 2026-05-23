@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read, create, update, delete: if isOwner(userId);
+
+      match /savedChallenges/{challengeId} {
+        allow read, create, update, delete: if isOwner(userId);
+      }
+
+      match /completedChallenges/{completionId} {
+        allow read, create, update, delete: if isOwner(userId);
+      }
+    }
+
+    match /dailyChallenges/{date} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /globalStats/{documentId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /waitlist/{entryId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

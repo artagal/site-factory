@@ -2,6 +2,7 @@
 
 import { calculateBadges } from "./badges";
 import { getLevelFromXp } from "./xp";
+import { getRarityXpBonus } from "./rarity";
 import type { Challenge, ChallengeCompletion } from "../types/challenge";
 import type { GoFunMotionUserProgress } from "../types/user";
 
@@ -12,8 +13,11 @@ const defaultProgress: GoFunMotionUserProgress = {
   badges: [],
   completedChallenges: [],
   displayName: "Motion Rookie",
+  favoriteCategories: [],
   level: 1,
+  momentumScore: 0,
   preferredCategories: [],
+  savedChallenges: [],
   savedChallengeIds: [],
   streak: 0,
   totalChallengesCompleted: 0,
@@ -60,12 +64,23 @@ export function getLocalProgress() {
   const streak = calculateStreak(progress.completedChallenges);
   const badges = calculateBadges(progress.completedChallenges, streak);
   const xp = progress.completedChallenges.reduce((total, completion) => total + completion.xpEarned, 0);
+  const categoryCounts = progress.completedChallenges.reduce<Record<string, number>>((counts, completion) => {
+    counts[completion.category] = (counts[completion.category] ?? 0) + 1;
+    return counts;
+  }, {});
+  const favoriteCategories = Object.entries(categoryCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([category]) => category as GoFunMotionUserProgress["favoriteCategories"][number]);
 
   return {
     ...defaultProgress,
     ...progress,
     badges,
+    favoriteCategories,
     level: getLevelFromXp(xp),
+    momentumScore: Math.min(100, Math.round(streak * 12 + progress.completedChallenges.length * 4 + xp / 40)),
+    savedChallenges: progress.savedChallenges ?? [],
     streak,
     totalChallengesCompleted: progress.completedChallenges.length,
     xp
@@ -75,20 +90,25 @@ export function getLocalProgress() {
 export function saveChallengeLocally(challenge: Challenge) {
   const progress = getLocalProgress();
   const savedChallengeIds = [...new Set([...progress.savedChallengeIds, challenge.id])];
-  const next = { ...progress, savedChallengeIds };
+  const savedChallenges = [challenge, ...progress.savedChallenges.filter((saved) => saved.id !== challenge.id)].slice(0, 30);
+  const next = { ...progress, savedChallengeIds, savedChallenges };
   safeWrite(progressKey, next);
   return next;
 }
 
-export function completeChallengeLocally(challenge: Challenge, reflection = "") {
+export function completeChallengeLocally(challenge: Challenge, reflection = "", source: ChallengeCompletion["source"] = "generator") {
   const progress = getLocalProgress();
+  const xpEarned = challenge.xpReward + getRarityXpBonus(challenge.rarity);
   const completion: ChallengeCompletion = {
     category: challenge.category,
     challengeId: challenge.id,
     completedAt: new Date().toISOString(),
+    difficulty: challenge.difficulty,
     reflection,
+    rarity: challenge.rarity,
+    source,
     title: challenge.title,
-    xpEarned: challenge.xpReward
+    xpEarned
   };
   const nextProgress = {
     ...progress,

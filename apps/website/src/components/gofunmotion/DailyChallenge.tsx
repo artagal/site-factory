@@ -16,9 +16,10 @@ export const dailyChallenge: Challenge = {
   intensity: "low",
   locationType: ["outside", "anywhere"],
   moodTags: ["tired", "bored", "anxious"],
+  rarity: "Rare",
   safetyNote: "Choose a safe public or private place. Do not look at the sun directly.",
   timeEstimateMinutes: 10,
-  title: "Today’s Mission: Sunset Reset",
+  title: "Today's Mission: Sunset Reset",
   whyItHelps: "Pausing before posting turns a digital impulse into an actual memory.",
   xpReward: 50
 };
@@ -40,7 +41,7 @@ export function DailyChallengeCard({ large = false }: { large?: boolean }) {
           </div>
           <div>
             <p className="text-xs font-black uppercase tracking-[0.16em] text-white/45">Daily global challenge</p>
-            <p className="text-sm font-bold text-lime-200">1,284 accepted · 719 completed</p>
+            <p className="text-sm font-bold text-lime-200">1,284 accepted - 719 completed</p>
           </div>
         </div>
         <h2 className={`mt-6 font-black leading-tight text-white ${large ? "text-5xl" : "text-3xl"}`}>
@@ -51,7 +52,7 @@ export function DailyChallengeCard({ large = false }: { large?: boolean }) {
           <Button onClick={() => setAccepted(true)}>{accepted ? "Accepted" : "Accept challenge"}</Button>
           <Button
             onClick={() => {
-              completeChallengeLocally(dailyChallenge);
+              completeChallengeLocally(dailyChallenge, "", "daily");
               setCompleted(true);
             }}
             variant="secondary"

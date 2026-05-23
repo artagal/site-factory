@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { createEmailAccount, signInEmail, signInGuest } from "../../lib/auth";
+import { createEmailAccount, signInEmail, signInGoogle, signInGuest } from "../../lib/auth";
 import { isFirebaseConfigured } from "../../lib/firebase";
+import { ensureUserProfile } from "../../lib/firestore";
 import { Button } from "../../components/gofunmotion/Button";
 
 export default function LoginPage() {
@@ -12,7 +13,18 @@ export default function LoginPage() {
 
   async function handleGuest() {
     const result = await signInGuest();
+    if (result?.user) {
+      await ensureUserProfile(result.user);
+    }
     setStatus(result ? "Signed in anonymously." : "Firebase is not configured yet. Keep using local progress.");
+  }
+
+  async function handleGoogle() {
+    const result = await signInGoogle();
+    if (result?.user) {
+      await ensureUserProfile(result.user);
+    }
+    setStatus(result ? "Google sign-in connected. Save your momentum with one click." : "Firebase is not configured yet. Add env vars before live login.");
   }
 
   async function handleEmail(mode: "login" | "signup") {
@@ -23,6 +35,9 @@ export default function LoginPage() {
 
     const result =
       mode === "signup" ? await createEmailAccount(email, password) : await signInEmail(email, password);
+    if (result?.user) {
+      await ensureUserProfile(result.user);
+    }
     setStatus(result ? "Firebase auth connected." : "Firebase is not configured yet. No secrets are hardcoded.");
   }
 
@@ -45,6 +60,7 @@ export default function LoginPage() {
           <input className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none" onChange={(event) => setEmail(event.target.value)} placeholder="Email" type="email" value={email} />
           <input className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none" onChange={(event) => setPassword(event.target.value)} placeholder="Password" type="password" value={password} />
           <div className="flex flex-wrap gap-3">
+            <Button onClick={handleGoogle} variant="secondary">Google</Button>
             <Button onClick={() => handleEmail("login")}>Login</Button>
             <Button onClick={() => handleEmail("signup")} variant="ghost">Signup</Button>
             <Button onClick={handleGuest} variant="secondary">Guest</Button>

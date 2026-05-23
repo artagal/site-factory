@@ -12,6 +12,7 @@ export type ChallengeCategory =
 
 export type ChallengeDifficulty = "easy" | "medium" | "bold";
 export type ChallengeIntensity = "low" | "medium" | "high";
+export type ChallengeRarity = "Common" | "Rare" | "Epic" | "Legendary";
 
 export type Challenge = {
   category: ChallengeCategory;
@@ -21,6 +22,7 @@ export type Challenge = {
   intensity: ChallengeIntensity;
   locationType: string[];
   moodTags: string[];
+  rarity: ChallengeRarity;
   safetyNote?: string;
   timeEstimateMinutes: number;
   title: string;
@@ -49,7 +51,10 @@ export type ChallengeCompletion = {
   category: ChallengeCategory;
   challengeId: string;
   completedAt: string;
+  difficulty: ChallengeDifficulty;
   reflection?: string;
+  rarity: ChallengeRarity;
+  source?: "daily" | "generator" | "saved";
   title: string;
   xpEarned: number;
 };
