@@ -9,6 +9,45 @@ import { formatMinutes } from "../../lib/utils";
 import type { Challenge } from "../../types/challenge";
 import { Button } from "./Button";
 
+const rarityStyles = {
+  Common: {
+    glow: "shadow-[0_0_70px_rgba(255,255,255,0.08)]",
+    ring: "from-white/18 via-white/4 to-white/18",
+    text: "text-white/72"
+  },
+  Epic: {
+    glow: "shadow-[0_0_90px_rgba(247,37,133,0.2)]",
+    ring: "from-fuchsia-300/70 via-cyan-300/20 to-fuchsia-300/70",
+    text: "text-fuchsia-100"
+  },
+  Legendary: {
+    glow: "shadow-[0_0_110px_rgba(190,242,100,0.24)]",
+    ring: "from-lime-300 via-cyan-300/30 to-fuchsia-300",
+    text: "text-lime-100"
+  },
+  Rare: {
+    glow: "shadow-[0_0_82px_rgba(0,212,255,0.18)]",
+    ring: "from-cyan-300/70 via-white/10 to-cyan-300/70",
+    text: "text-cyan-100"
+  }
+} as const;
+
+function getRarity(challenge: Challenge): keyof typeof rarityStyles {
+  if (challenge.xpReward >= 120) {
+    return "Legendary";
+  }
+
+  if (challenge.difficulty === "medium") {
+    return challenge.timeEstimateMinutes >= 15 ? "Epic" : "Rare";
+  }
+
+  if (challenge.timeEstimateMinutes >= 15) {
+    return "Rare";
+  }
+
+  return "Common";
+}
+
 export function ChallengeCard({
   challenge,
   isRevealing = false,
@@ -20,6 +59,8 @@ export function ChallengeCard({
 }) {
   const [completed, setCompleted] = useState(false);
   const [copied, setCopied] = useState(false);
+  const rarity = getRarity(challenge);
+  const rarityStyle = rarityStyles[rarity];
 
   async function shareChallenge() {
     const text = createShareText(challenge);
@@ -37,11 +78,19 @@ export function ChallengeCard({
   return (
     <motion.article
       animate={{ opacity: 1, rotateX: 0, scale: 1, y: 0 }}
-      className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(145deg,rgba(255,255,255,0.14),rgba(255,255,255,0.05))] p-5 shadow-[0_28px_110px_rgba(0,0,0,0.46)] backdrop-blur-2xl md:p-6"
+      className={`relative overflow-hidden rounded-[2rem] border border-white/12 bg-[linear-gradient(145deg,rgba(255,255,255,0.14),rgba(255,255,255,0.05))] p-5 shadow-[0_28px_110px_rgba(0,0,0,0.46)] backdrop-blur-2xl md:p-6 ${rarityStyle.glow}`}
       exit={{ opacity: 0, rotateX: -6, scale: 0.96, y: 20 }}
       initial={{ opacity: 0, rotateX: 8, scale: 0.94, y: 28 }}
       transition={{ duration: 0.45, ease: [0.18, 0.9, 0.22, 1] }}
+      whileHover={{ rotateX: 1.5, rotateY: -1.5, scale: 1.01 }}
     >
+      <motion.div
+        aria-hidden="true"
+        animate={{ rotate: 360 }}
+        className={`absolute -inset-px rounded-[2rem] bg-gradient-to-r ${rarityStyle.ring} opacity-30`}
+        transition={{ duration: 9, ease: "linear", repeat: Infinity }}
+      />
+      <div className="absolute inset-[1px] rounded-[calc(2rem-1px)] bg-[#070816]/72" />
       <div className="absolute -right-14 -top-14 h-48 w-48 rounded-full bg-fuchsia-500/28 blur-3xl" />
       <div className="absolute -bottom-16 left-10 h-52 w-52 rounded-full bg-cyan-400/14 blur-3xl" />
       <motion.div
@@ -71,13 +120,16 @@ export function ChallengeCard({
             <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-black">
               Live mission
             </span>
+            <span className={`rounded-full bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] ${rarityStyle.text}`}>
+              {rarity}
+            </span>
             <span className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-white/72">
               {challenge.category}
             </span>
           </div>
           <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.14em] text-white/72">
             <Trophy aria-hidden="true" size={15} />
-            {challenge.xpReward} XP
+            Momentum +{challenge.xpReward}
           </span>
         </div>
         <div className="mt-5 rounded-[1.7rem] border border-white/10 bg-black/28 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
@@ -118,7 +170,7 @@ export function ChallengeCard({
           </p>
         </div>
         <div className="mt-5 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4 text-sm font-semibold leading-6 text-lime-50">
-          {challenge.safetyNote}
+          Scrolling interrupted. {challenge.safetyNote}
         </div>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Button

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Clock3, MapPin, Radio, Sparkles, WandSparkles } from "lucide-react";
+import { ArrowRight, Clock3, MapPin, Radio, Sparkles, Volume2, VolumeX, WandSparkles } from "lucide-react";
 import { generateChallenge } from "../../lib/challengeEngine";
 import { challengeCategories, challengeTemplates } from "../../lib/challenges";
 import type { Challenge, ChallengeFilters } from "../../types/challenge";
@@ -31,7 +31,8 @@ const moodOptions: Array<{ caption: string; filters: Partial<ChallengeFilters>; 
   { caption: "Send me somewhere.", filters: { category: "Explore", mood: "adventurous", location: "outside" }, label: "adventurous" },
   { caption: "Tiny first step.", filters: { category: "Anti-Doomscroll", mood: "lazy", intensity: "easy" }, label: "unmotivated" },
   { caption: "Give me people energy.", filters: { category: "Social", mood: "social", location: "anywhere" }, label: "social" },
-  { caption: "Small courage rep.", filters: { category: "Confidence", mood: "adventurous", intensity: "medium" }, label: "need confidence" }
+  { caption: "Small courage rep.", filters: { category: "Confidence", mood: "adventurous", intensity: "medium" }, label: "need confidence" },
+  { caption: "Surprise me.", filters: { category: "Random", mood: "motivated", location: "anywhere" }, label: "random" }
 ];
 
 const presets: Array<{ description: string; filters: ChallengeFilters; label: string }> = [
@@ -66,6 +67,15 @@ const slotTitles = [
   "City Side Quest",
   "Confidence Spark",
   "Creative Blink"
+];
+
+const delightMessages = [
+  "No perfect plan needed. Just one small mission.",
+  "Scrolling loop detected. Motion recommended.",
+  "Your next memory is probably outside.",
+  "Tiny courage mission unlocked.",
+  "Real life is loading...",
+  "Challenge accepted. Go make today less boring."
 ];
 
 function PillGroup<T extends string | number>({
@@ -109,9 +119,11 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
   const [challenge, setChallenge] = useState<Challenge>(initialChallenge);
   const [isSpinning, setIsSpinning] = useState(false);
   const [spinRound, setSpinRound] = useState(0);
+  const [soundEnabled, setSoundEnabled] = useState(false);
 
   const categoryOptions = useMemo(() => ["Random", ...challengeCategories] as const, []);
   const selectedFeeling = moodOptions.find((option) => option.filters.mood === filters.mood && option.filters.category === filters.category)?.label ?? filters.mood;
+  const delightMessage = delightMessages[spinRound % delightMessages.length];
 
   function updateFilter<Key extends keyof ChallengeFilters>(key: Key, value: ChallengeFilters[Key]) {
     setFilters((current) => ({ ...current, [key]: value }));
@@ -260,6 +272,15 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
                 </p>
                 <p className="mt-2 text-sm font-bold text-white/58">Watch the mission lock in, then do it before the scroll loop wins.</p>
               </div>
+              <button
+                aria-label={soundEnabled ? "Turn sound off" : "Turn sound on"}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 text-xs font-black uppercase tracking-[0.12em] text-white/70 transition hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-lime-300"
+                onClick={() => setSoundEnabled((current) => !current)}
+                type="button"
+              >
+                {soundEnabled ? <Volume2 aria-hidden="true" size={15} /> : <VolumeX aria-hidden="true" size={15} />}
+                {soundEnabled ? "Sound ready" : "Sound off"}
+              </button>
               <div className="relative h-16 min-w-[220px] overflow-hidden rounded-2xl border border-white/10 bg-black/44 px-4 py-2">
                 <motion.div
                   animate={isSpinning && !reduceMotion ? { y: ["0%", "-72%", "-18%"] } : { y: `${-(spinRound % slotTitles.length) * 2.5}rem` }}
@@ -276,6 +297,14 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-black to-transparent" />
               </div>
             </div>
+            <motion.p
+              animate={{ opacity: [0.62, 1, 0.72] }}
+              className="relative mt-4 rounded-2xl bg-black/30 px-4 py-3 text-sm font-black text-white/76"
+              key={delightMessage}
+              transition={{ duration: 0.8 }}
+            >
+              {delightMessage}
+            </motion.p>
           </div>
           <AnimatePresence mode="wait">
             <ChallengeCard challenge={challenge} isRevealing={isSpinning} key={challenge.id} onGenerateAnother={() => generateNext()} />
