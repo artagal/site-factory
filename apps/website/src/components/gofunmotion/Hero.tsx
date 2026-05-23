@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion } from "framer-motion";
-import { ArrowDown, CheckCircle2, MousePointer2, Play, Sparkles, Zap } from "lucide-react";
+import { ArrowDown, CheckCircle2, MousePointer2, Play, Sparkles, Trophy, Zap } from "lucide-react";
 import { LinkButton } from "./Button";
 import { StatsStrip } from "./StatsStrip";
 
@@ -14,9 +14,9 @@ const floatingCards = [
 ];
 
 const heroProof = [
-  "No app required",
+  "Generate first",
   "No forced signup",
-  "Safe real-life prompts"
+  "XP after action"
 ];
 
 export function Hero() {
@@ -72,8 +72,8 @@ export function Hero() {
           </p>
           <p className="mt-5 grid max-w-2xl gap-1 text-lg font-semibold leading-8 text-white/74 md:text-xl">
             <span>Choose your mood.</span>
-            <span>Spin for a mission.</span>
-            <span>Do one real thing before the scroll loop pulls you back.</span>
+            <span>Get one mission.</span>
+            <span>Start, complete, earn XP, and keep your streak alive.</span>
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <LinkButton className="min-w-36 whitespace-nowrap shadow-[0_20px_80px_rgba(247,37,133,0.38)]" href="#generator">
@@ -82,7 +82,7 @@ export function Hero() {
             <LinkButton href="/categories" variant="ghost">See Challenge Modes</LinkButton>
           </div>
           <div className="mt-6 grid max-w-xl grid-cols-3 gap-3">
-            {["Feel it", "Spin it", "Live it"].map((step, index) => (
+            {["Mood", "Start", "Reward"].map((step, index) => (
               <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-3 backdrop-blur" key={step}>
                 <p className="flex size-7 items-center justify-center rounded-full bg-white text-xs font-black text-black">{index + 1}</p>
                 <p className="mt-2 text-sm font-black text-white">{step}</p>
@@ -99,7 +99,7 @@ export function Hero() {
           </div>
           <p className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-white/52">
             <ArrowDown aria-hidden="true" size={16} />
-            No app. No forced signup. One action right now.
+            The shortest path: mood - mission - start - complete.
           </p>
         </div>
         <div className="relative z-10 min-h-[560px] md:min-h-[620px]">
@@ -115,7 +115,7 @@ export function Hero() {
                   <p className="mt-1 text-sm font-black text-white">Mission draw</p>
                 </div>
                 <div className="flex size-11 items-center justify-center rounded-2xl bg-lime-300 text-black">
-                  <Zap aria-hidden="true" size={19} />
+                  <Trophy aria-hidden="true" size={19} />
                 </div>
               </div>
               <motion.div
@@ -148,7 +148,7 @@ export function Hero() {
               </div>
               <div className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-lime-300 p-3 text-center text-sm font-black text-black">
                 <Play aria-hidden="true" size={16} />
-                Start challenge
+                Start - Complete - +40 XP
               </div>
             </div>
           </motion.div>

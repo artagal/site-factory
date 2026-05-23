@@ -166,27 +166,29 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
       <div className="mb-6 max-w-3xl">
         <p className="inline-flex items-center gap-2 rounded-full bg-cyan-300/10 px-3 py-2 text-sm font-black uppercase tracking-[0.18em] text-cyan-200">
           <WandSparkles aria-hidden="true" size={16} />
-          Interactive mission draw
+          Core product loop
         </p>
         <h2 className="mt-4 text-4xl font-black leading-tight text-white md:text-6xl">
           How are you feeling right now?
         </h2>
         <p className="mt-4 text-lg font-semibold leading-8 text-white/68">
-          GoFunMotion starts with the emotional state, then spins one safe real-life mission that matches your time, place, and energy.
+          Pick your mood, get one mission, start it, complete it, then earn XP and keep your streak alive.
         </p>
       </div>
-      <div className="mb-6 grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.05] p-4 backdrop-blur-2xl md:grid-cols-4">
+      <div className="mb-6 grid gap-3 rounded-[2rem] border border-white/10 bg-white/[0.05] p-3 backdrop-blur-2xl sm:grid-cols-2 lg:grid-cols-6">
         {[
-          ["1", "Pick a mood"],
-          ["2", "Choose time"],
-          ["3", "Pull mission"],
-          ["4", "Go do it"]
+          ["1", "Mood"],
+          ["2", "Mission"],
+          ["3", "Start"],
+          ["4", "Complete"],
+          ["5", "XP + streak"],
+          ["6", "Save/share"]
         ].map(([number, label]) => (
           <div className="flex items-center gap-3 rounded-2xl bg-black/24 p-3" key={number}>
             <span className="flex size-9 items-center justify-center rounded-full bg-white text-sm font-black text-black">
               {number}
             </span>
-            <span className="text-sm font-black text-white">{label}</span>
+            <span className="text-sm font-black leading-tight text-white">{label}</span>
           </div>
         ))}
       </div>
@@ -201,7 +203,7 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
             What do you need right now?
           </h3>
           <p className="mt-3 text-base font-semibold leading-7 text-white/70">
-            Tap the feeling closest to now, or use a fast preset.
+            Tap the feeling closest to now. The rest should take seconds.
           </p>
           <div className="mt-5 grid gap-2 lg:grid-cols-2">
             {moodOptions.map((option) => {

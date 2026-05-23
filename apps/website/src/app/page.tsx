@@ -3,6 +3,7 @@ import { Brain, Flame, Map, Smartphone, Trophy, Users, Zap } from "lucide-react"
 import { BlogCard } from "../components/gofunmotion/BlogCard";
 import { CategoryCard } from "../components/gofunmotion/CategoryCard";
 import { ChallengeGenerator } from "../components/gofunmotion/ChallengeGenerator";
+import { CoreLoop } from "../components/gofunmotion/CoreLoop";
 import { DailyChallengeCard } from "../components/gofunmotion/DailyChallenge";
 import { Hero } from "../components/gofunmotion/Hero";
 import { HowItWorks } from "../components/gofunmotion/HowItWorks";
@@ -75,8 +76,9 @@ export default function HomePage() {
     <main>
       <SeoJsonLd data={schema} id="gofunmotion-home-schema" />
       <Hero />
-      <LivePulse />
+      <CoreLoop />
       <ChallengeGenerator />
+      <LivePulse />
       <RealWorldModes />
 
       <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">

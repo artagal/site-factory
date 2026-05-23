@@ -9,7 +9,7 @@ import { getRarityXpBonus } from "../../lib/rarity";
 import { formatMinutes } from "../../lib/utils";
 import type { Challenge, ChallengeRarity } from "../../types/challenge";
 import type { GoFunMotionUserProgress } from "../../types/user";
-import { Button } from "./Button";
+import { Button, LinkButton } from "./Button";
 
 const rarityStyles: Record<ChallengeRarity, { glow: string; ring: string; text: string }> = {
   Common: {
@@ -54,6 +54,7 @@ export function ChallengeCard({
   const rarity = challenge.rarity;
   const rarityStyle = rarityStyles[rarity];
   const totalXpReward = challenge.xpReward + getRarityXpBonus(rarity);
+  const unlockedBadges = completionProgress?.badges.slice(0, 3) ?? [];
 
   async function shareChallenge() {
     const text = createShareText(challenge);
@@ -203,7 +204,7 @@ export function ChallengeCard({
           </p>
         </div>
         <div className="mt-5 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4 text-sm font-semibold leading-6 text-lime-50">
-          Scrolling interrupted. {challenge.safetyNote}
+          This is the core loop: start it, do the real thing, come back, complete it. {challenge.safetyNote}
         </div>
         <AnimatePresence>
           {started && !completed ? (
@@ -285,13 +286,25 @@ export function ChallengeCard({
               </span>
             </div>
             <p className="mt-3 text-lime-100/82">You did one real thing. That counts. Scrolling interrupted.</p>
+            {unlockedBadges.length ? (
+              <div className="mt-4 rounded-2xl border border-white/10 bg-black/26 p-4">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-lime-100/52">Badge progress</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {unlockedBadges.map((badge) => (
+                    <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-black" key={badge.id}>
+                      {badge.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             {reflection ? (
               <div className="mt-4 rounded-2xl border border-lime-300/20 bg-black/26 p-4">
                 <p className="text-xs font-black uppercase tracking-[0.14em] text-lime-100/52">Reflection</p>
                 <p className="mt-2 text-sm font-semibold text-white/76">{reflection}</p>
               </div>
             ) : null}
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            <div className="mt-4 grid gap-2 sm:grid-cols-3">
               <Button onClick={shareChallenge} variant="secondary">
                 <Share2 aria-hidden="true" size={18} />
                 Share win
@@ -299,6 +312,9 @@ export function ChallengeCard({
               <Button disabled={busyAction === "save"} onClick={handleSave} variant="ghost">
                 {saved ? "Mission saved" : "Save mission"}
               </Button>
+              <LinkButton className="min-h-12" href="/login" showArrow={false} variant="ghost">
+                Sign in
+              </LinkButton>
             </div>
           </motion.div>
         </div>
