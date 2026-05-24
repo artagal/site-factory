@@ -1,12 +1,13 @@
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { getFirebaseAdminDb, verifyBearerToken } from "../../../../lib/server/firebase-admin";
-import { getPartnerSubscriptionPriceId, getStripeClient } from "../../../../lib/server/stripe";
+import { cleanStripeEnvValue, getPartnerSubscriptionPriceId, getStripeClient } from "../../../../lib/server/stripe";
 import type { PaidPartnerPricingTier } from "../../../../lib/payments";
 
 const allowedTiers = new Set<PaidPartnerPricingTier>(["growth", "pro"]);
 
 function getBaseUrl(request: Request) {
-  const configured = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const configured = cleanStripeEnvValue(process.env.NEXT_PUBLIC_SITE_URL) ||
+    cleanStripeEnvValue(process.env.VERCEL_PROJECT_PRODUCTION_URL);
   if (configured) return configured.startsWith("http") ? configured : `https://${configured}`;
 
   const url = new URL(request.url);

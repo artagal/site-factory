@@ -3,12 +3,16 @@ import { getStripePriceEnvName, type PaidPartnerPricingTier } from "../payments"
 
 let stripeClient: Stripe | null = null;
 
+export function cleanStripeEnvValue(value: string | undefined) {
+  return value?.replace(/[^\x21-\x7e]/g, "").trim() ?? "";
+}
+
 export function isStripeConfigured() {
-  return Boolean(process.env.STRIPE_SECRET_KEY?.trim());
+  return Boolean(cleanStripeEnvValue(process.env.STRIPE_SECRET_KEY));
 }
 
 export function getStripeClient() {
-  const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
+  const secretKey = cleanStripeEnvValue(process.env.STRIPE_SECRET_KEY);
   if (!secretKey) return null;
   stripeClient ??= new Stripe(secretKey, {
     appInfo: {
@@ -20,9 +24,9 @@ export function getStripeClient() {
 
 export function getPartnerSubscriptionPriceId(tier: PaidPartnerPricingTier) {
   const envName = getStripePriceEnvName(tier);
-  return process.env[envName]?.trim() ?? null;
+  return cleanStripeEnvValue(process.env[envName]) || null;
 }
 
 export function getStripeWebhookSecret() {
-  return process.env.STRIPE_WEBHOOK_SECRET?.trim() ?? null;
+  return cleanStripeEnvValue(process.env.STRIPE_WEBHOOK_SECRET) || null;
 }
