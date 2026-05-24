@@ -22,7 +22,7 @@ export default function FriendsPage() {
         <p className="mt-5 text-lg leading-8 text-white/64">Use filters and demo deal cards to shape quick plans for friends, groups, and casual nights out.</p>
       </section>
       <section className="mt-8">
-        <PlanFinderForm defaultValues={{ budget: "under50", city: "Las Vegas", indoorOutdoor: "either", timeAvailable: "2hours", vibe: "social", when: "tonight", who: "friends" }} />
+        <PlanFinderForm defaultValues={{ budget: "under50", city: "Austin", indoorOutdoor: "either", timeAvailable: "2hours", vibe: "social", when: "tonight", who: "friends" }} />
       </section>
       <section className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {listings.map((listing) => <DealCard key={listing.id} listing={listing} />)}

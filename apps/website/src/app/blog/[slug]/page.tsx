@@ -34,10 +34,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     description: post.description,
     keywords: [
       post.keyword,
-      "what to do instead of scrolling",
-      "fun things to do when bored",
-      "AI challenge generator",
-      "real life challenges"
+      "things to do today",
+      "local activity deals",
+      "date night ideas",
+      "family activities"
     ],
     path: `/blog/${post.slug}`,
     publishedTime: post.publishedAt,
@@ -127,7 +127,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <section className="mt-10 rounded-[2rem] border border-fuchsia-300/20 bg-fuchsia-300/10 p-5 md:p-6">
             <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-fuchsia-100">
               <Target aria-hidden="true" size={16} />
-              Try these missions
+              Try these plan ideas
             </p>
             <div className="mt-5 grid gap-3">
               {post.missions.map((mission) => (
@@ -144,12 +144,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               Turn this article into action
             </p>
             <h2 className="mt-3 text-3xl font-black leading-tight text-white">
-              Generate a mission based on this idea.
+              Turn this idea into a plan.
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-7 text-white/68">{post.generatorPrompt}</p>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-              <LinkButton href="/challenge">Open challenge generator</LinkButton>
-              <LinkButton href="/daily" variant="ghost">Try today's mission</LinkButton>
+              <LinkButton href="/find">Find My Plan</LinkButton>
+              <LinkButton href="/deals" variant="ghost">Browse Deals</LinkButton>
             </div>
           </section>
 
@@ -171,12 +171,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               Next real step
             </p>
             <h2 className="mt-3 text-2xl font-black leading-tight text-white">
-              Do not just read. Spin one mission.
+              Do not just read. Find one plan.
             </h2>
             <p className="mt-3 text-sm leading-6 text-white/60">
-              GoFunMotion should turn search traffic into a completed real-world action.
+              GoFunMotion should turn search traffic into a useful local plan.
             </p>
-            <LinkButton className="mt-5 w-full" href="/challenge">Generate now</LinkButton>
+            <LinkButton className="mt-5 w-full" href="/find">Find My Plan</LinkButton>
           </div>
 
           <div className="mt-4 rounded-[2rem] border border-white/10 bg-black/24 p-5">

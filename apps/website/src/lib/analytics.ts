@@ -1,14 +1,22 @@
 export type AnalyticsEventName =
-  | "account_deleted"
+  | "booking_request_started"
+  | "booking_request_submitted"
   | "hero_cta_click"
-  | "challenge_generated"
-  | "challenge_started"
+  | "listing_saved"
+  | "listing_viewed"
+  | "login_clicked"
+  | "partner_application_submitted"
+  | "plan_generated"
+  | "plan_saved"
+  | "waitlist_submitted"
+  // Deprecated legacy events remain typed only so isolated old components compile during the pivot.
+  | "account_deleted"
   | "challenge_completed"
+  | "challenge_generated"
   | "challenge_saved"
   | "challenge_shared"
-  | "email_verification_sent"
-  | "login_clicked"
-  | "waitlist_submitted";
+  | "challenge_started"
+  | "email_verification_sent";
 
 export type AnalyticsEvent = {
   id: string;
@@ -107,7 +115,7 @@ export function trackEvent(name: AnalyticsEventName, properties: Record<string, 
     runtime.dispatchEvent(new runtime.CustomEvent("gofunmotion:analytics", { detail: event }));
   }
 
-  void fetch("/api/events", {
+  void fetch("/api/track", {
     body: JSON.stringify(event),
     headers: {
       "Content-Type": "application/json"

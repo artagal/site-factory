@@ -18,7 +18,7 @@ export default function WaitlistPage() {
           Bring GoFunMotion Deals to your city.
         </h1>
         <p className="mt-5 text-lg leading-8 text-white/62">
-          Phase 1 uses a lightweight city-interest placeholder. Future phases will connect local demand with partner applications and approved listings.
+          Join the city interest list so GoFunMotion can connect local demand with partner applications and approved listings.
         </p>
       </div>
       <form className="rounded-2xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-2xl">

@@ -1,11 +1,13 @@
 import { getFirebaseAdminDb, FieldValue } from "./firebase-admin";
 
 export type GlobalStatField =
-  | "challengesCompleted"
-  | "challengesGenerated"
-  | "challengesSaved"
-  | "challengesShared"
+  | "activeCities"
+  | "activeListings"
+  | "bookingRequests"
+  | "listingsViewed"
   | "loginClicks"
+  | "partnerApplications"
+  | "plansGenerated"
   | "waitlistSubmissions";
 
 export async function incrementServerGlobalStats(fields: GlobalStatField[]) {

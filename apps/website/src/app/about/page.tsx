@@ -12,7 +12,7 @@ export const metadata: Metadata = buildSeoMetadata({
 export default function AboutPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-12 md:px-8 md:py-20">
-      <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Mission</p>
+      <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">About</p>
       <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-7xl">
         Make local plans easier to choose.
       </h1>
@@ -24,7 +24,7 @@ export default function AboutPage() {
           The product direction is local discovery: city, mood, time, budget, and who is going in; simple plans, activity deals, and booking requests out.
         </p>
         <p>
-          Today the site uses demo scaffolding while Firebase saves, booking requests, partner dashboards, and admin approval are phased in.
+          Today the site uses clearly marked demo scaffolding while Firebase saves, booking requests, partner dashboards, and admin approval are connected.
         </p>
       </div>
       <div className="mt-8 flex flex-wrap gap-3">

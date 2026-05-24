@@ -68,7 +68,7 @@ export function PlanFinderForm({
           <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">City</span>
           <input
             className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none transition placeholder:text-white/28 focus:border-lime-300"
-            defaultValue={defaultValues?.city ?? "Las Vegas"}
+            defaultValue={defaultValues?.city ?? "Miami"}
             name="city"
             placeholder="City or near me"
           />

@@ -1,19 +1,23 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   getFirestore,
   increment,
+  query,
   serverTimestamp,
   setDoc,
   updateDoc,
+  where,
   type Firestore
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { getFirebaseApp } from "./firebase";
 import type { Challenge, ChallengeCompletion, DailyChallengeRecord } from "../types/challenge";
+import type { BookingRequest, GoFunMotionUserProfile, Listing, PartnerApplication, SuggestedPlan } from "../types/deals";
 import type { LeaderboardSnapshot } from "./leaderboard";
 import type { GoFunMotionUserProgress } from "../types/user";
 
@@ -30,26 +34,146 @@ export async function ensureUserProfile(user: User) {
     doc(db, "users", user.uid),
     {
       createdAt: serverTimestamp(),
-      categoryStats: [],
-      displayName: user.displayName ?? "Motion Rookie",
+      displayName: user.displayName ?? "GoFunMotion user",
       email: user.email,
-      favoriteCategories: [],
       isAnonymous: user.isAnonymous,
       lastLoginAt: serverTimestamp(),
-      level: 1,
-      momentumScore: 0,
       photoURL: user.photoURL,
+      phone: null,
       preferredCategories: [],
-      recentActivity: [],
-      savedChallengeIds: [],
-      streak: 0,
-      totalChallengesCompleted: 0,
-      xp: 0
+      preferredCityId: null,
+      role: "user",
+      updatedAt: serverTimestamp()
     },
     { merge: true }
   );
 
   return user.uid;
+}
+
+export async function readUserProfile(userId: string): Promise<GoFunMotionUserProfile | null> {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  const snapshot = await getDoc(doc(db, "users", userId));
+  if (!snapshot.exists()) return null;
+  const data = snapshot.data();
+
+  return {
+    displayName: String(data.displayName ?? "GoFunMotion user"),
+    email: typeof data.email === "string" ? data.email : null,
+    phone: typeof data.phone === "string" ? data.phone : null,
+    photoURL: typeof data.photoURL === "string" ? data.photoURL : null,
+    preferredCategories: Array.isArray(data.preferredCategories) ? data.preferredCategories.map(String) : [],
+    preferredCityId: typeof data.preferredCityId === "string" ? data.preferredCityId : null,
+    role: data.role === "business" ? "business" : "user"
+  };
+}
+
+export async function saveListingForUser(userId: string, listing: Listing) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  await setDoc(doc(db, "users", userId, "savedListings", listing.id), {
+    listingId: listing.id,
+    listingSnapshot: listing,
+    savedAt: serverTimestamp()
+  });
+
+  return listing.id;
+}
+
+export async function unsaveListingForUser(userId: string, listingId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+  await deleteDoc(doc(db, "users", userId, "savedListings", listingId));
+  return listingId;
+}
+
+export async function savePlanForUser(userId: string, plan: SuggestedPlan) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  await setDoc(doc(db, "users", userId, "savedPlans", plan.id), {
+    planId: plan.id,
+    planSnapshot: plan,
+    savedAt: serverTimestamp()
+  });
+
+  return plan.id;
+}
+
+export async function readSavedListings(userId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "users", userId, "savedListings"));
+  return snapshot.docs.map((savedDoc) => savedDoc.data());
+}
+
+export async function readSavedPlans(userId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "users", userId, "savedPlans"));
+  return snapshot.docs.map((savedDoc) => savedDoc.data());
+}
+
+export async function readUserBookingRequests(userId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(query(collection(db, "bookingRequests"), where("userId", "==", userId)));
+  return snapshot.docs.map((requestDoc) => ({ id: requestDoc.id, ...requestDoc.data() }));
+}
+
+export async function createBookingRequest(request: BookingRequest) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  return addDoc(collection(db, "bookingRequests"), {
+    ...request,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+}
+
+export async function createPartnerApplication(application: PartnerApplication) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  return addDoc(collection(db, "partnerApplications"), {
+    ...application,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
+}
+
+export async function isAdminUser(userId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return false;
+  const snapshot = await getDoc(doc(db, "admins", userId));
+  return snapshot.exists();
+}
+
+export async function addMarketplaceWaitlistEntry({
+  city,
+  email,
+  interestType,
+  source = "website"
+}: {
+  city: string | null;
+  email: string;
+  interestType: "user" | "business";
+  source?: string;
+}) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  return addDoc(collection(db, "waitlist"), {
+    city,
+    createdAt: serverTimestamp(),
+    email,
+    interestType,
+    source
+  });
 }
 
 export async function saveChallengeToFirestore(userId: string, challenge: Challenge) {
@@ -281,8 +405,10 @@ export async function addWaitlistEntry(email: string, interests: string[], sourc
   if (!db) return null;
 
   return addDoc(collection(db, "waitlist"), {
+    city: null,
     createdAt: serverTimestamp(),
     email,
+    interestType: interests.some((interest) => interest.toLowerCase().includes("business")) ? "business" : "user",
     interests,
     source
   });

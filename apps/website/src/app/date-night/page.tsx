@@ -22,7 +22,7 @@ export default function DateNightPage() {
         <p className="mt-5 text-lg leading-8 text-white/64">Choose a vibe and budget, then use the starter marketplace cards as the structure for future real listings.</p>
       </section>
       <section className="mt-8">
-        <PlanFinderForm defaultValues={{ budget: "under50", city: "Las Vegas", indoorOutdoor: "either", timeAvailable: "2hours", vibe: "romantic", when: "tonight", who: "date" }} />
+        <PlanFinderForm defaultValues={{ budget: "under50", city: "Miami", indoorOutdoor: "either", timeAvailable: "2hours", vibe: "romantic", when: "tonight", who: "date" }} />
       </section>
       <section className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {listings.map((listing) => <DealCard key={listing.id} listing={listing} />)}

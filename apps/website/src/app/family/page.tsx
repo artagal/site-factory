@@ -22,7 +22,7 @@ export default function FamilyPage() {
         <p className="mt-5 text-lg leading-8 text-white/64">Filter for kids, indoor plans, weekend activities, and lower-stress options.</p>
       </section>
       <section className="mt-8">
-        <PlanFinderForm defaultValues={{ budget: "under25", city: "Las Vegas", indoorOutdoor: "indoor", timeAvailable: "2hours", vibe: "family-friendly", when: "weekend", who: "family" }} />
+        <PlanFinderForm defaultValues={{ budget: "under25", city: "San Diego", indoorOutdoor: "indoor", timeAvailable: "2hours", vibe: "family-friendly", when: "weekend", who: "family" }} />
       </section>
       <section className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {listings.map((listing) => <DealCard key={listing.id} listing={listing} />)}

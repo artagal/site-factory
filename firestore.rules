@@ -2,121 +2,217 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() {
+    function isSignedIn() {
       return request.auth != null;
     }
 
     function isOwner(userId) {
-      return signedIn() && request.auth.uid == userId;
+      return isSignedIn() && request.auth.uid == userId;
     }
 
-    function validUserProfileKeys() {
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isBusinessOwner(businessId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/businesses/$(businessId)) &&
+        request.auth.uid in get(/databases/$(database)/documents/businesses/$(businessId)).data.ownerIds;
+    }
+
+    function canReadPublishedListing() {
+      return resource.data.status == "published" &&
+        resource.data.approvalStatus == "approved";
+    }
+
+    function validUserProfile() {
       return request.resource.data.keys().hasOnly([
-        "badges",
-        "categoryStats",
         "createdAt",
         "displayName",
         "email",
-        "favoriteCategories",
-        "isAnonymous",
         "lastLoginAt",
-        "lastProgressSyncAt",
-        "level",
-        "momentumScore",
+        "phone",
         "photoURL",
         "preferredCategories",
-        "profileUpdatedAt",
-        "recentActivity",
-        "savedChallengeIds",
-        "streak",
-        "totalChallengesCompleted",
-        "xp"
-      ]);
+        "preferredCityId",
+        "role",
+        "updatedAt"
+      ]) &&
+      (!("role" in request.resource.data) || request.resource.data.role in ["user", "business"]);
     }
 
-    function validSavedChallengeKeys() {
+    function validSavedListing() {
+      return request.resource.data.keys().hasOnly(["listingId", "savedAt", "listingSnapshot"]);
+    }
+
+    function validSavedPlan() {
+      return request.resource.data.keys().hasOnly(["planId", "savedAt", "planSnapshot"]);
+    }
+
+    function validBookingCreate() {
       return request.resource.data.keys().hasOnly([
+        "businessId",
+        "businessOwnerIds",
+        "cityId",
+        "createdAt",
+        "email",
+        "listingId",
+        "message",
+        "name",
+        "partySize",
+        "phone",
+        "requestedDate",
+        "requestedTime",
+        "status",
+        "updatedAt",
+        "userId"
+      ]) &&
+      request.resource.data.userId == request.auth.uid &&
+      request.resource.data.status == "pending";
+    }
+
+    function validPartnerApplication() {
+      return request.resource.data.keys().hasOnly([
+        "averagePrice",
+        "businessName",
         "category",
-        "challengeId",
+        "city",
+        "createdAt",
         "description",
-        "difficulty",
-        "intensity",
-        "locationType",
-        "moodTags",
-        "rarity",
-        "safetyNote",
-        "savedAt",
-        "timeEstimateMinutes",
-        "title",
-        "whyItHelps",
-        "xpReward"
-      ]);
-    }
-
-    function validCompletedChallengeKeys() {
-      return request.resource.data.keys().hasOnly([
-        "category",
-        "challengeId",
-        "completedAt",
-        "difficulty",
-        "rarity",
-        "reflection",
-        "source",
-        "title",
-        "xpEarned"
-      ]);
+        "email",
+        "instagram",
+        "message",
+        "offersLastMinuteDeals",
+        "ownerName",
+        "phone",
+        "status",
+        "updatedAt",
+        "website"
+      ]) &&
+      request.resource.data.status == "new";
     }
 
     function validWaitlistEntry() {
-      return request.resource.data.keys().hasOnly(["createdAt", "email", "interests", "source"]) &&
-        request.resource.data.email is string &&
-        request.resource.data.email.size() <= 254;
+      return request.resource.data.keys().hasOnly([
+        "city",
+        "createdAt",
+        "email",
+        "interestType",
+        "source",
+        "userAgent"
+      ]) &&
+      request.resource.data.email is string &&
+      request.resource.data.email.size() <= 254 &&
+      request.resource.data.interestType in ["user", "business"];
+    }
+
+    match /admins/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin();
     }
 
     match /users/{userId} {
-      allow read: if isOwner(userId);
-      allow create, update: if isOwner(userId) && validUserProfileKeys();
-      allow delete: if false;
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update: if isOwner(userId) && validUserProfile();
+      allow delete: if isOwner(userId) || isAdmin();
 
-      match /savedChallenges/{challengeId} {
+      match /savedListings/{listingId} {
         allow read, delete: if isOwner(userId);
-        allow create, update: if isOwner(userId) && validSavedChallengeKeys();
+        allow create, update: if isOwner(userId) && validSavedListing();
       }
 
-      match /completedChallenges/{completionId} {
+      match /savedPlans/{planId} {
         allow read, delete: if isOwner(userId);
-        allow create, update: if isOwner(userId) && validCompletedChallengeKeys();
+        allow create, update: if isOwner(userId) && validSavedPlan();
       }
     }
 
-    match /dailyChallenges/{date} {
-      allow read: if true;
-      allow write: if false;
+    match /cities/{cityId} {
+      allow read: if resource.data.active == true || resource.data.comingSoon == true;
+      allow write: if isAdmin();
     }
 
-    match /globalStats/{documentId} {
-      allow read: if true;
-      allow write: if false;
+    match /categories/{categoryId} {
+      allow read: if resource.data.active == true;
+      allow write: if isAdmin();
     }
 
-    match /leaderboards/{periodId} {
-      allow read: if true;
-      allow write: if false;
-
-      match /entries/{entryId} {
-        allow read: if true;
-        allow write: if false;
-      }
+    match /businesses/{businessId} {
+      allow read: if resource.data.status == "approved" || isBusinessOwner(businessId) || isAdmin();
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.ownerIds &&
+        request.resource.data.status == "pending";
+      allow update: if isAdmin() ||
+        (isBusinessOwner(businessId) &&
+          request.resource.data.diff(resource.data).changedKeys().hasOnly([
+            "addressLine1",
+            "addressLine2",
+            "categories",
+            "description",
+            "email",
+            "instagram",
+            "logoUrl",
+            "name",
+            "phone",
+            "photos",
+            "postalCode",
+            "updatedAt",
+            "website"
+          ]));
+      allow delete: if isAdmin();
     }
 
-    match /categoryLeaderboards/{category}/periods/{periodId}/entries/{entryId} {
-      allow read: if true;
-      allow write: if false;
+    match /listings/{listingId} {
+      allow read: if canReadPublishedListing() || isBusinessOwner(resource.data.businessId) || isAdmin();
+      allow create: if isSignedIn() &&
+        isBusinessOwner(request.resource.data.businessId) &&
+        request.resource.data.status in ["draft", "pending_approval"] &&
+        request.resource.data.approvalStatus == "pending" &&
+        request.resource.data.featured == false &&
+        request.resource.data.promoted == false;
+      allow update: if isAdmin() ||
+        (isBusinessOwner(resource.data.businessId) &&
+          request.resource.data.businessId == resource.data.businessId &&
+          request.resource.data.approvalStatus == resource.data.approvalStatus &&
+          request.resource.data.featured == resource.data.featured &&
+          request.resource.data.promoted == resource.data.promoted);
+      allow delete: if isAdmin() || isBusinessOwner(resource.data.businessId);
+    }
+
+    match /plans/{planId} {
+      allow read, update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /bookingRequests/{requestId} {
+      allow create: if isSignedIn() && validBookingCreate();
+      allow read: if isAdmin() ||
+        (isSignedIn() && resource.data.userId == request.auth.uid) ||
+        (isSignedIn() && request.auth.uid in resource.data.businessOwnerIds);
+      allow update: if isAdmin() ||
+        (isSignedIn() &&
+          request.auth.uid in resource.data.businessOwnerIds &&
+          request.resource.data.status in ["contacted", "confirmed", "cancelled", "rejected"]);
+      allow delete: if isAdmin();
+    }
+
+    match /partnerApplications/{applicationId} {
+      allow create: if validPartnerApplication();
+      allow read, update, delete: if isAdmin();
     }
 
     match /waitlist/{entryId} {
       allow create: if validWaitlistEntry();
-      allow read, update, delete: if false;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /globalStats/{documentId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /analyticsEvents/{eventId} {
+      allow create: if false;
+      allow read, update, delete: if isAdmin();
     }
 
     match /{document=**} {

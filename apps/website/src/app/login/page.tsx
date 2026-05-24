@@ -6,14 +6,13 @@ import { trackEvent } from "../../lib/analytics";
 import { createEmailAccount, observeUser, signInEmail, signInGoogle, signInGuest, signOutUser } from "../../lib/auth";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import { ensureUserProfile } from "../../lib/firestore";
-import { syncLocalProgressToFirebase } from "../../lib/progressActions";
 import { Button } from "../../components/gofunmotion/Button";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [password, setPassword] = useState("");
-  const [status, setStatus] = useState("Firebase is optional in Phase 1. Browse plans and deals without signing in.");
+  const [status, setStatus] = useState("Firebase is optional in this preview. Browse plans and deals without signing in.");
   const [user, setUser] = useState<User | null>(null);
   const firebaseReady = isFirebaseConfigured();
 
@@ -26,7 +25,6 @@ export default function LoginPage() {
     }
 
     await ensureUserProfile(resultUser);
-    await syncLocalProgressToFirebase();
     setStatus(successMessage);
   }
 
@@ -50,7 +48,7 @@ export default function LoginPage() {
       provider: "anonymous"
     });
     const resultUser = await runAuthAction(async () => (await signInGuest())?.user ?? null);
-    if (resultUser || !firebaseReady) await finishSignIn(resultUser, "Guest session connected. Saved plans and deals will be enabled in Phase 2.");
+    if (resultUser || !firebaseReady) await finishSignIn(resultUser, "Guest session connected. Saved plans and deals can sync when Firebase is configured.");
   }
 
   async function handleGoogle() {
@@ -59,7 +57,7 @@ export default function LoginPage() {
       provider: "google"
     });
     const resultUser = await runAuthAction(async () => (await signInGoogle())?.user ?? null);
-    if (resultUser || !firebaseReady) await finishSignIn(resultUser, "Google sign-in connected. Marketplace saves will be enabled in Phase 2.");
+    if (resultUser || !firebaseReady) await finishSignIn(resultUser, "Google sign-in connected. Marketplace saves can sync when Firebase is configured.");
   }
 
   async function handleEmail(mode: "login" | "signup") {
@@ -76,7 +74,7 @@ export default function LoginPage() {
     const resultUser = await runAuthAction(async () =>
       (mode === "signup" ? await createEmailAccount(email, password) : await signInEmail(email, password))?.user ?? null
     );
-    if (resultUser || !firebaseReady) await finishSignIn(resultUser, "Firebase auth connected. Marketplace saves will be enabled in Phase 2.");
+    if (resultUser || !firebaseReady) await finishSignIn(resultUser, "Firebase auth connected. Marketplace saves can sync when Firebase is configured.");
   }
 
   async function handleSignOut() {

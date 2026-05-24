@@ -91,7 +91,7 @@ export default function HomePage() {
       },
       {
         question: "Can I book directly today?",
-        answer: "Phase 1 uses request-based booking placeholders only. Payments and live partner booking are not implemented yet."
+        answer: "GoFunMotion uses request-based booking for now. Payments and checkout are not implemented yet."
       }
     ])
   ]);
@@ -257,7 +257,7 @@ export default function HomePage() {
           <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">City waitlist</p>
           <h2 className="mt-3 text-3xl font-black text-white md:text-5xl">Want GoFunMotion Deals in your city?</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-white/60">
-            Phase 1 keeps city interest lightweight. Tell us where you are, and future phases can connect city demand to partner approval.
+            Tell us where you are, and GoFunMotion can connect city demand to future partner approvals and local launch planning.
           </p>
         </div>
       </section>

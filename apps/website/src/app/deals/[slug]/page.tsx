@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bookmark, CalendarClock, MapPin, Share2, Ticket } from "lucide-react";
+import { BookingRequestForm } from "../../../components/listings/booking-request-form";
 import { demoNotice, formatPrice, getBusinessById, getCategoryById, getListingBySlug, listings } from "../../../lib/deals-data";
 import { buildSeoMetadata } from "../../../lib/seo";
 
@@ -94,7 +95,7 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
 
       <section className="mt-10 grid gap-5 lg:grid-cols-3">
         <InfoBlock title="Why it fits" text={listing.whyItFits} />
-        <InfoBlock title="What's included" text="Demo listing includes the activity description, price, timing, and request-based booking placeholder." />
+        <InfoBlock title="What's included" text={`Duration: ${listing.durationMinutes} minutes. Group size: ${listing.groupSize}. Booking mode: request availability.`} />
         <InfoBlock title="Terms" text={listing.terms} />
       </section>
 
@@ -107,10 +108,14 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
         <div className="rounded-2xl border border-white/10 bg-black/24 p-6">
           <h2 className="text-2xl font-black text-white">Map placeholder</h2>
           <p className="mt-3 text-sm leading-6 text-white/58">
-            Exact location, distance, and mapping are intentionally placeholder-only in Phase 1. No paid location APIs are connected.
+            Exact location, distance, and mapping are intentionally placeholder-only until live partner data is approved. No paid location APIs are connected.
           </p>
           <p className="mt-4 text-sm leading-6 text-white/52">{demoNotice}</p>
         </div>
+      </section>
+
+      <section className="mt-8">
+        <BookingRequestForm listing={listing} />
       </section>
     </main>
   );

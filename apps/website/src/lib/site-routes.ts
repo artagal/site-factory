@@ -1,5 +1,5 @@
 import { blogPosts } from "./blog";
-import { listings } from "./deals-data";
+import { categories, cities, listings } from "./deals-data";
 import { absoluteUrl, getCanonicalBaseUrl } from "./seo";
 
 export type SitemapRoute = {
@@ -20,13 +20,15 @@ const appRoutes = [
   "/friends",
   "/family",
   "/partner",
+  "/partner/apply",
+  "/partner/dashboard",
   "/pricing",
   "/saved",
   "/profile",
-  "/profile/settings",
   "/waitlist",
   "/about",
   "/blog",
+  "/admin",
   "/login",
   "/privacy",
   "/terms"
@@ -72,7 +74,21 @@ export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRou
     priority: listing.featured ? 0.82 : 0.72
   }));
 
-  return uniqueRoutes([...routes, ...dealRoutes, ...blogRoutes]);
+  const cityRoutes = cities.map((city) => ({
+    changeFrequency: "weekly" as const,
+    lastModified,
+    path: `/cities/${city.slug}`,
+    priority: city.active ? 0.76 : 0.55
+  }));
+
+  const categoryRoutes = categories.map((category) => ({
+    changeFrequency: "weekly" as const,
+    lastModified,
+    path: `/categories/${category.slug}`,
+    priority: 0.74
+  }));
+
+  return uniqueRoutes([...routes, ...dealRoutes, ...cityRoutes, ...categoryRoutes, ...blogRoutes]);
 }
 
 export function getAbsoluteFactoryRoutes(baseUrl = getCanonicalBaseUrl()) {

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { Footer } from "../components/gofunmotion/Footer";
-import { MobileBottomCTA } from "../components/gofunmotion/MobileBottomCTA";
 import { MotionBackground } from "../components/gofunmotion/MotionBackground";
-import { Navbar } from "../components/gofunmotion/Navbar";
+import { Footer } from "../components/layout/footer";
+import { Navbar } from "../components/layout/navbar";
 import { buildSeoMetadata } from "../lib/seo";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -49,7 +48,6 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
-        <MobileBottomCTA />
       </body>
     </html>
   );

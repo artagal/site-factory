@@ -4,7 +4,7 @@ import { buildSeoMetadata } from "../../lib/seo";
 export const metadata: Metadata = buildSeoMetadata({
   title: "Partner Pricing | GoFunMotion Deals",
   description:
-    "Preview future GoFunMotion Deals partner pricing tiers for local activity businesses. Payments are not implemented in Phase 1.",
+    "Preview future GoFunMotion Deals partner pricing tiers for local activity businesses. Payments are not implemented yet.",
   keywords: ["partner pricing", "local business subscriptions", "promoted listings"],
   path: "/pricing"
 });
@@ -34,7 +34,7 @@ export default function PricingPage() {
         <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Future partner pricing</p>
         <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Pricing is planned, not active.</h1>
         <p className="mt-5 text-lg leading-8 text-white/64">
-          These tiers define the product architecture for later. Phase 1 does not implement checkout, Stripe, paid APIs, or live subscriptions.
+          These tiers define the product architecture for later. GoFunMotion does not implement checkout, Stripe, paid APIs, or live subscriptions yet.
         </p>
       </section>
       <section className="mt-10 grid gap-5 md:grid-cols-3">

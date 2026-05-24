@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Menu } from "lucide-react";
 import { AccountNav } from "./AccountNav";
 import { LinkButton } from "./Button";
 
@@ -6,6 +7,7 @@ const links = [
   { href: "/find", label: "Find" },
   { href: "/deals", label: "Deals" },
   { href: "/date-night", label: "Date Night" },
+  { href: "/friends", label: "Friends" },
   { href: "/family", label: "Family" },
   { href: "/partner", label: "Partner" }
 ];
@@ -41,11 +43,32 @@ export function Navbar() {
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 lg:flex">
           <AccountNav />
           <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/find">
             Find My Plan
           </LinkButton>
+        </div>
+        <div className="flex items-center gap-2 lg:hidden">
+          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/find" showArrow={false}>
+            Find My Plan
+          </LinkButton>
+          <details className="relative">
+            <summary className="flex size-11 cursor-pointer list-none items-center justify-center rounded-full border border-white/10 bg-white/[0.07] text-white">
+              <Menu aria-hidden="true" size={20} />
+              <span className="sr-only">Open menu</span>
+            </summary>
+            <div className="absolute right-0 top-13 w-64 rounded-2xl border border-white/10 bg-[#070816] p-2 shadow-[0_24px_80px_rgba(0,0,0,0.45)]">
+              {links.map((link) => (
+                <Link className="block rounded-xl px-4 py-3 text-sm font-black text-white/76 hover:bg-white/[0.08] hover:text-white" href={link.href} key={link.href}>
+                  {link.label}
+                </Link>
+              ))}
+              <Link className="block rounded-xl px-4 py-3 text-sm font-black text-white/76 hover:bg-white/[0.08] hover:text-white" href="/login">
+                Sign In
+              </Link>
+            </div>
+          </details>
         </div>
       </div>
     </header>
