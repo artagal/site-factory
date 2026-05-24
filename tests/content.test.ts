@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildSuggestedPlan, categories, cities, demoNotice, filterListings, listings, parsePlanFinderInput } from "../apps/website/src/lib/deals-data";
 import { formatDuration, formatPrice } from "../apps/website/src/lib/format";
+import { dealFormatExamples, partnerDealTypes } from "../apps/website/src/lib/deal-taxonomy";
 import { slugify } from "../apps/website/src/lib/slug";
 import { getFactoryRoutes } from "../apps/website/src/lib/site-routes";
 
@@ -75,5 +76,7 @@ describe("GoFunMotion Deals marketplace content", () => {
   it("keeps demo taxonomies broad enough for the launch surface", () => {
     expect(cities.map((city) => city.slug)).toEqual(expect.arrayContaining(["miami", "los-angeles", "new-york"]));
     expect(categories.map((category) => category.slug)).toEqual(expect.arrayContaining(["date-night", "family", "friends"]));
+    expect(partnerDealTypes.map((type) => type.id)).toEqual(expect.arrayContaining(["escape-rooms", "creative-studios", "kids-activity-centers"]));
+    expect(dealFormatExamples).toEqual(expect.arrayContaining(["Tonight only", "Last-minute slot", "2 spots left"]));
   });
 });

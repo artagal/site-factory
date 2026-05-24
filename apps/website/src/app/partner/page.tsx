@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BarChart3, BadgeCheck, ClipboardList, Send } from "lucide-react";
+import { dealFormatExamples, partnerDealTypes } from "../../lib/deal-taxonomy";
 import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
@@ -58,6 +59,48 @@ export default function PartnerPage() {
             </article>
           );
         })}
+      </section>
+
+      <section className="mt-12">
+        <div className="max-w-3xl">
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Who can list</p>
+          <h2 className="mt-3 text-4xl font-black leading-tight text-white md:text-5xl">
+            Businesses with real openings, empty seats, or slow hours.
+          </h2>
+          <p className="mt-4 text-sm leading-6 text-white/60">
+            GoFunMotion works best when the offer is simple: a real activity, a real time window, a clear discount, and limited remaining availability.
+          </p>
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {partnerDealTypes.map((type) => (
+            <article className="rounded-2xl border border-white/10 bg-white/[0.055] p-5" key={type.id}>
+              <h3 className="text-2xl font-black text-white">{type.name}</h3>
+              <p className="mt-2 text-sm leading-6 text-white/58">{type.description}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {type.offerTypes.slice(0, 3).map((offer) => (
+                  <span className="rounded-full bg-lime-300/10 px-3 py-1.5 text-xs font-black text-lime-100" key={offer}>
+                    {offer}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-4 rounded-2xl bg-black/24 p-3 text-sm font-black text-white/76">{type.dealExamples[0]}</p>
+              <p className="mt-3 text-xs font-black uppercase tracking-[0.12em] text-white/38">
+                Buyers: {type.customerTypes.slice(0, 3).join(", ")}
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-12 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-6">
+        <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-200">Best deal formats</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {dealFormatExamples.map((format) => (
+            <span className="rounded-full bg-black/28 px-4 py-2 text-sm font-black text-white/78" key={format}>
+              {format}
+            </span>
+          ))}
+        </div>
       </section>
 
       <section className="mt-12 rounded-2xl border border-white/10 bg-black/24 p-6 md:p-8" id="interest">

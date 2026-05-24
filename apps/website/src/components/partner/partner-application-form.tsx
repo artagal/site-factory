@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { partnerDealTypes } from "../../lib/deal-taxonomy";
 import { demoCategories } from "../../lib/demoData";
 
 export function PartnerApplicationForm() {
@@ -37,6 +38,9 @@ export function PartnerApplicationForm() {
         <label className="block">
           <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">Business category</span>
           <select className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300" name="category" required>
+            {partnerDealTypes.map((type) => (
+              <option className="bg-[#070816]" key={type.id} value={type.name}>{type.name}</option>
+            ))}
             {demoCategories.map((category) => (
               <option className="bg-[#070816]" key={category.id} value={category.name}>{category.name}</option>
             ))}
@@ -48,7 +52,7 @@ export function PartnerApplicationForm() {
       </div>
       <label className="mt-3 block">
         <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">What do you want to list?</span>
-        <textarea className="mt-2 min-h-28 w-full rounded-2xl border border-white/10 bg-black/28 px-4 py-3 text-sm font-bold text-white outline-none focus:border-lime-300" name="description" placeholder="Describe your activities, deals, classes, or open slots." required />
+        <textarea className="mt-2 min-h-28 w-full rounded-2xl border border-white/10 bg-black/28 px-4 py-3 text-sm font-bold text-white outline-none focus:border-lime-300" name="description" placeholder="Example: pottery seats tonight, escape room at 8:30 PM, slow-hour family pass, first class trial, or cancellation slot." required />
       </label>
       <label className="mt-3 block">
         <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">Message</span>

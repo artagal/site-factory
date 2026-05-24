@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness, CalendarHeart, Clock3, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
 import { DealCard } from "../components/gofunmotion/deal-card";
 import { SeoJsonLd } from "../components/seo-json-ld";
+import { partnerDealTypes } from "../lib/deal-taxonomy";
 import { categories, demoNotice, getFeaturedListings } from "../lib/deals-data";
 import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSchema } from "../lib/seo";
 
@@ -298,7 +299,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid content-center gap-3">
-            {["Post an open slot", "Set was / now pricing", "Receive booking requests", "Get approved before public visibility"].map((item) => (
+            {["Post an open slot", "Set was / now pricing", "Show spots left", "Receive booking requests"].map((item) => (
               <div className="rounded-2xl bg-black/26 p-4 text-sm font-black text-white/78" key={item}>
                 {item}
               </div>
@@ -307,6 +308,14 @@ export default function HomePage() {
               List Your Business
             </Link>
           </div>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {partnerDealTypes.slice(0, 4).map((type) => (
+            <Link className="rounded-2xl border border-white/10 bg-black/24 p-4 transition hover:border-lime-300/30 hover:bg-white/[0.07]" href="/partner" key={type.id}>
+              <p className="text-sm font-black text-white">{type.name}</p>
+              <p className="mt-2 text-xs leading-5 text-white/50">{type.dealExamples[0]}</p>
+            </Link>
+          ))}
         </div>
       </section>
 
