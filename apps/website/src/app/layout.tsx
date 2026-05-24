@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { AuthProgressBridge } from "../components/gofunmotion/AuthProgressBridge";
 import { Footer } from "../components/gofunmotion/Footer";
 import { MobileBottomCTA } from "../components/gofunmotion/MobileBottomCTA";
 import { MotionBackground } from "../components/gofunmotion/MotionBackground";
@@ -19,23 +18,21 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "GoFunMotion - Replace Scrolling With Real Life",
+  title: "GoFunMotion - Find Fun Things To Do Today",
   description:
-    "Find fun things to do instead of scrolling. GoFunMotion generates AI-powered real-life challenges for boredom, movement, confidence, and connection.",
+    "Discover local activities, last-minute deals, date ideas, family fun, and spontaneous plans based on your mood, time, budget, and city.",
   image: "/og/gofunmotion-og.svg",
   keywords: [
-    "real life challenges",
-    "anti doomscrolling",
-    "what to do instead of scrolling",
-    "fun things to do when bored",
-    "things to do instead of doomscrolling",
-    "fun things to do",
-    "AI challenge generator",
-    "social challenges",
-    "confidence challenges",
-    "movement challenges",
-    "bored ideas",
-    "things to do instead of scrolling"
+    "things to do today",
+    "fun things to do near me",
+    "local activity deals",
+    "date night ideas",
+    "family activities",
+    "last minute deals",
+    "activity finder",
+    "weekend plans",
+    "local experiences",
+    "fun finder"
   ],
   path: "/"
 });
@@ -48,7 +45,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${plusJakarta.variable} ${spaceGrotesk.variable}`}>
-        <AuthProgressBridge />
         <MotionBackground />
         <Navbar />
         {children}

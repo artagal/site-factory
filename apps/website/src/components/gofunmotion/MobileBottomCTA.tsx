@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flame, Radio } from "lucide-react";
+import { Heart, Search } from "lucide-react";
 import { MobileAccountLink } from "./AccountNav";
 
-const hiddenRoutes = ["/challenge", "/login", "/privacy", "/terms"];
+const hiddenRoutes = ["/login", "/privacy", "/terms"];
 
 export function MobileBottomCTA() {
   const pathname = usePathname();
@@ -13,9 +13,6 @@ export function MobileBottomCTA() {
   if (hiddenRoutes.some((route) => pathname.startsWith(route))) {
     return null;
   }
-
-  const primaryHref = pathname === "/" || pathname === "/challenge" ? "#generator" : "/challenge";
-  const primaryLabel = pathname === "/challenge" ? "Spin mission" : "Generate mission";
 
   return (
     <nav
@@ -25,17 +22,17 @@ export function MobileBottomCTA() {
       <div className="grid grid-cols-[1fr_auto_auto] gap-2">
         <Link
           className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#f72585,#7c3aed,#00d4ff)] px-4 text-sm font-black text-white shadow-[0_0_34px_rgba(0,212,255,0.26)] active:scale-[0.98]"
-          href={primaryHref}
+          href="/find"
         >
-          <Radio aria-hidden="true" size={18} />
-          {primaryLabel}
+          <Search aria-hidden="true" size={18} />
+          Find My Plan
         </Link>
         <Link
-          aria-label="Open daily mission"
+          aria-label="Open saved plans"
           className="inline-flex size-14 items-center justify-center rounded-2xl border border-lime-300/20 bg-lime-300/10 text-lime-100 active:scale-[0.98]"
-          href="/daily"
+          href="/saved"
         >
-          <Flame aria-hidden="true" size={20} />
+          <Heart aria-hidden="true" size={20} />
         </Link>
         <MobileAccountLink />
       </div>

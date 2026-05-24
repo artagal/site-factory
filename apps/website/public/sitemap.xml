@@ -127,31 +127,73 @@
     <priority>0.68</priority>
   </url>
   <url>
-    <loc>https://gofunmotion.com/categories</loc>
+    <loc>https://gofunmotion.com/date-night</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
-    <loc>https://gofunmotion.com/challenge</loc>
+    <loc>https://gofunmotion.com/deals</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/deals/escape-room-last-minute-demo</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/deals/kids-indoor-play-weekend-demo</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.72</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/deals/mini-golf-friends-plan-demo</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.72</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/deals/pottery-date-night-demo</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.82</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/family</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/find</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://gofunmotion.com/daily</loc>
-    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.75</priority>
-  </url>
-  <url>
-    <loc>https://gofunmotion.com/leaderboard</loc>
+    <loc>https://gofunmotion.com/friends</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
   </url>
   <url>
     <loc>https://gofunmotion.com/login</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/partner</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/pricing</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>
@@ -170,6 +212,12 @@
   </url>
   <url>
     <loc>https://gofunmotion.com/profile/settings</loc>
+    <lastmod>2026-05-23T00:00:00.000Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+  <url>
+    <loc>https://gofunmotion.com/saved</loc>
     <lastmod>2026-05-23T00:00:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.75</priority>

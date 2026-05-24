@@ -2,11 +2,15 @@ import Link from "next/link";
 import { Logo } from "./Navbar";
 
 const footerLinks = [
-  { href: "/challenge", label: "Challenge Generator" },
-  { href: "/categories", label: "Categories" },
-  { href: "/waitlist", label: "Mobile App" },
-  { href: "/login", label: "Login" },
-  { href: "/profile", label: "Account" },
+  { href: "/find", label: "Find a Plan" },
+  { href: "/deals", label: "Deals" },
+  { href: "/date-night", label: "Date Night" },
+  { href: "/friends", label: "Friends" },
+  { href: "/family", label: "Family" },
+  { href: "/partner", label: "Partner" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/saved", label: "Saved" },
+  { href: "/login", label: "Sign In" },
   { href: "/about", label: "About" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" }
@@ -19,7 +23,7 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-xl text-sm leading-6 text-white/60">
-            The internet that gets you moving. Fun AI-powered real-life challenges for motion, courage, connection, and adventure.
+            GoFunMotion Deals helps people find local activities, last-minute deals, date ideas, family plans, and bookable experiences without endless searching.
           </p>
           <p className="mt-4 text-sm text-white/45">Contact: hello@gofunmotion.com</p>
         </div>

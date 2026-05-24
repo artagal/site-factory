@@ -1,77 +1,97 @@
 import type { Metadata } from "next";
-import { Brain, Flame, Map, Smartphone, Trophy, Users, Zap } from "lucide-react";
-import { BlogCard } from "../components/gofunmotion/BlogCard";
-import { CategoryCard } from "../components/gofunmotion/CategoryCard";
-import { ChallengeGenerator } from "../components/gofunmotion/ChallengeGenerator";
-import { CoreLoop } from "../components/gofunmotion/CoreLoop";
-import { DailyChallengeCard } from "../components/gofunmotion/DailyChallenge";
-import { DailyMissionBanner } from "../components/gofunmotion/DailyMissionBanner";
-import { Hero } from "../components/gofunmotion/Hero";
-import { HowItWorks } from "../components/gofunmotion/HowItWorks";
-import { LeaderboardPreview } from "../components/gofunmotion/Leaderboard";
+import Link from "next/link";
+import { ArrowRight, BadgeCheck, BriefcaseBusiness, CalendarHeart, MapPin, Sparkles, Users } from "lucide-react";
+import { DealCard } from "../components/gofunmotion/deal-card";
+import { PlanFinderForm } from "../components/gofunmotion/plan-finder-form";
 import { LinkButton } from "../components/gofunmotion/Button";
-import { LivePulse } from "../components/gofunmotion/LivePulse";
-import { MomentumShowcase } from "../components/gofunmotion/MomentumShowcase";
-import { RealWorldModes } from "../components/gofunmotion/RealWorldModes";
-import { WaitlistForm } from "../components/gofunmotion/WaitlistForm";
-import { blogPosts } from "../lib/blog";
-import { challengeCategories } from "../lib/challenges";
-import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSchema } from "../lib/seo";
 import { SeoJsonLd } from "../components/seo-json-ld";
+import { categories, demoNotice, getFeaturedListings } from "../lib/deals-data";
+import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSchema } from "../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "GoFunMotion - Replace Scrolling With Real Life",
+  title: "GoFunMotion - Find Fun Things To Do Today",
   description:
-    "GoFunMotion helps you find fun things to do instead of scrolling with AI-powered real-life challenges for boredom, movement, confidence, and connection.",
+    "Discover local activities, last-minute deals, date ideas, family fun, and spontaneous plans based on your mood, time, budget, and city.",
   image: "/og/gofunmotion-og.svg",
   keywords: [
-    "real life challenges",
-    "anti doomscrolling",
-    "what to do instead of scrolling",
-    "fun things to do when bored",
-    "things to do instead of doomscrolling",
-    "fun things to do",
-    "AI challenge generator",
-    "social challenges",
-    "confidence challenges",
-    "movement challenges",
-    "bored ideas",
-    "things to do instead of scrolling"
+    "things to do today",
+    "fun things to do near me",
+    "local activity deals",
+    "date night ideas",
+    "family activities",
+    "last minute deals",
+    "activity finder",
+    "weekend plans",
+    "local experiences",
+    "fun finder"
   ],
   path: "/"
 });
 
-const whyCards = [
-  { icon: Zap, title: "Break the boredom loop", text: "When your brain says scroll, GoFunMotion says move." },
-  { icon: Flame, title: "Wake up your day", text: "One tiny challenge can change the whole mood of your day." },
-  { icon: Users, title: "Create connection", text: "Small social prompts help lonely moments turn into contact." },
-  { icon: Map, title: "Discover your city", text: "Make familiar streets feel like a playable world." },
-  { icon: Brain, title: "Reset your attention", text: "Step out of the feed and back into your senses." },
-  { icon: Trophy, title: "Earn XP for life", text: "Streaks, badges, and levels make real-world action rewarding." }
+const planCards = [
+  "Comedy Night - Tonight",
+  "Pottery Class - 25% Off",
+  "Date Night Under $50",
+  "Kids Indoor Play - Weekend",
+  "Escape Room - Last-Minute Slot",
+  "Mini Golf - Friends Plan"
 ];
 
-const communityMoments = [
-  "I opened it because I was bored. 20 minutes later I was outside watching the sunset.",
-  "This turned a random Friday night into an adventure.",
-  "It feels like Duolingo for real life."
+const howItWorks = [
+  {
+    icon: MapPin,
+    title: "Tell us the basics",
+    text: "City, when, who's going, budget, vibe, time, and indoor or outdoor."
+  },
+  {
+    icon: Sparkles,
+    title: "Get a simple plan",
+    text: "GoFunMotion returns a shortlist with one clear plan, a matching deal, and a backup."
+  },
+  {
+    icon: BadgeCheck,
+    title: "Save or request",
+    text: "Save ideas for later, share the plan, or request booking when a listing fits."
+  }
+];
+
+const audienceSections = [
+  {
+    href: "/date-night",
+    title: "Date night without the planning spiral",
+    text: "Find romantic, playful, relaxed, or creative plans based on time and budget.",
+    icon: CalendarHeart
+  },
+  {
+    href: "/friends",
+    title: "Group plans people can agree on",
+    text: "Shortlist social activities, last-minute slots, and easy backup options.",
+    icon: Users
+  },
+  {
+    href: "/family",
+    title: "Family activities that work today",
+    text: "Filter for kids, indoor plans, weekends, and lower-stress options.",
+    icon: Sparkles
+  }
 ];
 
 export default function HomePage() {
   const schema = createSchemaGraph([
     createWebPageSchema({
       description:
-        "GoFunMotion is an AI-powered real-life challenges platform that helps people replace scrolling with movement, confidence, connection, and adventure.",
+        "GoFunMotion Deals helps people discover local activities, last-minute deals, date ideas, family activities, and spontaneous plans.",
       path: "/",
-      title: "GoFunMotion"
+      title: "GoFunMotion Deals"
     }),
     createFaqSchema([
       {
-        question: "Do I need an app to use GoFunMotion?",
-        answer: "No. GoFunMotion works in the browser now. The iOS and Android app is planned for later."
+        question: "Do I need an account to browse plans?",
+        answer: "No. You can use the plan finder and browse demo deal scaffolding before signing in."
       },
       {
-        question: "Does the challenge generator require signup?",
-        answer: "No. You can generate challenges immediately. Accounts and Firebase can be connected later for saved progress."
+        question: "Can I book directly today?",
+        answer: "Phase 1 uses request-based booking placeholders only. Payments and live partner booking are not implemented yet."
       }
     ])
   ]);
@@ -79,133 +99,166 @@ export default function HomePage() {
   return (
     <main>
       <SeoJsonLd data={schema} id="gofunmotion-home-schema" />
-      <Hero />
-      <DailyMissionBanner />
-      <CoreLoop />
-      <ChallengeGenerator />
-      <LivePulse />
-      <RealWorldModes />
-
-      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
-        <div className="max-w-3xl">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-fuchsia-300">Why it works</p>
-          <h2 className="mt-3 text-4xl font-black leading-tight text-white md:text-6xl">
-            Tiny missions beat endless scrolling.
-          </h2>
-          <p className="mt-4 text-lg leading-8 text-white/62">
-            One clear prompt. One small action. Real momentum you can feel.
+      <section className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-10 px-4 py-12 md:px-8 lg:grid-cols-[0.95fr_1.05fr]">
+        <div>
+          <p className="inline-flex min-h-9 items-center rounded-full border border-lime-300/25 bg-lime-300/10 px-4 text-xs font-black uppercase tracking-[0.16em] text-lime-100">
+            Local plans and activity deals
           </p>
-        </div>
-        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {whyCards.map((card) => {
-            const Icon = card.icon;
-            return (
-              <article className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-5 backdrop-blur-2xl" key={card.title}>
-                <div className="flex size-12 items-center justify-center rounded-2xl bg-white text-black">
-                  <Icon aria-hidden="true" size={23} />
-                </div>
-                <h3 className="mt-5 text-2xl font-black text-white">{card.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-white/60">{card.text}</p>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
-        <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Challenge modes</p>
-            <h2 className="mt-3 text-4xl font-black text-white md:text-6xl">Pick the kind of life you want today</h2>
+          <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.95] text-white md:text-7xl">
+            Find something fun to do today.
+          </h1>
+          <p className="mt-5 max-w-2xl text-lg font-semibold leading-8 text-white/68 md:text-xl">
+            Tell us your city, mood, time, budget, and who&apos;s going. GoFunMotion finds real plans,
+            local activities, and last-minute deals you can actually do.
+          </p>
+          <p className="mt-4 text-sm font-black uppercase tracking-[0.14em] text-cyan-200">
+            No endless searching. No fake points. Just real things to do.
+          </p>
+          <div className="mt-8">
+            <LinkButton className="min-h-14 rounded-2xl px-6 text-base" href="/find">
+              Find My Plan
+            </LinkButton>
           </div>
-          <LinkButton href="/categories" variant="ghost">All categories</LinkButton>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {challengeCategories.slice(0, 6).map((category) => (
-            <CategoryCard category={category} key={category} />
-          ))}
-        </div>
-      </section>
 
-      <HowItWorks />
-
-      <section className="mx-auto grid max-w-7xl gap-5 px-4 py-14 md:px-8 md:py-20 lg:grid-cols-[1.1fr_0.9fr]">
-        <DailyChallengeCard />
-        <LeaderboardPreview />
-      </section>
-
-      <MomentumShowcase />
-
-      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
-        <div className="mb-8 max-w-3xl">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Community moments</p>
-          <h2 className="mt-3 text-4xl font-black leading-tight text-white md:text-6xl">
-            Tonight does not have to feel wasted.
-          </h2>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {communityMoments.map((quote) => (
-            <figure className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-2xl" key={quote}>
-              <div className="absolute -right-10 -top-10 size-28 rounded-full bg-fuchsia-400/18 blur-2xl" />
-              <blockquote className="text-xl font-black leading-tight text-white">&quot;{quote}&quot;</blockquote>
-              <figcaption className="mt-4 text-sm font-bold text-white/42">Early community story</figcaption>
-            </figure>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
-        <div className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-2xl">
-            <Smartphone aria-hidden="true" className="text-cyan-300" size={34} />
-            <h2 className="mt-5 text-4xl font-black leading-tight text-white md:text-6xl">
-              GoFunMotion is coming to iOS and Android.
-            </h2>
-            <p className="mt-4 text-lg leading-8 text-white/62">
-              Daily streaks, friend challenges, location-based adventures, an AI coach, real-life quests, and social leaderboards are planned next.
-            </p>
-          </div>
-          <WaitlistForm />
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
-        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(247,37,133,0.16),rgba(124,58,237,0.16),rgba(190,242,100,0.08))] p-6 backdrop-blur-2xl md:p-8">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Premium coming soon</p>
-          <h2 className="mt-3 max-w-4xl text-4xl font-black leading-tight text-white md:text-6xl">
-            Future packs for couples, friends, city adventures, creators, and AI coaching.
-          </h2>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              "Unlimited AI challenges",
-              "Advanced challenge packs",
-              "Couples and friends mode",
-              "City adventure mode",
-              "Streak protection",
-              "AI personal coach",
-              "Private groups",
-              "Creator packs"
-            ].map((feature) => (
-              <div className="rounded-2xl bg-black/24 p-4 text-sm font-black text-white/78" key={feature}>
-                {feature}
+        <div className="relative min-h-[480px] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-[0_25px_100px_rgba(0,0,0,0.32)] backdrop-blur-2xl">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:44px_44px] opacity-45" />
+          <div className="relative grid h-full gap-3 sm:grid-cols-2">
+            {planCards.map((card, index) => (
+              <div
+                className="flex min-h-28 flex-col justify-between rounded-2xl border border-white/10 bg-black/38 p-4"
+                key={card}
+              >
+                <span className="text-xs font-black uppercase tracking-[0.14em] text-white/38">
+                  {index % 2 === 0 ? "Plan" : "Deal"}
+                </span>
+                <p className="text-xl font-black leading-tight text-white">{card}</p>
+                <span className="text-sm font-bold text-lime-200">Demo preview</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-4 py-12 md:px-8">
+        <div className="mb-5 max-w-3xl">
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Quick finder</p>
+          <h2 className="mt-3 text-4xl font-black text-white md:text-5xl">Start with one clear plan.</h2>
+        </div>
+        <PlanFinderForm />
+      </section>
+
       <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-fuchsia-300">SEO idea engine</p>
-            <h2 className="mt-3 text-4xl font-black text-white md:text-6xl">Read before you scroll again</h2>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Featured demo deals</p>
+            <h2 className="mt-3 text-4xl font-black text-white md:text-5xl">Local activity cards for the new marketplace.</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">{demoNotice}</p>
           </div>
-          <LinkButton href="/blog" variant="ghost">Open blog</LinkButton>
+          <Link className="inline-flex items-center gap-2 text-sm font-black text-lime-200 hover:text-white" href="/deals">
+            Browse deals <ArrowRight aria-hidden="true" size={17} />
+          </Link>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {blogPosts.slice(0, 3).map((post) => (
-            <BlogCard {...post} key={post.slug} />
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {getFeaturedListings().map((listing) => (
+            <DealCard key={listing.id} listing={listing} />
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Popular categories</p>
+            <h2 className="mt-3 text-4xl font-black leading-tight text-white md:text-5xl">
+              Choose the kind of fun that fits today.
+            </h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {categories.map((category) => (
+              <Link
+                className="rounded-2xl border border-white/10 bg-white/[0.055] p-5 transition hover:border-white/20 hover:bg-white/[0.09]"
+                href={`/deals?category=${category.id}`}
+                key={category.id}
+              >
+                <span className="text-sm font-black uppercase tracking-[0.14em]" style={{ color: category.accentColor }}>
+                  {category.name}
+                </span>
+                <p className="mt-2 text-sm leading-6 text-white/58">{category.description}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="grid gap-4 md:grid-cols-3">
+          {howItWorks.map((item) => {
+            const Icon = item.icon;
+            return (
+              <article className="rounded-2xl border border-white/10 bg-white/[0.055] p-6" key={item.title}>
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-white text-[#070816]">
+                  <Icon aria-hidden="true" size={22} />
+                </div>
+                <h3 className="mt-5 text-2xl font-black text-white">{item.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-white/60">{item.text}</p>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-4 px-4 py-14 md:px-8 md:py-20 lg:grid-cols-3">
+        {audienceSections.map((section) => {
+          const Icon = section.icon;
+          return (
+            <Link
+              className="group rounded-2xl border border-white/10 bg-white/[0.055] p-6 transition hover:border-lime-300/35 hover:bg-white/[0.09]"
+              href={section.href}
+              key={section.href}
+            >
+              <Icon aria-hidden="true" className="text-lime-200" size={30} />
+              <h2 className="mt-5 text-3xl font-black leading-tight text-white">{section.title}</h2>
+              <p className="mt-3 text-sm leading-6 text-white/60">{section.text}</p>
+              <span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-lime-200 group-hover:text-white">
+                Explore <ArrowRight aria-hidden="true" size={16} />
+              </span>
+            </Link>
+          );
+        })}
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+        <div className="grid gap-5 rounded-2xl border border-white/10 bg-white/[0.055] p-6 md:p-8 lg:grid-cols-[1fr_0.9fr]">
+          <div>
+            <BriefcaseBusiness aria-hidden="true" className="text-cyan-300" size={34} />
+            <h2 className="mt-5 text-4xl font-black leading-tight text-white md:text-5xl">
+              Fill empty slots with people looking for something fun to do.
+            </h2>
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-white/64">
+              Local businesses will be able to apply, create listings, promote last-minute deals, and receive booking requests after approval.
+            </p>
+          </div>
+          <div className="grid content-center gap-3">
+            {["List activities", "Promote last-minute deals", "Receive booking requests", "Require admin approval"].map((item) => (
+              <div className="rounded-2xl bg-black/26 p-4 text-sm font-black text-white/78" key={item}>
+                {item}
+              </div>
+            ))}
+            <Link className="mt-2 inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/10 bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/partner">
+              Partner With Us
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 pb-16 pt-8 md:px-8 md:pb-24">
+        <div className="rounded-2xl border border-white/10 bg-black/26 p-6 md:p-8">
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">City waitlist</p>
+          <h2 className="mt-3 text-3xl font-black text-white md:text-5xl">Want GoFunMotion Deals in your city?</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-white/60">
+            Phase 1 keeps city interest lightweight. Tell us where you are, and future phases can connect city demand to partner approval.
+          </p>
         </div>
       </section>
     </main>

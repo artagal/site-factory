@@ -3,11 +3,11 @@ import { AccountNav } from "./AccountNav";
 import { LinkButton } from "./Button";
 
 const links = [
-  { href: "/challenge", label: "Generator" },
-  { href: "/categories", label: "Modes" },
-  { href: "/daily", label: "Daily" },
-  { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/blog", label: "Ideas" }
+  { href: "/find", label: "Find" },
+  { href: "/deals", label: "Deals" },
+  { href: "/date-night", label: "Date Night" },
+  { href: "/family", label: "Family" },
+  { href: "/partner", label: "Partner" }
 ];
 
 export function Logo() {
@@ -43,8 +43,8 @@ export function Navbar() {
         </nav>
         <div className="flex items-center gap-2">
           <AccountNav />
-          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/challenge">
-            Try it
+          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/find">
+            Find My Plan
           </LinkButton>
         </div>
       </div>

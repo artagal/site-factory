@@ -36,7 +36,7 @@ export function AccountNav() {
         }
       >
         <LogIn aria-hidden="true" size={17} />
-        Login
+        Sign In
       </Link>
     );
   }
@@ -79,7 +79,7 @@ export function MobileAccountLink() {
 
   return (
     <Link
-      aria-label={user ? "Open account" : "Login"}
+      aria-label={user ? "Open account" : "Sign in"}
       className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-3 text-sm font-black text-white active:scale-[0.98]"
       href={user ? "/profile" : "/login"}
       onClick={() => {
@@ -92,7 +92,7 @@ export function MobileAccountLink() {
       }}
     >
       <UserCircle2 aria-hidden="true" size={20} />
-      <span>{user ? "Account" : "Login"}</span>
+      <span>{user ? "Account" : "Sign In"}</span>
     </Link>
   );
 }

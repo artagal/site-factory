@@ -5,7 +5,7 @@ import { buildSeoMetadata } from "../../lib/seo";
 export const metadata: Metadata = buildSeoMetadata({
   title: "About GoFunMotion",
   description:
-    "GoFunMotion is a lifestyle movement brand using AI-powered real-life challenges to help people stop doomscrolling and start living.",
+    "GoFunMotion Deals helps people discover local activities, last-minute deals, date ideas, family plans, and spontaneous things to do.",
   path: "/about"
 });
 
@@ -14,22 +14,22 @@ export default function AboutPage() {
     <main className="mx-auto max-w-5xl px-4 py-12 md:px-8 md:py-20">
       <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Mission</p>
       <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-7xl">
-        Your couch is comfortable. Your life is outside.
+        Make local plans easier to choose.
       </h1>
       <div className="mt-8 grid gap-5 text-lg leading-8 text-white/68">
         <p>
-          GoFunMotion exists because boredom should not automatically become scrolling. The product gives people tiny real-life missions that are safe, fun, social, active, and easy to start.
+          GoFunMotion Deals exists for the moment when someone wants to do something fun but does not want to search through tabs, maps, reviews, calendars, and group texts.
         </p>
         <p>
-          It is not about shame. It is about momentum. A two-minute mission can become a walk, a conversation, a date idea, a creative spark, or a better night.
+          The product direction is local discovery: city, mood, time, budget, and who is going in; simple plans, activity deals, and booking requests out.
         </p>
         <p>
-          Today GoFunMotion is a website and web app. The architecture is prepared for Firebase, mobile apps, AI generation, premium challenge packs, groups, and creator modes later.
+          Today the site uses demo scaffolding while Firebase saves, booking requests, partner dashboards, and admin approval are phased in.
         </p>
       </div>
       <div className="mt-8 flex flex-wrap gap-3">
-        <LinkButton href="/challenge">Generate a mission</LinkButton>
-        <LinkButton href="/waitlist" variant="ghost">Join app waitlist</LinkButton>
+        <LinkButton href="/find">Find My Plan</LinkButton>
+        <LinkButton href="/partner" variant="ghost">Partner With Us</LinkButton>
       </div>
     </main>
   );
