@@ -3,16 +3,29 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { Building2, CheckCircle2, ListChecks, MapPinned, ShieldCheck } from "lucide-react";
+import { Building2, CheckCircle2, CreditCard, ListChecks, MapPinned, ShieldCheck } from "lucide-react";
 import { observeUser } from "../../lib/auth";
 import { demoBusinesses, demoCategories, demoCities, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
-import { isAdminUser } from "../../lib/firestore";
+import {
+  isAdminUser,
+  readAdminBusinesses,
+  readAdminListings,
+  readAdminPartnerApplications,
+  readAdminPartnerSubscriptions,
+  type PartnerApplicationRecord,
+  type PartnerSubscriptionRecord
+} from "../../lib/firestore";
+import type { Business, Listing } from "../../types/deals";
 
 export function AdminDashboard() {
   const [allowed, setAllowed] = useState(false);
+  const [applications, setApplications] = useState<PartnerApplicationRecord[]>([]);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
   const [checking, setChecking] = useState(true);
+  const [listings, setListings] = useState<Listing[]>([]);
   const [status, setStatus] = useState("");
+  const [subscriptions, setSubscriptions] = useState<PartnerSubscriptionRecord[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => observeUser(setUser), []);
@@ -28,6 +41,22 @@ export function AdminDashboard() {
         if (!cancelled) {
           setAllowed(nextAllowed);
           setStatus(nextAllowed ? "" : "This account is not listed in admins/{uid}.");
+        }
+
+        if (nextAllowed) {
+          const [nextApplications, nextBusinesses, nextListings, nextSubscriptions] = await Promise.all([
+            readAdminPartnerApplications(),
+            readAdminBusinesses(),
+            readAdminListings(),
+            readAdminPartnerSubscriptions()
+          ]);
+
+          if (!cancelled) {
+            setApplications(nextApplications);
+            setBusinesses(nextBusinesses);
+            setListings(nextListings);
+            setSubscriptions(nextSubscriptions);
+          }
         }
       } catch (error) {
         if (!cancelled) setStatus(error instanceof Error ? error.message : "Could not verify admin access.");
@@ -72,17 +101,32 @@ export function AdminDashboard() {
     );
   }
 
+  const visibleBusinesses = businesses.length ? businesses : demoBusinesses;
+  const visibleListings = listings.length ? listings : demoListings;
+  const applicationItems = applications.length
+    ? applications.map((application) => `${application.businessName} - ${application.city} - ${application.status}`)
+    : ["No live partner applications yet."];
+  const subscriptionItems = subscriptions.length
+    ? subscriptions.map((subscription) => {
+      const business = visibleBusinesses.find((item) => item.id === subscription.businessId);
+      const businessLabel = business?.name ?? subscription.businessId ?? "Unlinked business";
+      return `${businessLabel} - ${subscription.pricingTier ?? "unknown tier"} - ${subscription.subscriptionStatus}`;
+    })
+    : ["No paid partner subscriptions synced yet."];
+
   return (
     <>
       <section className="mt-8 grid gap-4 md:grid-cols-5">
-        <AdminStat icon={ShieldCheck} label="Applications" value="Review" />
-        <AdminStat icon={Building2} label="Businesses" value={String(demoBusinesses.length)} />
-        <AdminStat icon={ListChecks} label="Listings" value={String(demoListings.length)} />
+        <AdminStat icon={ShieldCheck} label="Applications" value={String(applications.length || "Review")} />
+        <AdminStat icon={Building2} label="Businesses" value={String(visibleBusinesses.length)} />
+        <AdminStat icon={ListChecks} label="Listings" value={String(visibleListings.length)} />
         <AdminStat icon={MapPinned} label="Cities" value={String(demoCities.length)} />
-        <AdminStat icon={CheckCircle2} label="Categories" value={String(demoCategories.length)} />
+        <AdminStat icon={CreditCard} label="Paid plans" value={String(subscriptions.filter((subscription) => subscription.paidAccessEnabled).length)} />
       </section>
       <section className="mt-8 grid gap-5 lg:grid-cols-2">
-        <AdminPanel title="Demo listing review state" items={demoListings.map((listing) => `${listing.title} - ${listing.status}/${listing.approvalStatus}`)} />
+        <AdminPanel title="Partner applications" items={applicationItems} />
+        <AdminPanel title="Partner subscriptions" items={subscriptionItems} />
+        <AdminPanel title={listings.length ? "Live listing review state" : "Demo listing review state"} items={visibleListings.map((listing) => `${listing.title} - ${listing.status}/${listing.approvalStatus}`)} />
         <AdminPanel title="Managed cities" items={demoCities.map((city) => `${city.name}, ${city.state} - ${city.active ? "active" : "coming soon"}`)} />
       </section>
     </>
@@ -102,7 +146,7 @@ function AdminPanel({ items, title }: { items: string[]; title: string }) {
   );
 }
 
-function AdminStat({ icon: Icon, label, value }: { icon: typeof ShieldCheck; label: string; value: string }) {
+function AdminStat({ icon: Icon, label, value }: { icon: typeof CheckCircle2; label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
       <Icon aria-hidden="true" className="text-cyan-300" size={24} />
