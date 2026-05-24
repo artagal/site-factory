@@ -64,7 +64,7 @@ export function AdminDashboard() {
         {checking ? <p className="mt-4 text-sm font-bold text-white/58">Checking admin access...</p> : null}
         {status ? <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
         {!user ? (
-          <Link className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/login">
+          <Link className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/login?next=/admin">
             Sign In
           </Link>
         ) : null}

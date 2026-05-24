@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { User } from "firebase/auth";
 import { trackEvent } from "../../lib/analytics";
 import { createEmailAccount, observeUser, signInEmail, signInGoogle, signInGuest, signOutUser } from "../../lib/auth";
@@ -9,12 +10,23 @@ import { ensureUserProfile } from "../../lib/firestore";
 import { Button } from "../../components/gofunmotion/Button";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("Firebase is optional in this preview. Browse plans and deals without signing in.");
   const [user, setUser] = useState<User | null>(null);
   const firebaseReady = isFirebaseConfigured();
+  const nextPath = getSafeNextPath(searchParams.get("next"));
 
   useEffect(() => observeUser(setUser), []);
 
@@ -26,6 +38,9 @@ export default function LoginPage() {
 
     await ensureUserProfile(resultUser);
     setStatus(successMessage);
+    if (nextPath) {
+      router.push(nextPath);
+    }
   }
 
   async function runAuthAction(action: () => Promise<User | null | undefined>) {
@@ -129,6 +144,22 @@ export default function LoginPage() {
           ) : null}
           <p className="text-sm font-bold text-lime-200">{status}</p>
         </div>
+      </div>
+    </main>
+  );
+}
+
+function getSafeNextPath(value: string | null) {
+  if (!value) return null;
+  if (!value.startsWith("/") || value.startsWith("//")) return null;
+  return value;
+}
+
+function LoginFallback() {
+  return (
+    <main className="mx-auto max-w-5xl px-4 py-12 md:px-8 md:py-20">
+      <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 text-sm font-bold text-white/64">
+        Loading sign-in...
       </div>
     </main>
   );
