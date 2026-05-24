@@ -8,15 +8,7 @@ export type AnalyticsEventName =
   | "partner_application_submitted"
   | "plan_generated"
   | "plan_saved"
-  | "waitlist_submitted"
-  // Deprecated legacy events remain typed only so isolated old components compile during the pivot.
-  | "account_deleted"
-  | "challenge_completed"
-  | "challenge_generated"
-  | "challenge_saved"
-  | "challenge_shared"
-  | "challenge_started"
-  | "email_verification_sent";
+  | "waitlist_submitted";
 
 export type AnalyticsEvent = {
   id: string;

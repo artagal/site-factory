@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Clock, MapPin, Sparkles, Tag } from "lucide-react";
+import { SaveListingButton } from "../listings/save-listing-button";
 import { getCategoryById, formatPrice } from "../../lib/deals-data";
 import type { Listing } from "../../types/deals";
 
@@ -67,6 +68,9 @@ export function DealCard({ listing }: { listing: Listing }) {
         >
           View Deal
         </Link>
+        <div className="mt-3">
+          <SaveListingButton listing={listing} />
+        </div>
       </div>
     </article>
   );

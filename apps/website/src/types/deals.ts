@@ -86,6 +86,7 @@ export type Listing = {
   categoryIds: string[];
   cityId: string;
   cityName: string;
+  clickCount: number;
   currency: "USD";
   description: string;
   discountPercent: number | null;
@@ -104,12 +105,15 @@ export type Listing = {
   phone: string | null;
   price: number;
   promoted: boolean;
+  requestCount: number;
+  saveCount: number;
   shortDescription: string;
   slug: string;
   status: "draft" | "pending_approval" | "published" | "paused" | "expired";
   terms: string;
   title: string;
   vibeTags: PlanVibe[];
+  viewCount: number;
   whyItFits: string;
 };
 

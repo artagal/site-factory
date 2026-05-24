@@ -90,7 +90,7 @@ describe("GoFunMotion Deals API routes", () => {
 
   it("tracks only allowed analytics events", async () => {
     const badResponse = await trackPost(jsonRequest("https://site-factory.test/api/track", {
-      type: "challenge_completed"
+      type: "old_product_event"
     }));
 
     expect(badResponse.status).toBe(400);

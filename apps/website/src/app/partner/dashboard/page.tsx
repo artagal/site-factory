@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ClipboardList, Eye, MousePointerClick, Send, Star } from "lucide-react";
-import { demoBusinesses, demoListings } from "../../../lib/demoData";
+import { PartnerDashboard } from "../../../components/partner/partner-dashboard";
 import { buildSeoMetadata } from "../../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
@@ -12,9 +11,6 @@ export const metadata: Metadata = buildSeoMetadata({
 });
 
 export default function PartnerDashboardPage() {
-  const business = demoBusinesses[0];
-  const listings = demoListings.filter((listing) => listing.businessId === business.id);
-
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
@@ -29,58 +25,7 @@ export default function PartnerDashboardPage() {
           Apply for live access
         </Link>
       </div>
-
-      <section className="mt-8 grid gap-4 md:grid-cols-4">
-        <Stat icon={Eye} label="Listing views" value="Demo" />
-        <Stat icon={Send} label="Booking requests" value="0" />
-        <Stat icon={Star} label="Saved count" value="0" />
-        <Stat icon={MousePointerClick} label="Clicks" value="0" />
-      </section>
-
-      <section className="mt-8 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-          <h2 className="text-2xl font-black text-white">Business profile</h2>
-          <p className="mt-3 text-xl font-black text-white/82">{business.name}</p>
-          <p className="mt-2 text-sm leading-6 text-white/58">{business.description}</p>
-          <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-white/58">
-            Approved demo profile. Real partner-created businesses start as pending until admin approval.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-          <h2 className="text-2xl font-black text-white">Listings</h2>
-          <div className="mt-4 grid gap-3">
-            {listings.map((listing) => (
-              <div className="rounded-2xl bg-black/24 p-4" key={listing.id}>
-                <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
-                  <div>
-                    <p className="font-black text-white">{listing.title}</p>
-                    <p className="mt-1 text-sm text-white/52">{listing.status} / {listing.approvalStatus}</p>
-                  </div>
-                  <Link className="text-sm font-black text-lime-200 hover:text-white" href={`/deals/${listing.slug}`}>View</Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mt-8 rounded-2xl border border-white/10 bg-black/24 p-6">
-        <ClipboardList aria-hidden="true" className="text-cyan-300" size={30} />
-        <h2 className="mt-4 text-2xl font-black text-white">Booking requests</h2>
-        <p className="mt-2 text-sm leading-6 text-white/58">
-          Incoming requests will appear here with pending, contacted, confirmed, cancelled, or rejected status.
-        </p>
-      </section>
+      <PartnerDashboard />
     </main>
-  );
-}
-
-function Stat({ icon: Icon, label, value }: { icon: typeof Eye; label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
-      <Icon aria-hidden="true" className="text-lime-200" size={24} />
-      <p className="mt-4 text-3xl font-black text-white">{value}</p>
-      <p className="mt-1 text-sm font-bold text-white/50">{label}</p>
-    </div>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Bookmark, CalendarClock, Heart, UserCircle2 } from "lucide-react";
+import { Bookmark, CalendarClock, Heart } from "lucide-react";
+import { ProfileDashboard } from "../../components/profile/profile-dashboard";
 import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
@@ -29,19 +30,13 @@ export default function ProfilePage() {
             </Link>
           </div>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-          <UserCircle2 aria-hidden="true" className="text-cyan-300" size={36} />
-          <h2 className="mt-5 text-3xl font-black text-white">Firebase account area</h2>
-          <p className="mt-3 text-sm leading-6 text-white/58">
-            When Firebase is configured, this page reads the signed-in user&apos;s saved plans, saved listings, booking requests, preferred city, preferred categories, and account info.
-          </p>
-        </div>
+        <ProfileDashboard />
       </section>
 
       <section className="mt-10 grid gap-5 md:grid-cols-3">
-        <ProfileBlock icon={Bookmark} title="Saved plans" text="Generated plans saved after sign-in will appear here." />
-        <ProfileBlock icon={Heart} title="Saved deals" text="Listings and activities saved for later will appear here." />
-        <ProfileBlock icon={CalendarClock} title="Booking requests" text="Pending, contacted, confirmed, cancelled, and rejected requests will appear here." />
+        <ProfileBlock icon={Bookmark} title="Saved plans" text="Rule-based plan snapshots sync to your signed-in profile." />
+        <ProfileBlock icon={Heart} title="Saved deals" text="Listings and activities saved for later stay attached to your account." />
+        <ProfileBlock icon={CalendarClock} title="Booking requests" text="Pending, contacted, confirmed, cancelled, and rejected requests are grouped here." />
       </section>
     </main>
   );

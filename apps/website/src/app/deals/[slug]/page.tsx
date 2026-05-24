@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Bookmark, CalendarClock, MapPin, Share2, Ticket } from "lucide-react";
+import { CalendarClock, MapPin, Ticket } from "lucide-react";
 import { BookingRequestForm } from "../../../components/listings/booking-request-form";
+import { SaveListingButton } from "../../../components/listings/save-listing-button";
+import { ShareButton } from "../../../components/shared/share-button";
 import { demoNotice, formatPrice, getBusinessById, getCategoryById, getListingBySlug, listings } from "../../../lib/deals-data";
 import { buildSeoMetadata } from "../../../lib/seo";
 
@@ -78,17 +80,11 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
             </span>
           </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <button className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" type="button">
+            <a className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="#request-booking">
               Request Booking
-            </button>
-            <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-5 text-sm font-black text-white" type="button">
-              <Bookmark aria-hidden="true" size={17} />
-              Save
-            </button>
-            <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-5 text-sm font-black text-white" type="button">
-              <Share2 aria-hidden="true" size={17} />
-              Share
-            </button>
+            </a>
+            <SaveListingButton listing={listing} />
+            <ShareButton text={listing.shortDescription} title={listing.title} />
           </div>
         </div>
       </section>
@@ -114,7 +110,7 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
         </div>
       </section>
 
-      <section className="mt-8">
+      <section className="mt-8" id="request-booking">
         <BookingRequestForm listing={listing} />
       </section>
     </main>

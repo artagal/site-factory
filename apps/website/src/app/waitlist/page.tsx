@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MapPinned } from "lucide-react";
+import { WaitlistForm } from "../../components/shared/waitlist-form";
 import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
@@ -21,20 +22,7 @@ export default function WaitlistPage() {
           Join the city interest list so GoFunMotion can connect local demand with partner applications and approved listings.
         </p>
       </div>
-      <form className="rounded-2xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-2xl">
-        <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">City interest</p>
-        <div className="mt-5 grid gap-3">
-          <input className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none focus:border-lime-300" name="email" placeholder="Email" type="email" />
-          <input className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none focus:border-lime-300" name="city" placeholder="City" />
-          <select className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none focus:border-lime-300" name="interestType" defaultValue="user">
-            <option className="bg-[#070816]" value="user">I want plans and deals</option>
-            <option className="bg-[#070816]" value="business">I run a local business</option>
-          </select>
-          <button className="min-h-12 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816]" type="button">
-            Interest Form Coming Soon
-          </button>
-        </div>
-      </form>
+      <WaitlistForm />
     </main>
   );
 }

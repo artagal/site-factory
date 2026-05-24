@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Bookmark, Send, Share2 } from "lucide-react";
+import { ArrowRight, Send } from "lucide-react";
 import { DealCard } from "../../components/gofunmotion/deal-card";
 import { PlanFinderForm } from "../../components/gofunmotion/plan-finder-form";
+import { SavePlanButton } from "../../components/planner/save-plan-button";
+import { ShareButton } from "../../components/shared/share-button";
 import {
   buildSuggestedPlan,
   demoNotice,
@@ -78,14 +80,8 @@ export default async function FindPage({ searchParams }: FindPageProps) {
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-5 text-sm font-black text-white" type="button">
-            <Bookmark aria-hidden="true" size={18} />
-            Save after sign in
-          </button>
-          <button className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.07] px-5 text-sm font-black text-white" type="button">
-            <Share2 aria-hidden="true" size={18} />
-            Share plan
-          </button>
+          <SavePlanButton plan={plan} />
+          <ShareButton label="Share plan" text={plan.summary} title={plan.title} />
           <Link className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/deals">
             <Send aria-hidden="true" size={18} />
             Browse matching deals
