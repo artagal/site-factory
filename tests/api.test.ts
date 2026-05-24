@@ -6,6 +6,8 @@ import { POST as partnerPost } from "../apps/website/src/app/api/partner-applica
 import { GET as searchGet } from "../apps/website/src/app/api/search/route";
 import { POST as trackPost } from "../apps/website/src/app/api/track/route";
 import { POST as waitlistPost } from "../apps/website/src/app/api/waitlist/route";
+import { POST as stripeWebhookPost } from "../apps/website/src/app/api/webhooks/stripe/route";
+import Stripe from "stripe";
 
 function jsonRequest(url: string, body: Record<string, unknown>, headers: Record<string, string> = {}) {
   return new Request(url, {
@@ -121,5 +123,52 @@ describe("GoFunMotion Deals API routes", () => {
 
     expect(missingStripe.status).toBe(503);
     expect(missingJson.error).toContain("Stripe is not configured");
+  });
+
+  it("verifies Stripe webhooks before requiring Firebase Admin sync", async () => {
+    const oldStripeKey = process.env.STRIPE_SECRET_KEY;
+    const oldWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    process.env.STRIPE_SECRET_KEY = "sk_test_gofunmotion";
+    process.env.STRIPE_WEBHOOK_SECRET = "whsec_gofunmotion";
+
+    try {
+      const payload = JSON.stringify({
+        data: {
+          object: {
+            customer: "cus_test",
+            id: "sub_test",
+            metadata: {
+              businessId: "business_test",
+              product: "partner_subscription",
+              tier: "growth"
+            },
+            object: "subscription",
+            status: "active"
+          }
+        },
+        id: "evt_test",
+        object: "event",
+        type: "customer.subscription.updated"
+      });
+      const signature = Stripe.webhooks.generateTestHeaderString({
+        payload,
+        secret: process.env.STRIPE_WEBHOOK_SECRET
+      });
+
+      const response = await stripeWebhookPost(new Request("https://site-factory.test/api/webhooks/stripe", {
+        body: payload,
+        headers: {
+          "stripe-signature": signature
+        },
+        method: "POST"
+      }));
+      const json = await readJson<{ error: string }>(response);
+
+      expect(response.status).toBe(503);
+      expect(json.error).toContain("Firebase Admin is not configured");
+    } finally {
+      process.env.STRIPE_SECRET_KEY = oldStripeKey;
+      process.env.STRIPE_WEBHOOK_SECRET = oldWebhookSecret;
+    }
   });
 });

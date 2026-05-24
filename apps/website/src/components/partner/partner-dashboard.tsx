@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
 import { ClipboardList, Eye, MousePointerClick, Send, Star } from "lucide-react";
+import { PartnerCheckoutButton } from "./partner-checkout-button";
 import { observeUser } from "../../lib/auth";
 import { demoBusinesses, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
@@ -115,6 +116,32 @@ export function PartnerDashboard() {
           <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-white/58">
             Status: {business.status}. Partner-created listings stay pending until admin approval.
           </p>
+          <div className="mt-4 rounded-2xl bg-black/24 p-4">
+            <p className="text-sm font-black uppercase tracking-[0.16em] text-lime-300">Partner plan</p>
+            <p className="mt-2 text-2xl font-black capitalize text-white">{business.pricingTier ?? "starter"}</p>
+            <p className="mt-1 text-sm font-bold text-white/54">
+              Subscription: {business.subscriptionStatus ?? "not active"}.
+              {business.paidAccessEnabled ? " Paid features are enabled." : " Upgrade to unlock recurring deal campaigns."}
+            </p>
+            {business.isDemo ? null : (
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <PartnerCheckoutButton
+                  businessId={business.id}
+                  className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
+                  email={user?.email}
+                  label="Upgrade to Growth"
+                  tier="growth"
+                />
+                <PartnerCheckoutButton
+                  businessId={business.id}
+                  className="min-h-11 w-full rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-black text-white hover:bg-white/12 disabled:opacity-60"
+                  email={user?.email}
+                  label="Upgrade to Pro"
+                  tier="pro"
+                />
+              </div>
+            )}
+          </div>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
           <h2 className="text-2xl font-black text-white">Listings</h2>

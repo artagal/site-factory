@@ -200,6 +200,11 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    match /partnerSubscriptions/{subscriptionId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if false;
+    }
+
     match /waitlist/{entryId} {
       allow create: if validWaitlistEntry();
       allow read, update, delete: if isAdmin();

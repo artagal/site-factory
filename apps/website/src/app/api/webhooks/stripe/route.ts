@@ -1,4 +1,5 @@
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
+import { syncPartnerCheckoutSession, syncPartnerSubscriptionEvent } from "../../../../lib/server/partner-subscriptions";
 import { getStripeClient, getStripeWebhookSecret } from "../../../../lib/server/stripe";
 
 export async function POST(request: Request) {
@@ -16,12 +17,28 @@ export async function POST(request: Request) {
 
   try {
     const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+    let syncResult: Record<string, unknown> = { status: "ignored" };
+
+    if (event.type === "checkout.session.completed") {
+      syncResult = await syncPartnerCheckoutSession(event.data.object, stripe);
+    }
+
+    if (
+      event.type === "customer.subscription.created" ||
+      event.type === "customer.subscription.updated" ||
+      event.type === "customer.subscription.deleted"
+    ) {
+      syncResult = await syncPartnerSubscriptionEvent(event.data.object);
+    }
 
     return jsonOk({
       received: true,
+      sync: syncResult,
       type: event.type
     });
   } catch (error) {
-    return jsonError(error instanceof Error ? error.message : "Invalid Stripe webhook signature.", 400);
+    const message = error instanceof Error ? error.message : "Invalid Stripe webhook signature.";
+    const status = message.includes("Firebase Admin is not configured") ? 503 : 400;
+    return jsonError(message, status);
   }
 }

@@ -4,10 +4,16 @@ import { useState } from "react";
 import type { PaidPartnerPricingTier } from "../../lib/payments";
 
 export function PartnerCheckoutButton({
+  businessId,
   className = "",
+  email,
+  label = "Start Checkout",
   tier
 }: {
+  businessId?: string;
   className?: string;
+  email?: string | null;
+  label?: string;
   tier: PaidPartnerPricingTier;
 }) {
   const [status, setStatus] = useState("");
@@ -20,7 +26,7 @@ export function PartnerCheckoutButton({
     setStatus("");
     try {
       const response = await fetch("/api/checkout/partner-subscription", {
-        body: JSON.stringify({ tier }),
+        body: JSON.stringify({ businessId, email, tier }),
         headers: { "Content-Type": "application/json" },
         method: "POST"
       });
@@ -42,7 +48,7 @@ export function PartnerCheckoutButton({
   return (
     <div>
       <button className={className} disabled={busy} onClick={startCheckout} type="button">
-        {busy ? "Opening checkout..." : "Start Checkout"}
+        {busy ? "Opening checkout..." : label}
       </button>
       {status ? <p className="mt-3 rounded-2xl bg-black/24 p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
     </div>

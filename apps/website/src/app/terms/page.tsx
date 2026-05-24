@@ -15,7 +15,7 @@ export default function TermsPage() {
         <p>GoFunMotion Deals is a discovery platform for local activity ideas, demo listings, future partner listings, saved plans, and request-based booking workflows.</p>
         <p>Demo listings are not real production partners or live bookable inventory. Do not treat demo prices, availability, or business names as active offers.</p>
         <p>Partners are responsible for the activities they provide, their policies, safety requirements, pricing, availability, and customer communication.</p>
-        <p>Payments, commissions, promoted listings, subscriptions, and checkout are not implemented yet and should be governed by updated terms before launch.</p>
+        <p>Partner subscriptions may be processed through Stripe Checkout where configured. Consumer booking payments, commissions, promoted placements, and Stripe Connect payouts are future features and should be governed by updated terms before launch.</p>
       </div>
     </main>
   );

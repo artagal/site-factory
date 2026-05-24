@@ -55,6 +55,13 @@ export async function POST(request: Request) {
       tier
     },
     mode: "subscription",
+    subscription_data: {
+      metadata: {
+        businessId: businessId ?? "",
+        product: "partner_subscription",
+        tier
+      }
+    },
     success_url: `${baseUrl}/pricing?checkout=success&tier=${tier}&session_id={CHECKOUT_SESSION_ID}`
   });
 

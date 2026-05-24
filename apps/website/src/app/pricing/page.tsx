@@ -8,7 +8,7 @@ import { buildSeoMetadata } from "../../lib/seo";
 export const metadata: Metadata = buildSeoMetadata({
   title: "Partner Pricing | GoFunMotion Deals",
   description:
-    "Preview future GoFunMotion Deals partner pricing tiers for local activity businesses. Payments are not implemented yet.",
+    "GoFunMotion Deals partner pricing for local activity businesses running discounted last-minute open-slot offers.",
   keywords: ["partner pricing", "local business subscriptions", "promoted listings"],
   path: "/pricing"
 });
@@ -31,11 +31,11 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
         <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Future partner pricing</p>
         <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Partner pricing for open-slot deals.</h1>
         <p className="mt-5 text-lg leading-8 text-white/64">
-          Start with a reviewed free listing, then upgrade when you want recurring deal campaigns, better visibility, and more analytics. Stripe Checkout is used for paid partner subscriptions when Stripe keys are configured.
+          Start with a reviewed free listing, then upgrade when you want recurring deal campaigns, better visibility, and more analytics. Stripe Checkout powers paid partner subscriptions when Stripe keys are configured.
         </p>
         {checkoutStatus === "success" ? (
           <p className="mt-5 rounded-2xl border border-lime-300/25 bg-lime-300/10 p-4 text-sm font-black text-lime-100">
-            Checkout completed. Your subscription event will be verified by Stripe webhooks before paid access is enabled.
+            Checkout completed. Stripe webhooks will verify the subscription and enable paid access for the connected business.
           </p>
         ) : null}
         {checkoutStatus === "cancelled" ? (
