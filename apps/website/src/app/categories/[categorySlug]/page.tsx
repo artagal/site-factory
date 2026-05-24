@@ -17,10 +17,10 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const category = getCategoryBySlug(categorySlug);
   if (!category) return buildSeoMetadata({ description: "Category not found.", noIndex: true, path: `/categories/${categorySlug}`, title: "Category Not Found | GoFunMotion" });
   return buildSeoMetadata({
-    description: `${category.description} Browse GoFunMotion Deals activity cards and plan ideas.`,
-    keywords: [category.name, "local activities", "activity deals", "things to do today"],
+    description: `${category.description} Browse discounted open slots and last-minute GoFunMotion Deals activity cards.`,
+    keywords: [category.name, "activity deals", "last minute activity deals", "open slot deals"],
     path: `/categories/${category.slug}`,
-    title: `${category.name} Activities | GoFunMotion Deals`
+    title: `${category.name} Deals | GoFunMotion Deals`
   });
 }
 
@@ -34,7 +34,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
       <section className="max-w-4xl">
         <p className="text-sm font-black uppercase tracking-[0.18em]" style={{ color: category.accentColor }}>{category.name}</p>
-        <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">{category.name} plans and deals.</h1>
+        <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">{category.name} deals and open slots.</h1>
         <p className="mt-5 text-lg leading-8 text-white/64">{category.description}</p>
       </section>
       <section className="mt-8">

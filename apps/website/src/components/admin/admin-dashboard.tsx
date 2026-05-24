@@ -82,7 +82,7 @@ export function AdminDashboard() {
         <AdminStat icon={CheckCircle2} label="Categories" value={String(demoCategories.length)} />
       </section>
       <section className="mt-8 grid gap-5 lg:grid-cols-2">
-        <AdminPanel title="Listings pending approval" items={demoListings.map((listing) => `${listing.title} - ${listing.status}/${listing.approvalStatus}`)} />
+        <AdminPanel title="Demo listing review state" items={demoListings.map((listing) => `${listing.title} - ${listing.status}/${listing.approvalStatus}`)} />
         <AdminPanel title="Managed cities" items={demoCities.map((city) => `${city.name}, ${city.state} - ${city.active ? "active" : "coming soon"}`)} />
       </section>
     </>

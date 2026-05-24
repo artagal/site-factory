@@ -66,9 +66,29 @@ export function PartnerDashboard() {
       <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.06] p-6">
         <h2 className="text-3xl font-black text-white">Sign in to manage your business.</h2>
         <p className="mt-3 text-sm leading-6 text-white/58">Partner dashboards are only available to authenticated business owners.</p>
-        <Link className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/login">
+        <Link className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/login?next=/partner/dashboard">
           Sign In
         </Link>
+      </section>
+    );
+  }
+
+  if (isFirebaseConfigured() && user && !loading && !businesses.length) {
+    return (
+      <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.06] p-6">
+        <h2 className="text-3xl font-black text-white">No approved business is attached yet.</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-white/58">
+          Apply first, then an admin can review the business and connect your Firebase account as an owner. Demo businesses are not shown as live owned inventory.
+        </p>
+        {status ? <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/partner/apply">
+            Apply to List Your Business
+          </Link>
+          <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.07] px-5 text-sm font-black text-white hover:bg-white/10" href="/partner">
+            See Partner Fit
+          </Link>
+        </div>
       </section>
     );
   }

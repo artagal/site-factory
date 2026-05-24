@@ -59,7 +59,7 @@ export function ProfileDashboard() {
 
     if (!isFirebaseConfigured()) {
       setLoading(false);
-      setStatus("Firebase is not configured yet. Browse plans and demo deals without signing in.");
+      setStatus("Firebase is not configured yet. Browse deals and demo open slots without signing in.");
       return;
     }
 
@@ -79,9 +79,9 @@ export function ProfileDashboard() {
     return (
       <section className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
         <UserCircle2 aria-hidden="true" className="text-cyan-300" size={36} />
-        <h2 className="mt-5 text-3xl font-black text-white">Sign in to sync your plans.</h2>
+        <h2 className="mt-5 text-3xl font-black text-white">Sign in to sync saved deals.</h2>
         <p className="mt-3 text-sm leading-6 text-white/58">
-          Browse is public. Sign in is only needed for saved plans, saved deals, booking requests, partner dashboard, and admin access.
+          Browse is public. Sign in is only needed for saved deals, helper plans, booking requests, partner dashboard, and admin access.
         </p>
         {status ? <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
         <Link className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/login">

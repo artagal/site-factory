@@ -7,7 +7,7 @@ export type BlogPost = {
   }>;
   generatorPrompt: string;
   keyword: string;
-  missions: string[];
+  actionSteps: string[];
   publishedAt: string;
   readTime: string;
   sections: Array<{
@@ -28,7 +28,7 @@ export const blogPosts: BlogPost[] = [
     ],
     generatorPrompt: "Use the plan finder to turn mood, time, budget, and city into a real plan.",
     keyword: "best things to do when bored",
-    missions: ["Pick your city and vibe.", "Choose one main activity.", "Keep one backup nearby."],
+    actionSteps: ["Check tonight's discounted openings.", "Choose one main activity.", "Keep one backup nearby."],
     publishedAt: "2026-05-24",
     readTime: "4 min read",
     sections: [
@@ -47,7 +47,7 @@ export const blogPosts: BlogPost[] = [
     ],
     generatorPrompt: "Find a date night under $50 based on city, mood, and available time.",
     keyword: "date night ideas under $50",
-    missions: ["Start with a walk or coffee.", "Choose one activity deal.", "Add a dessert backup."],
+    actionSteps: ["Start with a walk or coffee.", "Choose one activity deal.", "Add a dessert backup."],
     publishedAt: "2026-05-24",
     readTime: "4 min read",
     sections: [
@@ -66,7 +66,7 @@ export const blogPosts: BlogPost[] = [
     ],
     generatorPrompt: "Find a group-friendly activity for friends this weekend.",
     keyword: "fun things to do with friends this weekend",
-    missions: ["Pick a budget.", "Send two options.", "Choose the fastest yes."],
+    actionSteps: ["Pick a budget.", "Send two options.", "Choose the fastest yes."],
     publishedAt: "2026-05-24",
     readTime: "3 min read",
     sections: [
@@ -85,7 +85,7 @@ export const blogPosts: BlogPost[] = [
     ],
     generatorPrompt: "Find a rainy day family plan with kids-friendly options.",
     keyword: "family activities when it rains",
-    missions: ["Filter for indoor.", "Check kid-friendly timing.", "Plan a snack backup."],
+    actionSteps: ["Filter for indoor.", "Check kid-friendly timing.", "Plan a snack backup."],
     publishedAt: "2026-05-24",
     readTime: "4 min read",
     sections: [
@@ -104,7 +104,7 @@ export const blogPosts: BlogPost[] = [
     ],
     generatorPrompt: "List your business so local customers can request availability.",
     keyword: "how local businesses can fill empty slots",
-    missions: ["Create a clear offer.", "Add last-minute availability.", "Respond to requests."],
+    actionSteps: ["Create a clear offer.", "Add last-minute availability.", "Respond to requests."],
     publishedAt: "2026-05-24",
     readTime: "4 min read",
     sections: [
@@ -123,7 +123,7 @@ export const blogPosts: BlogPost[] = [
     ],
     generatorPrompt: "Browse last-minute activity deals near your city.",
     keyword: "last-minute activities near you",
-    missions: ["Choose tonight or weekend.", "Filter by budget.", "Request availability."],
+    actionSteps: ["Choose tonight or weekend.", "Filter by budget.", "Request availability."],
     publishedAt: "2026-05-24",
     readTime: "3 min read",
     sections: [

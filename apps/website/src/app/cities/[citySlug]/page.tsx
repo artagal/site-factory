@@ -17,10 +17,10 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   const city = getCityBySlug(citySlug);
   if (!city) return buildSeoMetadata({ description: "City not found.", noIndex: true, path: `/cities/${citySlug}`, title: "City Not Found | GoFunMotion" });
   return buildSeoMetadata({
-    description: `Find fun things to do today in ${city.name}: local activities, last-minute deals, date ideas, family plans, and spontaneous experiences.`,
-    keywords: [`things to do in ${city.name}`, `${city.name} date ideas`, `${city.name} activity deals`],
+    description: `Find last-minute activity deals in ${city.name}: open slots, date night discounts, family passes, and local experiences.`,
+    keywords: [`${city.name} activity deals`, `${city.name} last minute deals`, `${city.name} date night deals`],
     path: `/cities/${city.slug}`,
-    title: `${city.name} Things To Do Today | GoFunMotion`
+    title: `${city.name} Last-Minute Activity Deals | GoFunMotion`
   });
 }
 
@@ -34,7 +34,7 @@ export default async function CityPage({ params }: CityPageProps) {
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
       <section className="max-w-4xl">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">{city.name}, {city.state}</p>
-        <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Find something fun to do in {city.name}.</h1>
+        <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Last-minute activity deals in {city.name}.</h1>
         <p className="mt-5 text-lg leading-8 text-white/64">{city.description}</p>
       </section>
       <section className="mt-8">

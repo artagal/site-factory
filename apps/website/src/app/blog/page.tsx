@@ -28,14 +28,14 @@ export default function BlogPage() {
           Local ideas that lead to plans
         </p>
         <h1 className="mt-4 max-w-5xl text-5xl font-black leading-tight text-white md:text-7xl">
-          Ideas for real plans, deals, and local fun.
+          Ideas for last-minute deals and local fun.
         </h1>
         <p className="mt-5 max-w-3xl text-lg leading-8 text-white/64">
-          Start with an article, then use GoFunMotion Deals to find a plan, browse listings, or join the partner side of the marketplace.
+          Start with an article, then browse discounted activity openings, compare time windows, or join the partner side.
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <LinkButton href="/find">Find My Plan</LinkButton>
-          <LinkButton href="/deals" variant="ghost">Browse Deals</LinkButton>
+          <LinkButton href="/deals?when=tonight">Browse Tonight&apos;s Deals</LinkButton>
+          <LinkButton href="/find" variant="ghost">Help Me Choose</LinkButton>
         </div>
       </section>
 
@@ -56,10 +56,10 @@ export default function BlogPage() {
               Search traffic should end in a useful local plan.
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/62">
-              These articles target things to do today, date nights, family activities, local deals, and partner growth. Each article points readers back to the planner or marketplace.
+              These articles target things to do tonight, date nights, family activity deals, local discounts, and partner growth. Each article points readers back to the deals screen or partner application.
             </p>
           </div>
-          <LinkButton href="/find" variant="secondary">Find My Plan</LinkButton>
+          <LinkButton href="/deals?when=tonight" variant="secondary">Browse Deals</LinkButton>
         </div>
       </section>
     </main>

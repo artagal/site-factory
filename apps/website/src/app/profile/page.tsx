@@ -6,7 +6,7 @@ import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
   title: "Profile | GoFunMotion Deals",
-  description: "View saved plans, saved deals, booking requests, preferences, and account information on GoFunMotion Deals.",
+  description: "View saved deals, helper plans, booking requests, preferences, and account information on GoFunMotion Deals.",
   noIndex: true,
   path: "/profile"
 });
@@ -17,16 +17,16 @@ export default function ProfilePage() {
       <section className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">User profile</p>
-          <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Your plans, deals, and requests.</h1>
+          <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Your deals, plans, and requests.</h1>
           <p className="mt-5 text-lg leading-8 text-white/64">
-            Browse without login. Sign in when you want to save plans, save deals, submit booking requests, or manage partner access.
+            Browse without login. Sign in when you want to save deals, keep helper plans, submit booking requests, or manage partner access.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/login">
               Sign In
             </Link>
             <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.07] px-5 text-sm font-black text-white hover:bg-white/10" href="/find">
-              Find My Plan
+              Help Me Choose
             </Link>
           </div>
         </div>

@@ -57,7 +57,7 @@ export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRou
     changeFrequency: path === "/" || path === "/find" || path === "/deals" ? "daily" : "weekly",
     lastModified,
     path,
-    priority: path === "/" ? 1 : path === "/find" ? 0.95 : path === "/deals" ? 0.9 : 0.75
+    priority: path === "/" ? 1 : path === "/deals" ? 0.96 : path === "/find" ? 0.76 : 0.75
   }));
 
   const blogRoutes = blogPosts.map((post) => ({

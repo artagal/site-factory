@@ -7,11 +7,13 @@ import { getFactoryRoutes } from "../apps/website/src/lib/site-routes";
 
 describe("GoFunMotion Deals marketplace content", () => {
   it("registers marketplace routes for sitemap generation", () => {
-    const routes = getFactoryRoutes().map((route) => route.path);
+    const factoryRoutes = getFactoryRoutes();
+    const routes = factoryRoutes.map((route) => route.path);
 
     expect(routes).toContain("/");
     expect(routes).toContain("/find");
     expect(routes).toContain("/deals");
+    expect(factoryRoutes.find((route) => route.path === "/deals")?.priority).toBeGreaterThan(factoryRoutes.find((route) => route.path === "/find")?.priority ?? 0);
     expect(routes).toContain("/partner");
     expect(routes).toContain("/partner/apply");
     expect(routes).toContain("/partner/dashboard");
