@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { trackEvent } from "../../lib/analytics";
-import { addWaitlistEntry } from "../../lib/firestore";
 import { addWaitlistEntryLocally } from "../../lib/localStorage";
 import { Button } from "./Button";
 
@@ -19,8 +18,20 @@ export function WaitlistForm() {
       return;
     }
 
-    const firestoreResult = await addWaitlistEntry(email, selected, "website");
-    if (!firestoreResult) {
+    const response = await fetch("/api/waitlist", {
+      body: JSON.stringify({
+        email,
+        interests: selected,
+        source: "website"
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      },
+      method: "POST"
+    }).catch(() => null);
+    const result = response?.ok ? ((await response.json()) as { synced?: boolean }) : null;
+
+    if (!result?.synced) {
       addWaitlistEntryLocally(email, selected);
     }
 
@@ -29,7 +40,7 @@ export function WaitlistForm() {
       interestCount: selected.length,
       interests: selected,
       source: "website",
-      synced: Boolean(firestoreResult)
+      synced: Boolean(result?.synced)
     });
     setStatus("You are on the list. Mobile app momentum incoming.");
     setEmail("");

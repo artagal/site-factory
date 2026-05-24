@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Clock3, MapPin, Radio, WandSparkles } from "lucide-react";
 import { trackEvent } from "../../lib/analytics";
-import { generateChallenge } from "../../lib/challengeEngine";
+import { generateChallenge, generateChallengeFromApi } from "../../lib/challengeEngine";
 import { challengeCategories, challengeTemplates } from "../../lib/challenges";
 import type { Challenge, ChallengeFilters } from "../../types/challenge";
 import { Button } from "./Button";
@@ -132,8 +132,8 @@ export function ChallengeGenerator({ compact = false }: { compact?: boolean }) {
       window.setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 30);
     }
     window.setTimeout(
-      () => {
-        const next = generateChallenge(nextFilters, recentIds);
+      async () => {
+        const next = await generateChallengeFromApi(nextFilters, recentIds).catch(() => generateChallenge(nextFilters, recentIds));
         setChallenge(next);
         setRecentIds((current) => [...current.slice(-2), next.id]);
         setSpinRound((current) => current + 1);

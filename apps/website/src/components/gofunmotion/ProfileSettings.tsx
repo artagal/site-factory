@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { LogOut, Save, ShieldCheck, UserRound } from "lucide-react";
-import { observeUser, signOutUser, updateUserDisplayName } from "../../lib/auth";
+import { AlertTriangle, LogOut, MailCheck, Save, ShieldCheck, Trash2, UserRound } from "lucide-react";
+import { getCurrentUserIdToken, observeUser, sendCurrentUserEmailVerification, signOutUser, updateUserDisplayName } from "../../lib/auth";
+import { trackEvent } from "../../lib/analytics";
 import { updateUserProfileInFirestore } from "../../lib/firestore";
 import { getLocalProgress, setProgressScope, updateLocalProfile } from "../../lib/localStorage";
 import { emitProgressUpdate, syncLocalProgressToFirebase } from "../../lib/progressActions";
@@ -21,6 +22,7 @@ function initials(name: string) {
 
 export function ProfileSettings() {
   const [busy, setBusy] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
   const [displayName, setDisplayName] = useState("Motion Rookie");
   const [status, setStatus] = useState("Profile settings are saved locally and synced to Firebase when signed in.");
   const [user, setUser] = useState<User | null>(null);
@@ -75,6 +77,68 @@ export function ProfileSettings() {
       setStatus("Signed out. This browser is back to local guest progress.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Sign out failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleVerifyEmail() {
+    setBusy(true);
+    try {
+      const result = await sendCurrentUserEmailVerification();
+      if (!result) {
+        setStatus("This account does not need email verification.");
+        return;
+      }
+
+      trackEvent("email_verification_sent", {
+        provider: "email"
+      });
+      setStatus("Verification email sent. Check your inbox, then reload after verifying.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Could not send verification email.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    if (deleteConfirm !== "DELETE") {
+      setStatus("Type DELETE to confirm account deletion.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in again before deleting this account.");
+        return;
+      }
+
+      const response = await fetch("/api/account/delete", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        method: "POST"
+      });
+
+      if (!response.ok) {
+        const body = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error ?? "Account deletion failed.");
+      }
+
+      trackEvent("account_deleted", {
+        provider: user?.providerData[0]?.providerId ?? "unknown"
+      });
+      await signOutUser().catch(() => undefined);
+      const guestProgress = setProgressScope(null);
+      emitProgressUpdate(guestProgress);
+      setUser(null);
+      setDeleteConfirm("");
+      setStatus("Account deleted. This browser is now using local guest progress.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Account deletion failed.");
     } finally {
       setBusy(false);
     }
@@ -142,6 +206,45 @@ export function ProfileSettings() {
         </div>
 
         <p className="mt-5 rounded-2xl bg-black/24 p-4 text-sm font-bold leading-6 text-lime-100">{status}</p>
+
+        {user?.email && !user.emailVerified ? (
+          <div className="mt-5 rounded-[1.35rem] border border-cyan-300/20 bg-cyan-300/10 p-4">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-100">Email verification</p>
+            <p className="mt-2 text-sm font-bold leading-6 text-white/68">
+              Verify email/password accounts before relying on them for long-term progress recovery.
+            </p>
+            <Button className="mt-4" disabled={busy} onClick={handleVerifyEmail} variant="secondary">
+              <MailCheck aria-hidden="true" size={18} />
+              Send verification email
+            </Button>
+          </div>
+        ) : null}
+
+        {user ? (
+          <div className="mt-5 rounded-[1.35rem] border border-red-300/20 bg-red-400/10 p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle aria-hidden="true" className="mt-1 text-red-200" size={20} />
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-red-100">Danger zone</p>
+                <p className="mt-2 text-sm font-bold leading-6 text-white/68">
+                  Delete removes the Firebase account plus saved and completed missions for this user ID. It does not remove local guest fallback data on other devices.
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+              <input
+                className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-sm font-bold text-white outline-none placeholder:text-white/35 focus:border-red-300"
+                onChange={(event) => setDeleteConfirm(event.target.value)}
+                placeholder="Type DELETE"
+                value={deleteConfirm}
+              />
+              <Button disabled={busy || deleteConfirm !== "DELETE"} onClick={handleDeleteAccount} variant="ghost">
+                <Trash2 aria-hidden="true" size={18} />
+                Delete account
+              </Button>
+            </div>
+          </div>
+        ) : null}
       </section>
     </div>
   );

@@ -5,6 +5,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
+  sendEmailVerification,
   signInAnonymously,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -58,6 +59,23 @@ export async function updateUserDisplayName(displayName: string) {
 
   await updateProfile(user, { displayName });
   return user;
+}
+
+export async function sendCurrentUserEmailVerification() {
+  const auth = getGoFunMotionAuth();
+  const user = auth?.currentUser;
+  if (!user?.email || user.emailVerified) return null;
+
+  await sendEmailVerification(user);
+  return user;
+}
+
+export async function getCurrentUserIdToken() {
+  const auth = getGoFunMotionAuth();
+  const user = auth?.currentUser;
+  if (!user) return null;
+
+  return user.getIdToken();
 }
 
 export function observeUser(callback: (user: User | null) => void) {

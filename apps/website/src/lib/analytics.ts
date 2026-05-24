@@ -1,10 +1,12 @@
 export type AnalyticsEventName =
+  | "account_deleted"
   | "hero_cta_click"
   | "challenge_generated"
   | "challenge_started"
   | "challenge_completed"
   | "challenge_saved"
   | "challenge_shared"
+  | "email_verification_sent"
   | "login_clicked"
   | "waitlist_submitted";
 
@@ -104,6 +106,15 @@ export function trackEvent(name: AnalyticsEventName, properties: Record<string, 
   if (runtime.dispatchEvent && runtime.CustomEvent) {
     runtime.dispatchEvent(new runtime.CustomEvent("gofunmotion:analytics", { detail: event }));
   }
+
+  void fetch("/api/events", {
+    body: JSON.stringify(event),
+    headers: {
+      "Content-Type": "application/json"
+    },
+    keepalive: true,
+    method: "POST"
+  }).catch(() => undefined);
 
   return event;
 }

@@ -171,6 +171,53 @@ npx.cmd vercel env add NEXT_PUBLIC_FIREBASE_APP_ID production
 
 Repeat for `preview` if needed.
 
+## Add Firebase Admin Environment Variable
+
+Production-only server routes need Firebase Admin credentials for trusted backend writes:
+
+```text
+/api/events
+/api/waitlist
+/api/account/delete
+/api/admin/rebuild-leaderboard
+```
+
+Create a Firebase service account in Firebase Console:
+
+1. Project settings.
+2. Service accounts.
+3. Generate new private key.
+4. Base64-encode the JSON file locally.
+5. Add the encoded value to Vercel as:
+
+```env
+FIREBASE_SERVICE_ACCOUNT_JSON=
+GOFUNMOTION_ADMIN_CRON_SECRET=
+```
+
+PowerShell base64 helper:
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\to\service-account.json"))
+```
+
+Do not expose this value in client code. Do not commit it. After adding the Vercel env var, redeploy production.
+
+`GOFUNMOTION_ADMIN_CRON_SECRET` protects the server leaderboard rebuild route. Call it only from a trusted environment:
+
+```powershell
+Invoke-WebRequest -Method Post `
+  -Uri https://gofunmotion.com/api/admin/rebuild-leaderboard `
+  -Headers @{ "x-admin-secret" = "YOUR_SECRET" }
+```
+
+If Admin credentials are missing:
+
+- Challenge generation still works.
+- Local progress still works.
+- Firebase client profile sync still works after login.
+- Server-side global stats, server waitlist writes, leaderboard rebuild, and account deletion return safe fallback behavior instead of crashing.
+
 ## Verification Checklist
 
 1. Run locally:
@@ -196,7 +243,12 @@ npm.cmd run dev -- --port 3004 --hostname 127.0.0.1
    - Complete the challenge.
    - Open `/profile` and confirm XP, streak, badges, saved missions, and recent activity update.
    - Test on another browser/device after Google login to confirm cloud sync.
+   - Open `/profile/settings`.
+   - Update display name and confirm `/profile` reflects it.
+   - Send verification email for email/password accounts.
+   - Sign out and confirm the browser returns to guest progress.
+   - For a disposable test account only, type `DELETE` and test account deletion.
 
 ## Notes
 
-Global stats writes are intentionally blocked from the client by Firestore rules. They should later be updated through a trusted Cloud Function.
+Global stats writes are blocked from the public client by Firestore rules. They are now routed through server-side Vercel API routes when `FIREBASE_SERVICE_ACCOUNT_JSON` is configured. A future Cloud Function can replace these server routes if the backend moves fully into Firebase.

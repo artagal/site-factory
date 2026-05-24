@@ -50,6 +50,15 @@ NEXT_PUBLIC_FIREBASE_APP_ID=
 
 Copy `apps/website/.env.example` to `apps/website/.env.local` for local Firebase testing. Do not commit `.env.local`.
 
+Production server routes also support Firebase Admin for trusted writes:
+
+```env
+FIREBASE_SERVICE_ACCOUNT_JSON=
+GOFUNMOTION_ADMIN_CRON_SECRET=
+```
+
+Use a base64-encoded Firebase service account JSON value in Vercel. If this is missing, the site still works, but `/api/events`, `/api/waitlist`, `/api/account/delete`, and `/api/admin/rebuild-leaderboard` cannot perform trusted Firestore/Auth admin writes.
+
 Firebase project files are included:
 
 - `firebase.json`
@@ -72,6 +81,8 @@ Auth providers to enable in Firebase Console:
 - Google
 - Email/password
 
+Production account controls now include profile display-name updates, email verification for email/password accounts, sign out, and server-side account deletion through `/profile/settings`.
+
 ## Vercel Notes
 
 - Framework: Next.js
@@ -79,3 +90,4 @@ Auth providers to enable in Firebase Console:
 - Output directory: `.next` when the Vercel root is `apps/website`
 - Do not expose server-side AI keys in client code.
 - `/api/generate-challenge` currently uses local templates and is ready for a secure AI provider later.
+- Server routes use best-effort per-instance rate limits. For high traffic, replace the in-memory limiter with a shared store such as Redis or a Firebase-backed throttle.

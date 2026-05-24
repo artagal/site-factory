@@ -62,9 +62,12 @@ export function generateChallenge(
   return candidates[0]?.challenge ?? challengeTemplates[0];
 }
 
-export async function generateChallengeFromApi(filters: Partial<ChallengeFilters>) {
+export async function generateChallengeFromApi(filters: Partial<ChallengeFilters>, recentChallengeIds: string[] = []) {
   const response = await fetch("/api/generate-challenge", {
-    body: JSON.stringify(filters),
+    body: JSON.stringify({
+      ...filters,
+      recentChallengeIds
+    }),
     headers: {
       "Content-Type": "application/json"
     },

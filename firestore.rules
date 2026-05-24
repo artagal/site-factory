@@ -10,15 +10,82 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == userId;
     }
 
+    function validUserProfileKeys() {
+      return request.resource.data.keys().hasOnly([
+        "badges",
+        "categoryStats",
+        "createdAt",
+        "displayName",
+        "email",
+        "favoriteCategories",
+        "isAnonymous",
+        "lastLoginAt",
+        "lastProgressSyncAt",
+        "level",
+        "momentumScore",
+        "photoURL",
+        "preferredCategories",
+        "profileUpdatedAt",
+        "recentActivity",
+        "savedChallengeIds",
+        "streak",
+        "totalChallengesCompleted",
+        "xp"
+      ]);
+    }
+
+    function validSavedChallengeKeys() {
+      return request.resource.data.keys().hasOnly([
+        "category",
+        "challengeId",
+        "description",
+        "difficulty",
+        "intensity",
+        "locationType",
+        "moodTags",
+        "rarity",
+        "safetyNote",
+        "savedAt",
+        "timeEstimateMinutes",
+        "title",
+        "whyItHelps",
+        "xpReward"
+      ]);
+    }
+
+    function validCompletedChallengeKeys() {
+      return request.resource.data.keys().hasOnly([
+        "category",
+        "challengeId",
+        "completedAt",
+        "difficulty",
+        "rarity",
+        "reflection",
+        "source",
+        "title",
+        "xpEarned"
+      ]);
+    }
+
+    function validWaitlistEntry() {
+      return request.resource.data.keys().hasOnly(["createdAt", "email", "interests", "source"]) &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() <= 254;
+    }
+
     match /users/{userId} {
-      allow read, create, update, delete: if isOwner(userId);
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && validUserProfileKeys();
+      allow delete: if false;
 
       match /savedChallenges/{challengeId} {
-        allow read, create, update, delete: if isOwner(userId);
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validSavedChallengeKeys();
       }
 
       match /completedChallenges/{completionId} {
-        allow read, create, update, delete: if isOwner(userId);
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validCompletedChallengeKeys();
       }
     }
 
@@ -48,7 +115,7 @@ service cloud.firestore {
     }
 
     match /waitlist/{entryId} {
-      allow create: if true;
+      allow create: if validWaitlistEntry();
       allow read, update, delete: if false;
     }
 
