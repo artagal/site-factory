@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { GET as planGet, POST as planPost } from "../apps/website/src/app/api/plan/route";
 import { POST as bookingPost } from "../apps/website/src/app/api/booking-request/route";
+import { POST as checkoutPost } from "../apps/website/src/app/api/checkout/partner-subscription/route";
 import { POST as partnerPost } from "../apps/website/src/app/api/partner-application/route";
 import { GET as searchGet } from "../apps/website/src/app/api/search/route";
 import { POST as trackPost } from "../apps/website/src/app/api/track/route";
@@ -102,5 +103,23 @@ describe("GoFunMotion Deals API routes", () => {
     }));
 
     expect(goodResponse.status).toBe(200);
+  });
+
+  it("keeps paid partner checkout disabled until Stripe is configured", async () => {
+    const invalidTier = await checkoutPost(jsonRequest("https://site-factory.test/api/checkout/partner-subscription", {
+      tier: "starter"
+    }));
+    const invalidJson = await readJson<{ error: string }>(invalidTier);
+
+    expect(invalidTier.status).toBe(400);
+    expect(invalidJson.error).toContain("Growth or Pro");
+
+    const missingStripe = await checkoutPost(jsonRequest("https://site-factory.test/api/checkout/partner-subscription", {
+      tier: "growth"
+    }));
+    const missingJson = await readJson<{ error: string }>(missingStripe);
+
+    expect(missingStripe.status).toBe(503);
+    expect(missingJson.error).toContain("Stripe is not configured");
   });
 });
