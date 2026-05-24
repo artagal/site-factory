@@ -1,4 +1,5 @@
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
+import { getFirebaseAdminDb, verifyBearerToken } from "../../../../lib/server/firebase-admin";
 import { getPartnerSubscriptionPriceId, getStripeClient } from "../../../../lib/server/stripe";
 import type { PaidPartnerPricingTier } from "../../../../lib/payments";
 
@@ -10,6 +11,29 @@ function getBaseUrl(request: Request) {
 
   const url = new URL(request.url);
   return `${url.protocol}//${url.host}`;
+}
+
+async function verifyBusinessCheckoutAccess(request: Request, businessId: string) {
+  const db = getFirebaseAdminDb();
+  if (!db) {
+    return { error: "Firebase Admin is required before a paid checkout can be linked to a business.", status: 503 };
+  }
+
+  const token = await verifyBearerToken(request);
+  if (!token) {
+    return { error: "Sign in before upgrading a business plan.", status: 401 };
+  }
+
+  const snapshot = await db.collection("businesses").doc(businessId).get();
+  const ownerIds = snapshot.exists && Array.isArray(snapshot.data()?.ownerIds)
+    ? snapshot.data()?.ownerIds.map(String)
+    : [];
+
+  if (!ownerIds.includes(token.uid)) {
+    return { error: "Only a business owner can start checkout for this business.", status: 403 };
+  }
+
+  return null;
 }
 
 export async function POST(request: Request) {
@@ -36,6 +60,11 @@ export async function POST(request: Request) {
 
   const email = typeof body?.email === "string" && body.email.includes("@") ? body.email : undefined;
   const businessId = typeof body?.businessId === "string" ? body.businessId : undefined;
+  if (businessId) {
+    const accessError = await verifyBusinessCheckoutAccess(request, businessId);
+    if (accessError) return jsonError(accessError.error, accessError.status);
+  }
+
   const baseUrl = getBaseUrl(request);
 
   const session = await stripe.checkout.sessions.create({

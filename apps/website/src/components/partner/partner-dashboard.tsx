@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
 import { ClipboardList, Eye, MousePointerClick, Send, Star } from "lucide-react";
+import { PartnerBillingPortalButton } from "./partner-billing-portal-button";
 import { PartnerCheckoutButton } from "./partner-checkout-button";
 import { observeUser } from "../../lib/auth";
 import { demoBusinesses, demoListings } from "../../lib/demoData";
@@ -125,20 +126,29 @@ export function PartnerDashboard() {
             </p>
             {business.isDemo ? null : (
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <PartnerCheckoutButton
-                  businessId={business.id}
-                  className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
-                  email={user?.email}
-                  label="Upgrade to Growth"
-                  tier="growth"
-                />
-                <PartnerCheckoutButton
-                  businessId={business.id}
-                  className="min-h-11 w-full rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-black text-white hover:bg-white/12 disabled:opacity-60"
-                  email={user?.email}
-                  label="Upgrade to Pro"
-                  tier="pro"
-                />
+                {business.stripeCustomerId ? (
+                  <PartnerBillingPortalButton
+                    businessId={business.id}
+                    className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
+                  />
+                ) : (
+                  <>
+                    <PartnerCheckoutButton
+                      businessId={business.id}
+                      className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
+                      email={user?.email}
+                      label="Upgrade to Growth"
+                      tier="growth"
+                    />
+                    <PartnerCheckoutButton
+                      businessId={business.id}
+                      className="min-h-11 w-full rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-black text-white hover:bg-white/12 disabled:opacity-60"
+                      email={user?.email}
+                      label="Upgrade to Pro"
+                      tier="pro"
+                    />
+                  </>
+                )}
               </div>
             )}
           </div>

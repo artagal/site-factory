@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { PaidPartnerPricingTier } from "../../lib/payments";
+import { getCurrentUserIdToken } from "../../lib/auth";
 
 export function PartnerCheckoutButton({
   businessId,
@@ -25,9 +26,18 @@ export function PartnerCheckoutButton({
     setBusy(true);
     setStatus("");
     try {
+      const token = businessId ? await getCurrentUserIdToken() : null;
+      if (businessId && !token) {
+        setStatus("Sign in as a business owner before upgrading this business.");
+        return;
+      }
+
       const response = await fetch("/api/checkout/partner-subscription", {
         body: JSON.stringify({ businessId, email, tier }),
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
         method: "POST"
       });
       const result = (await response.json().catch(() => null)) as { error?: string; url?: string } | null;
