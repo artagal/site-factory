@@ -17,18 +17,19 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "GoFunMotion - Find Fun Things To Do Today",
+  title: "GoFunMotion - Last-Minute Fun Deals Near You",
   description:
-    "Discover local activities, last-minute deals, date ideas, family fun, and spontaneous plans based on your mood, time, budget, and city.",
+    "Find last-minute fun deals near you. Save on activities, date nights, family fun, and local experiences with open spots today.",
   image: "/og/gofunmotion-og.svg",
   keywords: [
-    "things to do today",
-    "fun things to do near me",
+    "last minute fun deals",
+    "activity deals near me",
+    "things to do tonight",
     "local activity deals",
     "date night ideas",
     "family activities",
     "last minute deals",
-    "activity finder",
+    "open slot deals",
     "weekend plans",
     "local experiences",
     "fun finder"

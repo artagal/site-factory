@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Logo } from "./Navbar";
 
 const footerLinks = [
-  { href: "/find", label: "Find a Plan" },
   { href: "/deals", label: "Deals" },
+  { href: "/find", label: "Help Me Choose" },
   { href: "/date-night", label: "Date Night" },
   { href: "/friends", label: "Friends" },
   { href: "/family", label: "Family" },
@@ -23,7 +23,7 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-xl text-sm leading-6 text-white/60">
-            GoFunMotion Deals helps people find local activities, last-minute deals, date ideas, family plans, and bookable experiences without endless searching.
+            GoFunMotion Deals helps people find discounted last-minute activity openings, date night deals, family passes, and local experiences with clear was/now pricing.
           </p>
           <p className="mt-4 text-sm text-white/45">Contact: hello@gofunmotion.com</p>
         </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarClock, MapPin, Ticket } from "lucide-react";
+import { CalendarClock, MapPin, Ticket, Users } from "lucide-react";
 import { BookingRequestForm } from "../../../components/listings/booking-request-form";
 import { SaveListingButton } from "../../../components/listings/save-listing-button";
 import { ShareButton } from "../../../components/shared/share-button";
@@ -47,6 +47,12 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
 
   const business = getBusinessById(listing.businessId);
   const category = getCategoryById(listing.categoryIds[0]);
+  const remainingLabel =
+    listing.remainingSpots === null
+      ? "Limited availability"
+      : listing.remainingSpots === 1
+        ? "1 spot left"
+        : `${listing.remainingSpots} spots left`;
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
@@ -74,10 +80,26 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
               <CalendarClock aria-hidden="true" size={17} />
               {listing.availableSlots.join(", ")}
             </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.07] px-4 py-2 text-sm font-bold text-white/70">
+              <Users aria-hidden="true" size={17} />
+              {remainingLabel}
+            </span>
             <span className="inline-flex items-center gap-2 rounded-full bg-lime-300 px-4 py-2 text-sm font-black text-[#070816]">
               <Ticket aria-hidden="true" size={17} />
-              {formatPrice(listing.price)}
+              Now {formatPrice(listing.price)}
             </span>
+          </div>
+          <div className="mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
+            <p className="text-sm font-black text-lime-100">
+              {listing.originalPrice ? (
+                <>
+                  Was <span className="line-through">{formatPrice(listing.originalPrice)}</span>, now {formatPrice(listing.price)}.
+                </>
+              ) : (
+                <>Special last-minute price: {formatPrice(listing.price)}.</>
+              )}{" "}
+              Request booking to confirm the open window.
+            </p>
           </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <a className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="#request-booking">
@@ -91,7 +113,7 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
 
       <section className="mt-10 grid gap-5 lg:grid-cols-3">
         <InfoBlock title="Why it fits" text={listing.whyItFits} />
-        <InfoBlock title="What's included" text={`Duration: ${listing.durationMinutes} minutes. Group size: ${listing.groupSize}. Booking mode: request availability.`} />
+        <InfoBlock title="Open slot details" text={`Duration: ${listing.durationMinutes} minutes. Group size: ${listing.groupSize}. Remaining availability: ${remainingLabel}. Booking mode: request availability.`} />
         <InfoBlock title="Terms" text={listing.terms} />
       </section>
 

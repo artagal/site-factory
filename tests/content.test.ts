@@ -28,6 +28,7 @@ describe("GoFunMotion Deals marketplace content", () => {
     expect(listings.length).toBeGreaterThanOrEqual(5);
     expect(listings.every((listing) => listing.isDemo)).toBe(true);
     expect(listings.every((listing) => listing.bookingMode === "request")).toBe(true);
+    expect(listings.every((listing) => typeof listing.remainingSpots === "number")).toBe(true);
     expect(listings.every((listing) => listing.status === "published" && listing.approvalStatus === "approved")).toBe(true);
   });
 

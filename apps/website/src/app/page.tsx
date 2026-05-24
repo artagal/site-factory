@@ -1,83 +1,77 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, BriefcaseBusiness, CalendarHeart, Clock3, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, CalendarHeart, Clock3, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
 import { DealCard } from "../components/gofunmotion/deal-card";
-import { PlanFinderForm } from "../components/gofunmotion/plan-finder-form";
-import { LinkButton } from "../components/gofunmotion/Button";
 import { SeoJsonLd } from "../components/seo-json-ld";
 import { categories, demoNotice, getFeaturedListings } from "../lib/deals-data";
 import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSchema } from "../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "GoFunMotion - Find Fun Things To Do Today",
+  title: "GoFunMotion - Last-Minute Fun Deals Near You",
   description:
-    "Discover local activities, last-minute deals, date ideas, family fun, and spontaneous plans based on your mood, time, budget, and city.",
+    "Find last-minute fun deals near you. Save on activities, date nights, family fun, and local experiences with open spots today.",
   image: "/og/gofunmotion-og.svg",
   keywords: [
-    "things to do today",
-    "fun things to do near me",
-    "local activity deals",
-    "date night ideas",
-    "family activities",
-    "last minute deals",
-    "activity finder",
-    "weekend plans",
-    "local experiences",
-    "fun finder"
+    "last minute fun deals",
+    "activity deals near me",
+    "things to do tonight",
+    "date night deals",
+    "family activity deals",
+    "last minute activity deals",
+    "local experience deals",
+    "weekend deals"
   ],
   path: "/"
 });
 
-const planCards = [
-  { accent: "from-fuchsia-400 to-rose-300", label: "Tonight", meta: "Comedy Night", price: "$18" },
-  { accent: "from-lime-300 to-emerald-300", label: "25% off", meta: "Pottery Date Night", price: "$45" },
-  { accent: "from-cyan-300 to-blue-300", label: "Under $50", meta: "Low-key date plan", price: "$39" },
-  { accent: "from-amber-300 to-orange-300", label: "Weekend", meta: "Kids Indoor Play", price: "$20" },
-  { accent: "from-violet-300 to-fuchsia-300", label: "Last slot", meta: "Escape Room", price: "$22" },
-  { accent: "from-sky-300 to-lime-300", label: "Friends", meta: "Mini Golf Plan", price: "$24" }
+const heroDeals = [
+  { accent: "from-lime-300 to-emerald-300", city: "Miami", now: "$39", spots: "2 spots left", time: "Tonight 7:00 PM", title: "Pottery Date Night", was: "$60" },
+  { accent: "from-cyan-300 to-blue-300", city: "Austin", now: "$22", spots: "1 room left", time: "Tonight 8:30 PM", title: "Escape Room Slot", was: "$32" },
+  { accent: "from-amber-300 to-orange-300", city: "San Diego", now: "$20", spots: "8 passes left", time: "Weekend", title: "Kids Indoor Play", was: "$25" },
+  { accent: "from-fuchsia-300 to-rose-300", city: "New York", now: "$10", spots: "6 trial spots", time: "Tomorrow 6:30 PM", title: "Dance Trial Class", was: "$20" }
 ];
 
-const heroStats = [
-  { icon: Clock3, label: "Fast plans", value: "1 minute" },
-  { icon: TicketPercent, label: "Deal-ready", value: "Request first" },
-  { icon: ShieldCheck, label: "Partner safety", value: "Reviewed" }
+const dealStats = [
+  { icon: TicketPercent, label: "Deal-first", value: "Was / Now" },
+  { icon: Clock3, label: "Time-sensitive", value: "Tonight" },
+  { icon: ShieldCheck, label: "No fake partners", value: "Demo labeled" }
 ];
 
 const howItWorks = [
   {
     icon: MapPin,
-    title: "Tell us the basics",
-    text: "City, when, who's going, budget, vibe, time, and indoor or outdoor."
+    title: "Pick your city and time",
+    text: "Start with tonight, tomorrow, or this weekend. The product is built around real open slots."
   },
   {
-    icon: Sparkles,
-    title: "Get a simple plan",
-    text: "GoFunMotion returns a shortlist with one clear plan, a matching deal, and a backup."
+    icon: TicketPercent,
+    title: "Compare simple deals",
+    text: "Every card shows the old price, new price, time window, and how many spots are left."
   },
   {
-    icon: BadgeCheck,
-    title: "Save or request",
-    text: "Save ideas for later, share the plan, or request booking when a listing fits."
+    icon: Clock3,
+    title: "Request the open slot",
+    text: "Until checkout is live, booking stays request-based so availability can be confirmed."
   }
 ];
 
 const audienceSections = [
   {
     href: "/date-night",
-    title: "Date night without the planning spiral",
-    text: "Find romantic, playful, relaxed, or creative plans based on time and budget.",
+    title: "Date night deals",
+    text: "Last-minute creative, romantic, or low-pressure experiences that make tonight easier to choose.",
     icon: CalendarHeart
   },
   {
     href: "/friends",
-    title: "Group plans people can agree on",
-    text: "Shortlist social activities, last-minute slots, and easy backup options.",
+    title: "Friends and group deals",
+    text: "Open slots for groups that want a plan now: escape rooms, mini golf, comedy, classes, and more.",
     icon: Users
   },
   {
     href: "/family",
-    title: "Family activities that work today",
-    text: "Filter for kids, indoor plans, weekends, and lower-stress options.",
+    title: "Family and kids deals",
+    text: "Indoor passes, weekend activities, kids classes, and simple family-friendly openings.",
     icon: Sparkles
   }
 ];
@@ -86,18 +80,18 @@ export default function HomePage() {
   const schema = createSchemaGraph([
     createWebPageSchema({
       description:
-        "GoFunMotion Deals helps people discover local activities, last-minute deals, date ideas, family activities, and spontaneous plans.",
+        "GoFunMotion Deals helps people find last-minute activity deals, open slots, date night deals, family activities, and local experiences.",
       path: "/",
       title: "GoFunMotion Deals"
     }),
     createFaqSchema([
       {
-        question: "Do I need an account to browse plans?",
-        answer: "No. You can use the plan finder and browse demo deal scaffolding before signing in."
+        question: "What is GoFunMotion Deals?",
+        answer: "GoFunMotion Deals is a local deals platform for last-minute activity openings, date nights, family fun, and bookable experiences."
       },
       {
-        question: "Can I book directly today?",
-        answer: "GoFunMotion uses request-based booking for now. Payments and checkout are not implemented yet."
+        question: "Are the current listings real production partners?",
+        answer: "Current demo listings are clearly labeled. Real partner listings should be reviewed and approved before appearing as live inventory."
       }
     ])
   ]);
@@ -105,28 +99,37 @@ export default function HomePage() {
   return (
     <main>
       <SeoJsonLd data={schema} id="gofunmotion-home-schema" />
-      <section className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-10 px-4 py-10 md:px-8 md:py-14 lg:grid-cols-[0.92fr_1.08fr]">
+      <section className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-10 px-4 py-10 md:px-8 md:py-14 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="relative">
           <p className="inline-flex min-h-9 items-center rounded-full border border-lime-300/25 bg-lime-300/10 px-4 text-xs font-black uppercase tracking-[0.16em] text-lime-100">
-            Local plans and activity deals
+            Open slots. Bigger discounts. Real plans.
           </p>
           <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.95] text-white md:text-7xl">
-            Find something fun to do today.
+            Last-minute fun deals near you.
           </h1>
           <p className="mt-5 max-w-2xl text-lg font-semibold leading-8 text-white/68 md:text-xl">
-            Tell us your city, mood, time, budget, and who&apos;s going. GoFunMotion finds real plans,
-            local activities, and last-minute deals you can actually do.
+            Save on activities, date nights, family fun, and local experiences with open spots today.
           </p>
           <p className="mt-4 text-sm font-black uppercase tracking-[0.14em] text-cyan-200">
-            No endless searching. No fake points. Just real things to do.
+            Like open-table discounts for fun: was price, now price, time window, spots left.
           </p>
-          <div className="mt-8">
-            <LinkButton className="min-h-14 rounded-2xl px-6 text-base" href="/find">
-              Find My Plan
-            </LinkButton>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-6 text-base font-black text-[#070816] transition hover:bg-white"
+              href="/deals?when=tonight"
+            >
+              Browse Tonight&apos;s Deals
+              <ArrowRight aria-hidden="true" size={19} />
+            </Link>
+            <Link
+              className="inline-flex min-h-14 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.07] px-6 text-base font-black text-white transition hover:bg-white/12"
+              href="/find"
+            >
+              Help Me Choose
+            </Link>
           </div>
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            {heroStats.map((stat) => {
+            {dealStats.map((stat) => {
               const Icon = stat.icon;
               return (
                 <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4" key={stat.label}>
@@ -140,59 +143,78 @@ export default function HomePage() {
         </div>
 
         <div className="relative min-h-[520px] overflow-hidden rounded-2xl border border-white/10 bg-[#0b1024]/84 p-4 shadow-[0_28px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(244,114,182,0.26),transparent_28%),radial-gradient(circle_at_82%_12%,rgba(34,211,238,0.22),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.10),rgba(255,255,255,0.02))]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(190,242,100,0.26),transparent_28%),radial-gradient(circle_at_82%_12%,rgba(34,211,238,0.22),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.10),rgba(255,255,255,0.02))]" />
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:42px_42px] opacity-55 [mask-image:radial-gradient(circle_at_center,black,transparent_80%)]" />
           <div className="relative flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/30 p-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Tonight in Miami</p>
-              <p className="mt-1 text-2xl font-black text-white">3-plan shortlist ready</p>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Tonight&apos;s Deals</p>
+              <p className="mt-1 text-2xl font-black text-white">Open activity slots</p>
             </div>
             <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">Demo</span>
           </div>
-          <div className="relative mt-4 grid gap-3 sm:grid-cols-2">
-            {planCards.map((card, index) => (
-              <div
-                className="group flex min-h-36 flex-col justify-between rounded-2xl border border-white/10 bg-black/40 p-4 transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.08]"
-                key={card.meta}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <span className={`rounded-full bg-gradient-to-r ${card.accent} px-3 py-1.5 text-xs font-black text-[#070816]`}>
-                    {card.label}
-                  </span>
-                  <span className="text-lg font-black text-white">{card.price}</span>
-                </div>
+          <div className="relative mt-4 grid gap-3">
+            {heroDeals.map((deal) => (
+              <div className="grid gap-4 rounded-2xl border border-white/10 bg-black/40 p-4 transition hover:-translate-y-1 hover:border-lime-300/30 hover:bg-white/[0.08] sm:grid-cols-[1fr_auto]" key={deal.title}>
                 <div>
-                  <span className="text-xs font-black uppercase tracking-[0.14em] text-white/38">
-                    {index % 2 === 0 ? "Plan" : "Deal"}
-                  </span>
-                  <p className="mt-2 text-2xl font-black leading-tight text-white">{card.meta}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`rounded-full bg-gradient-to-r ${deal.accent} px-3 py-1.5 text-xs font-black text-[#070816]`}>
+                      {deal.time}
+                    </span>
+                    <span className="rounded-full bg-white/[0.08] px-3 py-1.5 text-xs font-black text-white/70">
+                      {deal.spots}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-2xl font-black leading-tight text-white">{deal.title}</p>
+                  <p className="mt-1 text-sm font-bold text-white/48">{deal.city}</p>
+                </div>
+                <div className="flex items-end justify-between gap-4 sm:block sm:text-right">
+                  <p className="text-sm font-bold text-white/38 line-through">Was {deal.was}</p>
+                  <p className="text-3xl font-black text-lime-200">Now {deal.now}</p>
                 </div>
               </div>
             ))}
           </div>
-          <div className="relative mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
-            <p className="text-sm font-black text-lime-100">No fake production partners. Demo inventory stays labeled until approved businesses go live.</p>
-          </div>
+          <p className="relative mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4 text-sm font-black text-lime-100">
+            Demo inventory is labeled until real businesses are approved. No fake partners, no fake checkout.
+          </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-12 md:px-8">
-        <div className="mb-5 max-w-3xl">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Quick finder</p>
-          <h2 className="mt-3 text-4xl font-black text-white md:text-5xl">Start with one clear plan.</h2>
-        </div>
-        <PlanFinderForm />
+      <section className="mx-auto max-w-7xl px-4 py-10 md:px-8">
+        <form action="/deals" className="grid gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4 md:grid-cols-[1.2fr_0.9fr_auto] md:p-5">
+          <label className="block">
+            <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">City</span>
+            <input
+              className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300"
+              defaultValue="Miami"
+              name="city"
+              placeholder="Miami"
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">When</span>
+            <select className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300" defaultValue="tonight" name="when">
+              <option className="bg-[#070816]" value="tonight">Tonight</option>
+              <option className="bg-[#070816]" value="today">Today</option>
+              <option className="bg-[#070816]" value="tomorrow">Tomorrow</option>
+              <option className="bg-[#070816]" value="weekend">This weekend</option>
+            </select>
+          </label>
+          <button className="mt-auto inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" type="submit">
+            See Deals
+          </button>
+        </form>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Featured demo deals</p>
-            <h2 className="mt-3 text-4xl font-black text-white md:text-5xl">Local activity cards for the new marketplace.</h2>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Tonight&apos;s deals</p>
+            <h2 className="mt-3 text-4xl font-black text-white md:text-5xl">Discounted activity slots people can understand fast.</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">{demoNotice}</p>
           </div>
-          <Link className="inline-flex items-center gap-2 text-sm font-black text-lime-200 hover:text-white" href="/deals">
-            Browse deals <ArrowRight aria-hidden="true" size={17} />
+          <Link className="inline-flex items-center gap-2 text-sm font-black text-lime-200 hover:text-white" href="/deals?when=tonight">
+            Browse all deals <ArrowRight aria-hidden="true" size={17} />
           </Link>
         </div>
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -205,16 +227,16 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
         <div className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Popular categories</p>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Popular deal types</p>
             <h2 className="mt-3 text-4xl font-black leading-tight text-white md:text-5xl">
-              Choose the kind of fun that fits today.
+              Choose the kind of opening you want.
             </h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            {categories.map((category) => (
+            {categories.slice(0, 8).map((category) => (
               <Link
                 className="rounded-2xl border border-white/10 bg-white/[0.055] p-5 transition hover:border-white/20 hover:bg-white/[0.09]"
-                href={`/deals?category=${category.id}`}
+                href={`/deals?category=${category.id}&when=tonight`}
                 key={category.id}
               >
                 <span className="text-sm font-black uppercase tracking-[0.14em]" style={{ color: category.accentColor }}>
@@ -269,20 +291,20 @@ export default function HomePage() {
           <div>
             <BriefcaseBusiness aria-hidden="true" className="text-cyan-300" size={34} />
             <h2 className="mt-5 text-4xl font-black leading-tight text-white md:text-5xl">
-              Fill empty slots with people looking for something fun to do.
+              Fill empty slots with discounted last-minute offers.
             </h2>
             <p className="mt-4 max-w-2xl text-lg leading-8 text-white/64">
-              Local businesses will be able to apply, create listings, promote last-minute deals, and receive booking requests after approval.
+              Local businesses can turn unused capacity into new customers by listing open windows, slow-hour deals, and last-minute availability.
             </p>
           </div>
           <div className="grid content-center gap-3">
-            {["List activities", "Promote last-minute deals", "Receive booking requests", "Require admin approval"].map((item) => (
+            {["Post an open slot", "Set was / now pricing", "Receive booking requests", "Get approved before public visibility"].map((item) => (
               <div className="rounded-2xl bg-black/26 p-4 text-sm font-black text-white/78" key={item}>
                 {item}
               </div>
             ))}
             <Link className="mt-2 inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/10 bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/partner">
-              Partner With Us
+              List Your Business
             </Link>
           </div>
         </div>
@@ -291,9 +313,9 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl px-4 pb-16 pt-8 md:px-8 md:pb-24">
         <div className="rounded-2xl border border-white/10 bg-black/26 p-6 md:p-8">
           <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">City waitlist</p>
-          <h2 className="mt-3 text-3xl font-black text-white md:text-5xl">Want GoFunMotion Deals in your city?</h2>
+          <h2 className="mt-3 text-3xl font-black text-white md:text-5xl">Want last-minute activity deals in your city?</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-white/60">
-            Tell us where you are, and GoFunMotion can connect city demand to future partner approvals and local launch planning.
+            Tell us where you are. GoFunMotion will use city demand to prioritize partner outreach and approved local inventory.
           </p>
         </div>
       </section>

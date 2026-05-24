@@ -4,8 +4,8 @@ import { AccountNav } from "./AccountNav";
 import { LinkButton } from "./Button";
 
 const links = [
-  { href: "/find", label: "Find" },
   { href: "/deals", label: "Deals" },
+  { href: "/find", label: "Help Me Choose" },
   { href: "/date-night", label: "Date Night" },
   { href: "/friends", label: "Friends" },
   { href: "/family", label: "Family" },
@@ -45,13 +45,13 @@ export function Navbar() {
         </nav>
         <div className="hidden items-center gap-2 lg:flex">
           <AccountNav />
-          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/find">
-            Find My Plan
+          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/deals?when=tonight">
+            Tonight&apos;s Deals
           </LinkButton>
         </div>
         <div className="flex items-center gap-2 lg:hidden">
-          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/find" showArrow={false}>
-            Find My Plan
+          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/deals?when=tonight" showArrow={false}>
+            Deals
           </LinkButton>
           <details className="relative">
             <summary className="flex size-11 cursor-pointer list-none items-center justify-center rounded-full border border-white/10 bg-white/[0.07] text-white">

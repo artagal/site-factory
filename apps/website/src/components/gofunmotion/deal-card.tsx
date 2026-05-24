@@ -1,11 +1,18 @@
 import Link from "next/link";
-import { Clock, MapPin, Sparkles, Tag } from "lucide-react";
+import { Clock, MapPin, Sparkles, Tag, TicketPercent, Users } from "lucide-react";
 import { SaveListingButton } from "../listings/save-listing-button";
 import { getCategoryById, formatPrice } from "../../lib/deals-data";
 import type { Listing } from "../../types/deals";
 
 export function DealCard({ listing }: { listing: Listing }) {
   const category = getCategoryById(listing.categoryIds[0]);
+  const primarySlot = listing.availableSlots[0] ?? "Request time";
+  const remainingLabel =
+    listing.remainingSpots === null
+      ? "Limited availability"
+      : listing.remainingSpots === 1
+        ? "1 spot left"
+        : `${listing.remainingSpots} spots left`;
 
   return (
     <article className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.08] hover:shadow-[0_30px_95px_rgba(0,0,0,0.34)]">
@@ -36,28 +43,43 @@ export function DealCard({ listing }: { listing: Listing }) {
             <p className="mt-2 text-sm font-bold text-white/54">{listing.businessName}</p>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-black text-lime-200">{formatPrice(listing.price)}</p>
             {listing.originalPrice ? (
-              <p className="text-sm font-bold text-white/38 line-through">{formatPrice(listing.originalPrice)}</p>
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-white/38">
+                Was <span className="line-through">{formatPrice(listing.originalPrice)}</span>
+              </p>
+            ) : null}
+            <p className="text-2xl font-black text-lime-200">Now {formatPrice(listing.price)}</p>
+            {listing.originalPrice ? (
+              <p className="text-xs font-black text-lime-200/72">
+                Save {formatPrice(listing.originalPrice - listing.price)}
+              </p>
             ) : null}
           </div>
         </div>
         <p className="mt-4 text-sm leading-6 text-white/64">{listing.shortDescription}</p>
-        <div className="mt-4 grid gap-2 text-sm font-bold text-white/58 sm:grid-cols-3">
-          <span className="inline-flex items-center gap-2">
+        <div className="mt-4 grid gap-2 text-sm font-bold text-white/66 sm:grid-cols-2">
+          <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-black/24 px-3">
             <MapPin aria-hidden="true" size={16} />
             {listing.cityName}
           </span>
-          <span className="inline-flex items-center gap-2">
-            <Clock aria-hidden="true" size={16} />
-            {listing.durationMinutes} min
-          </span>
-          <span className="inline-flex items-center gap-2">
+          <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-black/24 px-3">
             <Tag aria-hidden="true" size={16} />
-            {listing.availableSlots[0]}
+            {listing.availableDays.includes("tonight") ? "Tonight" : listing.availableDays[0]}
+          </span>
+          <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-black/24 px-3">
+            <Clock aria-hidden="true" size={16} />
+            {primarySlot}
+          </span>
+          <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-lime-300/12 px-3 text-lime-100">
+            <Users aria-hidden="true" size={16} />
+            {remainingLabel}
           </span>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
+          <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
+            <TicketPercent aria-hidden="true" className="mr-1 inline" size={13} />
+            Last-minute deal
+          </span>
           {listing.vibeTags.slice(0, 3).map((tag) => (
             <span className="rounded-full bg-white/[0.07] px-3 py-1.5 text-xs font-bold text-white/66" key={tag}>
               {tag.replace(/-/g, " ")}

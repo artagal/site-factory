@@ -6,14 +6,14 @@ import { buildSeoMetadata } from "../../lib/seo";
 export const metadata: Metadata = buildSeoMetadata({
   title: "Partner With GoFunMotion Deals",
   description:
-    "Local businesses can prepare to list activities, promote last-minute deals, and receive booking requests through GoFunMotion Deals.",
+    "Local businesses can list discounted last-minute open slots, slow-hour activity deals, and receive booking requests through GoFunMotion Deals.",
   keywords: ["activity business marketing", "local business deals", "booking requests", "promoted listings"],
   path: "/partner"
 });
 
 const partnerBenefits = [
-  { icon: ClipboardList, title: "List activities", text: "Create clear listings for classes, events, experiences, and local deals." },
-  { icon: Send, title: "Receive requests", text: "Use request-based booking while payments and checkout stay out of the current product." },
+  { icon: ClipboardList, title: "Post open slots", text: "Create clear last-minute offers for classes, events, experiences, and unused time windows." },
+  { icon: Send, title: "Receive requests", text: "Customers request the discounted window while payments and checkout stay out of the current product." },
   { icon: BadgeCheck, title: "Approval first", text: "Partner listings should require admin approval before public visibility." },
   { icon: BarChart3, title: "Grow later", text: "Future plans can support promoted listings, subscriptions, lead fees, and commissions." }
 ];
@@ -25,10 +25,10 @@ export default function PartnerPage() {
         <div>
           <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">For local businesses</p>
           <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">
-            Fill empty slots with people looking for something fun to do.
+            Fill empty slots with discounted last-minute offers.
           </h1>
           <p className="mt-5 text-lg leading-8 text-white/64">
-            GoFunMotion Deals is being built for escape rooms, studios, classes, kids activity centers, wellness businesses, tours, workshops, and local venues.
+            GoFunMotion Deals is being built for businesses with unused time windows: escape rooms, studios, classes, kids activity centers, wellness businesses, tours, workshops, and local venues.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/pricing">
@@ -40,9 +40,9 @@ export default function PartnerPage() {
           </div>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-          <h2 className="text-2xl font-black text-white">Approval-first marketplace</h2>
+          <h2 className="text-2xl font-black text-white">Simple open-slot marketplace</h2>
           <p className="mt-3 text-sm leading-6 text-white/60">
-            Businesses can apply and prepare listings, but public visibility requires admin approval. No payments or paid placement are enabled yet.
+            Businesses can apply, prepare last-minute offers, and show was/now pricing. Public visibility requires admin approval. No payments or paid placement are enabled yet.
           </p>
         </div>
       </section>
@@ -64,7 +64,7 @@ export default function PartnerPage() {
         <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Partner application</p>
         <h2 className="mt-3 text-4xl font-black text-white">Start with a reviewed application.</h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-white/60">
-          The target workflow is application, admin review, business profile, listing editor, booking requests, and dashboard. No self-approval or paid placement is enabled yet.
+          The target workflow is application, admin review, business profile, open-slot listing editor, booking requests, and dashboard. No self-approval or paid placement is enabled yet.
         </p>
         <Link className="mt-6 inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/partner/apply">
           Apply to List Your Business

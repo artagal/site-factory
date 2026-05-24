@@ -19,10 +19,10 @@ import {
 import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "Find My Plan | GoFunMotion Deals",
+  title: "Help Me Choose | GoFunMotion Deals",
   description:
-    "Use the GoFunMotion plan finder to choose your city, mood, time, budget, and group, then get a simple local activity plan.",
-  keywords: ["plan finder", "things to do today", "local activity finder", "date night planner"],
+    "Not sure which deal to pick? Use the GoFunMotion helper to choose a city, mood, time, budget, and group, then get a simple activity plan.",
+  keywords: ["activity deal helper", "things to do tonight", "local activity finder", "date night deals"],
   path: "/find"
 });
 
@@ -40,12 +40,12 @@ export default async function FindPage({ searchParams }: FindPageProps) {
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
       <section className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Plan finder</p>
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Deal helper</p>
           <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">
-            Tell us what today needs.
+            Not sure which deal to pick?
           </h1>
           <p className="mt-4 text-lg leading-8 text-white/64">
-            Browse before login. Save, request booking, and build a profile later when Firebase marketplace data is wired.
+            Start with the discounted open slots on GoFunMotion Deals. If you cannot decide, this helper turns your city, time, budget, and group into one simple plan.
           </p>
         </div>
         <PlanFinderForm compact defaultValues={input} />
@@ -54,7 +54,7 @@ export default async function FindPage({ searchParams }: FindPageProps) {
       <section className="mt-10 rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-2xl md:p-7">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Suggested demo plan</p>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Suggested deal plan</p>
             <h2 className="mt-3 text-4xl font-black leading-tight text-white">{plan.title}</h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-white/60">{plan.summary}</p>
           </div>

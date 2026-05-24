@@ -81,7 +81,7 @@ export function PlanFinderForm({
         <Select label="Indoor/outdoor" name="indoorOutdoor" options={indoorOptions} value={defaultValues?.indoorOutdoor ?? "either"} />
         <button className="mt-auto inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-5 py-3 text-sm font-black text-[#070816] transition hover:bg-white active:scale-[0.98]" type="submit">
           <Search aria-hidden="true" size={18} />
-          Find My Plan
+          Find Deal Plan
         </button>
       </div>
     </form>

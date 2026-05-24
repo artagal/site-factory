@@ -105,6 +105,7 @@ export type Listing = {
   phone: string | null;
   price: number;
   promoted: boolean;
+  remainingSpots: number | null;
   requestCount: number;
   saveCount: number;
   shortDescription: string;
