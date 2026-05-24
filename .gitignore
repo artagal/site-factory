@@ -148,3 +148,5 @@ output/seo-audits/*
 output/wordpress-drafts/*
 output/content-calendars/*
 !output/**/.gitkeep
+
+.vercel
