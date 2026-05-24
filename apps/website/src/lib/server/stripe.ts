@@ -4,12 +4,13 @@ import { getStripePriceEnvName, type PaidPartnerPricingTier } from "../payments"
 let stripeClient: Stripe | null = null;
 
 export function isStripeConfigured() {
-  return Boolean(process.env.STRIPE_SECRET_KEY);
+  return Boolean(process.env.STRIPE_SECRET_KEY?.trim());
 }
 
 export function getStripeClient() {
-  if (!process.env.STRIPE_SECRET_KEY) return null;
-  stripeClient ??= new Stripe(process.env.STRIPE_SECRET_KEY, {
+  const secretKey = process.env.STRIPE_SECRET_KEY?.trim();
+  if (!secretKey) return null;
+  stripeClient ??= new Stripe(secretKey, {
     appInfo: {
       name: "GoFunMotion Deals"
     }
@@ -19,9 +20,9 @@ export function getStripeClient() {
 
 export function getPartnerSubscriptionPriceId(tier: PaidPartnerPricingTier) {
   const envName = getStripePriceEnvName(tier);
-  return process.env[envName] ?? null;
+  return process.env[envName]?.trim() ?? null;
 }
 
 export function getStripeWebhookSecret() {
-  return process.env.STRIPE_WEBHOOK_SECRET ?? null;
+  return process.env.STRIPE_WEBHOOK_SECRET?.trim() ?? null;
 }
