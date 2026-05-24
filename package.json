@@ -16,6 +16,7 @@
     "sitemap:generate": "tsx scripts/generate-sitemap.ts",
     "robots:generate": "tsx scripts/generate-robots.ts",
     "firestore:seed-demo": "tsx scripts/seedFirestore.ts",
+    "admin:bootstrap": "tsx scripts/bootstrapAdmin.ts",
     "wordpress:draft": "tsx scripts/generate-wordpress-draft.ts",
     "content-calendar:generate": "tsx scripts/generate-content-calendar.ts",
     "firebase:login": "firebase login --no-localhost",
