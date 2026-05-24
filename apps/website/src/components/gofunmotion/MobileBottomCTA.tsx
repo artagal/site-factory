@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flame, Radio, UserCircle2 } from "lucide-react";
+import { Flame, Radio } from "lucide-react";
+import { MobileAccountLink } from "./AccountNav";
 
 const hiddenRoutes = ["/challenge", "/login", "/privacy", "/terms"];
 
@@ -36,13 +37,7 @@ export function MobileBottomCTA() {
         >
           <Flame aria-hidden="true" size={20} />
         </Link>
-        <Link
-          aria-label="Open profile"
-          className="inline-flex size-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.07] text-white active:scale-[0.98]"
-          href="/profile"
-        >
-          <UserCircle2 aria-hidden="true" size={20} />
-        </Link>
+        <MobileAccountLink />
       </div>
     </nav>
   );

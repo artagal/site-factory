@@ -5,6 +5,8 @@ const footerLinks = [
   { href: "/challenge", label: "Challenge Generator" },
   { href: "/categories", label: "Categories" },
   { href: "/waitlist", label: "Mobile App" },
+  { href: "/login", label: "Login" },
+  { href: "/profile", label: "Account" },
   { href: "/about", label: "About" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" }
