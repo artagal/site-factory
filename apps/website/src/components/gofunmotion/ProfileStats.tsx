@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bookmark, CheckCircle2, Crown, Flame, Gauge, History, Sparkles, Target, Trophy, UserRound, Zap } from "lucide-react";
-import { getLocalProgress } from "../../lib/localStorage";
-import { progressUpdatedEvent } from "../../lib/progressActions";
+import type { User } from "firebase/auth";
+import { Bookmark, CheckCircle2, Crown, Flame, Gauge, History, LogOut, Settings, Sparkles, Target, Trophy, UserRound, Zap } from "lucide-react";
+import { observeUser, signOutUser } from "../../lib/auth";
+import { getLocalProgress, setProgressScope } from "../../lib/localStorage";
+import { emitProgressUpdate, progressUpdatedEvent } from "../../lib/progressActions";
 import { getCurrentLevelProgress } from "../../lib/xp";
 import type { GoFunMotionRecentActivity, GoFunMotionUserProgress } from "../../types/user";
 import { BadgeGrid } from "./BadgeGrid";
-import { LinkButton } from "./Button";
+import { Button, LinkButton } from "./Button";
 import { StreakCounter } from "./StreakCounter";
 import { XPBadge } from "./XPBadge";
 
@@ -89,14 +91,19 @@ function MomentumRing({ score }: { score: number }) {
 
 export function ProfileStats() {
   const [progress, setProgress] = useState<GoFunMotionUserProgress | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const refreshProgress = () => setProgress(getLocalProgress());
 
     refreshProgress();
     window.addEventListener(progressUpdatedEvent, refreshProgress);
+    const stopObservingUser = observeUser(setUser);
 
-    return () => window.removeEventListener(progressUpdatedEvent, refreshProgress);
+    return () => {
+      stopObservingUser();
+      window.removeEventListener(progressUpdatedEvent, refreshProgress);
+    };
   }, []);
 
   if (!progress) {
@@ -110,6 +117,13 @@ export function ProfileStats() {
   const avatarInitials = getAvatarInitials(progress.displayName);
   const username = getUsername(progress.displayName);
   const realLifeCombo = getTodayCombo(progress);
+
+  async function handleSignOut() {
+    await signOutUser();
+    const guestProgress = setProgressScope(null);
+    emitProgressUpdate(guestProgress);
+    setUser(null);
+  }
 
   return (
     <div className="grid gap-5">
@@ -136,7 +150,17 @@ export function ProfileStats() {
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <LinkButton href="/challenge">Generate mission</LinkButton>
+              <LinkButton href="/profile/settings" variant="secondary">
+                <Settings aria-hidden="true" size={18} />
+                Settings
+              </LinkButton>
               <LinkButton href="/login" variant="ghost">Sync progress</LinkButton>
+              {user ? (
+                <Button onClick={handleSignOut} variant="ghost">
+                  <LogOut aria-hidden="true" size={18} />
+                  Sign out
+                </Button>
+              ) : null}
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-[1fr_auto]">

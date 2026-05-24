@@ -9,6 +9,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  updateProfile,
   type User
 } from "firebase/auth";
 import { getFirebaseApp, isFirebaseConfigured } from "./firebase";
@@ -48,6 +49,15 @@ export async function signOutUser() {
   const auth = getGoFunMotionAuth();
   if (!auth) return;
   await signOut(auth);
+}
+
+export async function updateUserDisplayName(displayName: string) {
+  const auth = getGoFunMotionAuth();
+  const user = auth?.currentUser;
+  if (!user) return null;
+
+  await updateProfile(user, { displayName });
+  return user;
 }
 
 export function observeUser(callback: (user: User | null) => void) {

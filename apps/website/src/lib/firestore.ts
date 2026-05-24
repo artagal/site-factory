@@ -152,6 +152,20 @@ export async function syncUserProgressSummaryToFirestore(userId: string, progres
   );
 }
 
+export async function updateUserProfileInFirestore(userId: string, updates: { displayName?: string; photoURL?: string | null }) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  return setDoc(
+    doc(db, "users", userId),
+    {
+      ...updates,
+      profileUpdatedAt: serverTimestamp()
+    },
+    { merge: true }
+  );
+}
+
 function toIsoString(value: unknown) {
   if (typeof value === "string") return value;
   if (value && typeof value === "object" && "toDate" in value && typeof value.toDate === "function") {

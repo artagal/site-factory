@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { completeChallengeLocally, getLocalProgress, mergeLocalProgress, saveChallengeLocally } from "../apps/website/src/lib/localStorage";
+import {
+  completeChallengeLocally,
+  getLocalProgress,
+  getProgressForScope,
+  mergeLocalProgress,
+  saveChallengeLocally,
+  setProgressScope
+} from "../apps/website/src/lib/localStorage";
 import type { Challenge, ChallengeCompletion } from "../apps/website/src/types/challenge";
 import type { GoFunMotionUserProgress } from "../apps/website/src/types/user";
 
@@ -135,5 +142,22 @@ describe("GoFunMotion local progress", () => {
     expect(merged.xp).toBe(70);
     expect(stored.xp).toBe(70);
     expect(stored.totalChallengesCompleted).toBe(2);
+  });
+
+  it("keeps signed-in local progress isolated by Firebase user id", () => {
+    completeChallengeLocally(challenge);
+    expect(getProgressForScope(null).xp).toBe(30);
+
+    setProgressScope("user-a");
+    expect(getLocalProgress().xp).toBe(0);
+    completeChallengeLocally(remoteChallenge);
+    expect(getLocalProgress().xp).toBe(40);
+
+    setProgressScope("user-b");
+    expect(getLocalProgress().xp).toBe(0);
+
+    setProgressScope("user-a");
+    expect(getLocalProgress().xp).toBe(40);
+    expect(JSON.parse(globalThis.localStorage.getItem("gofunmotion:progress:user:user-a") ?? "{}").xp).toBe(40);
   });
 });

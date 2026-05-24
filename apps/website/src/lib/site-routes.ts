@@ -17,6 +17,7 @@ const appRoutes = [
   "/daily",
   "/categories",
   "/profile",
+  "/profile/settings",
   "/leaderboard",
   "/waitlist",
   "/about",

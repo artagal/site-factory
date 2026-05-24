@@ -6,7 +6,8 @@ import { getRarityXpBonus } from "./rarity";
 import type { Challenge, ChallengeCompletion } from "../types/challenge";
 import type { GoFunMotionUserProgress } from "../types/user";
 
-const progressKey = "gofunmotion:progress";
+export const guestProgressKey = "gofunmotion:progress";
+const progressScopeKey = "gofunmotion:progress-scope";
 const waitlistKey = "gofunmotion:waitlist";
 
 const defaultProgress: GoFunMotionUserProgress = {
@@ -42,6 +43,34 @@ function safeWrite<T>(key: string, value: T) {
   const storage = globalThis.localStorage;
   if (!storage) return;
   storage.setItem(key, JSON.stringify(value));
+}
+
+function safeRemove(key: string) {
+  const storage = globalThis.localStorage;
+  if (!storage) return;
+  storage.removeItem(key);
+}
+
+function userProgressKey(userId: string) {
+  return `gofunmotion:progress:user:${userId}`;
+}
+
+function getProgressKey() {
+  const storage = globalThis.localStorage;
+  if (!storage) return guestProgressKey;
+  const scope = storage.getItem(progressScopeKey);
+
+  return scope ? userProgressKey(scope) : guestProgressKey;
+}
+
+function readProgressFromKey(key: string) {
+  return normalizeProgress(safeRead<GoFunMotionUserProgress>(key, defaultProgress));
+}
+
+function writeProgressToKey(key: string, progress: GoFunMotionUserProgress) {
+  const next = normalizeProgress(progress);
+  safeWrite(key, next);
+  return next;
 }
 
 function calculateStreak(completions: ChallengeCompletion[]) {
@@ -140,35 +169,65 @@ function normalizeProgress(progress: GoFunMotionUserProgress): GoFunMotionUserPr
 }
 
 export function getLocalProgress() {
-  return normalizeProgress(safeRead<GoFunMotionUserProgress>(progressKey, defaultProgress));
+  return readProgressFromKey(getProgressKey());
 }
 
 export function setLocalProgress(progress: GoFunMotionUserProgress) {
-  const next = normalizeProgress(progress);
-  safeWrite(progressKey, next);
-  return next;
+  return writeProgressToKey(getProgressKey(), progress);
 }
 
-export function mergeLocalProgress(remoteProgress: GoFunMotionUserProgress) {
-  const localProgress = getLocalProgress();
+export function getProgressForScope(userId: string | null) {
+  return readProgressFromKey(userId ? userProgressKey(userId) : guestProgressKey);
+}
+
+export function setProgressForScope(userId: string | null, progress: GoFunMotionUserProgress) {
+  return writeProgressToKey(userId ? userProgressKey(userId) : guestProgressKey, progress);
+}
+
+export function setProgressScope(userId: string | null) {
+  const storage = globalThis.localStorage;
+  if (!storage) return getLocalProgress();
+
+  if (userId) {
+    storage.setItem(progressScopeKey, userId);
+  } else {
+    safeRemove(progressScopeKey);
+  }
+
+  return getLocalProgress();
+}
+
+export function updateLocalProfile(updates: Pick<GoFunMotionUserProgress, "displayName">) {
+  return setLocalProgress({
+    ...getLocalProgress(),
+    ...updates
+  });
+}
+
+export function mergeProgressRecords(progressRecords: GoFunMotionUserProgress[]) {
+  const records = progressRecords.length ? progressRecords : [defaultProgress];
   const completedByKey = new Map<string, ChallengeCompletion>();
   const savedById = new Map<string, Challenge>();
+  const preferredCategories = new Set<GoFunMotionUserProgress["preferredCategories"][number]>();
+  let displayName = "Motion Rookie";
 
-  [...remoteProgress.completedChallenges, ...localProgress.completedChallenges].forEach((completion) => {
-    const key = `${completion.challengeId}-${completion.completedAt}-${completion.source ?? "generator"}`;
-    completedByKey.set(key, completion);
+  records.forEach((progress) => {
+    if (progress.displayName && progress.displayName !== "Motion Rookie") {
+      displayName = progress.displayName;
+    }
+
+    progress.preferredCategories.forEach((category) => preferredCategories.add(category));
+    progress.completedChallenges.forEach((completion) => {
+      const key = `${completion.challengeId}-${completion.completedAt}-${completion.source ?? "generator"}`;
+      completedByKey.set(key, completion);
+    });
+    progress.savedChallenges.forEach((challenge) => savedById.set(challenge.id, challenge));
   });
 
-  [...remoteProgress.savedChallenges, ...localProgress.savedChallenges].forEach((challenge) => {
-    savedById.set(challenge.id, challenge);
-  });
-
-  return setLocalProgress({
-    ...localProgress,
-    displayName: remoteProgress.displayName || localProgress.displayName,
-    preferredCategories: [
-      ...new Set([...remoteProgress.preferredCategories, ...localProgress.preferredCategories])
-    ],
+  return normalizeProgress({
+    ...defaultProgress,
+    displayName,
+    preferredCategories: Array.from(preferredCategories),
     completedChallenges: Array.from(completedByKey.values()).sort(
       (a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
     ),
@@ -177,12 +236,16 @@ export function mergeLocalProgress(remoteProgress: GoFunMotionUserProgress) {
   });
 }
 
+export function mergeLocalProgress(remoteProgress: GoFunMotionUserProgress) {
+  return setLocalProgress(mergeProgressRecords([remoteProgress, getLocalProgress()]));
+}
+
 export function saveChallengeLocally(challenge: Challenge) {
   const progress = getLocalProgress();
   const savedChallengeIds = [...new Set([...progress.savedChallengeIds, challenge.id])];
   const savedChallenges = [challenge, ...progress.savedChallenges.filter((saved) => saved.id !== challenge.id)].slice(0, 30);
   const next = normalizeProgress({ ...progress, savedChallengeIds, savedChallenges });
-  safeWrite(progressKey, next);
+  safeWrite(getProgressKey(), next);
   return next;
 }
 
@@ -205,7 +268,7 @@ export function completeChallengeLocally(challenge: Challenge, reflection = "", 
     completedChallenges: [completion, ...progress.completedChallenges]
   };
   const next = normalizeProgress(nextProgress);
-  safeWrite(progressKey, next);
+  safeWrite(getProgressKey(), next);
   return next;
 }
 

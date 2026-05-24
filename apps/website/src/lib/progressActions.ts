@@ -8,7 +8,16 @@ import {
   saveChallengeToFirestore,
   syncUserProgressSummaryToFirestore
 } from "./firestore";
-import { completeChallengeLocally, getLocalProgress, mergeLocalProgress, saveChallengeLocally } from "./localStorage";
+import {
+  completeChallengeLocally,
+  getLocalProgress,
+  getProgressForScope,
+  mergeProgressRecords,
+  saveChallengeLocally,
+  setLocalProgress,
+  setProgressForScope,
+  setProgressScope
+} from "./localStorage";
 import type { Challenge, ChallengeCompletion } from "../types/challenge";
 import type { GoFunMotionUserProgress } from "../types/user";
 
@@ -26,7 +35,7 @@ type BrowserEventGlobal = typeof globalThis & {
   dispatchEvent?: (event: unknown) => boolean;
 };
 
-function emitProgressUpdate(progress: GoFunMotionUserProgress) {
+export function emitProgressUpdate(progress: GoFunMotionUserProgress) {
   const browserGlobal = globalThis as BrowserEventGlobal;
 
   if (typeof browserGlobal.dispatchEvent === "function" && typeof browserGlobal.CustomEvent === "function") {
@@ -121,21 +130,30 @@ export async function completeChallengeWithSync(
 }
 
 export async function syncLocalProgressToFirebase(): Promise<ProgressActionResult> {
-  const progress = getLocalProgress();
+  const activeProgress = getLocalProgress();
   const user = getCurrentUser();
 
   if (!user) {
     return {
-      progress,
+      progress: activeProgress,
       requiresLogin: true,
       synced: false
     };
   }
 
   try {
+    const guestProgress = getProgressForScope(null);
+    const userLocalProgress = getProgressForScope(user.uid);
     await ensureUserProfile(user);
     const remoteProgress = await readUserProgressFromFirestore(user.uid);
-    const mergedProgress = remoteProgress ? mergeLocalProgress(remoteProgress) : progress;
+    const mergedProgress = mergeProgressRecords(
+      [remoteProgress, userLocalProgress, guestProgress].filter(Boolean) as GoFunMotionUserProgress[]
+    );
+
+    setProgressForScope(user.uid, mergedProgress);
+    setProgressScope(user.uid);
+    setLocalProgress(mergedProgress);
+
     await Promise.all(mergedProgress.savedChallenges.map((challenge) => saveChallengeToFirestore(user.uid, challenge)));
     await Promise.all(mergedProgress.completedChallenges.map((completion) => saveCompletionToFirestore(user.uid, completion)));
     await syncUserProgressSummaryToFirestore(user.uid, mergedProgress);
@@ -149,7 +167,7 @@ export async function syncLocalProgressToFirebase(): Promise<ProgressActionResul
   } catch (error) {
     return {
       error: formatSyncError(error),
-      progress,
+      progress: activeProgress,
       requiresLogin: false,
       synced: false
     };

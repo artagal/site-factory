@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { AuthProgressBridge } from "../components/gofunmotion/AuthProgressBridge";
 import { Footer } from "../components/gofunmotion/Footer";
 import { MobileBottomCTA } from "../components/gofunmotion/MobileBottomCTA";
 import { MotionBackground } from "../components/gofunmotion/MotionBackground";
@@ -47,6 +48,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${plusJakarta.variable} ${spaceGrotesk.variable}`}>
+        <AuthProgressBridge />
         <MotionBackground />
         <Navbar />
         {children}
