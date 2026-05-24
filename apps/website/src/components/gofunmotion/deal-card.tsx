@@ -8,8 +8,9 @@ export function DealCard({ listing }: { listing: Listing }) {
   const category = getCategoryById(listing.categoryIds[0]);
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl">
+    <article className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.08] hover:shadow-[0_30px_95px_rgba(0,0,0,0.34)]">
       <div className="relative min-h-44 overflow-hidden bg-[radial-gradient(circle_at_20%_20%,rgba(190,242,100,0.34),transparent_32%),radial-gradient(circle_at_80%_10%,rgba(34,211,238,0.26),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.02))] p-4">
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent,rgba(255,255,255,0.10),transparent)] opacity-60" />
         <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-2">
           <span className="rounded-full bg-black/52 px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-white/80">
             Demo listing
@@ -20,11 +21,12 @@ export function DealCard({ listing }: { listing: Listing }) {
             </span>
           ) : null}
         </div>
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
           <div className="inline-flex items-center gap-2 rounded-full bg-black/42 px-3 py-1.5 text-xs font-bold text-white/80">
             <Sparkles aria-hidden="true" size={14} />
             {category?.name ?? "Local activity"}
           </div>
+          <span className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-[#070816]">{listing.cityName}</span>
         </div>
       </div>
       <div className="p-5">

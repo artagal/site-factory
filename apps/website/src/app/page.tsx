@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, BriefcaseBusiness, CalendarHeart, MapPin, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, BriefcaseBusiness, CalendarHeart, Clock3, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
 import { DealCard } from "../components/gofunmotion/deal-card";
 import { PlanFinderForm } from "../components/gofunmotion/plan-finder-form";
 import { LinkButton } from "../components/gofunmotion/Button";
@@ -29,12 +29,18 @@ export const metadata: Metadata = buildSeoMetadata({
 });
 
 const planCards = [
-  "Comedy Night - Tonight",
-  "Pottery Class - 25% Off",
-  "Date Night Under $50",
-  "Kids Indoor Play - Weekend",
-  "Escape Room - Last-Minute Slot",
-  "Mini Golf - Friends Plan"
+  { accent: "from-fuchsia-400 to-rose-300", label: "Tonight", meta: "Comedy Night", price: "$18" },
+  { accent: "from-lime-300 to-emerald-300", label: "25% off", meta: "Pottery Date Night", price: "$45" },
+  { accent: "from-cyan-300 to-blue-300", label: "Under $50", meta: "Low-key date plan", price: "$39" },
+  { accent: "from-amber-300 to-orange-300", label: "Weekend", meta: "Kids Indoor Play", price: "$20" },
+  { accent: "from-violet-300 to-fuchsia-300", label: "Last slot", meta: "Escape Room", price: "$22" },
+  { accent: "from-sky-300 to-lime-300", label: "Friends", meta: "Mini Golf Plan", price: "$24" }
+];
+
+const heroStats = [
+  { icon: Clock3, label: "Fast plans", value: "1 minute" },
+  { icon: TicketPercent, label: "Deal-ready", value: "Request first" },
+  { icon: ShieldCheck, label: "Partner safety", value: "Reviewed" }
 ];
 
 const howItWorks = [
@@ -99,8 +105,8 @@ export default function HomePage() {
   return (
     <main>
       <SeoJsonLd data={schema} id="gofunmotion-home-schema" />
-      <section className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-10 px-4 py-12 md:px-8 lg:grid-cols-[0.95fr_1.05fr]">
-        <div>
+      <section className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-10 px-4 py-10 md:px-8 md:py-14 lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="relative">
           <p className="inline-flex min-h-9 items-center rounded-full border border-lime-300/25 bg-lime-300/10 px-4 text-xs font-black uppercase tracking-[0.16em] text-lime-100">
             Local plans and activity deals
           </p>
@@ -119,23 +125,53 @@ export default function HomePage() {
               Find My Plan
             </LinkButton>
           </div>
+          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            {heroStats.map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4" key={stat.label}>
+                  <Icon aria-hidden="true" className="text-lime-200" size={22} />
+                  <p className="mt-3 text-lg font-black text-white">{stat.value}</p>
+                  <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-white/42">{stat.label}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="relative min-h-[480px] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.055] p-4 shadow-[0_25px_100px_rgba(0,0,0,0.32)] backdrop-blur-2xl">
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:44px_44px] opacity-45" />
-          <div className="relative grid h-full gap-3 sm:grid-cols-2">
+        <div className="relative min-h-[520px] overflow-hidden rounded-2xl border border-white/10 bg-[#0b1024]/84 p-4 shadow-[0_28px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(244,114,182,0.26),transparent_28%),radial-gradient(circle_at_82%_12%,rgba(34,211,238,0.22),transparent_30%),linear-gradient(135deg,rgba(255,255,255,0.10),rgba(255,255,255,0.02))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:42px_42px] opacity-55 [mask-image:radial-gradient(circle_at_center,black,transparent_80%)]" />
+          <div className="relative flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/30 p-4">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Tonight in Miami</p>
+              <p className="mt-1 text-2xl font-black text-white">3-plan shortlist ready</p>
+            </div>
+            <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">Demo</span>
+          </div>
+          <div className="relative mt-4 grid gap-3 sm:grid-cols-2">
             {planCards.map((card, index) => (
               <div
-                className="flex min-h-28 flex-col justify-between rounded-2xl border border-white/10 bg-black/38 p-4"
-                key={card}
+                className="group flex min-h-36 flex-col justify-between rounded-2xl border border-white/10 bg-black/40 p-4 transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.08]"
+                key={card.meta}
               >
-                <span className="text-xs font-black uppercase tracking-[0.14em] text-white/38">
-                  {index % 2 === 0 ? "Plan" : "Deal"}
-                </span>
-                <p className="text-xl font-black leading-tight text-white">{card}</p>
-                <span className="text-sm font-bold text-lime-200">Demo preview</span>
+                <div className="flex items-start justify-between gap-3">
+                  <span className={`rounded-full bg-gradient-to-r ${card.accent} px-3 py-1.5 text-xs font-black text-[#070816]`}>
+                    {card.label}
+                  </span>
+                  <span className="text-lg font-black text-white">{card.price}</span>
+                </div>
+                <div>
+                  <span className="text-xs font-black uppercase tracking-[0.14em] text-white/38">
+                    {index % 2 === 0 ? "Plan" : "Deal"}
+                  </span>
+                  <p className="mt-2 text-2xl font-black leading-tight text-white">{card.meta}</p>
+                </div>
               </div>
             ))}
+          </div>
+          <div className="relative mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
+            <p className="text-sm font-black text-lime-100">No fake production partners. Demo inventory stays labeled until approved businesses go live.</p>
           </div>
         </div>
       </section>
