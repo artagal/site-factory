@@ -54,15 +54,15 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
 
       <TrustBadges />
 
-      <form className="sticky top-14 z-20 mt-5 rounded-2xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:static md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.34)]">
-        <div className="grid grid-cols-[minmax(0,1fr)_7.25rem_auto] items-end gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto]">
+      <form className="sticky top-14 z-20 mt-5 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:top-20 md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.34)]">
+        <div className="grid grid-cols-[minmax(0,1fr)_7.75rem_auto] items-center gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto] md:items-end">
           <CitySelectField compact defaultCity={input.city} defaultCityId={input.cityId} dense />
           <FilterSelect label="When" name="when" options={[["tonight", "Tonight"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]]} value={input.when} compact dense />
           <div className="hidden md:block">
             <CategorySelectField compact defaultCategoryId={categoryId} includeAll />
           </div>
           <input name="sort" type="hidden" value={sort} />
-          <button className="min-h-10 rounded-xl bg-lime-300 px-3 text-xs font-black text-[#070816] hover:bg-white md:min-h-12 md:rounded-2xl md:px-5 md:text-sm" type="submit">
+          <button className="h-12 rounded-2xl bg-lime-300 px-4 text-sm font-black leading-none text-[#070816] hover:bg-white md:px-5" type="submit">
             <span className="md:hidden">Show</span>
             <span className="hidden md:inline">Show Deals</span>
           </button>
@@ -180,7 +180,7 @@ function FilterSelect({
   return (
     <label className="block">
       <span className={dense ? "sr-only md:not-sr-only md:text-xs md:font-black md:uppercase md:tracking-[0.14em] md:text-white/45" : "text-xs font-black uppercase tracking-[0.14em] text-white/45"}>{label}</span>
-      <select className={`${dense ? "mt-0 min-h-10 rounded-xl px-3 text-xs md:mt-1 md:min-h-12 md:rounded-2xl md:px-4 md:text-sm" : `${compact ? "mt-1" : "mt-2"} min-h-12 rounded-2xl px-4 text-sm`} w-full border border-white/10 bg-black/28 font-bold text-white outline-none focus:border-lime-300`} defaultValue={value} name={name}>
+      <select className={`${dense ? "mt-0 h-12 rounded-2xl px-3 py-0 text-sm leading-[48px] md:mt-1 md:px-4" : `${compact ? "mt-1" : "mt-2"} h-12 rounded-2xl px-4 py-0 text-sm leading-[48px]`} w-full border border-white/10 bg-black/28 font-bold text-white outline-none focus:border-lime-300`} defaultValue={value} name={name}>
         {options.map(([optionValue, optionLabel]) => (
           <option className="bg-[#070816] text-white" key={optionValue} value={optionValue}>
             {optionLabel}

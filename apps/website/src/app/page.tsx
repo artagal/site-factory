@@ -186,12 +186,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="sticky top-14 z-20 mx-auto max-w-7xl px-3 py-2 md:static md:px-8 md:py-8">
-        <form action="/deals" className="grid grid-cols-[minmax(0,1fr)_7.25rem_auto] items-end gap-2 rounded-2xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:grid-cols-[1fr_0.9fr_1.1fr_auto] md:gap-3 md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.32)]">
+      <section className="sticky top-14 z-20 mx-auto max-w-7xl px-3 py-2 md:top-20 md:px-8 md:py-4">
+        <form action="/deals" className="grid grid-cols-[minmax(0,1fr)_7.75rem_auto] items-center gap-2 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:grid-cols-[1fr_0.9fr_1.1fr_auto] md:items-end md:gap-3 md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.32)]">
           <CitySelectField defaultCityId="miami" dense />
           <label className="block">
             <span className="sr-only md:not-sr-only md:text-xs md:font-black md:uppercase md:tracking-[0.14em] md:text-white/45">When</span>
-            <select className="min-h-10 w-full rounded-xl border border-white/10 bg-black/28 px-3 text-xs font-bold text-white outline-none focus:border-lime-300 md:mt-2 md:min-h-12 md:rounded-2xl md:px-4 md:text-sm" defaultValue="tonight" name="when">
+            <select className="h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-3 py-0 text-sm font-bold leading-[48px] text-white outline-none focus:border-lime-300 md:mt-2 md:px-4" defaultValue="tonight" name="when">
               <option className="bg-[#070816]" value="tonight">Tonight</option>
               <option className="bg-[#070816]" value="today">Today</option>
               <option className="bg-[#070816]" value="tomorrow">Tomorrow</option>
@@ -201,7 +201,7 @@ export default async function HomePage() {
           <div className="hidden md:block">
             <CategorySelectField includeAll />
           </div>
-          <button className="inline-flex min-h-10 items-center justify-center rounded-xl bg-lime-300 px-3 text-xs font-black text-[#070816] hover:bg-white md:mt-auto md:min-h-12 md:rounded-2xl md:px-5 md:text-sm" type="submit">
+          <button className="inline-flex h-12 items-center justify-center rounded-2xl bg-lime-300 px-4 text-sm font-black leading-none text-[#070816] hover:bg-white md:mt-auto md:px-5" type="submit">
             <span className="md:hidden">Show</span>
             <span className="hidden md:inline">Show Deals</span>
           </button>
