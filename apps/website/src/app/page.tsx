@@ -100,13 +100,13 @@ export default function HomePage() {
   return (
     <main>
       <SeoJsonLd data={schema} id="gofunmotion-home-schema" />
-      <section className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-10 px-4 py-10 md:px-8 md:py-14 lg:grid-cols-[0.9fr_1.1fr]">
+      <section className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-8 pt-10 md:px-8 md:pb-12 md:pt-14 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="relative">
           <p className="inline-flex min-h-9 items-center rounded-full border border-lime-300/25 bg-lime-300/10 px-4 text-xs font-black uppercase tracking-[0.16em] text-lime-100">
             Open slots. Bigger discounts. Real plans.
           </p>
           <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.95] text-white md:text-7xl">
-            Last-minute fun deals near you.
+            Find last-minute fun deals near you.
           </h1>
           <p className="mt-5 max-w-2xl text-lg font-semibold leading-8 text-white/68 md:text-xl">
             Save on activities, date nights, family fun, and local experiences with open spots today.
@@ -119,14 +119,14 @@ export default function HomePage() {
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-6 text-base font-black text-[#070816] transition hover:bg-white"
               href="/deals?when=tonight"
             >
-              Browse Tonight&apos;s Deals
+              See Tonight&apos;s Deals
               <ArrowRight aria-hidden="true" size={19} />
             </Link>
             <Link
               className="inline-flex min-h-14 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.07] px-6 text-base font-black text-white transition hover:bg-white/12"
               href="/find"
             >
-              Help Me Choose
+              Find My Plan
             </Link>
           </div>
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -149,9 +149,9 @@ export default function HomePage() {
           <div className="relative flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/30 p-4">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Tonight&apos;s Deals</p>
-              <p className="mt-1 text-2xl font-black text-white">Open activity slots</p>
+              <p className="mt-1 text-2xl font-black text-white">Open slots with real discounts</p>
             </div>
-            <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">Demo</span>
+            <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">Tonight first</span>
           </div>
           <div className="relative mt-4 grid gap-3">
             {heroDeals.map((deal) => (
@@ -176,7 +176,7 @@ export default function HomePage() {
             ))}
           </div>
           <p className="relative mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4 text-sm font-black text-lime-100">
-            Demo inventory is labeled until real businesses are approved. No fake partners, no fake checkout.
+            Clear deal math: was price, now price, tonight window, and spots left. Demo inventory stays labeled until real businesses are approved.
           </p>
         </div>
       </section>
@@ -202,7 +202,7 @@ export default function HomePage() {
             </select>
           </label>
           <button className="mt-auto inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" type="submit">
-            See Deals
+            Find Deals Tonight
           </button>
         </form>
       </section>

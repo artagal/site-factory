@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, MapPin, Sparkles, Tag, TicketPercent, Users } from "lucide-react";
+import { ArrowRight, Clock, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
 import { SaveListingButton } from "../listings/save-listing-button";
 import { getCategoryById, formatPrice } from "../../lib/deals-data";
 import type { Listing } from "../../types/deals";
@@ -7,6 +7,13 @@ import type { Listing } from "../../types/deals";
 export function DealCard({ listing }: { listing: Listing }) {
   const category = getCategoryById(listing.categoryIds[0]);
   const primarySlot = listing.availableSlots[0] ?? "Request time";
+  const isTonight = listing.availableDays.includes("tonight");
+  const savings = listing.originalPrice ? Math.max(listing.originalPrice - listing.price, 0) : 0;
+  const discountLabel = listing.discountPercent
+    ? `${listing.discountPercent}% off`
+    : savings > 0
+      ? `Save ${formatPrice(savings)}`
+      : "Open slot";
   const remainingLabel =
     listing.remainingSpots === null
       ? "Limited availability"
@@ -15,45 +22,48 @@ export function DealCard({ listing }: { listing: Listing }) {
         : `${listing.remainingSpots} spots left`;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.08] hover:shadow-[0_30px_95px_rgba(0,0,0,0.34)]">
-      <div className="relative min-h-44 overflow-hidden bg-[radial-gradient(circle_at_20%_20%,rgba(190,242,100,0.34),transparent_32%),radial-gradient(circle_at_80%_10%,rgba(34,211,238,0.26),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.02))] p-4">
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent,rgba(255,255,255,0.10),transparent)] opacity-60" />
+    <article className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl transition hover:-translate-y-1 hover:border-lime-300/35 hover:bg-white/[0.08] hover:shadow-[0_30px_95px_rgba(0,0,0,0.34)]">
+      <div className="relative min-h-52 overflow-hidden bg-[radial-gradient(circle_at_18%_18%,rgba(190,242,100,0.36),transparent_30%),radial-gradient(circle_at_78%_6%,rgba(34,211,238,0.28),transparent_35%),linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.03))] p-4">
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent,rgba(255,255,255,0.12),transparent)] opacity-60" />
         <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-2">
-          <span className="rounded-full bg-black/52 px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-white/80">
-            Demo listing
+          <span className="rounded-full bg-black/54 px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-white/82">
+            {listing.isDemo ? "Demo / coming soon" : "Reviewed deal"}
           </span>
-          {listing.discountPercent ? (
-            <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-black">
-              {listing.discountPercent}% off
-            </span>
-          ) : null}
+          <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
+            {discountLabel}
+          </span>
         </div>
-        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
-          <div className="inline-flex items-center gap-2 rounded-full bg-black/42 px-3 py-1.5 text-xs font-bold text-white/80">
+        <div className="absolute bottom-4 left-4 right-4">
+          <div className="flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-xs font-black text-white/84">
+              <Clock aria-hidden="true" size={14} />
+              {isTonight ? "Tonight" : listing.availableDays[0] ?? "Soon"} - {primarySlot}
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
+              <Users aria-hidden="true" size={14} />
+              {remainingLabel}
+            </span>
+          </div>
+          <div className="mt-3 flex items-end justify-between gap-3">
+            <div className="inline-flex items-center gap-2 rounded-full bg-black/42 px-3 py-1.5 text-xs font-bold text-white/80">
             <Sparkles aria-hidden="true" size={14} />
             {category?.name ?? "Local activity"}
+            </div>
+            <span className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-[#070816]">{listing.cityName}</span>
           </div>
-          <span className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-[#070816]">{listing.cityName}</span>
         </div>
       </div>
       <div className="p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
+        <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
+          <div className="min-w-0">
             <h3 className="text-2xl font-black leading-tight text-white">{listing.title}</h3>
             <p className="mt-2 text-sm font-bold text-white/54">{listing.businessName}</p>
           </div>
-          <div className="text-right">
-            {listing.originalPrice ? (
-              <p className="text-xs font-black uppercase tracking-[0.12em] text-white/38">
-                Was <span className="line-through">{formatPrice(listing.originalPrice)}</span>
-              </p>
-            ) : null}
-            <p className="text-2xl font-black text-lime-200">Now {formatPrice(listing.price)}</p>
-            {listing.originalPrice ? (
-              <p className="text-xs font-black text-lime-200/72">
-                Save {formatPrice(listing.originalPrice - listing.price)}
-              </p>
-            ) : null}
+          <div className="rounded-2xl border border-lime-300/20 bg-lime-300/10 p-3 text-left sm:text-right">
+            <p className="text-xs font-black uppercase tracking-[0.12em] text-white/38">Was</p>
+            <p className="text-sm font-black text-white/45 line-through">{listing.originalPrice ? formatPrice(listing.originalPrice) : "Flexible"}</p>
+            <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-lime-200">Now</p>
+            <p className="text-3xl font-black leading-none text-lime-200">{formatPrice(listing.price)}</p>
           </div>
         </div>
         <p className="mt-4 text-sm leading-6 text-white/64">{listing.shortDescription}</p>
@@ -63,16 +73,8 @@ export function DealCard({ listing }: { listing: Listing }) {
             {listing.cityName}
           </span>
           <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-black/24 px-3">
-            <Tag aria-hidden="true" size={16} />
-            {listing.availableDays.includes("tonight") ? "Tonight" : listing.availableDays[0]}
-          </span>
-          <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-black/24 px-3">
-            <Clock aria-hidden="true" size={16} />
-            {primarySlot}
-          </span>
-          <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-lime-300/12 px-3 text-lime-100">
-            <Users aria-hidden="true" size={16} />
-            {remainingLabel}
+            <ShieldCheck aria-hidden="true" size={16} />
+            Request booking
           </span>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">
@@ -87,10 +89,11 @@ export function DealCard({ listing }: { listing: Listing }) {
           ))}
         </div>
         <Link
-          className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-white text-sm font-black text-[#070816] transition hover:bg-lime-200"
+          className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white text-sm font-black text-[#070816] transition hover:bg-lime-200"
           href={`/deals/${listing.slug}`}
         >
           View Deal
+          <ArrowRight aria-hidden="true" size={16} />
         </Link>
         <div className="mt-3">
           <SaveListingButton listing={listing} />
