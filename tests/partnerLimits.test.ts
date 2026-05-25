@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   countLimitedListings,
+  canFeatureListings,
+  canPromoteListings,
   formatActiveListingLimit,
   getEffectivePartnerTier,
   getPartnerTierCapabilities,
@@ -33,5 +35,12 @@ describe("partner paid-tier limits", () => {
     expect(getPartnerTierCapabilities({ paidAccessEnabled: false, pricingTier: "starter", subscriptionStatus: null }).activeListings).toBe(1);
     expect(getPartnerTierCapabilities({ paidAccessEnabled: true, pricingTier: "growth", subscriptionStatus: "active" }).activeListings).toBe(10);
     expect(formatActiveListingLimit(getPartnerTierCapabilities({ paidAccessEnabled: true, pricingTier: "pro", subscriptionStatus: "active" }).activeListings)).toBe("Unlimited");
+  });
+
+  it("gates paid placement by active Stripe-backed tier", () => {
+    expect(canFeatureListings({ paidAccessEnabled: false, pricingTier: "growth", subscriptionStatus: "past_due" })).toBe(false);
+    expect(canFeatureListings({ paidAccessEnabled: true, pricingTier: "growth", subscriptionStatus: "active" })).toBe(true);
+    expect(canPromoteListings({ paidAccessEnabled: true, pricingTier: "growth", subscriptionStatus: "active" })).toBe(false);
+    expect(canPromoteListings({ paidAccessEnabled: true, pricingTier: "pro", subscriptionStatus: "active" })).toBe(true);
   });
 });

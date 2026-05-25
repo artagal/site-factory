@@ -1,5 +1,6 @@
 import { jsonError, jsonOk } from "../../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../../../lib/server/firebase-admin";
+import { canFeatureListings, canPromoteListings } from "../../../../../lib/partner-limits";
 
 const ACTIONS = new Set([
   "approve",
@@ -105,6 +106,26 @@ export async function POST(request: Request): Promise<Response> {
   if (action === "feature" || action === "promote") {
     if (listing.approvalStatus !== "approved" || listing.status !== "published") {
       return jsonError("Only approved published listings can be featured or promoted.", 400);
+    }
+
+    const businessId = typeof listing.businessId === "string" ? listing.businessId : "";
+    const businessSnapshot = businessId ? await db.collection("businesses").doc(businessId).get() : null;
+    const business = businessSnapshot?.data() ?? {};
+
+    if (action === "feature" && !canFeatureListings({
+      paidAccessEnabled: business.paidAccessEnabled === true,
+      pricingTier: business.pricingTier,
+      subscriptionStatus: typeof business.subscriptionStatus === "string" ? business.subscriptionStatus : null
+    })) {
+      return jsonError("Featured placement requires an active Growth or Pro subscription.", 402);
+    }
+
+    if (action === "promote" && !canPromoteListings({
+      paidAccessEnabled: business.paidAccessEnabled === true,
+      pricingTier: business.pricingTier,
+      subscriptionStatus: typeof business.subscriptionStatus === "string" ? business.subscriptionStatus : null
+    })) {
+      return jsonError("Promoted campaigns require an active Pro subscription.", 402);
     }
   }
 

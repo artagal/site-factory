@@ -7,6 +7,7 @@ import { BadgeCheck, Building2, CalendarClock, CheckCircle2, CreditCard, Eye, Li
 import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
 import { demoBusinesses, demoCities, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
+import { canFeatureListings, canPromoteListings, getPartnerTierCapabilities } from "../../lib/partner-limits";
 import {
   isAdminUser,
   readAdminBookingRequests,
@@ -149,6 +150,7 @@ export function AdminDashboard() {
           <div className="mt-4 grid gap-3">
             {visibleListings.map((listing) => (
               <ListingModerationCard
+                business={visibleBusinesses.find((item) => item.id === listing.businessId) ?? null}
                 key={listing.id}
                 listing={listing}
                 live={Boolean(listings.length)}
@@ -196,16 +198,21 @@ type ListingModerationAction =
   | "unpromote";
 
 function ListingModerationCard({
+  business,
   listing,
   live,
   onModerated
 }: {
+  business: Business | null;
   listing: Listing;
   live: boolean;
   onModerated: () => void;
 }) {
   const [busyAction, setBusyAction] = useState<ListingModerationAction | "">("");
   const [status, setStatus] = useState("");
+  const canFeature = business ? canFeatureListings(business) : false;
+  const canPromote = business ? canPromoteListings(business) : false;
+  const tier = business ? getPartnerTierCapabilities(business) : null;
 
   async function moderateListing(action: ListingModerationAction) {
     if (busyAction || !live) return;
@@ -256,6 +263,7 @@ function ListingModerationCard({
           <div className="mt-3 flex flex-wrap gap-2 text-xs font-black">
             <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">{listing.status}</span>
             <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">{listing.approvalStatus}</span>
+            {tier ? <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">{tier.label}</span> : null}
             {listing.featured ? <span className="rounded-full bg-lime-300 px-3 py-1 text-[#070816]">Featured</span> : null}
             {listing.promoted ? <span className="rounded-full bg-cyan-300 px-3 py-1 text-[#070816]">Promoted</span> : null}
           </div>
@@ -271,9 +279,14 @@ function ListingModerationCard({
         <ModerationButton action="publish" busyAction={busyAction} disabled={!live || listing.status === "published"} icon={Eye} label="Publish" onClick={moderateListing} />
         <ModerationButton action="pause" busyAction={busyAction} disabled={!live || listing.status === "paused"} icon={PauseCircle} label="Pause" onClick={moderateListing} />
         <ModerationButton action="expire" busyAction={busyAction} disabled={!live || listing.status === "expired"} icon={XCircle} label="Expire" onClick={moderateListing} />
-        <ModerationButton action={listing.featured ? "unfeature" : "feature"} busyAction={busyAction} disabled={!live} icon={Star} label={listing.featured ? "Unfeature" : "Feature"} onClick={moderateListing} />
-        <ModerationButton action={listing.promoted ? "unpromote" : "promote"} busyAction={busyAction} disabled={!live} icon={Megaphone} label={listing.promoted ? "Unpromote" : "Promote"} onClick={moderateListing} />
+        <ModerationButton action={listing.featured ? "unfeature" : "feature"} busyAction={busyAction} disabled={!live || (!listing.featured && !canFeature)} icon={Star} label={listing.featured ? "Unfeature" : canFeature ? "Feature" : "Growth+ Feature"} onClick={moderateListing} />
+        <ModerationButton action={listing.promoted ? "unpromote" : "promote"} busyAction={busyAction} disabled={!live || (!listing.promoted && !canPromote)} icon={Megaphone} label={listing.promoted ? "Unpromote" : canPromote ? "Promote" : "Pro Promote"} onClick={moderateListing} />
       </div>
+      {live && business && (!canFeature || !canPromote) ? (
+        <p className="mt-3 rounded-2xl bg-white/[0.06] p-3 text-xs font-bold leading-5 text-white/50">
+          Paid placement is tier-gated: Growth can be featured, Pro can be promoted. Current effective tier: {tier?.label ?? "Starter"}.
+        </p>
+      ) : null}
       {!live ? <p className="mt-3 rounded-2xl bg-white/[0.06] p-3 text-xs font-bold leading-5 text-white/50">Demo listings are read-only. Live partner listings will show active moderation controls.</p> : null}
       {status ? <p className="mt-3 rounded-2xl bg-white/[0.06] p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
     </div>

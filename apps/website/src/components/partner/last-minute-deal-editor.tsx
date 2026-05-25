@@ -319,14 +319,15 @@ export function LastMinuteDealEditor({
           <div className="mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-lime-200">{capabilities.label} limits</p>
             <p className="mt-2 text-sm font-bold leading-6 text-white/62">{getTierLimitMessage(business, activeCount)}</p>
-            <div className="mt-3 grid gap-2 text-xs font-bold text-white/54 sm:grid-cols-3">
+            <div className="mt-3 grid gap-2 text-xs font-bold text-white/54 sm:grid-cols-2 lg:grid-cols-4">
               <span>Listings: {activeCount}/{limitLabel}</span>
               <span>Analytics: {capabilities.analyticsLevel}</span>
-              <span>{capabilities.canRunCampaigns ? "Campaigns unlocked" : "Campaigns locked"}</span>
+              <span>{capabilities.canUseFeaturedPlacement ? "Featured eligible" : "Featured locked"}</span>
+              <span>{capabilities.canUsePriorityPlacement ? "Promoted campaigns" : "Promoted locked"}</span>
             </div>
             {limitReached ? (
               <p className="mt-3 rounded-xl bg-black/24 p-3 text-xs font-bold leading-5 text-amber-100">
-                Pause, expire, or delete a listing to free a slot, or upgrade the business plan.
+                Upgrade to unlock more deals, or pause, expire, or delete a listing to free a slot.
               </p>
             ) : null}
           </div>

@@ -5,6 +5,7 @@ export type PartnerTier = "starter" | "growth" | "pro";
 export type PartnerTierCapabilities = {
   activeListings: number;
   analyticsLevel: "basic" | "standard" | "advanced";
+  canUseFeaturedPlacement: boolean;
   canRunCampaigns: boolean;
   canUsePriorityPlacement: boolean;
   label: string;
@@ -16,6 +17,7 @@ export const PARTNER_TIER_CAPABILITIES: Record<PartnerTier, PartnerTierCapabilit
   starter: {
     activeListings: 1,
     analyticsLevel: "basic",
+    canUseFeaturedPlacement: false,
     canRunCampaigns: false,
     canUsePriorityPlacement: false,
     label: "Starter"
@@ -23,6 +25,7 @@ export const PARTNER_TIER_CAPABILITIES: Record<PartnerTier, PartnerTierCapabilit
   growth: {
     activeListings: 10,
     analyticsLevel: "standard",
+    canUseFeaturedPlacement: true,
     canRunCampaigns: true,
     canUsePriorityPlacement: false,
     label: "Growth"
@@ -30,6 +33,7 @@ export const PARTNER_TIER_CAPABILITIES: Record<PartnerTier, PartnerTierCapabilit
   pro: {
     activeListings: Number.POSITIVE_INFINITY,
     analyticsLevel: "advanced",
+    canUseFeaturedPlacement: true,
     canRunCampaigns: true,
     canUsePriorityPlacement: true,
     label: "Pro"
@@ -44,6 +48,18 @@ export function getEffectivePartnerTier(
   }
 
   return "starter";
+}
+
+export function canFeatureListings(
+  business: Pick<Business, "paidAccessEnabled" | "pricingTier" | "subscriptionStatus">
+) {
+  return getPartnerTierCapabilities(business).canUseFeaturedPlacement;
+}
+
+export function canPromoteListings(
+  business: Pick<Business, "paidAccessEnabled" | "pricingTier" | "subscriptionStatus">
+) {
+  return getPartnerTierCapabilities(business).canUsePriorityPlacement;
 }
 
 export function getPartnerTierCapabilities(

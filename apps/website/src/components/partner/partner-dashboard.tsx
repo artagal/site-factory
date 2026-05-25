@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { ClipboardList, Eye, MousePointerClick, PlusCircle, Send, Star } from "lucide-react";
+import { BarChart3, ClipboardList, Crown, Eye, LockKeyhole, MousePointerClick, PlusCircle, Send, Star } from "lucide-react";
 import { LastMinuteDealEditor } from "./last-minute-deal-editor";
 import { PartnerBillingPortalButton } from "./partner-billing-portal-button";
 import { PartnerCheckoutButton } from "./partner-checkout-button";
@@ -11,6 +11,7 @@ import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
 import { demoBusinesses, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import { readBookingRequestsForBusiness, readBusinessesForOwner, readListingsForBusiness, type BookingRequestRecord } from "../../lib/firestore";
+import { countLimitedListings, formatActiveListingLimit, getPartnerTierCapabilities, type PartnerTierCapabilities } from "../../lib/partner-limits";
 import type { Business, Listing } from "../../types/deals";
 
 export function PartnerDashboard() {
@@ -119,6 +120,10 @@ export function PartnerDashboard() {
     : business.isDemo
       ? demoListings.filter((listing) => listing.businessId === business.id)
       : [];
+  const activeListingCount = countLimitedListings(visibleListings);
+  const tierCapabilities = getPartnerTierCapabilities(business);
+  const activeLimitLabel = formatActiveListingLimit(tierCapabilities.activeListings);
+  const limitReached = Number.isFinite(tierCapabilities.activeListings) && activeListingCount >= tierCapabilities.activeListings;
 
   return (
     <>
@@ -128,13 +133,28 @@ export function PartnerDashboard() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.16em] text-lime-200">Next step</p>
-            <h2 className="mt-2 text-2xl font-black text-white">Create a last-minute deal and submit it for approval.</h2>
-            <p className="mt-2 text-sm font-bold leading-6 text-white/58">Use only the key fields first: title, city, category, time, was price, now price, spots left, and booking mode.</p>
+            <h2 className="mt-2 text-2xl font-black text-white">{limitReached ? "Upgrade to unlock more deals." : "Create a last-minute deal and submit it for approval."}</h2>
+            <p className="mt-2 text-sm font-bold leading-6 text-white/58">
+              {limitReached
+                ? `${tierCapabilities.label} is at ${activeListingCount}/${activeLimitLabel} active deals. Upgrade, pause, or expire a listing to keep posting.`
+                : "Use only the key fields first: title, city, category, time, was price, now price, spots left, and booking mode."}
+            </p>
           </div>
-          <a className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="#create-last-minute-deal">
-            <PlusCircle aria-hidden="true" size={18} />
-            Create Last-Minute Deal
-          </a>
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            {!business.isDemo && (limitReached || tierCapabilities.tier === "starter") ? (
+              <PartnerCheckoutButton
+                businessId={business.id}
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200 disabled:opacity-60"
+                email={user?.email}
+                label="Upgrade to unlock more deals"
+                tier="growth"
+              />
+            ) : null}
+            <a className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="#create-last-minute-deal">
+              <PlusCircle aria-hidden="true" size={18} />
+              Create Last-Minute Deal
+            </a>
+          </div>
         </div>
       </section>
       <section className="mt-8 grid gap-4 md:grid-cols-4">
@@ -152,41 +172,13 @@ export function PartnerDashboard() {
           <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-white/58">
             Status: {business.status}. Partner-created listings stay pending until admin approval.
           </p>
-          <div className="mt-4 rounded-2xl bg-black/24 p-4">
-            <p className="text-sm font-black uppercase tracking-[0.16em] text-lime-300">Partner plan</p>
-            <p className="mt-2 text-2xl font-black capitalize text-white">{business.pricingTier ?? "starter"}</p>
-            <p className="mt-1 text-sm font-bold text-white/54">
-              Subscription: {business.subscriptionStatus ?? "not active"}.
-              {business.paidAccessEnabled ? " Paid features are enabled." : " Upgrade to unlock recurring deal campaigns."}
-            </p>
-            {business.isDemo ? null : (
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {business.stripeCustomerId ? (
-                  <PartnerBillingPortalButton
-                    businessId={business.id}
-                    className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
-                  />
-                ) : (
-                  <>
-                    <PartnerCheckoutButton
-                      businessId={business.id}
-                      className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
-                      email={user?.email}
-                      label="Upgrade to Growth"
-                      tier="growth"
-                    />
-                    <PartnerCheckoutButton
-                      businessId={business.id}
-                      className="min-h-11 w-full rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-black text-white hover:bg-white/12 disabled:opacity-60"
-                      email={user?.email}
-                      label="Upgrade to Pro"
-                      tier="pro"
-                    />
-                  </>
-                )}
-              </div>
-            )}
-          </div>
+          <PartnerPlanCard
+            activeLimitLabel={activeLimitLabel}
+            activeListingCount={activeListingCount}
+            business={business}
+            capabilities={tierCapabilities}
+            email={user?.email}
+          />
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
           <h2 className="text-2xl font-black text-white">Listings</h2>
@@ -242,6 +234,101 @@ export function PartnerDashboard() {
 }
 
 type PartnerBookingStatusAction = "contacted" | "confirmed" | "cancelled";
+
+function PartnerPlanCard({
+  activeLimitLabel,
+  activeListingCount,
+  business,
+  capabilities,
+  email
+}: {
+  activeLimitLabel: string;
+  activeListingCount: number;
+  business: Business;
+  capabilities: PartnerTierCapabilities & { tier: "starter" | "growth" | "pro" };
+  email?: string | null;
+}) {
+  const featureRows = [
+    {
+      icon: PlusCircle,
+      label: `${activeLimitLabel} active ${activeLimitLabel === "1" ? "deal" : "deals"}`,
+      unlocked: true
+    },
+    {
+      icon: BarChart3,
+      label: `${capabilities.analyticsLevel} analytics`,
+      unlocked: capabilities.analyticsLevel !== "basic"
+    },
+    {
+      icon: Star,
+      label: "Featured eligibility",
+      unlocked: capabilities.canUseFeaturedPlacement
+    },
+    {
+      icon: Crown,
+      label: "Priority promoted campaigns",
+      unlocked: capabilities.canUsePriorityPlacement
+    }
+  ];
+
+  return (
+    <div className="mt-4 rounded-2xl bg-black/24 p-4">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+        <div>
+          <p className="text-sm font-black uppercase tracking-[0.16em] text-lime-300">Partner plan</p>
+          <p className="mt-2 text-2xl font-black text-white">{capabilities.label}</p>
+          <p className="mt-1 text-sm font-bold text-white/54">
+            Subscription: {business.subscriptionStatus ?? "not active"}.
+            {business.paidAccessEnabled ? " Stripe billing is synced to this business." : " Upgrade to unlock more deals and paid placement."}
+          </p>
+        </div>
+        <span className="rounded-full bg-white/[0.08] px-3 py-1.5 text-xs font-black text-white/62">
+          {activeListingCount}/{activeLimitLabel} active
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        {featureRows.map((feature) => {
+          const Icon = feature.unlocked ? feature.icon : LockKeyhole;
+          return (
+            <div className={`rounded-2xl border p-3 ${feature.unlocked ? "border-lime-300/20 bg-lime-300/10" : "border-white/10 bg-white/[0.04]"}`} key={feature.label}>
+              <Icon aria-hidden="true" className={feature.unlocked ? "text-lime-200" : "text-white/34"} size={18} />
+              <p className={`mt-2 text-sm font-black ${feature.unlocked ? "text-white" : "text-white/48"}`}>{feature.label}</p>
+            </div>
+          );
+        })}
+      </div>
+
+      {business.isDemo ? null : (
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {business.stripeCustomerId ? (
+            <PartnerBillingPortalButton
+              businessId={business.id}
+              className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
+            />
+          ) : (
+            <>
+              <PartnerCheckoutButton
+                businessId={business.id}
+                className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
+                email={email}
+                label="Upgrade to Growth"
+                tier="growth"
+              />
+              <PartnerCheckoutButton
+                businessId={business.id}
+                className="min-h-11 w-full rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-black text-white hover:bg-white/12 disabled:opacity-60"
+                email={email}
+                label="Upgrade to Pro"
+                tier="pro"
+              />
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function PartnerBookingRequestCard({
   onUpdated,
