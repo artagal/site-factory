@@ -17,7 +17,7 @@ function getBaseUrl(request: Request) {
 async function verifyBusinessCheckoutAccess(request: Request, businessId: string) {
   const db = getFirebaseAdminDb();
   if (!db) {
-    return { error: "Firebase Admin is required before a paid checkout can be linked to a business.", status: 503 };
+    return { error: "Live billing is not connected to this business yet.", status: 503 };
   }
 
   const token = await verifyBearerToken(request);

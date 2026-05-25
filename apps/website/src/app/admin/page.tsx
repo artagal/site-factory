@@ -16,7 +16,7 @@ export default function AdminPage() {
         <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Admin approval</p>
         <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Review supply before it goes public.</h1>
         <p className="mt-4 text-lg leading-8 text-white/64">
-          In production this route is guarded by the admins collection. Normal users cannot approve businesses, listings, featured placement, or promoted inventory.
+          This page is only for approved GoFunMotion operators. Normal users cannot approve businesses, listings, featured placement, or promoted inventory.
         </p>
       </section>
       <AdminDashboard />

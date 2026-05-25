@@ -48,7 +48,7 @@ export function AdminDashboard() {
         const nextAllowed = await isAdminUser(nextUser.uid);
         if (!cancelled) {
           setAllowed(nextAllowed);
-          setStatus(nextAllowed ? "" : "This account is not listed in admins/{uid}.");
+          setStatus(nextAllowed ? "" : "This signed-in account does not have admin access yet.");
         }
 
         if (nextAllowed) {
@@ -81,7 +81,7 @@ export function AdminDashboard() {
 
     if (!isFirebaseConfigured()) {
       setChecking(false);
-      setStatus("Admin access requires Firebase configuration and an admins/{uid} document.");
+      setStatus("Admin access is not connected yet.");
       return;
     }
 
@@ -102,7 +102,7 @@ export function AdminDashboard() {
         <ShieldCheck aria-hidden="true" className="text-cyan-300" size={32} />
         <h2 className="mt-4 text-3xl font-black text-white">Admin access is protected.</h2>
         <p className="mt-3 text-sm leading-6 text-white/58">
-          Create an admins document for the signed-in Firebase user before approval controls are visible.
+          Sign in with an owner account. Approval controls are visible only to accounts marked as admins.
         </p>
         {checking ? <p className="mt-4 text-sm font-bold text-white/58">Checking admin access...</p> : null}
         {status ? <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
@@ -149,7 +149,7 @@ export function AdminDashboard() {
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
           <h2 className="text-2xl font-black text-white">Partner applications</h2>
           <p className="mt-2 text-sm font-bold leading-6 text-white/52">
-            Enter the Firebase Auth UID for the partner owner, then create the approved business profile.
+            Search the owner by email, connect their account, then create the approved business profile.
           </p>
           <div className="mt-4 grid gap-3">
             {applications.length ? applications.map((application) => (
@@ -407,7 +407,7 @@ function ApplicationApprovalCard({
       }
 
       setOwnerUid(result.uid);
-      setStatus(`Found ${result.displayName ?? result.email ?? "Firebase user"}: ${result.uid}`);
+      setStatus(`Found ${result.displayName ?? result.email ?? "account"}: ${result.uid}`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "User lookup failed.");
     } finally {
@@ -471,7 +471,7 @@ function ApplicationApprovalCard({
         <input
           className="min-h-11 rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-bold text-white outline-none placeholder:text-white/32 focus:border-cyan-300/60"
           onChange={(event) => setLookupEmail(event.target.value)}
-          placeholder="Owner email in Firebase Auth"
+          placeholder="Owner email"
           value={lookupEmail}
         />
         <button
@@ -485,7 +485,7 @@ function ApplicationApprovalCard({
         <input
           className="min-h-11 rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-bold text-white outline-none placeholder:text-white/32 focus:border-lime-300/60"
           onChange={(event) => setOwnerUid(event.target.value)}
-          placeholder="Firebase owner UID"
+          placeholder="Owner account UID"
           value={ownerUid}
         />
         <button

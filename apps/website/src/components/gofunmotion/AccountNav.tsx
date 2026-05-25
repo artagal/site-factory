@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { LogIn, LogOut, Settings, UserCircle2 } from "lucide-react";
+import { LogIn, LogOut, Settings, ShieldCheck, UserCircle2 } from "lucide-react";
 import { observeUser, signOutUser } from "../../lib/auth";
 import { trackEvent } from "../../lib/analytics";
+import { isFirebaseConfigured } from "../../lib/firebase";
+import { isAdminUser } from "../../lib/firestore";
 
 function getInitials(user: User | null) {
   const label = user?.displayName ?? user?.email ?? "Account";
@@ -19,9 +21,34 @@ function getInitials(user: User | null) {
 }
 
 export function AccountNav() {
+  const [adminAccess, setAdminAccess] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => observeUser(setUser), []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkAdmin(nextUser: User) {
+      try {
+        const allowed = isFirebaseConfigured() ? await isAdminUser(nextUser.uid) : false;
+        if (!cancelled) setAdminAccess(allowed);
+      } catch {
+        if (!cancelled) setAdminAccess(false);
+      }
+    }
+
+    if (!user) {
+      setAdminAccess(false);
+      return;
+    }
+
+    void checkAdmin(user);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   if (!user) {
     return (
@@ -60,6 +87,16 @@ export function AccountNav() {
         <Settings aria-hidden="true" size={17} />
         Settings
       </Link>
+      {adminAccess ? (
+        <Link
+          aria-label="Open admin"
+          className="hidden min-h-11 items-center justify-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-2 text-sm font-bold text-cyan-100 transition hover:bg-cyan-300 hover:text-black md:inline-flex"
+          href="/admin"
+        >
+          <ShieldCheck aria-hidden="true" size={17} />
+          Admin
+        </Link>
+      ) : null}
       <button
         aria-label="Sign out"
         className="hidden size-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-white/70 transition hover:bg-white/10 hover:text-white md:inline-flex"
@@ -73,9 +110,57 @@ export function AccountNav() {
 }
 
 export function MobileAccountLink() {
+  const [adminAccess, setAdminAccess] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => observeUser(setUser), []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkAdmin(nextUser: User) {
+      try {
+        const allowed = isFirebaseConfigured() ? await isAdminUser(nextUser.uid) : false;
+        if (!cancelled) setAdminAccess(allowed);
+      } catch {
+        if (!cancelled) setAdminAccess(false);
+      }
+    }
+
+    if (!user) {
+      setAdminAccess(false);
+      return;
+    }
+
+    void checkAdmin(user);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  if (user && adminAccess) {
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        <Link
+          aria-label="Open account"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.07] px-3 text-sm font-black text-white active:scale-[0.98]"
+          href="/profile"
+        >
+          <UserCircle2 aria-hidden="true" size={20} />
+          <span>Account</span>
+        </Link>
+        <Link
+          aria-label="Open admin"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/12 px-3 text-sm font-black text-cyan-100 active:scale-[0.98]"
+          href="/admin"
+        >
+          <ShieldCheck aria-hidden="true" size={20} />
+          <span>Admin</span>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <Link

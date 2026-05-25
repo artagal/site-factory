@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import { AccountNav } from "./AccountNav";
+import { AccountNav, MobileAccountLink } from "./AccountNav";
 import { LinkButton } from "./Button";
 
 const links = [
@@ -64,9 +64,9 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <Link className="block rounded-xl px-4 py-3 text-sm font-black text-white/76 hover:bg-white/[0.08] hover:text-white" href="/login">
-                Sign In
-              </Link>
+              <div className="mt-2">
+                <MobileAccountLink />
+              </div>
             </div>
           </details>
         </div>

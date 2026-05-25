@@ -39,7 +39,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const db = getFirebaseAdminDb();
-  if (!db) return jsonError("Firebase Admin is required for listing moderation.", 503);
+  if (!db) return jsonError("Admin listing moderation is not connected yet.", 503);
 
   const adminToken = await verifyAdmin(request);
   if (!adminToken) return jsonError("Admin access is required.", 401);

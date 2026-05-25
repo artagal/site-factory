@@ -19,7 +19,7 @@ export function SavePlanButton({ plan }: { plan: SuggestedPlan }) {
 
   async function savePlan() {
     if (!isFirebaseConfigured()) {
-      setStatus("Firebase is not configured yet. Plan saves will sync after env vars are added.");
+      setStatus("Live account sync is not connected yet. You can still use this plan.");
       return;
     }
 

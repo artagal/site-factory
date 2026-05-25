@@ -24,7 +24,7 @@ export default function AboutPage() {
           The product direction is local open-slot deals: city and time in; was/now pricing, spots left, and booking requests out.
         </p>
         <p>
-          Today the site uses clearly marked demo scaffolding while Firebase saves, booking requests, partner dashboards, and admin approval are connected.
+          Today the site uses clearly marked demo scaffolding while live saves, booking requests, partner dashboards, and admin approval are connected.
         </p>
       </div>
       <div className="mt-8 flex flex-wrap gap-3">

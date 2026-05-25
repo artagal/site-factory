@@ -31,7 +31,7 @@ export async function POST(request: Request): Promise<Response> {
   if (!name || !slug || !state) return jsonError("Add city name, state, and valid slug.", 400);
 
   const db = getFirebaseAdminDb();
-  if (!db) return jsonError("Firebase Admin is required for city management.", 503);
+  if (!db) return jsonError("Admin city management is not connected yet.", 503);
 
   const adminToken = await verifyAdmin(request);
   if (!adminToken) return jsonError("Admin access is required.", 401);

@@ -19,7 +19,7 @@ export function SaveListingButton({ listing }: { listing: Listing }) {
 
   async function toggleSaved() {
     if (!isFirebaseConfigured()) {
-      setStatus("Firebase is not configured yet. Sign-in saves will work after env vars are added.");
+      setStatus("Live account sync is not connected yet. You can still view and request deals.");
       return;
     }
 

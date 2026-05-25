@@ -65,7 +65,7 @@ export function PartnerDashboard() {
 
     if (!isFirebaseConfigured()) {
       setLoading(false);
-      setStatus("Firebase is not configured yet. Apply first, then connect live ownership in Firebase.");
+      setStatus("Live partner accounts are not connected yet. Apply first, then we can connect ownership.");
       setBusinesses([demoBusinesses[0]]);
       setListings(demoListings.filter((listing) => listing.businessId === demoBusinesses[0].id));
       return;
@@ -99,7 +99,7 @@ export function PartnerDashboard() {
       <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.06] p-6">
         <h2 className="text-3xl font-black text-white">No approved business is attached yet.</h2>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-white/58">
-          Apply first, then an admin can review the business and connect your Firebase account as an owner. Demo businesses are not shown as live owned inventory.
+          Apply first, then an admin can review the business and connect this account as an owner. Demo businesses are not shown as live owned inventory.
         </p>
         {status ? <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">

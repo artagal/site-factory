@@ -89,7 +89,7 @@ async function verifyOwnedBusiness(request: Request, businessId: string): Promis
   if (!token) return { error: jsonError("Sign in as the business owner before saving listings.", 401) };
 
   const db = getFirebaseAdminDb();
-  if (!db) return { error: jsonError("Firebase Admin is required for partner listing management.", 503) };
+  if (!db) return { error: jsonError("Live partner tools are not connected yet.", 503) };
 
   const businessSnapshot = await db.collection("businesses").doc(businessId).get();
   const business = businessSnapshot.data();

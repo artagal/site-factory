@@ -31,13 +31,13 @@ export async function POST(request: Request) {
 
   const db = getFirebaseAdminDb();
   const auth = getFirebaseAdminAuth();
-  if (!db || !auth) return jsonError("Firebase Admin is required for partner approvals.", 503);
+  if (!db || !auth) return jsonError("Admin approval tools are not connected yet.", 503);
 
   const adminToken = await verifyAdmin(request);
   if (!adminToken) return jsonError("Admin access is required.", 401);
 
   const owner = await auth.getUser(ownerUid).catch(() => null);
-  if (!owner) return jsonError("Owner UID does not match a Firebase Auth user.", 400);
+  if (!owner) return jsonError("Owner UID does not match a signed-in account.", 400);
 
   const applicationRef = db.collection("partnerApplications").doc(applicationId);
   const applicationSnapshot = await applicationRef.get();

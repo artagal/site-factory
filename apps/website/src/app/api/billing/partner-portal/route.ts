@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
   const db = getFirebaseAdminDb();
   if (!db) {
-    return jsonError("Firebase Admin is required before partner billing can be managed.", 503);
+    return jsonError("Live billing management is not connected yet.", 503);
   }
 
   const token = await verifyBearerToken(request);

@@ -243,14 +243,14 @@ describe("GoFunMotion Deals API routes", () => {
     expect(categoryJson.error).toContain("category name");
   });
 
-  it("validates admin Firebase user lookup payload", async () => {
+  it("validates admin account lookup payload", async () => {
     const response = await lookupAdminUserPost(jsonRequest("https://site-factory.test/api/admin/users/lookup", {
       email: "not-an-email"
     }));
     const json = await readJson<{ error: string }>(response);
 
     expect(response.status).toBe(400);
-    expect(json.error).toContain("valid Firebase Auth user email");
+    expect(json.error).toContain("valid account email");
   });
 
   it("verifies Stripe webhooks before requiring Firebase Admin sync", async () => {

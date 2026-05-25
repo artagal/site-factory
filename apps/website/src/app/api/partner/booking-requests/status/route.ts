@@ -17,7 +17,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const db = getFirebaseAdminDb();
-  if (!db) return jsonError("Firebase Admin is required for booking request updates.", 503);
+  if (!db) return jsonError("Live request updates are not connected yet.", 503);
 
   const token = await verifyBearerToken(request);
   if (!token) return jsonError("Sign in as a business owner before updating requests.", 401);

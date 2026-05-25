@@ -32,14 +32,14 @@ export async function POST(request: Request) {
   }
 
   if (!isFirebaseAdminConfigured()) {
-    return jsonError("Firebase Admin is not configured for account deletion yet.", 503);
+    return jsonError("Account deletion is not connected yet.", 503);
   }
 
   const decoded = await verifyBearerToken(request).catch(() => null);
   const auth = getFirebaseAdminAuth();
 
   if (!decoded || !auth) {
-    return jsonError("Valid Firebase login required.", 401);
+    return jsonError("Valid login required.", 401);
   }
 
   await deleteKnownUserSubcollections(decoded.uid);

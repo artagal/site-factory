@@ -29,7 +29,7 @@ export async function POST(request: Request): Promise<Response> {
   if (!name || !slug) return jsonError("Add category name and valid slug.", 400);
 
   const db = getFirebaseAdminDb();
-  if (!db) return jsonError("Firebase Admin is required for category management.", 503);
+  if (!db) return jsonError("Admin category management is not connected yet.", 503);
 
   const adminToken = await verifyAdmin(request);
   if (!adminToken) return jsonError("Admin access is required.", 401);

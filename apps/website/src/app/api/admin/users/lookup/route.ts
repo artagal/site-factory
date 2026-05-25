@@ -25,18 +25,18 @@ export async function POST(request: Request) {
   const email = clean(body?.email).toLowerCase();
 
   if (!email || !isEmail(email)) {
-    return jsonError("Enter a valid Firebase Auth user email.", 400);
+    return jsonError("Enter a valid account email.", 400);
   }
 
   const auth = getFirebaseAdminAuth();
   const db = getFirebaseAdminDb();
-  if (!auth || !db) return jsonError("Firebase Admin is required for user lookup.", 503);
+  if (!auth || !db) return jsonError("Account lookup is not connected yet.", 503);
 
   const adminToken = await verifyAdmin(request);
   if (!adminToken) return jsonError("Admin access is required.", 401);
 
   const user = await auth.getUserByEmail(email).catch(() => null);
-  if (!user) return jsonError("No Firebase Auth user was found for that email.", 404);
+  if (!user) return jsonError("No account was found for that email.", 404);
 
   return jsonOk({
     disabled: user.disabled,

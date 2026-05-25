@@ -24,7 +24,7 @@ export function WaitlistForm() {
       });
       const payload = (await response.json().catch(() => null)) as { error?: string; synced?: boolean } | null;
       if (!response.ok) throw new Error(payload?.error ?? "Could not join waitlist.");
-      setStatus(payload?.synced ? "You're on the city list." : "Saved locally for this preview. Firebase sync starts when env vars are configured.");
+      setStatus(payload?.synced ? "You're on the city list." : "Saved locally for this preview. Live sync starts when account services are connected.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Could not join waitlist.");
     } finally {

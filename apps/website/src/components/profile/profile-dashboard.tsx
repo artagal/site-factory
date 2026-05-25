@@ -51,7 +51,7 @@ export function ProfileDashboard() {
           setBookingRequests(nextRequests);
         }
       } catch (error) {
-        if (!cancelled) setStatus(error instanceof Error ? error.message : "Could not load profile.");
+        if (!cancelled) setStatus(formatProfileError(error));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -59,7 +59,7 @@ export function ProfileDashboard() {
 
     if (!isFirebaseConfigured()) {
       setLoading(false);
-      setStatus("Firebase is not configured yet. Browse deals and demo open slots without signing in.");
+      setStatus("Live account sync is not connected yet. Browse deals without signing in.");
       return;
     }
 
@@ -110,6 +110,14 @@ export function ProfileDashboard() {
       </div>
     </section>
   );
+}
+
+function formatProfileError(error: unknown) {
+  if (error instanceof Error && error.message.includes("Missing or insufficient permissions")) {
+    return "Your account is signed in, but saved items are not available yet. Refresh the page or sign in again.";
+  }
+
+  return "Could not load saved items yet. Try refreshing the page.";
 }
 
 function Metric({ icon: Icon, label, value }: { icon: typeof Bookmark; label: string; value: number }) {

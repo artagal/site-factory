@@ -525,7 +525,7 @@ export function LastMinuteDealEditor({
             </button>
           </div>
           {limitBlocksCurrentForm ? <p className="rounded-2xl bg-amber-300/12 p-3 text-xs font-bold leading-5 text-amber-100">This plan is at its active deal limit. Edit an existing active deal, pause one, or upgrade before creating another.</p> : null}
-          {business.isDemo ? <p className="rounded-2xl bg-black/24 p-3 text-xs font-bold leading-5 text-white/54">Demo businesses cannot create live inventory. Connect an approved Firebase business first.</p> : null}
+          {business.isDemo ? <p className="rounded-2xl bg-black/24 p-3 text-xs font-bold leading-5 text-white/54">Demo businesses cannot create live inventory. Connect an approved business account first.</p> : null}
           {status ? <p className="rounded-2xl bg-black/24 p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
         </form>
       </div>
