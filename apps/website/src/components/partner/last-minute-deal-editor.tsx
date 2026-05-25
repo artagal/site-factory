@@ -25,6 +25,7 @@ type DealFormState = {
   cancellationNote: string;
   capacity: string;
   categoryIds: string[];
+  cityName: string;
   description: string;
   durationMinutes: string;
   groupSize: string;
@@ -59,7 +60,15 @@ const VIBE_OPTIONS: Array<{ label: string; value: PlanVibe }> = [
   { label: "Low-energy", value: "low-energy" }
 ];
 
-function blankForm(primaryCategory = "date-night"): DealFormState {
+function titleizeSlug(value: string) {
+  return value
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function blankForm(primaryCategory = "date-night", cityName = "Your city"): DealFormState {
   return {
     availableSlot: "Tonight 7:00 PM",
     bookingMode: "request",
@@ -67,6 +76,7 @@ function blankForm(primaryCategory = "date-night"): DealFormState {
     cancellationNote: "Request booking first. The business confirms availability before the customer pays or arrives.",
     capacity: "",
     categoryIds: [primaryCategory],
+    cityName,
     description: "",
     durationMinutes: "90",
     groupSize: "2-6 people",
@@ -92,6 +102,7 @@ function formFromListing(listing: Listing): DealFormState {
     cancellationNote: listing.cancellationNote,
     capacity: listing.capacity === null ? "" : String(listing.capacity),
     categoryIds: listing.categoryIds.length ? listing.categoryIds : ["date-night"],
+    cityName: listing.cityName,
     description: listing.description,
     durationMinutes: String(listing.durationMinutes),
     groupSize: listing.groupSize,
@@ -119,7 +130,8 @@ export function LastMinuteDealEditor({
   onSaved: () => void;
 }) {
   const primaryCategory = business.categories[0] ?? "date-night";
-  const [form, setForm] = useState<DealFormState>(() => blankForm(primaryCategory));
+  const businessCityName = business.state ? `${titleizeSlug(business.cityId)}, ${business.state}` : titleizeSlug(business.cityId);
+  const [form, setForm] = useState<DealFormState>(() => blankForm(primaryCategory, businessCityName));
   const [busyMode, setBusyMode] = useState<SaveMode | null>(null);
   const [busyListingId, setBusyListingId] = useState("");
   const [status, setStatus] = useState("");
@@ -165,6 +177,7 @@ export function LastMinuteDealEditor({
           ...form,
           businessId: business.id,
           cityId: business.cityId,
+          description: form.description || form.shortDescription || form.title,
           listingType: "deal",
           saveMode
         }),
@@ -261,7 +274,7 @@ export function LastMinuteDealEditor({
         return;
       }
 
-      if (form.listingId === listing.id) setForm(blankForm(primaryCategory));
+      if (form.listingId === listing.id) setForm(blankForm(primaryCategory, businessCityName));
       setStatus("Listing deleted.");
       onSaved();
     } catch (error) {
@@ -293,7 +306,7 @@ export function LastMinuteDealEditor({
             <button
               className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white"
               onClick={() => {
-                setForm(blankForm(primaryCategory));
+                setForm(blankForm(primaryCategory, businessCityName));
                 setStatus("");
               }}
               disabled={limitReached}
@@ -393,9 +406,19 @@ export function LastMinuteDealEditor({
         </div>
 
         <form className="grid gap-4" onSubmit={(event) => event.preventDefault()}>
+          <div className="rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-lime-200">Quick deal setup</p>
+            <p className="mt-2 text-sm font-bold leading-6 text-white/64">
+              Fill these core fields first. Everything else is optional polish for approval.
+            </p>
+          </div>
+
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Deal title">
               <input className={inputClass} onChange={(event) => update("title", event.target.value)} placeholder="Escape room open slot" value={form.title} />
+            </Field>
+            <Field label="City">
+              <input className={inputClass} onChange={(event) => update("cityName", event.target.value)} placeholder="Miami, FL" value={form.cityName} />
             </Field>
             <Field label="Available time">
               <input className={inputClass} onChange={(event) => update("availableSlot", event.target.value)} placeholder="Tonight 8:30 PM" value={form.availableSlot} />
@@ -409,71 +432,74 @@ export function LastMinuteDealEditor({
             <Field label="Spots/windows left">
               <input className={inputClass} inputMode="numeric" onChange={(event) => update("remainingSpots", event.target.value)} placeholder="2" value={form.remainingSpots} />
             </Field>
-            <Field label="Duration minutes">
-              <input className={inputClass} inputMode="numeric" onChange={(event) => update("durationMinutes", event.target.value)} placeholder="90" value={form.durationMinutes} />
-            </Field>
-          </div>
-
-          <Field label="Short card description">
-            <input className={inputClass} onChange={(event) => update("shortDescription", event.target.value)} placeholder="2 discounted spots for tonight only." value={form.shortDescription} />
-          </Field>
-          <Field label="Full description">
-            <textarea className={`${inputClass} min-h-28 py-3`} onChange={(event) => update("description", event.target.value)} placeholder="Describe the experience, who it is best for, and what is included." value={form.description} />
-          </Field>
-
-          <ChipGroup label="Category">
-            {demoCategories.slice(0, 12).map((category) => (
-              <Chip active={form.categoryIds.includes(category.id)} key={category.id} label={category.name} onClick={() => toggleArray("categoryIds", category.id)} />
-            ))}
-          </ChipGroup>
-          <ChipGroup label="Great for">
-            {GROUP_OPTIONS.map((option) => (
-              <Chip active={form.groupTypes.includes(option.value)} key={option.value} label={option.label} onClick={() => toggleArray("groupTypes", option.value)} />
-            ))}
-          </ChipGroup>
-          <ChipGroup label="Vibe">
-            {VIBE_OPTIONS.map((option) => (
-              <Chip active={form.vibeTags.includes(option.value)} key={option.value} label={option.label} onClick={() => toggleArray("vibeTags", option.value)} />
-            ))}
-          </ChipGroup>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            <Field label="Indoor/outdoor">
-              <select className={inputClass} onChange={(event) => update("indoorOutdoor", event.target.value as IndoorOutdoor)} value={form.indoorOutdoor}>
-                <option value="indoor">Indoor</option>
-                <option value="outdoor">Outdoor</option>
-                <option value="either">Either</option>
-              </select>
-            </Field>
-            <Field label="Group size">
-              <input className={inputClass} onChange={(event) => update("groupSize", event.target.value)} placeholder="2-6 people" value={form.groupSize} />
-            </Field>
-            <Field label="Capacity">
-              <input className={inputClass} inputMode="numeric" onChange={(event) => update("capacity", event.target.value)} placeholder="Optional" value={form.capacity} />
-            </Field>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
             <Field label="Booking mode">
               <select className={inputClass} onChange={(event) => update("bookingMode", event.target.value as DealFormState["bookingMode"])} value={form.bookingMode}>
                 <option value="request">Request booking</option>
                 <option value="external_link">External booking link</option>
               </select>
             </Field>
-            <Field label="Booking link">
-              <input className={inputClass} onChange={(event) => update("bookingUrl", event.target.value)} placeholder="Optional booking URL" value={form.bookingUrl} />
-            </Field>
           </div>
 
-          <Field label="Why it fits">
-            <input className={inputClass} onChange={(event) => update("whyItFits", event.target.value)} value={form.whyItFits} />
+          <ChipGroup label="Category">
+            {demoCategories.slice(0, 12).map((category) => (
+              <Chip active={form.categoryIds.includes(category.id)} key={category.id} label={category.name} onClick={() => toggleArray("categoryIds", category.id)} />
+            ))}
+          </ChipGroup>
+
+          <Field label="Short card description">
+            <input className={inputClass} onChange={(event) => update("shortDescription", event.target.value)} placeholder="2 discounted spots for tonight only." value={form.shortDescription} />
           </Field>
-          <Field label="Terms">
-            <textarea className={`${inputClass} min-h-20 py-3`} onChange={(event) => update("terms", event.target.value)} value={form.terms} />
-          </Field>
-          <Field label="Cancellation / confirmation note">
-            <textarea className={`${inputClass} min-h-20 py-3`} onChange={(event) => update("cancellationNote", event.target.value)} value={form.cancellationNote} />
-          </Field>
+
+          <details className="rounded-2xl border border-white/10 bg-black/24 p-4">
+            <summary className="cursor-pointer text-sm font-black text-white">Advanced details</summary>
+            <div className="mt-4 grid gap-4">
+              <Field label="Full description">
+                <textarea className={`${inputClass} min-h-28 py-3`} onChange={(event) => update("description", event.target.value)} placeholder="Optional. If blank, the short description is used." value={form.description} />
+              </Field>
+              <ChipGroup label="Great for">
+                {GROUP_OPTIONS.map((option) => (
+                  <Chip active={form.groupTypes.includes(option.value)} key={option.value} label={option.label} onClick={() => toggleArray("groupTypes", option.value)} />
+                ))}
+              </ChipGroup>
+              <ChipGroup label="Vibe">
+                {VIBE_OPTIONS.map((option) => (
+                  <Chip active={form.vibeTags.includes(option.value)} key={option.value} label={option.label} onClick={() => toggleArray("vibeTags", option.value)} />
+                ))}
+              </ChipGroup>
+              <div className="grid gap-4 md:grid-cols-3">
+                <Field label="Duration minutes">
+                  <input className={inputClass} inputMode="numeric" onChange={(event) => update("durationMinutes", event.target.value)} placeholder="90" value={form.durationMinutes} />
+                </Field>
+                <Field label="Indoor/outdoor">
+                  <select className={inputClass} onChange={(event) => update("indoorOutdoor", event.target.value as IndoorOutdoor)} value={form.indoorOutdoor}>
+                    <option value="indoor">Indoor</option>
+                    <option value="outdoor">Outdoor</option>
+                    <option value="either">Either</option>
+                  </select>
+                </Field>
+                <Field label="Capacity">
+                  <input className={inputClass} inputMode="numeric" onChange={(event) => update("capacity", event.target.value)} placeholder="Optional" value={form.capacity} />
+                </Field>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <Field label="Group size">
+                  <input className={inputClass} onChange={(event) => update("groupSize", event.target.value)} placeholder="2-6 people" value={form.groupSize} />
+                </Field>
+                <Field label="Booking link">
+                  <input className={inputClass} onChange={(event) => update("bookingUrl", event.target.value)} placeholder="Optional booking URL" value={form.bookingUrl} />
+                </Field>
+              </div>
+              <Field label="Why it fits">
+                <input className={inputClass} onChange={(event) => update("whyItFits", event.target.value)} value={form.whyItFits} />
+              </Field>
+              <Field label="Terms">
+                <textarea className={`${inputClass} min-h-20 py-3`} onChange={(event) => update("terms", event.target.value)} value={form.terms} />
+              </Field>
+              <Field label="Cancellation / confirmation note">
+                <textarea className={`${inputClass} min-h-20 py-3`} onChange={(event) => update("cancellationNote", event.target.value)} value={form.cancellationNote} />
+              </Field>
+            </div>
+          </details>
 
           <div className="flex flex-col gap-3 sm:flex-row">
             <button

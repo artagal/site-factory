@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { ClipboardList, Eye, MousePointerClick, Send, Star } from "lucide-react";
+import { ClipboardList, Eye, MousePointerClick, PlusCircle, Send, Star } from "lucide-react";
 import { LastMinuteDealEditor } from "./last-minute-deal-editor";
 import { PartnerBillingPortalButton } from "./partner-billing-portal-button";
 import { PartnerCheckoutButton } from "./partner-checkout-button";
@@ -124,6 +124,19 @@ export function PartnerDashboard() {
     <>
       {status ? <p className="mt-6 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
       {loading ? <p className="mt-6 text-sm font-bold text-white/58">Loading partner dashboard...</p> : null}
+      <section className="mt-8 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-5">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-lime-200">Next step</p>
+            <h2 className="mt-2 text-2xl font-black text-white">Create a last-minute deal and submit it for approval.</h2>
+            <p className="mt-2 text-sm font-bold leading-6 text-white/58">Use only the key fields first: title, city, category, time, was price, now price, spots left, and booking mode.</p>
+          </div>
+          <a className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="#create-last-minute-deal">
+            <PlusCircle aria-hidden="true" size={18} />
+            Create Last-Minute Deal
+          </a>
+        </div>
+      </section>
       <section className="mt-8 grid gap-4 md:grid-cols-4">
         <Stat icon={Eye} label="Listing views" value={String(visibleListings.reduce((sum, listing) => sum + listing.viewCount, 0) || (business.isDemo ? "Demo" : 0))} />
         <Stat icon={Send} label="Booking requests" value={String(bookingRequests.length)} />
@@ -197,7 +210,7 @@ export function PartnerDashboard() {
         </div>
       </section>
 
-      <section className="mt-8">
+      <section className="mt-8" id="create-last-minute-deal">
         <LastMinuteDealEditor
           business={business}
           listings={listings}

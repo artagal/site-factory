@@ -310,6 +310,7 @@ function ApplicationApprovalCard({
   const [lookupBusy, setLookupBusy] = useState(false);
   const [lookupEmail, setLookupEmail] = useState(application.email);
   const [ownerUid, setOwnerUid] = useState("");
+  const [createdBusinessId, setCreatedBusinessId] = useState(application.approvedBusinessId ?? "");
   const [status, setStatus] = useState("");
 
   async function lookupOwnerUid() {
@@ -377,7 +378,9 @@ function ApplicationApprovalCard({
         return;
       }
 
-      setStatus(`Business created: ${result?.businessId ?? "approved"}.`);
+      const businessId = result?.businessId ?? application.approvedBusinessId ?? "";
+      setCreatedBusinessId(businessId);
+      setStatus(`Business created: ${businessId || "approved"}.`);
       onApproved();
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Approval failed.");
@@ -428,6 +431,20 @@ function ApplicationApprovalCard({
         </button>
       </div>
       {status ? <p className="mt-3 rounded-2xl bg-white/[0.06] p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
+      {createdBusinessId || application.approvedBusinessId ? (
+        <div className="mt-3 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
+          <p className="text-sm font-black text-lime-100">Business created.</p>
+          <p className="mt-1 break-all text-xs font-bold text-white/58">Business ID: {createdBusinessId || application.approvedBusinessId}</p>
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <Link className="inline-flex min-h-10 items-center justify-center rounded-2xl bg-lime-300 px-4 text-xs font-black text-[#070816] hover:bg-white" href="/partner/dashboard">
+              Open Partner Dashboard
+            </Link>
+            <Link className="inline-flex min-h-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-xs font-black text-white hover:bg-white/12" href="/admin">
+              Review Listings
+            </Link>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

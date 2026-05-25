@@ -34,8 +34,12 @@ export type BookingRequestRecord = BookingRequest & {
 };
 
 export type PartnerApplicationRecord = PartnerApplication & {
+  approvedBusinessId?: string;
+  approvedOwnerUid?: string;
   id: string;
   createdAt?: unknown;
+  reviewedAt?: unknown;
+  reviewedBy?: string;
   updatedAt?: unknown;
 };
 
