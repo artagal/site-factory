@@ -61,3 +61,20 @@ Initial webhook events:
 - `invoice.payment_failed`
 
 Consumer checkout and Stripe Connect marketplace payouts are future features. Keep booking requests request-based until real partner fulfillment, refund, and confirmation policies are ready.
+
+## Transactional Email
+
+Booking request notifications use Resend when configured. Booking requests still save if email is not configured; notification status is stored on the `bookingRequests` document.
+
+Required Vercel environment variables:
+
+- `RESEND_API_KEY`
+- `EMAIL_FROM` such as `GoFunMotion <notifications@gofunmotion.com>`
+
+Optional:
+
+- `EMAIL_REPLY_TO`
+- `BOOKING_REQUEST_FALLBACK_EMAIL`
+- `INTERNAL_NOTIFICATIONS_EMAIL`
+
+Verify the sending domain in Resend before using a `gofunmotion.com` sender.

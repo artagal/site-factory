@@ -1,7 +1,10 @@
 import { jsonError, jsonOk } from "../../../../../lib/server/api-response";
+import { sendBookingStatusNotification } from "../../../../../lib/server/email";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../../../lib/server/firebase-admin";
 
-const STATUSES = new Set(["contacted", "confirmed", "cancelled", "rejected"]);
+const STATUSES = ["contacted", "confirmed", "cancelled", "rejected"] as const;
+type BookingStatusUpdate = typeof STATUSES[number];
+const statusSet = new Set<string>(STATUSES);
 
 function clean(value: unknown, max = 180) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -12,7 +15,7 @@ export async function POST(request: Request): Promise<Response> {
   const requestId = clean(body?.requestId, 160);
   const status = clean(body?.status, 40);
 
-  if (!requestId || !STATUSES.has(status)) {
+  if (!requestId || !statusSet.has(status)) {
     return jsonError("Add requestId and a valid booking status.", 400);
   }
 
@@ -43,15 +46,47 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError("Only the owning business can update this booking request.", 403);
   }
 
+  const nextStatus = status as BookingStatusUpdate;
+
   await requestRef.set(
     {
       lastStatusChangedAt: FieldValue.serverTimestamp(),
       lastStatusChangedBy: token.uid,
-      status,
+      status: nextStatus,
       updatedAt: FieldValue.serverTimestamp()
     },
     { merge: true }
   );
 
-  return jsonOk({ requestId, status });
+  const notification = await sendBookingStatusNotification({
+    request: {
+      businessName: typeof requestData.businessName === "string" ? requestData.businessName : "Local business",
+      email: typeof requestData.email === "string" ? requestData.email : "",
+      listingId: typeof requestData.listingId === "string" ? requestData.listingId : "",
+      listingTitle: typeof requestData.listingTitle === "string" ? requestData.listingTitle : "Requested activity",
+      message: typeof requestData.message === "string" ? requestData.message : "",
+      name: typeof requestData.name === "string" ? requestData.name : "Customer",
+      partySize: typeof requestData.partySize === "number" ? requestData.partySize : 1,
+      phone: typeof requestData.phone === "string" ? requestData.phone : null,
+      requestedDate: typeof requestData.requestedDate === "string" ? requestData.requestedDate : "",
+      requestedTime: typeof requestData.requestedTime === "string" ? requestData.requestedTime : ""
+    },
+    requestId,
+    status: nextStatus
+  }).catch((error) => ({
+    configured: false,
+    results: [{ attempted: true, error: error instanceof Error ? error.message : "Could not send notification.", ok: false, provider: "resend" as const, to: [] }],
+    status: "partial"
+  }));
+
+  await requestRef.set(
+    {
+      lastStatusNotificationResults: notification.results,
+      lastStatusNotificationStatus: notification.status,
+      lastStatusNotificationUpdatedAt: FieldValue.serverTimestamp()
+    },
+    { merge: true }
+  );
+
+  return jsonOk({ notificationStatus: notification.status, requestId, status: nextStatus });
 }

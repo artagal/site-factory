@@ -3,6 +3,7 @@ import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../lib/
 import { getClientIp, checkRateLimit } from "../../../lib/server/rate-limit";
 import { getPublicListingByIdOrSlugForServer } from "../../../lib/server/public-listings";
 import { incrementServerGlobalStats } from "../../../lib/server/stats";
+import { sendBookingRequestNotifications } from "../../../lib/server/email";
 
 function clean(value: unknown, max = 180) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -36,12 +37,8 @@ export async function POST(request: Request) {
   const listing = await getPublicListingByIdOrSlugForServer({ listingId, listingSlug });
   if (!listing) return jsonError("This deal is not available for booking requests.", 404);
 
-  const requestPayload = {
-    businessId: listing.businessId,
+  const emailPayload = {
     businessName: listing.businessName,
-    businessOwnerIds: listing.ownerIds,
-    cityId: listing.cityId,
-    createdAt: FieldValue.serverTimestamp(),
     email,
     listingId: listing.id,
     listingTitle: listing.title,
@@ -50,7 +47,15 @@ export async function POST(request: Request) {
     partySize,
     phone,
     requestedDate,
-    requestedTime,
+    requestedTime
+  };
+
+  const requestPayload = {
+    ...emailPayload,
+    businessId: listing.businessId,
+    businessOwnerIds: listing.ownerIds,
+    cityId: listing.cityId,
+    createdAt: FieldValue.serverTimestamp(),
     status: "pending",
     updatedAt: FieldValue.serverTimestamp(),
     userId: token.uid
@@ -69,6 +74,25 @@ export async function POST(request: Request) {
       { merge: true }
     );
   }
+  const notification = await sendBookingRequestNotifications({
+    listing,
+    request: emailPayload,
+    requestId: docRef.id
+  }).catch((error) => ({
+    configured: false,
+    results: [{ attempted: true, error: error instanceof Error ? error.message : "Could not send notification.", ok: false, provider: "resend" as const, to: [] }],
+    status: "partial"
+  }));
+
+  await docRef.set(
+    {
+      notificationResults: notification.results,
+      notificationStatus: notification.status,
+      notificationUpdatedAt: FieldValue.serverTimestamp()
+    },
+    { merge: true }
+  );
+
   void incrementServerGlobalStats(["bookingRequests"]).catch(() => false);
-  return jsonOk({ requestId: docRef.id, synced: true }, 201);
+  return jsonOk({ notificationStatus: notification.status, requestId: docRef.id, synced: true }, 201);
 }
