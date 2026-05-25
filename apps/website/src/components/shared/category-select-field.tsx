@@ -10,6 +10,7 @@ export function CategorySelectField({
   compact = false,
   defaultCategory,
   defaultCategoryId,
+  dense = false,
   includeAll = false,
   label = "Category",
   name = "categoryId",
@@ -17,6 +18,7 @@ export function CategorySelectField({
 }: {
   categoryNameFieldName?: string;
   compact?: boolean;
+  dense?: boolean;
   defaultCategory?: string;
   defaultCategoryId?: string;
   includeAll?: boolean;
@@ -60,9 +62,9 @@ export function CategorySelectField({
 
   return (
     <label className="block">
-      <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">{label}</span>
+      <span className={dense ? "sr-only md:not-sr-only md:text-xs md:font-black md:uppercase md:tracking-[0.14em] md:text-white/45" : "text-xs font-black uppercase tracking-[0.14em] text-white/45"}>{label}</span>
       <select
-        className={`${compact ? "mt-1" : "mt-2"} min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none transition focus:border-lime-300`}
+        className={`${dense ? "mt-0 min-h-10 rounded-xl px-3 text-xs md:mt-1 md:min-h-12 md:rounded-2xl md:px-4 md:text-sm" : `${compact ? "mt-1" : "mt-2"} min-h-12 rounded-2xl px-4 text-sm`} w-full border border-white/10 bg-black/28 font-bold text-white outline-none transition focus:border-lime-300`}
         name={name}
         onChange={(event) => setSelectedCategoryId(event.target.value)}
         value={selectedCategoryId}
