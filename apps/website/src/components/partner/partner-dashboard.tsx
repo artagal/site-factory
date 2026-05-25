@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
 import { ClipboardList, Eye, MousePointerClick, Send, Star } from "lucide-react";
+import { LastMinuteDealEditor } from "./last-minute-deal-editor";
 import { PartnerBillingPortalButton } from "./partner-billing-portal-button";
 import { PartnerCheckoutButton } from "./partner-checkout-button";
 import { observeUser } from "../../lib/auth";
@@ -21,6 +22,23 @@ export function PartnerDashboard() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => observeUser(setUser), []);
+
+  async function refreshDashboard(nextUser: User, showLoading = false) {
+    if (showLoading) setLoading(true);
+    setStatus("");
+    try {
+      const ownerBusinesses = await readBusinessesForOwner(nextUser.uid);
+      const businessListings = ownerBusinesses.length ? await readListingsForBusiness(ownerBusinesses[0].id) : [];
+      const requests = ownerBusinesses.length ? await readBookingRequestsForBusiness(ownerBusinesses[0].id) : [];
+      setBusinesses(ownerBusinesses);
+      setListings(businessListings);
+      setBookingRequests(requests);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Could not load partner dashboard.");
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -96,14 +114,18 @@ export function PartnerDashboard() {
   }
 
   const business = businesses[0] ?? demoBusinesses[0];
-  const visibleListings = listings.length ? listings : demoListings.filter((listing) => listing.businessId === business.id);
+  const visibleListings = listings.length
+    ? listings
+    : business.isDemo
+      ? demoListings.filter((listing) => listing.businessId === business.id)
+      : [];
 
   return (
     <>
       {status ? <p className="mt-6 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
       {loading ? <p className="mt-6 text-sm font-bold text-white/58">Loading partner dashboard...</p> : null}
       <section className="mt-8 grid gap-4 md:grid-cols-4">
-        <Stat icon={Eye} label="Listing views" value={String(visibleListings.reduce((sum, listing) => sum + listing.viewCount, 0) || "Demo")} />
+        <Stat icon={Eye} label="Listing views" value={String(visibleListings.reduce((sum, listing) => sum + listing.viewCount, 0) || (business.isDemo ? "Demo" : 0))} />
         <Stat icon={Send} label="Booking requests" value={String(bookingRequests.length)} />
         <Stat icon={Star} label="Saved count" value={String(visibleListings.reduce((sum, listing) => sum + listing.saveCount, 0))} />
         <Stat icon={MousePointerClick} label="Clicks" value={String(visibleListings.reduce((sum, listing) => sum + listing.clickCount, 0))} />
@@ -156,7 +178,7 @@ export function PartnerDashboard() {
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
           <h2 className="text-2xl font-black text-white">Listings</h2>
           <div className="mt-4 grid gap-3">
-            {visibleListings.map((listing) => (
+            {visibleListings.length ? visibleListings.map((listing) => (
               <div className="rounded-2xl bg-black/24 p-4" key={listing.id}>
                 <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
                   <div>
@@ -166,9 +188,23 @@ export function PartnerDashboard() {
                   <Link className="text-sm font-black text-lime-200 hover:text-white" href={`/deals/${listing.slug}`}>View</Link>
                 </div>
               </div>
-            ))}
+            )) : (
+              <p className="rounded-2xl bg-black/24 p-4 text-sm font-bold leading-6 text-white/58">
+                No live deals yet. Use the editor below to create a draft or submit the first last-minute offer for approval.
+              </p>
+            )}
           </div>
         </div>
+      </section>
+
+      <section className="mt-8">
+        <LastMinuteDealEditor
+          business={business}
+          listings={listings}
+          onSaved={() => {
+            if (user && isFirebaseConfigured()) void refreshDashboard(user);
+          }}
+        />
       </section>
 
       <section className="mt-8 rounded-2xl border border-white/10 bg-black/24 p-6">

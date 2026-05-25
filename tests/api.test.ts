@@ -5,6 +5,7 @@ import { POST as lookupAdminUserPost } from "../apps/website/src/app/api/admin/u
 import { POST as billingPortalPost } from "../apps/website/src/app/api/billing/partner-portal/route";
 import { POST as bookingPost } from "../apps/website/src/app/api/booking-request/route";
 import { POST as checkoutPost } from "../apps/website/src/app/api/checkout/partner-subscription/route";
+import { POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
 import { POST as partnerPost } from "../apps/website/src/app/api/partner-application/route";
 import { GET as searchGet } from "../apps/website/src/app/api/search/route";
 import { POST as trackPost } from "../apps/website/src/app/api/track/route";
@@ -130,6 +131,14 @@ describe("GoFunMotion Deals API routes", () => {
 
   it("validates partner billing portal input", async () => {
     const response = await billingPortalPost(jsonRequest("https://site-factory.test/api/billing/partner-portal", {}));
+    const json = await readJson<{ error: string }>(response);
+
+    expect(response.status).toBe(400);
+    expect(json.error).toContain("Choose a business");
+  });
+
+  it("validates partner listing editor input", async () => {
+    const response = await partnerListingPost(jsonRequest("https://site-factory.test/api/partner/listings", {}));
     const json = await readJson<{ error: string }>(response);
 
     expect(response.status).toBe(400);
