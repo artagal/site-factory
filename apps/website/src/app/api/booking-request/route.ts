@@ -1,7 +1,7 @@
 import { jsonError, jsonOk } from "../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../lib/server/firebase-admin";
 import { getClientIp, checkRateLimit } from "../../../lib/server/rate-limit";
-import { getListingBySlug } from "../../../lib/search";
+import { getPublicListingByIdOrSlugForServer } from "../../../lib/server/public-listings";
 import { incrementServerGlobalStats } from "../../../lib/server/stats";
 
 function clean(value: unknown, max = 180) {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
   const listingSlug = clean(body?.listingSlug, 120);
   const listingId = clean(body?.listingId, 120);
-  const listing = listingSlug ? getListingBySlug(listingSlug) : undefined;
+  if (!listingId && !listingSlug) return jsonError("Choose a deal before requesting booking.", 400);
 
   const name = clean(body?.name, 120);
   const email = clean(body?.email, 254).toLowerCase();
@@ -33,15 +33,18 @@ export async function POST(request: Request) {
     return jsonError("Add name, valid email, date/time, and party size.", 400);
   }
 
+  const listing = await getPublicListingByIdOrSlugForServer({ listingId, listingSlug });
+  if (!listing) return jsonError("This deal is not available for booking requests.", 404);
+
   const requestPayload = {
-    businessId: listing?.businessId ?? clean(body?.businessId, 120),
-    businessName: listing?.businessName ?? clean(body?.businessName, 180),
-    businessOwnerIds: listing?.ownerIds ?? [],
-    cityId: listing?.cityId ?? clean(body?.cityId, 120),
+    businessId: listing.businessId,
+    businessName: listing.businessName,
+    businessOwnerIds: listing.ownerIds,
+    cityId: listing.cityId,
     createdAt: FieldValue.serverTimestamp(),
     email,
-    listingId: listing?.id ?? listingId,
-    listingTitle: listing?.title ?? clean(body?.listingTitle, 180),
+    listingId: listing.id,
+    listingTitle: listing.title,
     message,
     name,
     partySize,

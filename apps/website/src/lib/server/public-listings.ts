@@ -83,6 +83,36 @@ export async function getPublicListingBySlugForServer(slug: string): Promise<Lis
   return getListingBySlug(slug);
 }
 
+export async function getPublicListingByIdForServer(listingId: string): Promise<Listing | undefined> {
+  const db = getFirebaseAdminDb();
+  if (!db) return getPublishedListings().find((listing) => listing.id === listingId);
+
+  const snapshot = await db.collection("listings").doc(listingId).get();
+  const data = snapshot.data();
+
+  if (snapshot.exists && data?.status === "published" && data.approvalStatus === "approved") {
+    return serializeListing(snapshot.id, data);
+  }
+
+  return getPublishedListings().find((listing) => listing.id === listingId);
+}
+
+export async function getPublicListingByIdOrSlugForServer({
+  listingId,
+  listingSlug
+}: {
+  listingId?: string;
+  listingSlug?: string;
+}): Promise<Listing | undefined> {
+  if (listingId) {
+    const listing = await getPublicListingByIdForServer(listingId);
+    if (listing) return listing;
+  }
+
+  if (listingSlug) return getPublicListingBySlugForServer(listingSlug);
+  return undefined;
+}
+
 export async function getPublicBusinessForServer(businessId: string): Promise<Business | undefined> {
   const db = getFirebaseAdminDb();
   if (!db) return getBusinessById(businessId);

@@ -25,7 +25,9 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
 
     const payload = {
       email: String(formData.get("email") ?? ""),
+      businessId: listing.businessId,
       businessName: listing.businessName,
+      cityId: listing.cityId,
       listingId: listing.id,
       listingSlug: listing.slug,
       listingTitle: listing.title,
