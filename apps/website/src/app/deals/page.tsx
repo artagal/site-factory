@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Clock3, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { DealCard } from "../../components/gofunmotion/deal-card";
+import { CategorySelectField } from "../../components/shared/category-select-field";
 import { CitySelectField } from "../../components/shared/city-select-field";
 import { categories, demoNotice, filterListings, parsePlanFinderInput } from "../../lib/deals-data";
 import type { ListingSort } from "../../lib/search";
@@ -25,7 +26,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
     ...resolvedSearchParams,
     when: resolvedSearchParams.when ?? "tonight"
   });
-  const categoryValue = resolvedSearchParams.category;
+  const categoryValue = resolvedSearchParams.categoryId ?? resolvedSearchParams.category;
   const categoryId = Array.isArray(categoryValue) ? categoryValue[0] : categoryValue;
   const sortValue = readString(resolvedSearchParams.sort) as ListingSort | undefined;
   const sort: ListingSort = parseListingSort(sortValue);
@@ -54,7 +55,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
         <div className="grid gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto]">
           <CitySelectField compact defaultCity={input.city} defaultCityId={input.cityId} />
           <FilterSelect label="When" name="when" options={[["tonight", "Tonight"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]]} value={input.when} compact />
-          <FilterSelect label="Category" name="category" options={[["", "All categories"], ...categories.map((category) => [category.id, category.name])]} value={categoryId ?? ""} compact />
+          <CategorySelectField compact defaultCategoryId={categoryId} includeAll />
           <input name="sort" type="hidden" value={sort} />
           <button className="min-h-12 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" type="submit">
             Show Deals
@@ -79,7 +80,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
           <input name="cityId" type="hidden" value={input.cityId} />
           <input name="city" type="hidden" value={input.city} />
-          <input name="category" type="hidden" value={categoryId ?? ""} />
+          <input name="categoryId" type="hidden" value={categoryId ?? ""} />
           <input name="when" type="hidden" value={input.when} />
           <FilterSelect label="Who" name="who" options={[["solo", "Solo"], ["date", "Date"], ["friends", "Friends"], ["family", "Family"], ["kids", "Kids"]]} value={input.who} />
           <FilterSelect label="Budget" name="budget" options={[["flexible", "Flexible"], ["free", "Free"], ["under25", "Under $25"], ["under50", "Under $50"], ["under100", "Under $100"]]} value={input.budget} />

@@ -78,6 +78,8 @@ service cloud.firestore {
         "averagePrice",
         "businessName",
         "category",
+        "categoryId",
+        "categoryName",
         "city",
         "cityId",
         "cityName",

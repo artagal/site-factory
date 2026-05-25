@@ -8,6 +8,7 @@ import { POST as lookupAdminUserPost } from "../apps/website/src/app/api/admin/u
 import { POST as billingPortalPost } from "../apps/website/src/app/api/billing/partner-portal/route";
 import { POST as bookingPost } from "../apps/website/src/app/api/booking-request/route";
 import { GET as citiesGet } from "../apps/website/src/app/api/cities/route";
+import { GET as categoriesGet } from "../apps/website/src/app/api/categories/route";
 import { POST as checkoutPost } from "../apps/website/src/app/api/checkout/partner-subscription/route";
 import { DELETE as partnerListingDelete, PATCH as partnerListingPatch, POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
 import { POST as partnerBookingStatusPost } from "../apps/website/src/app/api/partner/booking-requests/status/route";
@@ -82,9 +83,15 @@ describe("GoFunMotion Deals API routes", () => {
     expect(citiesResponse.status).toBe(200);
     expect(citiesJson.cities.map((city) => city.id)).toContain("miami");
 
+    const categoriesResponse = await categoriesGet();
+    const categoriesJson = await readJson<{ categories: Array<{ id: string; label: string }> }>(categoriesResponse);
+
+    expect(categoriesResponse.status).toBe(200);
+    expect(categoriesJson.categories.map((category) => category.id)).toContain("creative");
+
     const partnerResponse = await partnerPost(jsonRequest("https://site-factory.test/api/partner-application", {
       businessName: "Demo Studio",
-      category: "Creative",
+      categoryId: "creative",
       cityId: "miami",
       description: "A local studio that wants to list reviewed creative classes and last-minute activity deals.",
       email: "owner@example.com",
@@ -109,7 +116,7 @@ describe("GoFunMotion Deals API routes", () => {
   it("rejects partner applications without a managed city selection", async () => {
     const response = await partnerPost(jsonRequest("https://site-factory.test/api/partner-application", {
       businessName: "Demo Studio",
-      category: "Creative",
+      categoryId: "creative",
       city: "",
       cityId: "",
       description: "A local studio that wants to list reviewed creative classes and last-minute activity deals.",

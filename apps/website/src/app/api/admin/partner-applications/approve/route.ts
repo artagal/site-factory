@@ -1,5 +1,6 @@
 import { slugify } from "../../../../../lib/slug";
 import { normalizeCitySelection } from "../../../../../lib/cities";
+import { normalizeCategorySelection } from "../../../../../lib/categories";
 import { jsonError, jsonOk } from "../../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminAuth, getFirebaseAdminDb, verifyBearerToken } from "../../../../../lib/server/firebase-admin";
 
@@ -48,6 +49,8 @@ export async function POST(request: Request) {
   const applicationCityId = clean(application.cityId, 120);
   const applicationCityName = clean(application.cityName, 120);
   const category = clean(application.category, 80);
+  const applicationCategoryId = clean(application.categoryId, 120);
+  const applicationCategoryName = clean(application.categoryName, 120);
   const email = clean(application.email, 254).toLowerCase();
 
   if (!businessName || !city || !category || !email) {
@@ -56,7 +59,11 @@ export async function POST(request: Request) {
 
   const businessId = `${slugify(businessName) || "business"}-${applicationId.slice(0, 8)}`;
   const businessRef = db.collection("businesses").doc(businessId);
-  const categorySlug = slugify(category) || "local-activity";
+  const categorySnapshot = applicationCategoryId ? await db.collection("categories").doc(applicationCategoryId).get() : null;
+  const categoryData = categorySnapshot?.exists ? categorySnapshot.data() : null;
+  const fallbackCategory = normalizeCategorySelection({ category, categoryId: applicationCategoryId });
+  const categorySlug = categorySnapshot?.exists ? applicationCategoryId : fallbackCategory.categoryId || slugify(category) || "local-activity";
+  const categoryName = categoryData ? clean(categoryData.name, 120) : applicationCategoryName || fallbackCategory.categoryName;
   const citySnapshot = applicationCityId ? await db.collection("cities").doc(applicationCityId).get() : null;
   const cityData = citySnapshot?.exists ? citySnapshot.data() : null;
   const fallbackCity = normalizeCitySelection({ city, cityId: applicationCityId });
@@ -72,6 +79,7 @@ export async function POST(request: Request) {
         addressLine1: "",
         addressLine2: null,
         categories: [categorySlug],
+        categoryNames: [categoryName],
         cityId,
         cityName,
         country: "US",

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { partnerDealTypes } from "../../lib/deal-taxonomy";
-import { demoCategories } from "../../lib/demoData";
+import { CategorySelectField } from "../shared/category-select-field";
 import { CitySelectField } from "../shared/city-select-field";
 
 export function PartnerApplicationForm() {
@@ -36,17 +35,7 @@ export function PartnerApplicationForm() {
         <Field name="email" placeholder="Email" required type="email" />
         <Field name="phone" placeholder="Phone" />
         <CitySelectField label="Business city" />
-        <label className="block">
-          <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">Business category</span>
-          <select className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300" name="category" required>
-            {partnerDealTypes.map((type) => (
-              <option className="bg-[#070816]" key={type.id} value={type.name}>{type.name}</option>
-            ))}
-            {demoCategories.map((category) => (
-              <option className="bg-[#070816]" key={category.id} value={category.name}>{category.name}</option>
-            ))}
-          </select>
-        </label>
+        <CategorySelectField label="Business category" />
         <Field name="website" placeholder="Website" />
         <Field name="instagram" placeholder="Instagram" />
         <Field name="averagePrice" placeholder="Average price" />

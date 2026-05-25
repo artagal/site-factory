@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, BriefcaseBusiness, CalendarHeart, Clock3, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
 import { DealCard } from "../components/gofunmotion/deal-card";
 import { SeoJsonLd } from "../components/seo-json-ld";
+import { CategorySelectField } from "../components/shared/category-select-field";
 import { CitySelectField } from "../components/shared/city-select-field";
 import { partnerDealTypes } from "../lib/deal-taxonomy";
 import { categories, demoNotice, filterListings } from "../lib/deals-data";
@@ -192,15 +193,7 @@ export default function HomePage() {
               <option className="bg-[#070816]" value="weekend">This weekend</option>
             </select>
           </label>
-          <label className="block">
-            <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">Category</span>
-            <select className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300" defaultValue="" name="category">
-              <option className="bg-[#070816]" value="">All categories</option>
-              {categories.slice(0, 8).map((category) => (
-                <option className="bg-[#070816]" key={category.id} value={category.id}>{category.name}</option>
-              ))}
-            </select>
-          </label>
+          <CategorySelectField includeAll />
           <button className="mt-auto inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" type="submit">
             Show Deals
           </button>

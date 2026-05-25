@@ -1,5 +1,6 @@
 import { jsonError, jsonOk } from "../../../lib/server/api-response";
 import { findCityOption, normalizeCitySelection } from "../../../lib/cities";
+import { findCategoryOption, normalizeCategorySelection } from "../../../lib/categories";
 import { FieldValue, getFirebaseAdminDb } from "../../../lib/server/firebase-admin";
 import { getClientIp, checkRateLimit } from "../../../lib/server/rate-limit";
 import { incrementServerGlobalStats } from "../../../lib/server/stats";
@@ -19,13 +20,18 @@ export async function POST(request: Request) {
   const email = clean(body?.email, 254).toLowerCase();
   const rawCity = clean(body?.city, 120);
   const rawCityId = clean(body?.cityId, 120);
-  const category = clean(body?.category, 80);
+  const rawCategory = clean(body?.category, 80);
+  const rawCategoryId = clean(body?.categoryId, 120);
   const description = clean(body?.description, 800);
   const db = getFirebaseAdminDb();
   const liveCitySnapshot = db && rawCityId ? await db.collection("cities").doc(rawCityId).get() : null;
+  const liveCategorySnapshot = db && rawCategoryId ? await db.collection("categories").doc(rawCategoryId).get() : null;
   const liveCityData = liveCitySnapshot?.exists ? liveCitySnapshot.data() : null;
+  const liveCategoryData = liveCategorySnapshot?.exists ? liveCategorySnapshot.data() : null;
   const liveCity = liveCityData && (liveCityData.active === true || liveCityData.comingSoon === true) ? liveCityData : null;
+  const liveCategory = liveCategoryData && liveCategoryData.active === true ? liveCategoryData : null;
   const knownCity = liveCity || findCityOption(rawCityId) || findCityOption(rawCity);
+  const knownCategory = liveCategory || findCategoryOption(rawCategoryId) || findCategoryOption(rawCategory);
   const citySelection = liveCity
     ? {
       cityId: rawCityId,
@@ -34,16 +40,26 @@ export async function POST(request: Request) {
       state: clean(liveCity.state, 40)
     }
     : normalizeCitySelection({ city: rawCity, cityId: rawCityId });
+  const categorySelection = liveCategory
+    ? {
+      category: clean(liveCategory.name, 120),
+      categoryId: rawCategoryId,
+      categoryName: clean(liveCategory.name, 120)
+    }
+    : normalizeCategorySelection({ category: rawCategory, categoryId: rawCategoryId });
   const city = citySelection.cityLabel;
+  const category = categorySelection.categoryName;
 
-  if (!businessName || !ownerName || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !knownCity || !category || description.length < 20) {
-    return jsonError("Add business name, owner name, valid email, selected city, category, and description.", 400);
+  if (!businessName || !ownerName || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !knownCity || !knownCategory || description.length < 20) {
+    return jsonError("Add business name, owner name, valid email, selected city, selected category, and description.", 400);
   }
 
   const application = {
     averagePrice: clean(body?.averagePrice, 80),
     businessName,
     category,
+    categoryId: categorySelection.categoryId,
+    categoryName: categorySelection.categoryName,
     city,
     cityId: citySelection.cityId,
     cityName: citySelection.cityName,

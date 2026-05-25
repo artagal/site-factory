@@ -186,6 +186,8 @@ export type PartnerApplication = {
   averagePrice: string;
   businessName: string;
   category: string;
+  categoryId: string;
+  categoryName: string;
   city: string;
   cityId: string;
   cityName: string;

@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   const listings = filterListings({
     ...input,
     availability: searchParams.availability,
-    categoryId: searchParams.category || searchParams.categoryId,
+    categoryId: searchParams.categoryId || searchParams.category,
     citySlug: searchParams.citySlug,
     discountOnly: searchParams.discount === "true" || searchParams.discountOnly === "true",
     maxDistance: searchParams.distance,
