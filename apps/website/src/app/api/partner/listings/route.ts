@@ -1,4 +1,5 @@
 import { slugify } from "../../../../lib/slug";
+import { countLimitedListings, getPartnerTierCapabilities, isLimitedListingStatus } from "../../../../lib/partner-limits";
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../../lib/server/firebase-admin";
 import type { DecodedIdToken } from "firebase-admin/auth";
@@ -67,22 +68,12 @@ function discountPercent(originalPrice: number | null, price: number) {
   return Math.round(((originalPrice - price) / originalPrice) * 100);
 }
 
-function activeListingLimit(pricingTier: unknown) {
-  if (pricingTier === "pro") return Number.POSITIVE_INFINITY;
-  if (pricingTier === "growth") return 10;
-  return 1;
-}
-
 function titleizeSlug(value: string) {
   return value
     .split("-")
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
-}
-
-function isActivePartnerListing(data: DocumentData) {
-  return ["draft", "pending_approval", "published"].includes(String(data.status ?? ""));
 }
 
 type OwnedBusinessResult =
@@ -113,6 +104,35 @@ async function verifyOwnedBusiness(request: Request, businessId: string): Promis
   }
 
   return { business, db, token };
+}
+
+async function getBusinessListingLimitState(db: Firestore, businessId: string, business: DocumentData, excludeListingId?: string) {
+  const listingSnapshot = await db.collection("listings").where("businessId", "==", businessId).get();
+  const listings = listingSnapshot.docs.map((item) => ({
+    id: item.id,
+    status: String(item.data().status ?? "")
+  }));
+  const activeCount = countLimitedListings(listings, excludeListingId);
+  const capabilities = getPartnerTierCapabilities({
+    paidAccessEnabled: business.paidAccessEnabled === true,
+    pricingTier: business.pricingTier,
+    subscriptionStatus: typeof business.subscriptionStatus === "string" ? business.subscriptionStatus : null
+  });
+
+  return { activeCount, capabilities };
+}
+
+async function assertCanUseLimitedListingSlot(db: Firestore, businessId: string, business: DocumentData, excludeListingId?: string) {
+  const { activeCount, capabilities } = await getBusinessListingLimitState(db, businessId, business, excludeListingId);
+
+  if (Number.isFinite(capabilities.activeListings) && activeCount >= capabilities.activeListings) {
+    return jsonError(
+      `${capabilities.label} is limited to ${capabilities.activeListings} active ${capabilities.activeListings === 1 ? "deal" : "deals"}. Upgrade or pause an existing listing.`,
+      402
+    );
+  }
+
+  return null;
 }
 
 async function verifyOwnedListing(request: Request, businessId: string, listingId: string): Promise<OwnedListingResult> {
@@ -172,15 +192,11 @@ export async function POST(request: Request): Promise<Response> {
     if (!existingSnapshot?.exists || existingBusinessId !== businessId) {
       return jsonError("Listing was not found for this business.", 404);
     }
-  } else if (saveMode !== "draft") {
-    const limit = activeListingLimit(business.pricingTier);
-    if (Number.isFinite(limit)) {
-      const listingSnapshot = await db.collection("listings").where("businessId", "==", businessId).get();
-      const activeCount = listingSnapshot.docs.filter((item) => isActivePartnerListing(item.data())).length;
-      if (activeCount >= limit) {
-        return jsonError(`Starter is limited to ${limit} active deal. Upgrade to Growth or pause an existing listing.`, 402);
-      }
-    }
+  }
+
+  if (isLimitedListingStatus(saveMode === "draft" ? "draft" : "pending_approval") && !isLimitedListingStatus(String(existing?.status ?? ""))) {
+    const limitError = await assertCanUseLimitedListingSlot(db, businessId, business, listingId || undefined);
+    if (limitError) return limitError;
   }
 
   const status = saveMode === "draft" ? "draft" : "pending_approval";
@@ -267,11 +283,23 @@ export async function PATCH(request: Request): Promise<Response> {
   }
 
   if (action === "draft") {
+    if (!isLimitedListingStatus(String(verified.listing.status ?? ""))) {
+      const businessSnapshot = await verified.db.collection("businesses").doc(businessId).get();
+      const limitError = await assertCanUseLimitedListingSlot(verified.db, businessId, businessSnapshot.data() ?? {}, listingId);
+      if (limitError) return limitError;
+    }
+
     await verified.listingRef.set({ status: "draft", updatedAt: now }, { merge: true });
     return jsonOk({ listingId, status: "draft" });
   }
 
   if (action === "submit") {
+    if (!isLimitedListingStatus(String(verified.listing.status ?? ""))) {
+      const businessSnapshot = await verified.db.collection("businesses").doc(businessId).get();
+      const limitError = await assertCanUseLimitedListingSlot(verified.db, businessId, businessSnapshot.data() ?? {}, listingId);
+      if (limitError) return limitError;
+    }
+
     await verified.listingRef.set(
       {
         approvalStatus: "pending",

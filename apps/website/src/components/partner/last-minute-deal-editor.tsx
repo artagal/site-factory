@@ -6,6 +6,13 @@ import type { ReactNode } from "react";
 import { Clock, Edit3, PauseCircle, Plus, Send, Tag, Trash2, type LucideIcon } from "lucide-react";
 import { getCurrentUserIdToken } from "../../lib/auth";
 import { demoCategories } from "../../lib/demoData";
+import {
+  countLimitedListings,
+  formatActiveListingLimit,
+  getPartnerTierCapabilities,
+  getTierLimitMessage,
+  isLimitedListingStatus
+} from "../../lib/partner-limits";
 import type { Business, GroupType, IndoorOutdoor, Listing, PlanVibe } from "../../types/deals";
 
 type SaveMode = "draft" | "submit";
@@ -102,12 +109,6 @@ function formFromListing(listing: Listing): DealFormState {
   };
 }
 
-function activeLimit(tier: Business["pricingTier"]) {
-  if (tier === "pro") return "Unlimited active deals";
-  if (tier === "growth") return "10 active deals";
-  return "1 active deal";
-}
-
 export function LastMinuteDealEditor({
   business,
   listings,
@@ -123,12 +124,15 @@ export function LastMinuteDealEditor({
   const [busyListingId, setBusyListingId] = useState("");
   const [status, setStatus] = useState("");
 
-  const activeCount = useMemo(
-    () => listings.filter((listing) => ["draft", "pending_approval", "published"].includes(listing.status)).length,
-    [listings]
-  );
-
   const isEditing = Boolean(form.listingId);
+  const selectedListing = useMemo(() => listings.find((listing) => listing.id === form.listingId) ?? null, [form.listingId, listings]);
+  const activeCount = useMemo(() => countLimitedListings(listings), [listings]);
+  const capabilities = useMemo(() => getPartnerTierCapabilities(business), [business]);
+  const limitLabel = formatActiveListingLimit(capabilities.activeListings);
+  const limitReached = Number.isFinite(capabilities.activeListings) && activeCount >= capabilities.activeListings;
+  const selectedUsesSlot = selectedListing ? isLimitedListingStatus(selectedListing.status) : false;
+  const saveNeedsSlot = !selectedUsesSlot;
+  const limitBlocksCurrentForm = saveNeedsSlot && limitReached;
 
   function update<Key extends keyof DealFormState>(key: Key, value: DealFormState[Key]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -278,7 +282,7 @@ export function LastMinuteDealEditor({
           </p>
         </div>
         <div className="rounded-2xl bg-black/24 px-4 py-3 text-sm font-bold text-white/62">
-          {activeCount} active / {activeLimit(business.pricingTier)}
+          {activeCount} active / {limitLabel}
         </div>
       </div>
 
@@ -292,11 +296,26 @@ export function LastMinuteDealEditor({
                 setForm(blankForm(primaryCategory));
                 setStatus("");
               }}
+              disabled={limitReached}
               type="button"
             >
               <Plus aria-hidden="true" size={16} />
               New
             </button>
+          </div>
+          <div className="mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-lime-200">{capabilities.label} limits</p>
+            <p className="mt-2 text-sm font-bold leading-6 text-white/62">{getTierLimitMessage(business, activeCount)}</p>
+            <div className="mt-3 grid gap-2 text-xs font-bold text-white/54 sm:grid-cols-3">
+              <span>Listings: {activeCount}/{limitLabel}</span>
+              <span>Analytics: {capabilities.analyticsLevel}</span>
+              <span>{capabilities.canRunCampaigns ? "Campaigns unlocked" : "Campaigns locked"}</span>
+            </div>
+            {limitReached ? (
+              <p className="mt-3 rounded-xl bg-black/24 p-3 text-xs font-bold leading-5 text-amber-100">
+                Pause, expire, or delete a listing to free a slot, or upgrade the business plan.
+              </p>
+            ) : null}
           </div>
           <div className="mt-4 grid gap-3">
             {listings.length ? listings.map((listing) => (
@@ -333,6 +352,7 @@ export function LastMinuteDealEditor({
                   {listing.status !== "pending_approval" ? (
                     <ActionButton
                       busy={busyListingId === `${listing.id}:submit`}
+                      disabled={!isLimitedListingStatus(listing.status) && limitReached}
                       icon={Send}
                       label="Submit"
                       onClick={() => void updateListingStatus(listing, "submit")}
@@ -348,6 +368,7 @@ export function LastMinuteDealEditor({
                   ) : (
                     <ActionButton
                       busy={busyListingId === `${listing.id}:draft`}
+                      disabled={!isLimitedListingStatus(listing.status) && limitReached}
                       icon={Clock}
                       label="Draft"
                       onClick={() => void updateListingStatus(listing, "draft")}
@@ -457,7 +478,7 @@ export function LastMinuteDealEditor({
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.08] px-5 text-sm font-black text-white hover:bg-white/12 disabled:opacity-60"
-              disabled={Boolean(busyMode) || business.isDemo}
+              disabled={Boolean(busyMode) || business.isDemo || limitBlocksCurrentForm}
               onClick={() => void saveDeal("draft")}
               type="button"
             >
@@ -466,7 +487,7 @@ export function LastMinuteDealEditor({
             </button>
             <button
               className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
-              disabled={Boolean(busyMode) || business.isDemo}
+              disabled={Boolean(busyMode) || business.isDemo || limitBlocksCurrentForm}
               onClick={() => void saveDeal("submit")}
               type="button"
             >
@@ -474,6 +495,7 @@ export function LastMinuteDealEditor({
               {busyMode === "submit" ? "Submitting..." : isEditing ? "Resubmit for Approval" : "Submit for Approval"}
             </button>
           </div>
+          {limitBlocksCurrentForm ? <p className="rounded-2xl bg-amber-300/12 p-3 text-xs font-bold leading-5 text-amber-100">This plan is at its active deal limit. Edit an existing active deal, pause one, or upgrade before creating another.</p> : null}
           {business.isDemo ? <p className="rounded-2xl bg-black/24 p-3 text-xs font-bold leading-5 text-white/54">Demo businesses cannot create live inventory. Connect an approved Firebase business first.</p> : null}
           {status ? <p className="rounded-2xl bg-black/24 p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
         </form>
@@ -520,11 +542,13 @@ function Chip({ active, label, onClick }: { active: boolean; label: string; onCl
 
 function ActionButton({
   busy,
+  disabled = false,
   icon: Icon,
   label,
   onClick
 }: {
   busy: boolean;
+  disabled?: boolean;
   icon: LucideIcon;
   label: string;
   onClick: () => void;
@@ -532,7 +556,7 @@ function ActionButton({
   return (
     <button
       className="inline-flex min-h-9 items-center gap-2 rounded-full bg-white/[0.08] px-3 text-xs font-black text-white/66 hover:bg-white/[0.14] disabled:opacity-60"
-      disabled={busy}
+      disabled={busy || disabled}
       onClick={onClick}
       type="button"
     >
