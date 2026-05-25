@@ -167,13 +167,50 @@ function ApplicationApprovalCard({
   application: PartnerApplicationRecord;
   onApproved: () => void;
 }) {
-  const [busy, setBusy] = useState(false);
+  const [approveBusy, setApproveBusy] = useState(false);
+  const [lookupBusy, setLookupBusy] = useState(false);
+  const [lookupEmail, setLookupEmail] = useState(application.email);
   const [ownerUid, setOwnerUid] = useState("");
   const [status, setStatus] = useState("");
 
+  async function lookupOwnerUid() {
+    if (lookupBusy) return;
+    setLookupBusy(true);
+    setStatus("");
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in as an admin before searching users.");
+        return;
+      }
+
+      const response = await fetch("/api/admin/users/lookup", {
+        body: JSON.stringify({ email: lookupEmail }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { displayName?: string | null; email?: string; error?: string; uid?: string } | null;
+
+      if (!response.ok || !result?.uid) {
+        setStatus(result?.error ?? "User lookup failed.");
+        return;
+      }
+
+      setOwnerUid(result.uid);
+      setStatus(`Found ${result.displayName ?? result.email ?? "Firebase user"}: ${result.uid}`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "User lookup failed.");
+    } finally {
+      setLookupBusy(false);
+    }
+  }
+
   async function approveApplication() {
-    if (busy) return;
-    setBusy(true);
+    if (approveBusy) return;
+    setApproveBusy(true);
     setStatus("");
     try {
       const token = await getCurrentUserIdToken();
@@ -206,7 +243,7 @@ function ApplicationApprovalCard({
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Approval failed.");
     } finally {
-      setBusy(false);
+      setApproveBusy(false);
     }
   }
 
@@ -223,6 +260,20 @@ function ApplicationApprovalCard({
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
         <input
+          className="min-h-11 rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-bold text-white outline-none placeholder:text-white/32 focus:border-cyan-300/60"
+          onChange={(event) => setLookupEmail(event.target.value)}
+          placeholder="Owner email in Firebase Auth"
+          value={lookupEmail}
+        />
+        <button
+          className="min-h-11 rounded-2xl border border-cyan-300/35 bg-cyan-300/10 px-5 text-sm font-black text-cyan-100 hover:bg-cyan-300/18 disabled:opacity-60"
+          disabled={lookupBusy || application.status === "approved"}
+          onClick={lookupOwnerUid}
+          type="button"
+        >
+          {lookupBusy ? "Searching..." : "Find UID"}
+        </button>
+        <input
           className="min-h-11 rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-bold text-white outline-none placeholder:text-white/32 focus:border-lime-300/60"
           onChange={(event) => setOwnerUid(event.target.value)}
           placeholder="Firebase owner UID"
@@ -230,11 +281,11 @@ function ApplicationApprovalCard({
         />
         <button
           className="min-h-11 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
-          disabled={busy || application.status === "approved"}
+          disabled={approveBusy || application.status === "approved"}
           onClick={approveApplication}
           type="button"
         >
-          {busy ? "Creating..." : application.status === "approved" ? "Approved" : "Create Business"}
+          {approveBusy ? "Creating..." : application.status === "approved" ? "Approved" : "Create Business"}
         </button>
       </div>
       {status ? <p className="mt-3 rounded-2xl bg-white/[0.06] p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
