@@ -33,9 +33,9 @@ const heroDeals = [
 ];
 
 const dealStats = [
-  { icon: TicketPercent, label: "Deal-first", value: "Was / Now" },
-  { icon: Clock3, label: "Time-sensitive", value: "Tonight" },
-  { icon: ShieldCheck, label: "No fake partners", value: "Demo labeled" }
+  { icon: TicketPercent, label: "Clear savings", value: "Was / Now" },
+  { icon: Clock3, label: "Open soon", value: "Tonight" },
+  { icon: ShieldCheck, label: "No fake checkout", value: "Request first" }
 ];
 
 const howItWorks = [
@@ -103,16 +103,16 @@ export default function HomePage() {
       <section className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 pb-8 pt-10 md:px-8 md:pb-12 md:pt-14 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="relative">
           <p className="inline-flex min-h-9 items-center rounded-full border border-lime-300/25 bg-lime-300/10 px-4 text-xs font-black uppercase tracking-[0.16em] text-lime-100">
-            Open slots. Bigger discounts. Real plans.
+            Tonight's last-minute deals
           </p>
           <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.95] text-white md:text-7xl">
-            Find last-minute fun deals near you.
+            Tonight&apos;s last-minute deals.
           </h1>
           <p className="mt-5 max-w-2xl text-lg font-semibold leading-8 text-white/68 md:text-xl">
             Save on activities, date nights, family fun, and local experiences with open spots today.
           </p>
           <p className="mt-4 text-sm font-black uppercase tracking-[0.14em] text-cyan-200">
-            Like open-table discounts for fun: was price, now price, time window, spots left.
+            Like Too Good To Go for fun: was price, now price, time window, spots left.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
@@ -126,7 +126,7 @@ export default function HomePage() {
               className="inline-flex min-h-14 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.07] px-6 text-base font-black text-white transition hover:bg-white/12"
               href="/find"
             >
-              Find My Plan
+              Not sure? We&apos;ll pick for you
             </Link>
           </div>
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -149,7 +149,7 @@ export default function HomePage() {
           <div className="relative flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/30 p-4">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Tonight&apos;s Deals</p>
-              <p className="mt-1 text-2xl font-black text-white">Open slots with real discounts</p>
+              <p className="mt-1 text-2xl font-black text-white">Last-minute open slots</p>
             </div>
             <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">Tonight first</span>
           </div>
@@ -176,7 +176,7 @@ export default function HomePage() {
             ))}
           </div>
           <p className="relative mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4 text-sm font-black text-lime-100">
-            Clear deal math: was price, now price, tonight window, and spots left. Demo inventory stays labeled until real businesses are approved.
+            Clear deal math: Was $90, Now $39, Tonight 8:30 PM, 2 spots left. Demo inventory stays labeled until real businesses are approved.
           </p>
         </div>
       </section>
@@ -211,7 +211,7 @@ export default function HomePage() {
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Tonight&apos;s deals</p>
-            <h2 className="mt-3 text-4xl font-black text-white md:text-5xl">Discounted activity slots people can understand fast.</h2>
+            <h2 className="mt-3 text-4xl font-black text-white md:text-5xl">Tonight&apos;s last-minute deals, sorted by what matters.</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">{demoNotice}</p>
           </div>
           <Link className="inline-flex items-center gap-2 text-sm font-black text-lime-200 hover:text-white" href="/deals?when=tonight">

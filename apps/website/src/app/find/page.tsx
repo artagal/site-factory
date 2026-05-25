@@ -21,7 +21,7 @@ import { buildSeoMetadata } from "../../lib/seo";
 export const metadata: Metadata = buildSeoMetadata({
   title: "Help Me Choose | GoFunMotion Deals",
   description:
-    "Not sure which deal to pick? Use the GoFunMotion helper to choose a city, mood, time, budget, and group, then get a simple activity plan.",
+    "Not sure which last-minute deal to pick? GoFunMotion can choose a simple discounted activity plan based on your city, time, budget, and group.",
   keywords: ["activity deal helper", "things to do tonight", "local activity finder", "date night deals"],
   path: "/find"
 });
@@ -42,11 +42,15 @@ export default async function FindPage({ searchParams }: FindPageProps) {
         <div>
           <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Deal helper</p>
           <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">
-            Not sure which deal to pick?
+            Not sure? We&apos;ll pick for you.
           </h1>
           <p className="mt-4 text-lg leading-8 text-white/64">
-            Start with the discounted open slots on GoFunMotion Deals. If you cannot decide, this helper turns your city, time, budget, and group into one simple plan.
+            The main GoFunMotion screen is tonight&apos;s deal board. If you do not want to compare cards, this helper turns your city, time, budget, and group into one simple discounted plan.
           </p>
+          <Link className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/deals?when=tonight">
+            Browse tonight&apos;s deals
+            <ArrowRight aria-hidden="true" size={16} />
+          </Link>
         </div>
         <PlanFinderForm compact defaultValues={input} />
       </section>
@@ -84,7 +88,7 @@ export default async function FindPage({ searchParams }: FindPageProps) {
           <ShareButton label="Share plan" text={plan.summary} title={plan.title} />
           <Link className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/deals">
             <Send aria-hidden="true" size={18} />
-            Browse matching deals
+            Browse tonight&apos;s deals
           </Link>
         </div>
       </section>

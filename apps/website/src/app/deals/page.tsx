@@ -7,9 +7,9 @@ import type { ListingSort } from "../../lib/search";
 import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "Last-Minute Activity Deals | GoFunMotion",
+  title: "Tonight's Last-Minute Fun Deals | GoFunMotion",
   description:
-    "Browse last-minute activity deals, open slots, date night discounts, family passes, friend plans, classes, and local experience offers.",
+    "Browse tonight's last-minute fun deals with clear was/now pricing, open slots, local activity discounts, date night deals, family passes, and classes.",
   keywords: ["local activity deals", "last minute deals", "date night deals", "family activities"],
   path: "/deals"
 });
@@ -37,12 +37,16 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
       <section className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div>
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Tonight&apos;s open slots</p>
-          <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Find a fun deal for tonight.</h1>
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Main deals screen</p>
+          <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Tonight&apos;s last-minute deals.</h1>
           <p className="mt-4 max-w-3xl text-lg leading-8 text-white/64">
-            Browse discounted activity windows with clear was/now pricing, time slots, and spots left. {demoNotice}
+            GoFunMotion is built around open entertainment slots: Was price, Now price, Tonight time, and spots left. Browse first, then request booking when a deal fits. {demoNotice}
           </p>
         </div>
+        <Link className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/find">
+          Not sure? We&apos;ll pick for you
+          <ArrowRight aria-hidden="true" size={16} />
+        </Link>
       </section>
 
       <section className="mt-8 grid gap-3 md:grid-cols-3">
@@ -90,7 +94,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
           <h2 className="mt-2 text-3xl font-black text-white">Open slots with real deal math.</h2>
         </div>
         <Link className="inline-flex items-center gap-2 text-sm font-black text-lime-200 hover:text-white" href="/find">
-          Not sure? Help me choose <ArrowRight aria-hidden="true" size={16} />
+          Not sure? We&apos;ll pick for you <ArrowRight aria-hidden="true" size={16} />
         </Link>
       </div>
 

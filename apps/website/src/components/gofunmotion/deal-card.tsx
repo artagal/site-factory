@@ -8,6 +8,7 @@ export function DealCard({ listing }: { listing: Listing }) {
   const category = getCategoryById(listing.categoryIds[0]);
   const primarySlot = listing.availableSlots[0] ?? "Request time";
   const isTonight = listing.availableDays.includes("tonight");
+  const timeWindowLabel = `${isTonight ? "Tonight" : listing.availableDays[0] ?? "Soon"} ${primarySlot}`;
   const savings = listing.originalPrice ? Math.max(listing.originalPrice - listing.price, 0) : 0;
   const discountLabel = listing.discountPercent
     ? `${listing.discountPercent}% off`
@@ -37,7 +38,7 @@ export function DealCard({ listing }: { listing: Listing }) {
           <div className="flex flex-wrap gap-2">
             <span className="inline-flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-xs font-black text-white/84">
               <Clock aria-hidden="true" size={14} />
-              {isTonight ? "Tonight" : listing.availableDays[0] ?? "Soon"} - {primarySlot}
+              {timeWindowLabel}
             </span>
             <span className="inline-flex items-center gap-2 rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
               <Users aria-hidden="true" size={14} />
@@ -46,8 +47,8 @@ export function DealCard({ listing }: { listing: Listing }) {
           </div>
           <div className="mt-3 flex items-end justify-between gap-3">
             <div className="inline-flex items-center gap-2 rounded-full bg-black/42 px-3 py-1.5 text-xs font-bold text-white/80">
-            <Sparkles aria-hidden="true" size={14} />
-            {category?.name ?? "Local activity"}
+              <Sparkles aria-hidden="true" size={14} />
+              {category?.name ?? "Local activity"}
             </div>
             <span className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-[#070816]">{listing.cityName}</span>
           </div>
@@ -67,6 +68,12 @@ export function DealCard({ listing }: { listing: Listing }) {
           </div>
         </div>
         <p className="mt-4 text-sm leading-6 text-white/64">{listing.shortDescription}</p>
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <DealFact label="Was" value={listing.originalPrice ? formatPrice(listing.originalPrice) : "Flexible"} muted />
+          <DealFact label="Now" value={formatPrice(listing.price)} highlight />
+          <DealFact label="Open" value={timeWindowLabel} />
+          <DealFact label="Left" value={remainingLabel} />
+        </div>
         <div className="mt-4 grid gap-2 text-sm font-bold text-white/66 sm:grid-cols-2">
           <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-black/24 px-3">
             <MapPin aria-hidden="true" size={16} />
@@ -100,5 +107,16 @@ export function DealCard({ listing }: { listing: Listing }) {
         </div>
       </div>
     </article>
+  );
+}
+
+function DealFact({ label, value, highlight = false, muted = false }: { label: string; value: string; highlight?: boolean; muted?: boolean }) {
+  return (
+    <div className={`min-h-20 rounded-2xl border p-3 ${highlight ? "border-lime-300/35 bg-lime-300/12" : "border-white/10 bg-black/24"}`}>
+      <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-white/42">{label}</p>
+      <p className={`mt-1 text-xl font-black leading-tight ${highlight ? "text-lime-200" : muted ? "text-white/58 line-through decoration-white/36" : "text-white"}`}>
+        {value}
+      </p>
+    </div>
   );
 }
