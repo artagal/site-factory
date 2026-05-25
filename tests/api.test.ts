@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { GET as planGet, POST as planPost } from "../apps/website/src/app/api/plan/route";
 import { POST as moderateAdminListingPost } from "../apps/website/src/app/api/admin/listings/moderate/route";
+import { POST as createAdminCategoryPost } from "../apps/website/src/app/api/admin/categories/route";
+import { POST as createAdminCityPost } from "../apps/website/src/app/api/admin/cities/route";
 import { POST as approvePartnerApplicationPost } from "../apps/website/src/app/api/admin/partner-applications/approve/route";
 import { POST as lookupAdminUserPost } from "../apps/website/src/app/api/admin/users/lookup/route";
 import { POST as billingPortalPost } from "../apps/website/src/app/api/billing/partner-portal/route";
@@ -190,6 +192,25 @@ describe("GoFunMotion Deals API routes", () => {
 
     expect(response.status).toBe(400);
     expect(json.error).toContain("listingId");
+  });
+
+  it("validates admin city and category create payloads", async () => {
+    const cityResponse = await createAdminCityPost(jsonRequest("https://site-factory.test/api/admin/cities", {
+      name: "",
+      state: ""
+    }));
+    const cityJson = await readJson<{ error: string }>(cityResponse);
+
+    expect(cityResponse.status).toBe(400);
+    expect(cityJson.error).toContain("city name");
+
+    const categoryResponse = await createAdminCategoryPost(jsonRequest("https://site-factory.test/api/admin/categories", {
+      name: ""
+    }));
+    const categoryJson = await readJson<{ error: string }>(categoryResponse);
+
+    expect(categoryResponse.status).toBe(400);
+    expect(categoryJson.error).toContain("category name");
   });
 
   it("validates admin Firebase user lookup payload", async () => {

@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { getFirebaseApp } from "./firebase";
-import type { BookingRequest, Business, GoFunMotionUserProfile, Listing, PartnerApplication, SuggestedPlan } from "../types/deals";
+import type { BookingRequest, Business, Category, City, GoFunMotionUserProfile, Listing, PartnerApplication, SuggestedPlan } from "../types/deals";
 
 export type SavedListingRecord = {
   listingId: string;
@@ -199,6 +199,20 @@ export async function readAdminBusinesses() {
   if (!db) return [];
   const snapshot = await getDocs(collection(db, "businesses"));
   return snapshot.docs.map((businessDoc) => ({ id: businessDoc.id, ...businessDoc.data() }) as Business);
+}
+
+export async function readAdminCities() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "cities"));
+  return snapshot.docs.map((cityDoc) => ({ id: cityDoc.id, ...cityDoc.data() }) as City);
+}
+
+export async function readAdminCategories() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "categories"));
+  return snapshot.docs.map((categoryDoc) => ({ id: categoryDoc.id, ...categoryDoc.data() }) as Category);
 }
 
 export async function readAdminListings() {
