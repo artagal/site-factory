@@ -7,6 +7,7 @@ import { POST as billingPortalPost } from "../apps/website/src/app/api/billing/p
 import { POST as bookingPost } from "../apps/website/src/app/api/booking-request/route";
 import { POST as checkoutPost } from "../apps/website/src/app/api/checkout/partner-subscription/route";
 import { DELETE as partnerListingDelete, PATCH as partnerListingPatch, POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
+import { POST as partnerBookingStatusPost } from "../apps/website/src/app/api/partner/booking-requests/status/route";
 import { POST as partnerPost } from "../apps/website/src/app/api/partner-application/route";
 import { GET as searchGet } from "../apps/website/src/app/api/search/route";
 import { POST as trackPost } from "../apps/website/src/app/api/track/route";
@@ -156,6 +157,17 @@ describe("GoFunMotion Deals API routes", () => {
 
     expect(deleteResponse.status).toBe(400);
     expect(deleteJson.error).toContain("Choose a business");
+  });
+
+  it("validates partner booking request status updates", async () => {
+    const response = await partnerBookingStatusPost(jsonRequest("https://site-factory.test/api/partner/booking-requests/status", {
+      requestId: "",
+      status: "confirmed"
+    }));
+    const json = await readJson<{ error: string }>(response);
+
+    expect(response.status).toBe(400);
+    expect(json.error).toContain("requestId");
   });
 
   it("validates admin partner application approval payload", async () => {

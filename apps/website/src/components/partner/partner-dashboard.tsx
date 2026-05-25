@@ -7,7 +7,7 @@ import { ClipboardList, Eye, MousePointerClick, PlusCircle, Send, Star } from "l
 import { LastMinuteDealEditor } from "./last-minute-deal-editor";
 import { PartnerBillingPortalButton } from "./partner-billing-portal-button";
 import { PartnerCheckoutButton } from "./partner-checkout-button";
-import { observeUser } from "../../lib/auth";
+import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
 import { demoBusinesses, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import { readBookingRequestsForBusiness, readBusinessesForOwner, readListingsForBusiness, type BookingRequestRecord } from "../../lib/firestore";
@@ -225,15 +225,135 @@ export function PartnerDashboard() {
         <h2 className="mt-4 text-2xl font-black text-white">Booking requests</h2>
         <div className="mt-3 grid gap-2">
           {bookingRequests.length ? bookingRequests.map((request) => (
-            <p className="rounded-xl bg-white/[0.06] p-3 text-sm font-bold text-white/62" key={request.id}>
-              {request.name} - {request.requestedDate} {request.requestedTime} - {request.status}
-            </p>
+            <PartnerBookingRequestCard
+              key={request.id}
+              onUpdated={() => {
+                if (user && isFirebaseConfigured()) void refreshDashboard(user);
+              }}
+              request={request}
+            />
           )) : (
             <p className="text-sm leading-6 text-white/58">Incoming requests will appear here with pending, contacted, confirmed, cancelled, or rejected status.</p>
           )}
         </div>
       </section>
     </>
+  );
+}
+
+type PartnerBookingStatusAction = "contacted" | "confirmed" | "cancelled";
+
+function PartnerBookingRequestCard({
+  onUpdated,
+  request
+}: {
+  onUpdated: () => void;
+  request: BookingRequestRecord;
+}) {
+  const [busyAction, setBusyAction] = useState<PartnerBookingStatusAction | "">("");
+  const [status, setStatus] = useState("");
+
+  async function updateRequest(nextStatus: PartnerBookingStatusAction) {
+    if (busyAction) return;
+    setBusyAction(nextStatus);
+    setStatus("");
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in as the business owner before updating requests.");
+        return;
+      }
+
+      const response = await fetch("/api/partner/booking-requests/status", {
+        body: JSON.stringify({
+          requestId: request.id,
+          status: nextStatus
+        }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string; status?: string } | null;
+
+      if (!response.ok) {
+        setStatus(result?.error ?? "Could not update request.");
+        return;
+      }
+
+      setStatus(`Request marked ${result?.status ?? nextStatus}.`);
+      onUpdated();
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Could not update request.");
+    } finally {
+      setBusyAction("");
+    }
+  }
+
+  return (
+    <div className="rounded-2xl bg-white/[0.06] p-4">
+      <div className="flex flex-col justify-between gap-3 md:flex-row md:items-start">
+        <div>
+          <p className="font-black text-white">{request.listingTitle ?? "Booking request"}</p>
+          <p className="mt-1 text-sm font-bold text-white/58">
+            {request.name} - {request.email} - party of {request.partySize}
+          </p>
+          <p className="mt-1 text-sm font-bold text-white/48">
+            {request.requestedDate} {request.requestedTime}
+          </p>
+          {request.message ? <p className="mt-3 text-sm leading-6 text-white/54">{request.message}</p> : null}
+        </div>
+        <RequestStatusBadge status={request.status} />
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <RequestStatusButton action="contacted" busyAction={busyAction} disabled={request.status === "contacted"} label="Contacted" onClick={updateRequest} />
+        <RequestStatusButton action="confirmed" busyAction={busyAction} disabled={request.status === "confirmed"} label="Confirmed" onClick={updateRequest} />
+        <RequestStatusButton action="cancelled" busyAction={busyAction} disabled={request.status === "cancelled"} label="Cancelled" onClick={updateRequest} />
+      </div>
+      {status ? <p className="mt-3 rounded-2xl bg-black/24 p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
+    </div>
+  );
+}
+
+function RequestStatusButton({
+  action,
+  busyAction,
+  disabled,
+  label,
+  onClick
+}: {
+  action: PartnerBookingStatusAction;
+  busyAction: PartnerBookingStatusAction | "";
+  disabled: boolean;
+  label: string;
+  onClick: (status: PartnerBookingStatusAction) => Promise<void>;
+}) {
+  return (
+    <button
+      className="inline-flex min-h-10 items-center rounded-full bg-black/28 px-4 text-xs font-black text-white/66 hover:bg-white/[0.12] disabled:opacity-50"
+      disabled={disabled || Boolean(busyAction)}
+      onClick={() => void onClick(action)}
+      type="button"
+    >
+      {busyAction === action ? "Saving..." : label}
+    </button>
+  );
+}
+
+function RequestStatusBadge({ status }: { status: BookingRequestRecord["status"] }) {
+  const styles: Record<BookingRequestRecord["status"], string> = {
+    cancelled: "border-rose-300/25 bg-rose-300/12 text-rose-100",
+    confirmed: "border-lime-300/30 bg-lime-300/14 text-lime-100",
+    contacted: "border-cyan-300/25 bg-cyan-300/12 text-cyan-100",
+    pending: "border-amber-300/25 bg-amber-300/12 text-amber-100",
+    rejected: "border-white/10 bg-white/[0.08] text-white/60"
+  };
+
+  return (
+    <span className={`inline-flex min-h-8 shrink-0 items-center rounded-full border px-3 text-xs font-black uppercase tracking-[0.12em] ${styles[status]}`}>
+      {status}
+    </span>
   );
 }
 

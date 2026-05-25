@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { getCurrentUserIdToken } from "../../lib/auth";
 import type { Listing } from "../../types/deals";
@@ -7,6 +8,7 @@ import type { Listing } from "../../types/deals";
 export function BookingRequestForm({ listing }: { listing: Listing }) {
   const [status, setStatus] = useState("Sign in, choose a time, and request availability. No payment is collected.");
   const [busy, setBusy] = useState(false);
+  const [confirmation, setConfirmation] = useState<{ requestId: string; synced: boolean } | null>(null);
 
   async function submit(formData: FormData) {
     if (busy) return;
@@ -22,8 +24,10 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
 
     const payload = {
       email: String(formData.get("email") ?? ""),
+      businessName: listing.businessName,
       listingId: listing.id,
       listingSlug: listing.slug,
+      listingTitle: listing.title,
       message: String(formData.get("message") ?? ""),
       name: String(formData.get("name") ?? ""),
       partySize: Number(formData.get("partySize") ?? 1),
@@ -40,12 +44,15 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
       },
       method: "POST"
     });
-    const result = (await response.json().catch(() => null)) as { error?: string; ok?: boolean; synced?: boolean } | null;
+    const result = (await response.json().catch(() => null)) as { error?: string; ok?: boolean; requestId?: string; synced?: boolean } | null;
 
     setBusy(false);
+    if (response.ok) {
+      setConfirmation({ requestId: result?.requestId ?? "pending", synced: result?.synced === true });
+    }
     setStatus(
       response.ok
-        ? "Request sent. The business will confirm availability."
+        ? "Request sent. Status: pending. The business will confirm availability before anything is charged."
         : result?.error ?? "Could not send request yet."
     );
   }
@@ -54,6 +61,23 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
     <form action={submit} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
       <h2 className="text-2xl font-black text-white">Request booking</h2>
       <p className="mt-2 text-sm leading-6 text-white/58">{status}</p>
+      {confirmation ? (
+        <div className="mt-4 rounded-2xl border border-lime-300/30 bg-lime-300/10 p-4">
+          <p className="text-sm font-black uppercase tracking-[0.14em] text-lime-200">Booking request sent</p>
+          <p className="mt-2 text-lg font-black text-white">Your request is pending confirmation.</p>
+          <p className="mt-2 text-sm leading-6 text-white/62">
+            The business can mark it contacted, confirmed, or cancelled from their dashboard. You can track the status in your profile.
+          </p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <Link className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white" href="/profile">
+              View request status
+            </Link>
+            <span className="inline-flex min-h-11 items-center rounded-2xl bg-black/24 px-4 text-xs font-bold text-white/50">
+              Request ID: {confirmation.requestId}
+            </span>
+          </div>
+        </div>
+      ) : null}
       <div className="mt-5 grid gap-3 md:grid-cols-2">
         <Field name="name" placeholder="Name" required />
         <Field name="email" placeholder="Email" required type="email" />

@@ -164,10 +164,12 @@ export type SuggestedPlan = {
 
 export type BookingRequest = {
   businessId: string;
+  businessName?: string;
   businessOwnerIds: string[];
   cityId: string;
   email: string;
   listingId: string;
+  listingTitle?: string;
   message: string;
   name: string;
   partySize: number;

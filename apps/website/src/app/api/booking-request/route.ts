@@ -35,11 +35,13 @@ export async function POST(request: Request) {
 
   const requestPayload = {
     businessId: listing?.businessId ?? clean(body?.businessId, 120),
+    businessName: listing?.businessName ?? clean(body?.businessName, 180),
     businessOwnerIds: listing?.ownerIds ?? [],
     cityId: listing?.cityId ?? clean(body?.cityId, 120),
     createdAt: FieldValue.serverTimestamp(),
     email,
     listingId: listing?.id ?? listingId,
+    listingTitle: listing?.title ?? clean(body?.listingTitle, 180),
     message,
     name,
     partySize,

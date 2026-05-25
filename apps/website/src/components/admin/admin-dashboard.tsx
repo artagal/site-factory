@@ -3,16 +3,18 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { BadgeCheck, Building2, CheckCircle2, CreditCard, Eye, ListChecks, MapPinned, Megaphone, PauseCircle, ShieldCheck, Star, XCircle } from "lucide-react";
+import { BadgeCheck, Building2, CalendarClock, CheckCircle2, CreditCard, Eye, ListChecks, MapPinned, Megaphone, PauseCircle, ShieldCheck, Star, XCircle } from "lucide-react";
 import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
-import { demoBusinesses, demoCategories, demoCities, demoListings } from "../../lib/demoData";
+import { demoBusinesses, demoCities, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import {
   isAdminUser,
+  readAdminBookingRequests,
   readAdminBusinesses,
   readAdminListings,
   readAdminPartnerApplications,
   readAdminPartnerSubscriptions,
+  type BookingRequestRecord,
   type PartnerApplicationRecord,
   type PartnerSubscriptionRecord
 } from "../../lib/firestore";
@@ -24,6 +26,7 @@ export function AdminDashboard() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [checking, setChecking] = useState(true);
   const [listings, setListings] = useState<Listing[]>([]);
+  const [bookingRequests, setBookingRequests] = useState<BookingRequestRecord[]>([]);
   const [status, setStatus] = useState("");
   const [subscriptions, setSubscriptions] = useState<PartnerSubscriptionRecord[]>([]);
   const [user, setUser] = useState<User | null>(null);
@@ -44,11 +47,12 @@ export function AdminDashboard() {
         }
 
         if (nextAllowed) {
-          const [nextApplications, nextBusinesses, nextListings, nextSubscriptions] = await Promise.all([
+          const [nextApplications, nextBusinesses, nextListings, nextSubscriptions, nextBookingRequests] = await Promise.all([
             readAdminPartnerApplications(),
             readAdminBusinesses(),
             readAdminListings(),
-            readAdminPartnerSubscriptions()
+            readAdminPartnerSubscriptions(),
+            readAdminBookingRequests()
           ]);
 
           if (!cancelled) {
@@ -56,6 +60,7 @@ export function AdminDashboard() {
             setBusinesses(nextBusinesses);
             setListings(nextListings);
             setSubscriptions(nextSubscriptions);
+            setBookingRequests(nextBookingRequests);
           }
         }
       } catch (error) {
@@ -113,12 +118,13 @@ export function AdminDashboard() {
 
   return (
     <>
-      <section className="mt-8 grid gap-4 md:grid-cols-5">
+      <section className="mt-8 grid gap-4 md:grid-cols-6">
         <AdminStat icon={ShieldCheck} label="Applications" value={String(applications.length || "Review")} />
         <AdminStat icon={Building2} label="Businesses" value={String(visibleBusinesses.length)} />
         <AdminStat icon={ListChecks} label="Listings" value={String(visibleListings.length)} />
         <AdminStat icon={MapPinned} label="Cities" value={String(demoCities.length)} />
         <AdminStat icon={CreditCard} label="Paid plans" value={String(subscriptions.filter((subscription) => subscription.paidAccessEnabled).length)} />
+        <AdminStat icon={CalendarClock} label="Requests" value={String(bookingRequests.length)} />
       </section>
       <section className="mt-8 grid gap-5 lg:grid-cols-2">
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
@@ -152,6 +158,7 @@ export function AdminDashboard() {
           </div>
         </div>
         <AdminPanel title="Managed cities" items={demoCities.map((city) => `${city.name}, ${city.state} - ${city.active ? "active" : "coming soon"}`)} />
+        <AdminBookingRequestsPanel requests={bookingRequests} />
       </section>
     </>
   );
@@ -159,16 +166,18 @@ export function AdminDashboard() {
   async function refreshAdminData(nextUser: User) {
     setStatus("");
     try {
-      const [nextApplications, nextBusinesses, nextListings, nextSubscriptions] = await Promise.all([
+      const [nextApplications, nextBusinesses, nextListings, nextSubscriptions, nextBookingRequests] = await Promise.all([
         readAdminPartnerApplications(),
         readAdminBusinesses(),
         readAdminListings(),
-        readAdminPartnerSubscriptions()
+        readAdminPartnerSubscriptions(),
+        readAdminBookingRequests()
       ]);
       setApplications(nextApplications);
       setBusinesses(nextBusinesses);
       setListings(nextListings);
       setSubscriptions(nextSubscriptions);
+      setBookingRequests(nextBookingRequests);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Could not refresh admin data.");
     }
@@ -459,6 +468,54 @@ function AdminPanel({ items, title }: { items: string[]; title: string }) {
         ))}
       </div>
     </div>
+  );
+}
+
+function AdminBookingRequestsPanel({ requests }: { requests: BookingRequestRecord[] }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
+      <h2 className="text-2xl font-black text-white">Booking requests</h2>
+      <p className="mt-2 text-sm font-bold leading-6 text-white/52">
+        Admin overview of customer requests across all businesses. Businesses update contacted, confirmed, or cancelled from their dashboard.
+      </p>
+      <div className="mt-4 grid gap-3">
+        {requests.length ? requests.slice(0, 12).map((request) => (
+          <div className="rounded-2xl bg-black/24 p-4" key={request.id}>
+            <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
+              <div>
+                <p className="font-black text-white">{request.listingTitle ?? "Booking request"}</p>
+                <p className="mt-1 text-sm font-bold text-white/54">
+                  {request.businessName ?? request.businessId} - {request.requestedDate} {request.requestedTime}
+                </p>
+                <p className="mt-1 text-sm font-bold text-white/42">
+                  {request.name} - {request.email} - party of {request.partySize}
+                </p>
+              </div>
+              <AdminRequestStatusBadge status={request.status} />
+            </div>
+            {request.message ? <p className="mt-3 text-sm leading-6 text-white/50">{request.message}</p> : null}
+          </div>
+        )) : (
+          <div className="rounded-2xl bg-black/24 p-4 text-sm font-bold text-white/64">No booking requests yet.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AdminRequestStatusBadge({ status }: { status: BookingRequestRecord["status"] }) {
+  const styles: Record<BookingRequestRecord["status"], string> = {
+    cancelled: "border-rose-300/25 bg-rose-300/12 text-rose-100",
+    confirmed: "border-lime-300/30 bg-lime-300/14 text-lime-100",
+    contacted: "border-cyan-300/25 bg-cyan-300/12 text-cyan-100",
+    pending: "border-amber-300/25 bg-amber-300/12 text-amber-100",
+    rejected: "border-white/10 bg-white/[0.08] text-white/60"
+  };
+
+  return (
+    <span className={`inline-flex min-h-8 shrink-0 items-center rounded-full border px-3 text-xs font-black uppercase tracking-[0.12em] ${styles[status]}`}>
+      {status}
+    </span>
   );
 }
 

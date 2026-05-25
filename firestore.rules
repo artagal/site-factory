@@ -52,11 +52,13 @@ service cloud.firestore {
     function validBookingCreate() {
       return request.resource.data.keys().hasOnly([
         "businessId",
+        "businessName",
         "businessOwnerIds",
         "cityId",
         "createdAt",
         "email",
         "listingId",
+        "listingTitle",
         "message",
         "name",
         "partySize",

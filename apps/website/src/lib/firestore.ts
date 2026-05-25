@@ -228,6 +228,13 @@ export async function readAdminPartnerSubscriptions() {
   });
 }
 
+export async function readAdminBookingRequests() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "bookingRequests"));
+  return snapshot.docs.map((requestDoc) => ({ id: requestDoc.id, ...requestDoc.data() }) as BookingRequestRecord);
+}
+
 export async function readBusinessesForOwner(userId: string) {
   const db = getGoFunMotionDb();
   if (!db) return [];
