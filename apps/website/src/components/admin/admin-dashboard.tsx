@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
 import { Building2, CheckCircle2, CreditCard, ListChecks, MapPinned, ShieldCheck } from "lucide-react";
-import { observeUser } from "../../lib/auth";
+import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
 import { demoBusinesses, demoCategories, demoCities, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import {
@@ -103,9 +103,6 @@ export function AdminDashboard() {
 
   const visibleBusinesses = businesses.length ? businesses : demoBusinesses;
   const visibleListings = listings.length ? listings : demoListings;
-  const applicationItems = applications.length
-    ? applications.map((application) => `${application.businessName} - ${application.city} - ${application.status}`)
-    : ["No live partner applications yet."];
   const subscriptionItems = subscriptions.length
     ? subscriptions.map((subscription) => {
       const business = visibleBusinesses.find((item) => item.id === subscription.businessId);
@@ -124,12 +121,124 @@ export function AdminDashboard() {
         <AdminStat icon={CreditCard} label="Paid plans" value={String(subscriptions.filter((subscription) => subscription.paidAccessEnabled).length)} />
       </section>
       <section className="mt-8 grid gap-5 lg:grid-cols-2">
-        <AdminPanel title="Partner applications" items={applicationItems} />
+        <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
+          <h2 className="text-2xl font-black text-white">Partner applications</h2>
+          <p className="mt-2 text-sm font-bold leading-6 text-white/52">
+            Enter the Firebase Auth UID for the partner owner, then create the approved business profile.
+          </p>
+          <div className="mt-4 grid gap-3">
+            {applications.length ? applications.map((application) => (
+              <ApplicationApprovalCard application={application} key={application.id} onApproved={() => user && void refreshAdminData(user)} />
+            )) : (
+              <div className="rounded-2xl bg-black/24 p-4 text-sm font-bold text-white/64">No live partner applications yet.</div>
+            )}
+          </div>
+        </div>
         <AdminPanel title="Partner subscriptions" items={subscriptionItems} />
         <AdminPanel title={listings.length ? "Live listing review state" : "Demo listing review state"} items={visibleListings.map((listing) => `${listing.title} - ${listing.status}/${listing.approvalStatus}`)} />
         <AdminPanel title="Managed cities" items={demoCities.map((city) => `${city.name}, ${city.state} - ${city.active ? "active" : "coming soon"}`)} />
       </section>
     </>
+  );
+
+  async function refreshAdminData(nextUser: User) {
+    setStatus("");
+    try {
+      const [nextApplications, nextBusinesses, nextListings, nextSubscriptions] = await Promise.all([
+        readAdminPartnerApplications(),
+        readAdminBusinesses(),
+        readAdminListings(),
+        readAdminPartnerSubscriptions()
+      ]);
+      setApplications(nextApplications);
+      setBusinesses(nextBusinesses);
+      setListings(nextListings);
+      setSubscriptions(nextSubscriptions);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Could not refresh admin data.");
+    }
+  }
+}
+
+function ApplicationApprovalCard({
+  application,
+  onApproved
+}: {
+  application: PartnerApplicationRecord;
+  onApproved: () => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [ownerUid, setOwnerUid] = useState("");
+  const [status, setStatus] = useState("");
+
+  async function approveApplication() {
+    if (busy) return;
+    setBusy(true);
+    setStatus("");
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in as an admin before approving applications.");
+        return;
+      }
+
+      const response = await fetch("/api/admin/partner-applications/approve", {
+        body: JSON.stringify({
+          applicationId: application.id,
+          ownerUid,
+          status: "approved"
+        }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { businessId?: string; error?: string } | null;
+
+      if (!response.ok) {
+        setStatus(result?.error ?? "Approval failed.");
+        return;
+      }
+
+      setStatus(`Business created: ${result?.businessId ?? "approved"}.`);
+      onApproved();
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Approval failed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl bg-black/24 p-4">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div>
+          <p className="font-black text-white">{application.businessName}</p>
+          <p className="mt-1 text-sm font-bold text-white/52">{application.city} - {application.category} - {application.status}</p>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-white/58">{application.description}</p>
+          <p className="mt-2 text-xs font-bold text-white/42">{application.email}</p>
+        </div>
+        <span className="rounded-full bg-white/[0.08] px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-lime-200">{application.status}</span>
+      </div>
+      <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
+        <input
+          className="min-h-11 rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-bold text-white outline-none placeholder:text-white/32 focus:border-lime-300/60"
+          onChange={(event) => setOwnerUid(event.target.value)}
+          placeholder="Firebase owner UID"
+          value={ownerUid}
+        />
+        <button
+          className="min-h-11 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
+          disabled={busy || application.status === "approved"}
+          onClick={approveApplication}
+          type="button"
+        >
+          {busy ? "Creating..." : application.status === "approved" ? "Approved" : "Create Business"}
+        </button>
+      </div>
+      {status ? <p className="mt-3 rounded-2xl bg-white/[0.06] p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
+    </div>
   );
 }
 
