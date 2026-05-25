@@ -10,6 +10,7 @@ export function DealCard({ listing }: { listing: Listing }) {
   const isTonight = listing.availableDays.includes("tonight");
   const timeWindowLabel = `${isTonight ? "Tonight" : listing.availableDays[0] ?? "Soon"} ${primarySlot}`;
   const savings = listing.originalPrice ? Math.max(listing.originalPrice - listing.price, 0) : 0;
+  const savingsLabel = savings > 0 ? `Save ${formatPrice(savings)}` : "Open slot";
   const discountLabel = listing.discountPercent
     ? `${listing.discountPercent}% off`
     : savings > 0
@@ -24,7 +25,7 @@ export function DealCard({ listing }: { listing: Listing }) {
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl transition hover:-translate-y-1 hover:border-lime-300/35 hover:bg-white/[0.08] hover:shadow-[0_30px_95px_rgba(0,0,0,0.34)]">
-      <div className="relative min-h-52 overflow-hidden bg-[radial-gradient(circle_at_18%_18%,rgba(190,242,100,0.36),transparent_30%),radial-gradient(circle_at_78%_6%,rgba(34,211,238,0.28),transparent_35%),linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.03))] p-4">
+      <div className="relative min-h-44 overflow-hidden bg-[radial-gradient(circle_at_18%_18%,rgba(190,242,100,0.36),transparent_30%),radial-gradient(circle_at_78%_6%,rgba(34,211,238,0.28),transparent_35%),linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.03))] p-4">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent,rgba(255,255,255,0.12),transparent)] opacity-60" />
         <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-2">
           <span className="rounded-full bg-black/54 px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-white/82">
@@ -54,26 +55,25 @@ export function DealCard({ listing }: { listing: Listing }) {
           </div>
         </div>
       </div>
-      <div className="p-5">
-        <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
+      <div className="p-4">
+        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
           <div className="min-w-0">
-            <h3 className="text-2xl font-black leading-tight text-white">{listing.title}</h3>
-            <p className="mt-2 text-sm font-bold text-white/54">{listing.businessName}</p>
+            <h3 className="text-xl font-black leading-tight text-white">{listing.title}</h3>
+            <p className="mt-1 text-sm font-bold text-white/54">{listing.businessName}</p>
           </div>
-          <div className="rounded-2xl border border-lime-300/20 bg-lime-300/10 p-3 text-left sm:text-right">
-            <p className="text-xs font-black uppercase tracking-[0.12em] text-white/38">Was</p>
-            <p className="text-sm font-black text-white/45 line-through">{listing.originalPrice ? formatPrice(listing.originalPrice) : "Flexible"}</p>
-            <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-lime-200">Now</p>
-            <p className="text-3xl font-black leading-none text-lime-200">{formatPrice(listing.price)}</p>
+          <div className="rounded-2xl border border-lime-300/24 bg-lime-300/12 p-3 text-left sm:min-w-32 sm:text-right">
+            <p className="text-xs font-black uppercase tracking-[0.12em] text-lime-200">Now</p>
+            <p className="text-4xl font-black leading-none text-lime-200">{formatPrice(listing.price)}</p>
+            <p className="mt-1 text-xs font-black text-white/45 line-through">Was {listing.originalPrice ? formatPrice(listing.originalPrice) : "Flexible"}</p>
           </div>
         </div>
-        <p className="mt-4 text-sm leading-6 text-white/64">{listing.shortDescription}</p>
         <div className="mt-4 grid grid-cols-2 gap-2">
           <DealFact label="Was" value={listing.originalPrice ? formatPrice(listing.originalPrice) : "Flexible"} muted />
-          <DealFact label="Now" value={formatPrice(listing.price)} highlight />
-          <DealFact label="Open" value={timeWindowLabel} />
+          <DealFact label="Deal" value={savingsLabel} highlight />
+          <DealFact label="Time" value={timeWindowLabel} />
           <DealFact label="Left" value={remainingLabel} />
         </div>
+        <p className="mt-3 line-clamp-2 text-sm leading-6 text-white/58">{listing.shortDescription}</p>
         <div className="mt-4 grid gap-2 text-sm font-bold text-white/66 sm:grid-cols-2">
           <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-black/24 px-3">
             <MapPin aria-hidden="true" size={16} />
@@ -89,7 +89,7 @@ export function DealCard({ listing }: { listing: Listing }) {
             <TicketPercent aria-hidden="true" className="mr-1 inline" size={13} />
             Last-minute deal
           </span>
-          {listing.vibeTags.slice(0, 3).map((tag) => (
+          {listing.vibeTags.slice(0, 2).map((tag) => (
             <span className="rounded-full bg-white/[0.07] px-3 py-1.5 text-xs font-bold text-white/66" key={tag}>
               {tag.replace(/-/g, " ")}
             </span>
@@ -112,9 +112,9 @@ export function DealCard({ listing }: { listing: Listing }) {
 
 function DealFact({ label, value, highlight = false, muted = false }: { label: string; value: string; highlight?: boolean; muted?: boolean }) {
   return (
-    <div className={`min-h-20 rounded-2xl border p-3 ${highlight ? "border-lime-300/35 bg-lime-300/12" : "border-white/10 bg-black/24"}`}>
+    <div className={`min-h-16 rounded-2xl border p-3 ${highlight ? "border-lime-300/35 bg-lime-300/12" : "border-white/10 bg-black/24"}`}>
       <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-white/42">{label}</p>
-      <p className={`mt-1 text-xl font-black leading-tight ${highlight ? "text-lime-200" : muted ? "text-white/58 line-through decoration-white/36" : "text-white"}`}>
+      <p className={`mt-1 font-black leading-tight ${highlight ? "text-2xl text-lime-200" : muted ? "text-lg text-white/58 line-through decoration-white/36" : "text-lg text-white"}`}>
         {value}
       </p>
     </div>

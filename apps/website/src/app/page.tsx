@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, CalendarHeart, Clock3, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, BriefcaseBusiness, CalendarHeart, Clock3, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
 import { DealCard } from "../components/gofunmotion/deal-card";
 import { SeoJsonLd } from "../components/seo-json-ld";
 import { partnerDealTypes } from "../lib/deal-taxonomy";
-import { categories, demoNotice, getFeaturedListings } from "../lib/deals-data";
+import { categories, demoNotice, filterListings } from "../lib/deals-data";
 import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSchema } from "../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
@@ -33,9 +33,9 @@ const heroDeals = [
 ];
 
 const dealStats = [
-  { icon: TicketPercent, label: "Clear savings", value: "Was / Now" },
-  { icon: Clock3, label: "Open soon", value: "Tonight" },
-  { icon: ShieldCheck, label: "No fake checkout", value: "Request first" }
+  { icon: BadgeCheck, label: "Reviewed partners" },
+  { icon: Clock3, label: "Availability confirmed by request" },
+  { icon: ShieldCheck, label: "No payment until confirmed" }
 ];
 
 const howItWorks = [
@@ -78,6 +78,7 @@ const audienceSections = [
 ];
 
 export default function HomePage() {
+  const homeListings = filterListings({ sort: "featured" }).slice(0, 6);
   const schema = createSchemaGraph([
     createWebPageSchema({
       description:
@@ -111,9 +112,7 @@ export default function HomePage() {
           <p className="mt-5 max-w-2xl text-lg font-semibold leading-8 text-white/68 md:text-xl">
             Save on activities, date nights, family fun, and local experiences with open spots today.
           </p>
-          <p className="mt-4 text-sm font-black uppercase tracking-[0.14em] text-cyan-200">
-            Like Too Good To Go for fun: was price, now price, time window, spots left.
-          </p>
+          <p className="mt-4 text-sm font-black uppercase tracking-[0.14em] text-cyan-200">Was / Now / Time / Spots left.</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-6 text-base font-black text-[#070816] transition hover:bg-white"
@@ -129,15 +128,14 @@ export default function HomePage() {
               Not sure? We&apos;ll pick for you
             </Link>
           </div>
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <div className="mt-7 flex flex-wrap gap-2">
             {dealStats.map((stat) => {
               const Icon = stat.icon;
               return (
-                <div className="rounded-2xl border border-white/10 bg-white/[0.055] p-4" key={stat.label}>
-                  <Icon aria-hidden="true" className="text-lime-200" size={22} />
-                  <p className="mt-3 text-lg font-black text-white">{stat.value}</p>
-                  <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-white/42">{stat.label}</p>
-                </div>
+                <span className="inline-flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.055] px-4 text-xs font-black text-white/70" key={stat.label}>
+                  <Icon aria-hidden="true" className="text-lime-200" size={15} />
+                  {stat.label}
+                </span>
               );
             })}
           </div>
@@ -181,8 +179,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-10 md:px-8">
-        <form action="/deals" className="grid gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4 md:grid-cols-[1.2fr_0.9fr_auto] md:p-5">
+      <section className="sticky top-16 z-20 mx-auto max-w-7xl px-4 py-3 md:static md:px-8 md:py-8">
+        <form action="/deals" className="grid gap-3 rounded-2xl border border-white/10 bg-[#090d1d]/95 p-3 shadow-[0_20px_70px_rgba(0,0,0,0.32)] backdrop-blur-2xl md:grid-cols-[1fr_0.9fr_1.1fr_auto] md:p-4">
           <label className="block">
             <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">City</span>
             <input
@@ -201,25 +199,34 @@ export default function HomePage() {
               <option className="bg-[#070816]" value="weekend">This weekend</option>
             </select>
           </label>
+          <label className="block">
+            <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">Category</span>
+            <select className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300" defaultValue="" name="category">
+              <option className="bg-[#070816]" value="">All categories</option>
+              {categories.slice(0, 8).map((category) => (
+                <option className="bg-[#070816]" key={category.id} value={category.id}>{category.name}</option>
+              ))}
+            </select>
+          </label>
           <button className="mt-auto inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" type="submit">
-            Find Deals Tonight
+            Show Deals
           </button>
         </form>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
+      <section className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Tonight&apos;s deals</p>
-            <h2 className="mt-3 text-4xl font-black text-white md:text-5xl">Tonight&apos;s last-minute deals, sorted by what matters.</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/52">{demoNotice}</p>
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Last-minute deals</p>
+            <h2 className="mt-3 text-4xl font-black text-white md:text-5xl">More cards. Faster decisions.</h2>
+            <p className="mt-3 max-w-2xl text-xs font-bold uppercase tracking-[0.12em] text-white/42">{demoNotice}</p>
           </div>
           <Link className="inline-flex items-center gap-2 text-sm font-black text-lime-200 hover:text-white" href="/deals?when=tonight">
             Browse all deals <ArrowRight aria-hidden="true" size={17} />
           </Link>
         </div>
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {getFeaturedListings().map((listing) => (
+          {homeListings.map((listing) => (
             <DealCard key={listing.id} listing={listing} />
           ))}
         </div>
