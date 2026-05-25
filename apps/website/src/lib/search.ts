@@ -51,12 +51,16 @@ export function getFeaturedListings() {
 }
 
 export function filterListings(input: ListingSearchInput = {}) {
+  return filterListingCollection(getPublishedListings(), input);
+}
+
+export function filterListingCollection(listings: Listing[], input: ListingSearchInput = {}) {
   const normalizedCity = input.city?.trim().toLowerCase();
   const category = input.categoryId;
   const citySlug = input.citySlug ?? input.cityId;
 
   return sortListings(
-    getPublishedListings().filter((listing) => {
+    listings.filter((listing) => {
       const cityMatches =
         !normalizedCity ||
         listing.cityId === normalizedCity ||

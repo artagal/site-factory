@@ -6,7 +6,9 @@ import { SeoJsonLd } from "../components/seo-json-ld";
 import { CategorySelectField } from "../components/shared/category-select-field";
 import { CitySelectField } from "../components/shared/city-select-field";
 import { partnerDealTypes } from "../lib/deal-taxonomy";
-import { categories, demoNotice, filterListings } from "../lib/deals-data";
+import { categories, demoNotice } from "../lib/deals-data";
+import { getPublicListingsForServer } from "../lib/server/public-listings";
+import { filterListingCollection } from "../lib/search";
 import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSchema } from "../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
@@ -79,8 +81,11 @@ const audienceSections = [
   }
 ];
 
-export default function HomePage() {
-  const homeListings = filterListings({ sort: "featured" }).slice(0, 6);
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const publicListings = await getPublicListingsForServer();
+  const homeListings = filterListingCollection(publicListings, { sort: "featured" }).slice(0, 6);
   const schema = createSchemaGraph([
     createWebPageSchema({
       description:

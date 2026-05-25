@@ -4,7 +4,9 @@ import { ArrowRight, BadgeCheck, Clock3, ShieldCheck, SlidersHorizontal } from "
 import { DealCard } from "../../components/gofunmotion/deal-card";
 import { CategorySelectField } from "../../components/shared/category-select-field";
 import { CitySelectField } from "../../components/shared/city-select-field";
-import { categories, demoNotice, filterListings, parsePlanFinderInput } from "../../lib/deals-data";
+import { categories, demoNotice, parsePlanFinderInput } from "../../lib/deals-data";
+import { getPublicListingsForServer } from "../../lib/server/public-listings";
+import { filterListingCollection } from "../../lib/search";
 import type { ListingSort } from "../../lib/search";
 import { buildSeoMetadata } from "../../lib/seo";
 
@@ -30,8 +32,9 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
   const categoryId = Array.isArray(categoryValue) ? categoryValue[0] : categoryValue;
   const sortValue = readString(resolvedSearchParams.sort) as ListingSort | undefined;
   const sort: ListingSort = parseListingSort(sortValue);
-  const results = filterListings({ ...input, categoryId, sort });
-  const visibleResults = results.length ? results : filterListings({ city: input.city, sort });
+  const publicListings = await getPublicListingsForServer();
+  const results = filterListingCollection(publicListings, { ...input, categoryId, sort });
+  const visibleResults = results.length ? results : filterListingCollection(publicListings, { city: input.city, cityId: input.cityId, sort });
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-12">

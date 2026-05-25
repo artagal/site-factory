@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { getCurrentUserIdToken } from "../../lib/auth";
+import { trackEvent } from "../../lib/analytics";
 import type { Listing } from "../../types/deals";
 
 export function BookingRequestForm({ listing }: { listing: Listing }) {
@@ -48,6 +49,7 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
 
     setBusy(false);
     if (response.ok) {
+      trackEvent("booking_request_submitted", { listingId: listing.id, listingSlug: listing.slug });
       setConfirmation({ requestId: result?.requestId ?? "pending", synced: result?.synced === true });
     }
     setStatus(

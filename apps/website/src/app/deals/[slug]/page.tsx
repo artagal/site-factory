@@ -3,10 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarClock, MapPin, Ticket, Users } from "lucide-react";
 import { BookingRequestForm } from "../../../components/listings/booking-request-form";
+import { ListingActionLink, ListingViewTracker } from "../../../components/listings/listing-analytics";
 import { SaveListingButton } from "../../../components/listings/save-listing-button";
 import { ShareButton } from "../../../components/shared/share-button";
-import { demoNotice, formatPrice, getBusinessById, getCategoryById, getListingBySlug, listings } from "../../../lib/deals-data";
+import { demoNotice, formatPrice, getCategoryById, getListingBySlug, listings } from "../../../lib/deals-data";
 import { buildSeoMetadata } from "../../../lib/seo";
+import { getPublicBusinessForServer, getPublicListingBySlugForServer } from "../../../lib/server/public-listings";
 
 type DealDetailProps = {
   params: Promise<{ slug: string }>;
@@ -18,7 +20,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: DealDetailProps): Promise<Metadata> {
   const { slug } = await params;
-  const listing = getListingBySlug(slug);
+  const listing = await getPublicListingBySlugForServer(slug);
 
   if (!listing) {
     return buildSeoMetadata({
@@ -39,13 +41,13 @@ export async function generateMetadata({ params }: DealDetailProps): Promise<Met
 
 export default async function DealDetailPage({ params }: DealDetailProps) {
   const { slug } = await params;
-  const listing = getListingBySlug(slug);
+  const listing = await getPublicListingBySlugForServer(slug);
 
   if (!listing) {
     notFound();
   }
 
-  const business = getBusinessById(listing.businessId);
+  const business = await getPublicBusinessForServer(listing.businessId);
   const category = getCategoryById(listing.categoryIds[0]);
   const remainingLabel =
     listing.remainingSpots === null
@@ -56,6 +58,7 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
+      <ListingViewTracker listingId={listing.id} listingSlug={listing.slug} />
       <Link className="text-sm font-black text-lime-200 hover:text-white" href="/deals">
         Back to deals
       </Link>
@@ -102,9 +105,14 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
             </p>
           </div>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <a className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="#request-booking">
+            <ListingActionLink
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white"
+              href="#request-booking"
+              listingId={listing.id}
+              listingSlug={listing.slug}
+            >
               Request Booking
-            </a>
+            </ListingActionLink>
             <SaveListingButton listing={listing} />
             <ShareButton text={listing.shortDescription} title={listing.title} />
           </div>

@@ -57,6 +57,15 @@ export async function POST(request: Request) {
   if (!db) return jsonOk({ requestId: `local-${Date.now()}`, synced: false });
 
   const docRef = await db.collection("bookingRequests").add(requestPayload);
+  if (requestPayload.listingId) {
+    await db.collection("listings").doc(requestPayload.listingId).set(
+      {
+        metricsUpdatedAt: FieldValue.serverTimestamp(),
+        requestCount: FieldValue.increment(1)
+      },
+      { merge: true }
+    );
+  }
   void incrementServerGlobalStats(["bookingRequests"]).catch(() => false);
   return jsonOk({ requestId: docRef.id, synced: true }, 201);
 }
