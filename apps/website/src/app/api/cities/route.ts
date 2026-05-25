@@ -12,9 +12,11 @@ export async function GET(): Promise<Response> {
   const cities = snapshot.docs
     .map((cityDoc) => ({ id: cityDoc.id, ...cityDoc.data() }) as City)
     .filter((city) => city.active || city.comingSoon);
+  const listingSnapshot = await db.collection("listings").where("status", "==", "published").where("approvalStatus", "==", "approved").get();
+  const listings = listingSnapshot.docs.map((listingDoc) => ({ cityId: String(listingDoc.data().cityId ?? "") })).filter((listing) => listing.cityId);
 
   return jsonOk({
-    cities: getCanonicalCityOptions(cities.length ? cities : demoCities),
+    cities: getCanonicalCityOptions(cities.length ? cities : demoCities, listings.length ? listings : undefined),
     source: cities.length ? "firestore" : "demo"
   });
 }

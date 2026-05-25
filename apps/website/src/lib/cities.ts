@@ -1,6 +1,6 @@
 import { demoCities, demoListings } from "./demoData";
 import { slugify } from "./slug";
-import type { City } from "../types/deals";
+import type { City, Listing } from "../types/deals";
 
 export type CityOption = Pick<City, "active" | "comingSoon" | "country" | "id" | "name" | "slug" | "state" | "timezone"> & {
   dealCount: number;
@@ -11,9 +11,9 @@ export function getCityLabel(city: Pick<City, "name" | "state">) {
   return city.state ? `${city.name}, ${city.state}` : city.name;
 }
 
-export function getCanonicalCityOptions(cities: City[] = demoCities): CityOption[] {
+export function getCanonicalCityOptions(cities: City[] = demoCities, listings: Array<Pick<Listing, "cityId">> = demoListings): CityOption[] {
   const dealCounts = new Map<string, number>();
-  for (const listing of demoListings) {
+  for (const listing of listings) {
     dealCounts.set(listing.cityId, (dealCounts.get(listing.cityId) ?? 0) + 1);
   }
 

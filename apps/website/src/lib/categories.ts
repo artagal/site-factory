@@ -1,15 +1,15 @@
 import { demoCategories, demoListings } from "./demoData";
 import { slugify } from "./slug";
-import type { Category } from "../types/deals";
+import type { Category, Listing } from "../types/deals";
 
 export type CategoryOption = Pick<Category, "accentColor" | "active" | "description" | "icon" | "id" | "name" | "slug" | "sortOrder"> & {
   dealCount: number;
   label: string;
 };
 
-export function getCanonicalCategoryOptions(categories: Category[] = demoCategories): CategoryOption[] {
+export function getCanonicalCategoryOptions(categories: Category[] = demoCategories, listings: Array<Pick<Listing, "categoryIds">> = demoListings): CategoryOption[] {
   const dealCounts = new Map<string, number>();
-  for (const listing of demoListings) {
+  for (const listing of listings) {
     for (const categoryId of listing.categoryIds) {
       dealCounts.set(categoryId, (dealCounts.get(categoryId) ?? 0) + 1);
     }
