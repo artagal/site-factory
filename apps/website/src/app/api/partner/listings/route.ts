@@ -1,4 +1,5 @@
 import { slugify } from "../../../../lib/slug";
+import { normalizeAvailableDays } from "../../../../lib/availability";
 import { countLimitedListings, getPartnerTierCapabilities, isLimitedListingStatus } from "../../../../lib/partner-limits";
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../../lib/server/firebase-admin";
@@ -174,6 +175,7 @@ export async function POST(request: Request): Promise<Response> {
   const originalPrice = cleanNullableNumber(body?.originalPrice, 0, 10000);
   const availableSlot = clean(body?.availableSlot, 80);
   const availableSlots = availableSlot ? [availableSlot] : cleanStringArray(body?.availableSlots, 8, 80);
+  const availableDays = normalizeAvailableDays(cleanStringArray(body?.availableDays, 7, 24), availableSlots);
 
   if (!title || !shortDescription || !description || !categoryIds.length || !availableSlots.length) {
     return jsonError("Add title, category, descriptions, price, and at least one available time.", 400);
@@ -211,7 +213,7 @@ export async function POST(request: Request): Promise<Response> {
   await listingRef.set(
     {
       approvalStatus: "pending",
-      availableDays: cleanStringArray(body?.availableDays, 7, 24),
+      availableDays,
       availableFrom: cleanNullable(body?.availableFrom, 40),
       availableSlots,
       availableUntil: cleanNullable(body?.availableUntil, 40),
