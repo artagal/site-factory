@@ -186,7 +186,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="sticky top-14 z-20 mx-auto max-w-7xl px-3 py-2 md:top-20 md:px-8 md:py-4">
+      <section className="sticky top-14 z-20 mx-auto max-w-7xl px-3 pb-2 pt-0 md:top-16 md:px-8 md:pb-4 md:pt-0">
         <form action="/deals" className="grid grid-cols-[minmax(0,1fr)_7.75rem_auto] items-center gap-2 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:grid-cols-[1fr_0.9fr_1.1fr_auto] md:items-end md:gap-3 md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.32)]">
           <CitySelectField defaultCityId="miami" dense />
           <label className="block">

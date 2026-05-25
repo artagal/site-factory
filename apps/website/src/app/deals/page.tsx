@@ -54,7 +54,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
 
       <TrustBadges />
 
-      <form className="sticky top-14 z-20 mt-5 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:top-20 md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.34)]">
+      <form className="sticky top-14 z-20 mt-0 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:top-16 md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.34)]">
         <div className="grid grid-cols-[minmax(0,1fr)_7.75rem_auto] items-center gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto] md:items-end">
           <CitySelectField compact defaultCity={input.city} defaultCityId={input.cityId} dense />
           <FilterSelect label="When" name="when" options={[["tonight", "Tonight"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]]} value={input.when} compact dense />
