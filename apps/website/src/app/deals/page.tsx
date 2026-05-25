@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Clock3, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { DealCard } from "../../components/gofunmotion/deal-card";
+import { CitySelectField } from "../../components/shared/city-select-field";
 import { categories, demoNotice, filterListings, parsePlanFinderInput } from "../../lib/deals-data";
 import type { ListingSort } from "../../lib/search";
 import { buildSeoMetadata } from "../../lib/seo";
@@ -51,7 +52,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
 
       <form className="sticky top-16 z-20 mt-6 rounded-2xl border border-white/10 bg-[#090d1d]/95 p-3 shadow-[0_20px_70px_rgba(0,0,0,0.34)] backdrop-blur-2xl md:static md:p-4">
         <div className="grid gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto]">
-          <FilterInput defaultValue={input.city} label="City" name="city" compact />
+          <CitySelectField compact defaultCity={input.city} defaultCityId={input.cityId} />
           <FilterSelect label="When" name="when" options={[["tonight", "Tonight"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]]} value={input.when} compact />
           <FilterSelect label="Category" name="category" options={[["", "All categories"], ...categories.map((category) => [category.id, category.name])]} value={categoryId ?? ""} compact />
           <input name="sort" type="hidden" value={sort} />
@@ -62,7 +63,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
       </form>
 
       <nav aria-label="Quick deal filters" className="mt-4 flex gap-2 overflow-x-auto pb-1">
-        <QuickFilter href="/deals?city=Miami&when=tonight&sort=tonight" label="Miami tonight" />
+        <QuickFilter href="/deals?cityId=miami&when=tonight&sort=tonight" label="Miami tonight" />
         <QuickFilter href="/deals?when=tonight&who=date&sort=date-night" label="Date night" />
         <QuickFilter href="/deals?when=tonight&who=friends&sort=tonight" label="Friends" />
         <QuickFilter href="/deals?when=weekend&who=family&sort=family-friendly" label="Family weekend" />
@@ -76,6 +77,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
           More filters
         </div>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+          <input name="cityId" type="hidden" value={input.cityId} />
           <input name="city" type="hidden" value={input.city} />
           <input name="category" type="hidden" value={categoryId ?? ""} />
           <input name="when" type="hidden" value={input.when} />
@@ -150,15 +152,6 @@ function TrustBadges() {
         );
       })}
     </div>
-  );
-}
-
-function FilterInput({ compact = false, defaultValue, label, name }: { compact?: boolean; defaultValue: string; label: string; name: string }) {
-  return (
-    <label className="block">
-      <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">{label}</span>
-      <input className={`${compact ? "mt-1" : "mt-2"} min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300`} defaultValue={defaultValue} name={name} />
-    </label>
   );
 }
 

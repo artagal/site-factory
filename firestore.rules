@@ -79,6 +79,8 @@ service cloud.firestore {
         "businessName",
         "category",
         "city",
+        "cityId",
+        "cityName",
         "createdAt",
         "description",
         "email",

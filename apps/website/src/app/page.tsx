@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, BriefcaseBusiness, CalendarHeart, Clock3, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
 import { DealCard } from "../components/gofunmotion/deal-card";
 import { SeoJsonLd } from "../components/seo-json-ld";
+import { CitySelectField } from "../components/shared/city-select-field";
 import { partnerDealTypes } from "../lib/deal-taxonomy";
 import { categories, demoNotice, filterListings } from "../lib/deals-data";
 import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSchema } from "../lib/seo";
@@ -181,15 +182,7 @@ export default function HomePage() {
 
       <section className="sticky top-16 z-20 mx-auto max-w-7xl px-4 py-3 md:static md:px-8 md:py-8">
         <form action="/deals" className="grid gap-3 rounded-2xl border border-white/10 bg-[#090d1d]/95 p-3 shadow-[0_20px_70px_rgba(0,0,0,0.32)] backdrop-blur-2xl md:grid-cols-[1fr_0.9fr_1.1fr_auto] md:p-4">
-          <label className="block">
-            <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">City</span>
-            <input
-              className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300"
-              defaultValue="Miami"
-              name="city"
-              placeholder="Miami"
-            />
-          </label>
+          <CitySelectField defaultCityId="miami" />
           <label className="block">
             <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">When</span>
             <select className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300" defaultValue="tonight" name="when">

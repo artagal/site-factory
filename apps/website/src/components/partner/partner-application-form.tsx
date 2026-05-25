@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { partnerDealTypes } from "../../lib/deal-taxonomy";
 import { demoCategories } from "../../lib/demoData";
+import { CitySelectField } from "../shared/city-select-field";
 
 export function PartnerApplicationForm() {
   const [status, setStatus] = useState("Applications are reviewed before any listing becomes public.");
@@ -34,7 +35,7 @@ export function PartnerApplicationForm() {
         <Field name="ownerName" placeholder="Owner name" required />
         <Field name="email" placeholder="Email" required type="email" />
         <Field name="phone" placeholder="Phone" />
-        <Field name="city" placeholder="City" required />
+        <CitySelectField label="Business city" />
         <label className="block">
           <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">Business category</span>
           <select className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300" name="category" required>

@@ -49,6 +49,7 @@ export type Business = {
   addressLine2: string | null;
   categories: string[];
   cityId: string;
+  cityName?: string;
   country: string;
   description: string;
   email: string;
@@ -128,6 +129,7 @@ export type Listing = {
 export type PlanFinderInput = {
   budget: BudgetTier | "flexible";
   city: string;
+  cityId: string;
   indoorOutdoor: IndoorOutdoor;
   timeAvailable: "30min" | "1hour" | "2hours" | "half-day" | "evening";
   vibe: PlanVibe;
@@ -185,6 +187,8 @@ export type PartnerApplication = {
   businessName: string;
   category: string;
   city: string;
+  cityId: string;
+  cityName: string;
   description: string;
   email: string;
   instagram: string | null;

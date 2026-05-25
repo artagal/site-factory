@@ -1,0 +1,75 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import { demoCities } from "../../lib/demoData";
+import { getCanonicalCityOptions, normalizeCitySelection, type CityOption } from "../../lib/cities";
+
+const fallbackCities = getCanonicalCityOptions(demoCities);
+
+export function CitySelectField({
+  compact = false,
+  defaultCity,
+  defaultCityId,
+  label = "City",
+  name = "cityId",
+  cityNameFieldName = "city",
+  required = true
+}: {
+  cityNameFieldName?: string;
+  compact?: boolean;
+  defaultCity?: string;
+  defaultCityId?: string;
+  label?: string;
+  name?: string;
+  required?: boolean;
+}) {
+  const initial = useMemo(() => normalizeCitySelection({ city: defaultCity, cityId: defaultCityId, options: fallbackCities }), [defaultCity, defaultCityId]);
+  const [cities, setCities] = useState<CityOption[]>(fallbackCities);
+  const [selectedCityId, setSelectedCityId] = useState(initial.cityId);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCities() {
+      try {
+        const response = await fetch("/api/cities", { cache: "no-store" });
+        const payload = (await response.json().catch(() => null)) as { cities?: CityOption[] } | null;
+        const nextCities = Array.isArray(payload?.cities) && payload.cities.length ? payload.cities : fallbackCities;
+        if (cancelled) return;
+        setCities(nextCities);
+        const nextSelection = normalizeCitySelection({ city: defaultCity, cityId: defaultCityId ?? initial.cityId, options: nextCities });
+        setSelectedCityId(nextSelection.cityId);
+      } catch {
+        if (!cancelled) setCities(fallbackCities);
+      }
+    }
+
+    void loadCities();
+    return () => {
+      cancelled = true;
+    };
+  }, [defaultCity, defaultCityId, initial.cityId]);
+
+  const selected = normalizeCitySelection({ city: defaultCity, cityId: selectedCityId, options: cities });
+
+  return (
+    <label className="block">
+      <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">{label}</span>
+      <select
+        className={`${compact ? "mt-1" : "mt-2"} min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none transition focus:border-lime-300`}
+        name={name}
+        onChange={(event) => setSelectedCityId(event.target.value)}
+        required={required}
+        value={selected.cityId}
+      >
+        {cities.map((city) => (
+          <option className="bg-[#070816] text-white" key={city.id} value={city.id}>
+            {city.label}{city.dealCount > 0 ? ` - ${city.dealCount} deal${city.dealCount === 1 ? "" : "s"}` : city.comingSoon ? " - coming soon" : ""}
+          </option>
+        ))}
+      </select>
+      <input name={cityNameFieldName} type="hidden" value={selected.cityName} />
+      <input name="cityLabel" type="hidden" value={selected.cityLabel} />
+    </label>
+  );
+}

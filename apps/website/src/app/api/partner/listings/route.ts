@@ -200,8 +200,11 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const status = saveMode === "draft" ? "draft" : "pending_approval";
-  const cityId = clean(body?.cityId, 100) || String(business.cityId ?? "coming-soon");
-  const cityName = clean(body?.cityName, 120) || String(business.cityName ?? titleizeSlug(cityId));
+  const businessCityId = clean(business.cityId, 100) || "coming-soon";
+  const citySnapshot = businessCityId ? await db.collection("cities").doc(businessCityId).get() : null;
+  const cityData = citySnapshot?.exists ? citySnapshot.data() : null;
+  const cityId = businessCityId;
+  const cityName = cityData ? clean(cityData.name, 120) : clean(business.cityName, 120) || titleizeSlug(cityId);
   const slug = `${slugify(title) || "last-minute-deal"}-${listingRef.id.slice(0, 6)}`;
   const now = FieldValue.serverTimestamp();
 

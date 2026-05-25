@@ -7,6 +7,7 @@ import { POST as approvePartnerApplicationPost } from "../apps/website/src/app/a
 import { POST as lookupAdminUserPost } from "../apps/website/src/app/api/admin/users/lookup/route";
 import { POST as billingPortalPost } from "../apps/website/src/app/api/billing/partner-portal/route";
 import { POST as bookingPost } from "../apps/website/src/app/api/booking-request/route";
+import { GET as citiesGet } from "../apps/website/src/app/api/cities/route";
 import { POST as checkoutPost } from "../apps/website/src/app/api/checkout/partner-subscription/route";
 import { DELETE as partnerListingDelete, PATCH as partnerListingPatch, POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
 import { POST as partnerBookingStatusPost } from "../apps/website/src/app/api/partner/booking-requests/status/route";
@@ -75,10 +76,16 @@ describe("GoFunMotion Deals API routes", () => {
   });
 
   it("accepts partner application and waitlist payloads without paid services", async () => {
+    const citiesResponse = await citiesGet();
+    const citiesJson = await readJson<{ cities: Array<{ id: string; label: string }> }>(citiesResponse);
+
+    expect(citiesResponse.status).toBe(200);
+    expect(citiesJson.cities.map((city) => city.id)).toContain("miami");
+
     const partnerResponse = await partnerPost(jsonRequest("https://site-factory.test/api/partner-application", {
       businessName: "Demo Studio",
       category: "Creative",
-      city: "Miami",
+      cityId: "miami",
       description: "A local studio that wants to list reviewed creative classes and last-minute activity deals.",
       email: "owner@example.com",
       ownerName: "Owner Name"
@@ -97,6 +104,22 @@ describe("GoFunMotion Deals API routes", () => {
 
     expect(waitlistResponse.status).toBe(201);
     expect(waitlistJson.synced).toBe(false);
+  });
+
+  it("rejects partner applications without a managed city selection", async () => {
+    const response = await partnerPost(jsonRequest("https://site-factory.test/api/partner-application", {
+      businessName: "Demo Studio",
+      category: "Creative",
+      city: "",
+      cityId: "",
+      description: "A local studio that wants to list reviewed creative classes and last-minute activity deals.",
+      email: "owner@example.com",
+      ownerName: "Owner Name"
+    }));
+    const json = await readJson<{ error: string }>(response);
+
+    expect(response.status).toBe(400);
+    expect(json.error).toContain("selected city");
   });
 
   it("tracks only allowed analytics events", async () => {

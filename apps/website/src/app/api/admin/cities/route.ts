@@ -19,8 +19,10 @@ async function verifyAdmin(request: Request) {
 
 export async function POST(request: Request): Promise<Response> {
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
-  const name = clean(body?.name, 120);
-  const state = clean(body?.state, 80);
+  const rawName = clean(body?.name, 120);
+  const cityStateMatch = rawName.match(/^(.+?),\s*([A-Za-z]{2})$/);
+  const name = clean(cityStateMatch?.[1] ?? rawName, 120);
+  const state = clean(body?.state, 80) || clean(cityStateMatch?.[2], 80).toUpperCase();
   const country = clean(body?.country, 80) || "US";
   const timezone = clean(body?.timezone, 80) || "America/New_York";
   const description = clean(body?.description, 600) || `${name} last-minute fun deals and local activity openings.`;

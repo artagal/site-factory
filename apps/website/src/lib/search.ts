@@ -53,12 +53,13 @@ export function getFeaturedListings() {
 export function filterListings(input: ListingSearchInput = {}) {
   const normalizedCity = input.city?.trim().toLowerCase();
   const category = input.categoryId;
-  const citySlug = input.citySlug;
+  const citySlug = input.citySlug ?? input.cityId;
 
   return sortListings(
     getPublishedListings().filter((listing) => {
       const cityMatches =
         !normalizedCity ||
+        listing.cityId === normalizedCity ||
         listing.cityName.toLowerCase().includes(normalizedCity) ||
         listing.cityId.toLowerCase().includes(normalizedCity.replace(/\s+/g, "-"));
       const citySlugMatches = !citySlug || listing.cityId === citySlug;

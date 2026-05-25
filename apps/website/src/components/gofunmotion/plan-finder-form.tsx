@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import { CitySelectField } from "../shared/city-select-field";
 import type { PlanFinderInput } from "../../types/deals";
 
 const whenOptions = [
@@ -59,20 +60,12 @@ export function PlanFinderForm({
 }: {
   action?: string;
   compact?: boolean;
-  defaultValues?: PlanFinderInput;
+  defaultValues?: Partial<PlanFinderInput>;
 }) {
   return (
     <form action={action} className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 shadow-[0_20px_80px_rgba(0,0,0,0.26)] backdrop-blur-2xl md:p-5">
       <div className={compact ? "grid gap-3 md:grid-cols-2 xl:grid-cols-4" : "grid gap-3 md:grid-cols-2 lg:grid-cols-4"}>
-        <label className="block">
-          <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">City</span>
-          <input
-            className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none transition placeholder:text-white/28 focus:border-lime-300"
-            defaultValue={defaultValues?.city ?? "Miami"}
-            name="city"
-            placeholder="City or near me"
-          />
-        </label>
+        <CitySelectField defaultCity={defaultValues?.city} defaultCityId={defaultValues?.cityId} />
         <Select label="When" name="when" options={whenOptions} value={defaultValues?.when ?? "today"} />
         <Select label="Who's going" name="who" options={whoOptions} value={defaultValues?.who ?? "date"} />
         <Select label="Budget" name="budget" options={budgetOptions} value={defaultValues?.budget ?? "under50"} />

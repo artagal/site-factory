@@ -1,14 +1,10 @@
 import { slugify } from "../../../../../lib/slug";
+import { normalizeCitySelection } from "../../../../../lib/cities";
 import { jsonError, jsonOk } from "../../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminAuth, getFirebaseAdminDb, verifyBearerToken } from "../../../../../lib/server/firebase-admin";
 
 function clean(value: unknown, max = 180) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
-}
-
-function parseState(city: string) {
-  const match = city.match(/,\s*([A-Z]{2})\b/);
-  return match?.[1] ?? "";
 }
 
 async function verifyAdmin(request: Request) {
@@ -49,6 +45,8 @@ export async function POST(request: Request) {
   const application = applicationSnapshot.data() ?? {};
   const businessName = clean(application.businessName, 120);
   const city = clean(application.city, 120);
+  const applicationCityId = clean(application.cityId, 120);
+  const applicationCityName = clean(application.cityName, 120);
   const category = clean(application.category, 80);
   const email = clean(application.email, 254).toLowerCase();
 
@@ -59,7 +57,12 @@ export async function POST(request: Request) {
   const businessId = `${slugify(businessName) || "business"}-${applicationId.slice(0, 8)}`;
   const businessRef = db.collection("businesses").doc(businessId);
   const categorySlug = slugify(category) || "local-activity";
-  const cityId = slugify(city) || "coming-soon";
+  const citySnapshot = applicationCityId ? await db.collection("cities").doc(applicationCityId).get() : null;
+  const cityData = citySnapshot?.exists ? citySnapshot.data() : null;
+  const fallbackCity = normalizeCitySelection({ city, cityId: applicationCityId });
+  const cityId = citySnapshot?.exists ? applicationCityId : fallbackCity.cityId;
+  const cityName = cityData ? clean(cityData.name, 120) : applicationCityName || fallbackCity.cityName;
+  const cityState = cityData ? clean(cityData.state, 80) : fallbackCity.state;
   const now = FieldValue.serverTimestamp();
 
   await db.runTransaction(async (transaction) => {
@@ -70,6 +73,7 @@ export async function POST(request: Request) {
         addressLine2: null,
         categories: [categorySlug],
         cityId,
+        cityName,
         country: "US",
         createdAt: now,
         description: clean(application.description, 1200),
@@ -87,7 +91,7 @@ export async function POST(request: Request) {
         postalCode: "",
         pricingTier: "starter",
         slug: slugify(businessName) || businessId,
-        state: parseState(city),
+        state: cityState,
         status: approvalStatus === "approved" ? "approved" : "pending",
         stripeCustomerId: null,
         stripeSubscriptionId: null,

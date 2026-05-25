@@ -130,7 +130,7 @@ export function LastMinuteDealEditor({
   onSaved: () => void;
 }) {
   const primaryCategory = business.categories[0] ?? "date-night";
-  const businessCityName = business.state ? `${titleizeSlug(business.cityId)}, ${business.state}` : titleizeSlug(business.cityId);
+  const businessCityName = business.cityName ?? (business.state ? `${titleizeSlug(business.cityId)}, ${business.state}` : titleizeSlug(business.cityId));
   const [form, setForm] = useState<DealFormState>(() => blankForm(primaryCategory, businessCityName));
   const [busyMode, setBusyMode] = useState<SaveMode | null>(null);
   const [busyListingId, setBusyListingId] = useState("");
@@ -419,7 +419,9 @@ export function LastMinuteDealEditor({
               <input className={inputClass} onChange={(event) => update("title", event.target.value)} placeholder="Escape room open slot" value={form.title} />
             </Field>
             <Field label="City">
-              <input className={inputClass} onChange={(event) => update("cityName", event.target.value)} placeholder="Miami, FL" value={form.cityName} />
+              <div className={`${inputClass} flex items-center text-white/70`}>
+                {businessCityName}
+              </div>
             </Field>
             <Field label="Available time">
               <input className={inputClass} onChange={(event) => update("availableSlot", event.target.value)} placeholder="Tonight 8:30 PM" value={form.availableSlot} />

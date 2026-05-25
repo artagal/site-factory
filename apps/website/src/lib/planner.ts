@@ -1,4 +1,5 @@
 import { demoCities, demoListings } from "./demoData";
+import { normalizeCitySelection } from "./cities";
 import { formatBudget, formatDuration, formatGroup, formatPrice, formatVibe, formatWhen } from "./format";
 import { filterListings } from "./search";
 import type { BudgetTier, IndoorOutdoor, PlanFinderInput, PlanVibe, PlanWhen, SuggestedPlan } from "../types/deals";
@@ -6,6 +7,7 @@ import type { BudgetTier, IndoorOutdoor, PlanFinderInput, PlanVibe, PlanWhen, Su
 export const defaultPlanFinderInput: PlanFinderInput = {
   budget: "under50",
   city: "Miami",
+  cityId: "miami",
   indoorOutdoor: "either",
   timeAvailable: "2hours",
   vibe: "surprise-me",
@@ -19,9 +21,15 @@ export function parsePlanFinderInput(searchParams: Record<string, string | strin
     return Array.isArray(value) ? value[0] : value;
   };
 
+  const city = normalizeCitySelection({
+    city: read("city"),
+    cityId: read("cityId")
+  });
+
   return {
     budget: parseOption(read("budget"), ["free", "under25", "under50", "under100", "premium", "flexible"], defaultPlanFinderInput.budget),
-    city: cleanText(read("city"), defaultPlanFinderInput.city, 80),
+    city: city.cityName,
+    cityId: city.cityId,
     indoorOutdoor: parseOption(read("indoorOutdoor"), ["indoor", "outdoor", "either"], defaultPlanFinderInput.indoorOutdoor),
     timeAvailable: parseOption(read("timeAvailable"), ["30min", "1hour", "2hours", "half-day", "evening"], defaultPlanFinderInput.timeAvailable),
     vibe: parseOption(
@@ -36,11 +44,11 @@ export function parsePlanFinderInput(searchParams: Record<string, string | strin
 
 export function buildSuggestedPlan(input: PlanFinderInput): SuggestedPlan {
   const directMatches = filterListings(input);
-  const cityMatches = filterListings({ city: input.city });
+  const cityMatches = filterListings({ city: input.city, cityId: input.cityId });
   const fallbackListings = directMatches.length ? directMatches : cityMatches.length ? cityMatches : demoListings.slice(0, 4);
   const selected = [...new Map(fallbackListings.map((listing) => [listing.id, listing])).values()].slice(0, 4);
   const first = selected[0];
-  const activeCity = demoCities.find((city) => city.name.toLowerCase() === input.city.toLowerCase());
+  const activeCity = demoCities.find((city) => city.slug === input.cityId || city.name.toLowerCase() === input.city.toLowerCase());
   const waitlistRecommended = !activeCity || !directMatches.length;
 
   return {
