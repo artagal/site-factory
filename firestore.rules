@@ -30,6 +30,7 @@ service cloud.firestore {
         "createdAt",
         "displayName",
         "email",
+        "isAnonymous",
         "lastLoginAt",
         "phone",
         "photoURL",
