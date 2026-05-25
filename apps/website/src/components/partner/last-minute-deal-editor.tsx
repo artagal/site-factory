@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { Clock, Edit3, Plus, Send, Tag } from "lucide-react";
+import { Clock, Edit3, PauseCircle, Plus, Send, Tag, Trash2, type LucideIcon } from "lucide-react";
 import { getCurrentUserIdToken } from "../../lib/auth";
 import { demoCategories } from "../../lib/demoData";
 import type { Business, GroupType, IndoorOutdoor, Listing, PlanVibe } from "../../types/deals";
 
 type SaveMode = "draft" | "submit";
+type ListingAction = "submit" | "pause" | "draft" | "expire";
 
 type DealFormState = {
   availableSlot: string;
@@ -119,6 +120,7 @@ export function LastMinuteDealEditor({
   const primaryCategory = business.categories[0] ?? "date-night";
   const [form, setForm] = useState<DealFormState>(() => blankForm(primaryCategory));
   const [busyMode, setBusyMode] = useState<SaveMode | null>(null);
+  const [busyListingId, setBusyListingId] = useState("");
   const [status, setStatus] = useState("");
 
   const activeCount = useMemo(
@@ -185,6 +187,86 @@ export function LastMinuteDealEditor({
     }
   }
 
+  async function updateListingStatus(listing: Listing, action: ListingAction) {
+    if (busyListingId || business.isDemo) return;
+    setBusyListingId(`${listing.id}:${action}`);
+    setStatus("");
+
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in as the business owner before updating listings.");
+        return;
+      }
+
+      const response = await fetch("/api/partner/listings", {
+        body: JSON.stringify({
+          action,
+          businessId: business.id,
+          listingId: listing.id
+        }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "PATCH"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string; status?: string } | null;
+
+      if (!response.ok) {
+        setStatus(result?.error ?? "Could not update this listing.");
+        return;
+      }
+
+      setStatus(`Listing moved to ${result?.status ?? action}.`);
+      onSaved();
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Could not update this listing.");
+    } finally {
+      setBusyListingId("");
+    }
+  }
+
+  async function deleteListing(listing: Listing) {
+    if (busyListingId || business.isDemo) return;
+    setBusyListingId(`${listing.id}:delete`);
+    setStatus("");
+
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in as the business owner before deleting listings.");
+        return;
+      }
+
+      const response = await fetch("/api/partner/listings", {
+        body: JSON.stringify({
+          businessId: business.id,
+          listingId: listing.id
+        }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "DELETE"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string } | null;
+
+      if (!response.ok) {
+        setStatus(result?.error ?? "Could not delete this listing.");
+        return;
+      }
+
+      if (form.listingId === listing.id) setForm(blankForm(primaryCategory));
+      setStatus("Listing deleted.");
+      onSaved();
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Could not delete this listing.");
+    } finally {
+      setBusyListingId("");
+    }
+  }
+
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
@@ -218,29 +300,69 @@ export function LastMinuteDealEditor({
           </div>
           <div className="mt-4 grid gap-3">
             {listings.length ? listings.map((listing) => (
-              <button
-                className={`rounded-2xl border p-4 text-left transition hover:bg-white/[0.08] ${form.listingId === listing.id ? "border-lime-300/60 bg-lime-300/10" : "border-white/10 bg-white/[0.04]"}`}
+              <div
+                className={`rounded-2xl border p-4 transition hover:bg-white/[0.08] ${form.listingId === listing.id ? "border-lime-300/60 bg-lime-300/10" : "border-white/10 bg-white/[0.04]"}`}
                 key={listing.id}
-                onClick={() => {
-                  setForm(formFromListing(listing));
-                  setStatus("");
-                }}
-                type="button"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-black text-white">{listing.title}</p>
                     <p className="mt-1 text-sm font-bold text-white/50">{listing.status} / {listing.approvalStatus}</p>
                   </div>
-                  <Edit3 aria-hidden="true" className="text-cyan-200" size={17} />
+                  <button
+                    className="inline-flex min-h-9 items-center gap-2 rounded-full bg-cyan-300/12 px-3 text-xs font-black text-cyan-100 hover:bg-cyan-300/20"
+                    onClick={() => {
+                      setForm(formFromListing(listing));
+                      setStatus("");
+                    }}
+                    type="button"
+                  >
+                    <Edit3 aria-hidden="true" size={14} />
+                    Edit
+                  </button>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2 text-xs font-black">
                   <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">Was {listing.originalPrice ? `$${listing.originalPrice}` : "n/a"}</span>
                   <span className="rounded-full bg-lime-300 px-3 py-1 text-[#070816]">Now ${listing.price}</span>
                   <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">{listing.availableSlots[0] ?? "Set time"}</span>
                 </div>
-                <Link className="mt-3 inline-flex text-sm font-black text-lime-200 hover:text-white" href={`/deals/${listing.slug}`}>View public page</Link>
-              </button>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Link className="inline-flex min-h-9 items-center rounded-full bg-white/[0.08] px-3 text-xs font-black text-lime-200 hover:text-white" href={`/deals/${listing.slug}`}>
+                    View
+                  </Link>
+                  {listing.status !== "pending_approval" ? (
+                    <ActionButton
+                      busy={busyListingId === `${listing.id}:submit`}
+                      icon={Send}
+                      label="Submit"
+                      onClick={() => void updateListingStatus(listing, "submit")}
+                    />
+                  ) : null}
+                  {listing.status !== "paused" ? (
+                    <ActionButton
+                      busy={busyListingId === `${listing.id}:pause`}
+                      icon={PauseCircle}
+                      label="Pause"
+                      onClick={() => void updateListingStatus(listing, "pause")}
+                    />
+                  ) : (
+                    <ActionButton
+                      busy={busyListingId === `${listing.id}:draft`}
+                      icon={Clock}
+                      label="Draft"
+                      onClick={() => void updateListingStatus(listing, "draft")}
+                    />
+                  )}
+                  {listing.status !== "published" ? (
+                    <ActionButton
+                      busy={busyListingId === `${listing.id}:delete`}
+                      icon={Trash2}
+                      label="Delete"
+                      onClick={() => void deleteListing(listing)}
+                    />
+                  ) : null}
+                </div>
+              </div>
             )) : (
               <p className="rounded-2xl bg-white/[0.05] p-4 text-sm font-bold leading-6 text-white/56">
                 No live deals yet. Create a draft, then submit it for admin approval.
@@ -392,6 +514,30 @@ function Chip({ active, label, onClick }: { active: boolean; label: string; onCl
       type="button"
     >
       {label}
+    </button>
+  );
+}
+
+function ActionButton({
+  busy,
+  icon: Icon,
+  label,
+  onClick
+}: {
+  busy: boolean;
+  icon: LucideIcon;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      className="inline-flex min-h-9 items-center gap-2 rounded-full bg-white/[0.08] px-3 text-xs font-black text-white/66 hover:bg-white/[0.14] disabled:opacity-60"
+      disabled={busy}
+      onClick={onClick}
+      type="button"
+    >
+      <Icon aria-hidden="true" size={14} />
+      {busy ? "..." : label}
     </button>
   );
 }

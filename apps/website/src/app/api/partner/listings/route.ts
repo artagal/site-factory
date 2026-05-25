@@ -2,7 +2,7 @@ import { slugify } from "../../../../lib/slug";
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../../lib/server/firebase-admin";
 import type { DecodedIdToken } from "firebase-admin/auth";
-import type { DocumentData, Firestore } from "firebase-admin/firestore";
+import type { DocumentData, DocumentReference, Firestore } from "firebase-admin/firestore";
 import type { BudgetTier, GroupType, IndoorOutdoor, ListingType, PlanVibe } from "../../../../types/deals";
 
 const GROUP_TYPES = new Set<GroupType>(["solo", "date", "friends", "family", "kids"]);
@@ -89,6 +89,10 @@ type OwnedBusinessResult =
   | { business: DocumentData; db: Firestore; token: DecodedIdToken }
   | { error: Response };
 
+type OwnedListingResult =
+  | { db: Firestore; listing: DocumentData; listingRef: DocumentReference }
+  | { error: Response };
+
 async function verifyOwnedBusiness(request: Request, businessId: string): Promise<OwnedBusinessResult> {
   const token = await verifyBearerToken(request);
   if (!token) return { error: jsonError("Sign in as the business owner before saving listings.", 401) };
@@ -109,6 +113,23 @@ async function verifyOwnedBusiness(request: Request, businessId: string): Promis
   }
 
   return { business, db, token };
+}
+
+async function verifyOwnedListing(request: Request, businessId: string, listingId: string): Promise<OwnedListingResult> {
+  if (!listingId) return { error: jsonError("Choose a listing before updating status.", 400) };
+
+  const verified = await verifyOwnedBusiness(request, businessId);
+  if ("error" in verified) return verified;
+
+  const listingRef = verified.db.collection("listings").doc(listingId);
+  const listingSnapshot = await listingRef.get();
+  const listing = listingSnapshot.data();
+
+  if (!listingSnapshot.exists || listing?.businessId !== businessId) {
+    return { error: jsonError("Listing was not found for this business.", 404) };
+  }
+
+  return { db: verified.db, listing, listingRef };
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -225,4 +246,67 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   return jsonOk({ listingId: listingRef.id, status }, listingId ? 200 : 201);
+}
+
+export async function PATCH(request: Request): Promise<Response> {
+  const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
+  const businessId = clean(body?.businessId, 140);
+  const listingId = clean(body?.listingId, 140);
+  const action = clean(body?.action, 40);
+
+  if (!businessId) return jsonError("Choose a business before updating a listing.", 400);
+
+  const verified = await verifyOwnedListing(request, businessId, listingId);
+  if ("error" in verified) return verified.error;
+
+  const now = FieldValue.serverTimestamp();
+
+  if (action === "pause") {
+    await verified.listingRef.set({ status: "paused", updatedAt: now }, { merge: true });
+    return jsonOk({ listingId, status: "paused" });
+  }
+
+  if (action === "draft") {
+    await verified.listingRef.set({ status: "draft", updatedAt: now }, { merge: true });
+    return jsonOk({ listingId, status: "draft" });
+  }
+
+  if (action === "submit") {
+    await verified.listingRef.set(
+      {
+        approvalStatus: "pending",
+        featured: false,
+        promoted: false,
+        status: "pending_approval",
+        updatedAt: now
+      },
+      { merge: true }
+    );
+    return jsonOk({ listingId, status: "pending_approval" });
+  }
+
+  if (action === "expire") {
+    await verified.listingRef.set({ status: "expired", updatedAt: now }, { merge: true });
+    return jsonOk({ listingId, status: "expired" });
+  }
+
+  return jsonError("Use a valid listing action: submit, pause, draft, or expire.", 400);
+}
+
+export async function DELETE(request: Request): Promise<Response> {
+  const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
+  const businessId = clean(body?.businessId, 140);
+  const listingId = clean(body?.listingId, 140);
+
+  if (!businessId) return jsonError("Choose a business before deleting a listing.", 400);
+
+  const verified = await verifyOwnedListing(request, businessId, listingId);
+  if ("error" in verified) return verified.error;
+
+  if (verified.listing.status === "published") {
+    return jsonError("Published listings should be paused or expired instead of deleted.", 400);
+  }
+
+  await verified.listingRef.delete();
+  return jsonOk({ deleted: true, listingId });
 }

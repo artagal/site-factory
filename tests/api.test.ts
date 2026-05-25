@@ -5,7 +5,7 @@ import { POST as lookupAdminUserPost } from "../apps/website/src/app/api/admin/u
 import { POST as billingPortalPost } from "../apps/website/src/app/api/billing/partner-portal/route";
 import { POST as bookingPost } from "../apps/website/src/app/api/booking-request/route";
 import { POST as checkoutPost } from "../apps/website/src/app/api/checkout/partner-subscription/route";
-import { POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
+import { DELETE as partnerListingDelete, PATCH as partnerListingPatch, POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
 import { POST as partnerPost } from "../apps/website/src/app/api/partner-application/route";
 import { GET as searchGet } from "../apps/website/src/app/api/search/route";
 import { POST as trackPost } from "../apps/website/src/app/api/track/route";
@@ -143,6 +143,18 @@ describe("GoFunMotion Deals API routes", () => {
 
     expect(response.status).toBe(400);
     expect(json.error).toContain("Choose a business");
+
+    const patchResponse = await partnerListingPatch(jsonRequest("https://site-factory.test/api/partner/listings", {}));
+    const patchJson = await readJson<{ error: string }>(patchResponse);
+
+    expect(patchResponse.status).toBe(400);
+    expect(patchJson.error).toContain("Choose a business");
+
+    const deleteResponse = await partnerListingDelete(jsonRequest("https://site-factory.test/api/partner/listings", {}));
+    const deleteJson = await readJson<{ error: string }>(deleteResponse);
+
+    expect(deleteResponse.status).toBe(400);
+    expect(deleteJson.error).toContain("Choose a business");
   });
 
   it("validates admin partner application approval payload", async () => {
