@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { Building2, CheckCircle2, CreditCard, ListChecks, MapPinned, ShieldCheck } from "lucide-react";
+import { BadgeCheck, Building2, CheckCircle2, CreditCard, Eye, ListChecks, MapPinned, Megaphone, PauseCircle, ShieldCheck, Star, XCircle } from "lucide-react";
 import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
 import { demoBusinesses, demoCategories, demoCities, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
@@ -135,7 +135,22 @@ export function AdminDashboard() {
           </div>
         </div>
         <AdminPanel title="Partner subscriptions" items={subscriptionItems} />
-        <AdminPanel title={listings.length ? "Live listing review state" : "Demo listing review state"} items={visibleListings.map((listing) => `${listing.title} - ${listing.status}/${listing.approvalStatus}`)} />
+        <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
+          <h2 className="text-2xl font-black text-white">{listings.length ? "Live listing approvals" : "Demo listing review state"}</h2>
+          <p className="mt-2 text-sm font-bold leading-6 text-white/52">
+            Approve, reject, publish, feature, promote, pause, or expire partner-created listings.
+          </p>
+          <div className="mt-4 grid gap-3">
+            {visibleListings.map((listing) => (
+              <ListingModerationCard
+                key={listing.id}
+                listing={listing}
+                live={Boolean(listings.length)}
+                onModerated={() => user && void refreshAdminData(user)}
+              />
+            ))}
+          </div>
+        </div>
         <AdminPanel title="Managed cities" items={demoCities.map((city) => `${city.name}, ${city.state} - ${city.active ? "active" : "coming soon"}`)} />
       </section>
     </>
@@ -158,6 +173,130 @@ export function AdminDashboard() {
       setStatus(error instanceof Error ? error.message : "Could not refresh admin data.");
     }
   }
+}
+
+type ListingModerationAction =
+  | "approve"
+  | "reject"
+  | "publish"
+  | "pause"
+  | "expire"
+  | "feature"
+  | "unfeature"
+  | "promote"
+  | "unpromote";
+
+function ListingModerationCard({
+  listing,
+  live,
+  onModerated
+}: {
+  listing: Listing;
+  live: boolean;
+  onModerated: () => void;
+}) {
+  const [busyAction, setBusyAction] = useState<ListingModerationAction | "">("");
+  const [status, setStatus] = useState("");
+
+  async function moderateListing(action: ListingModerationAction) {
+    if (busyAction || !live) return;
+    setBusyAction(action);
+    setStatus("");
+
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in as an admin before moderating listings.");
+        return;
+      }
+
+      const response = await fetch("/api/admin/listings/moderate", {
+        body: JSON.stringify({
+          action,
+          listingId: listing.id
+        }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string; status?: string } | null;
+
+      if (!response.ok) {
+        setStatus(result?.error ?? "Listing moderation failed.");
+        return;
+      }
+
+      setStatus(`Listing updated: ${action}.`);
+      onModerated();
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Listing moderation failed.");
+    } finally {
+      setBusyAction("");
+    }
+  }
+
+  return (
+    <div className="rounded-2xl bg-black/24 p-4">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div>
+          <p className="font-black text-white">{listing.title}</p>
+          <p className="mt-1 text-sm font-bold text-white/52">{listing.businessName} - {listing.cityName}</p>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-white/58">{listing.shortDescription}</p>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs font-black">
+            <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">{listing.status}</span>
+            <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">{listing.approvalStatus}</span>
+            {listing.featured ? <span className="rounded-full bg-lime-300 px-3 py-1 text-[#070816]">Featured</span> : null}
+            {listing.promoted ? <span className="rounded-full bg-cyan-300 px-3 py-1 text-[#070816]">Promoted</span> : null}
+          </div>
+        </div>
+        <Link className="inline-flex min-h-10 items-center gap-2 rounded-full bg-white/[0.08] px-3 text-xs font-black text-lime-200 hover:text-white" href={`/deals/${listing.slug}`}>
+          <Eye aria-hidden="true" size={14} />
+          View
+        </Link>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <ModerationButton action="approve" busyAction={busyAction} disabled={!live || listing.approvalStatus === "approved"} icon={BadgeCheck} label="Approve & Publish" onClick={moderateListing} />
+        <ModerationButton action="reject" busyAction={busyAction} disabled={!live || listing.approvalStatus === "rejected"} icon={XCircle} label="Reject" onClick={moderateListing} />
+        <ModerationButton action="publish" busyAction={busyAction} disabled={!live || listing.status === "published"} icon={Eye} label="Publish" onClick={moderateListing} />
+        <ModerationButton action="pause" busyAction={busyAction} disabled={!live || listing.status === "paused"} icon={PauseCircle} label="Pause" onClick={moderateListing} />
+        <ModerationButton action="expire" busyAction={busyAction} disabled={!live || listing.status === "expired"} icon={XCircle} label="Expire" onClick={moderateListing} />
+        <ModerationButton action={listing.featured ? "unfeature" : "feature"} busyAction={busyAction} disabled={!live} icon={Star} label={listing.featured ? "Unfeature" : "Feature"} onClick={moderateListing} />
+        <ModerationButton action={listing.promoted ? "unpromote" : "promote"} busyAction={busyAction} disabled={!live} icon={Megaphone} label={listing.promoted ? "Unpromote" : "Promote"} onClick={moderateListing} />
+      </div>
+      {!live ? <p className="mt-3 rounded-2xl bg-white/[0.06] p-3 text-xs font-bold leading-5 text-white/50">Demo listings are read-only. Live partner listings will show active moderation controls.</p> : null}
+      {status ? <p className="mt-3 rounded-2xl bg-white/[0.06] p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
+    </div>
+  );
+}
+
+function ModerationButton({
+  action,
+  busyAction,
+  disabled,
+  icon: Icon,
+  label,
+  onClick
+}: {
+  action: ListingModerationAction;
+  busyAction: ListingModerationAction | "";
+  disabled: boolean;
+  icon: typeof CheckCircle2;
+  label: string;
+  onClick: (action: ListingModerationAction) => Promise<void>;
+}) {
+  return (
+    <button
+      className="inline-flex min-h-10 items-center gap-2 rounded-full bg-white/[0.08] px-3 text-xs font-black text-white/66 hover:bg-white/[0.14] disabled:opacity-50"
+      disabled={disabled || Boolean(busyAction)}
+      onClick={() => void onClick(action)}
+      type="button"
+    >
+      <Icon aria-hidden="true" size={14} />
+      {busyAction === action ? "Working..." : label}
+    </button>
+  );
 }
 
 function ApplicationApprovalCard({

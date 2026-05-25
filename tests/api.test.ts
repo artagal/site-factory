@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GET as planGet, POST as planPost } from "../apps/website/src/app/api/plan/route";
+import { POST as moderateAdminListingPost } from "../apps/website/src/app/api/admin/listings/moderate/route";
 import { POST as approvePartnerApplicationPost } from "../apps/website/src/app/api/admin/partner-applications/approve/route";
 import { POST as lookupAdminUserPost } from "../apps/website/src/app/api/admin/users/lookup/route";
 import { POST as billingPortalPost } from "../apps/website/src/app/api/billing/partner-portal/route";
@@ -166,6 +167,17 @@ describe("GoFunMotion Deals API routes", () => {
 
     expect(response.status).toBe(400);
     expect(json.error).toContain("applicationId");
+  });
+
+  it("validates admin listing moderation payload", async () => {
+    const response = await moderateAdminListingPost(jsonRequest("https://site-factory.test/api/admin/listings/moderate", {
+      action: "approve",
+      listingId: ""
+    }));
+    const json = await readJson<{ error: string }>(response);
+
+    expect(response.status).toBe(400);
+    expect(json.error).toContain("listingId");
   });
 
   it("validates admin Firebase user lookup payload", async () => {
