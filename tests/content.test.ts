@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { buildSuggestedPlan, categories, cities, demoNotice, filterListings, listings, parsePlanFinderInput } from "../apps/website/src/lib/deals-data";
 import { formatDuration, formatPrice } from "../apps/website/src/lib/format";
 import { dealFormatExamples, partnerDealTypes } from "../apps/website/src/lib/deal-taxonomy";
@@ -6,6 +9,47 @@ import { slugify } from "../apps/website/src/lib/slug";
 import { getFactoryRoutes } from "../apps/website/src/lib/site-routes";
 
 describe("GoFunMotion Deals marketplace content", () => {
+  it("keeps paid checkout implementation out of the validation build", () => {
+    const websitePackage = JSON.parse(
+      readFileSync(path.join(process.cwd(), "apps", "website", "package.json"), "utf8")
+    ) as { dependencies?: Record<string, string> };
+    const envExample = readFileSync(path.join(process.cwd(), "apps", "website", ".env.example"), "utf8");
+    const schemaDoc = readFileSync(path.join(process.cwd(), "docs", "FIREBASE_SCHEMA_GOFUNMOTION_DEALS.md"), "utf8");
+
+    expect(websitePackage.dependencies?.stripe).toBeUndefined();
+    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "checkout", "partner-subscription", "route.ts"))).toBe(false);
+    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "billing", "partner-portal", "route.ts"))).toBe(false);
+    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "webhooks", "stripe", "route.ts"))).toBe(false);
+    expect(existsSync(path.join(process.cwd(), "apps", "website", "public", "og", "gofunmotion-og.svg"))).toBe(false);
+    expect(envExample).not.toContain("STRIPE_");
+    expect(envExample).not.toContain("GOFUNMOTION_ADMIN_CRON_SECRET");
+    expect(schemaDoc).not.toContain("future_checkout");
+  });
+
+  it("redirects deprecated challenge routes into the Deals product surface", async () => {
+    const configUrl = pathToFileURL(path.join(process.cwd(), "apps", "website", "next.config.mjs")).href;
+    const { default: nextConfig } = await import(configUrl);
+    const redirects = await nextConfig.redirects();
+
+    expect(redirects).toEqual(expect.arrayContaining([
+      {
+        destination: "/find",
+        permanent: false,
+        source: "/challenge"
+      },
+      {
+        destination: "/find?when=today",
+        permanent: false,
+        source: "/daily"
+      },
+      {
+        destination: "/deals",
+        permanent: false,
+        source: "/leaderboard"
+      }
+    ]));
+  });
+
   it("registers marketplace routes for sitemap generation", () => {
     const factoryRoutes = getFactoryRoutes();
     const routes = factoryRoutes.map((route) => route.path);
@@ -16,14 +60,19 @@ describe("GoFunMotion Deals marketplace content", () => {
     expect(factoryRoutes.find((route) => route.path === "/deals")?.priority).toBeGreaterThan(factoryRoutes.find((route) => route.path === "/find")?.priority ?? 0);
     expect(routes).toContain("/partner");
     expect(routes).toContain("/partner/apply");
-    expect(routes).toContain("/partner/dashboard");
     expect(routes).toContain("/pricing");
-    expect(routes).toContain("/saved");
-    expect(routes).toContain("/profile");
-    expect(routes).toContain("/admin");
     expect(routes).toContain("/cities/miami");
     expect(routes).toContain("/categories/date-night");
     expect(routes).toContain("/blog/date-night-ideas-under-50");
+    expect(routes).not.toContain("/categories");
+    expect(routes).not.toContain("/challenge");
+    expect(routes).not.toContain("/daily");
+    expect(routes).not.toContain("/leaderboard");
+    expect(routes).not.toContain("/login");
+    expect(routes).not.toContain("/profile");
+    expect(routes).not.toContain("/saved");
+    expect(routes).not.toContain("/admin");
+    expect(routes).not.toContain("/partner/dashboard");
   });
 
   it("ships demo listings without presenting them as production partners", () => {

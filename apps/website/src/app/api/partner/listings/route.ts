@@ -116,8 +116,7 @@ async function getBusinessListingLimitState(db: Firestore, businessId: string, b
   const activeCount = countLimitedListings(listings, excludeListingId);
   const capabilities = getPartnerTierCapabilities({
     paidAccessEnabled: business.paidAccessEnabled === true,
-    pricingTier: business.pricingTier,
-    subscriptionStatus: typeof business.subscriptionStatus === "string" ? business.subscriptionStatus : null
+    pricingTier: business.pricingTier
   });
 
   return { activeCount, capabilities };

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Clock3, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, BadgeCheck, Clock3, SearchX, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { DealCard } from "../../components/gofunmotion/deal-card";
+import { EmptyStatePanel, StatusBanner } from "../../components/gofunmotion/product-states";
 import { CategorySelectField } from "../../components/shared/category-select-field";
 import { CitySelectField } from "../../components/shared/city-select-field";
 import { categories, demoNotice, parsePlanFinderInput } from "../../lib/deals-data";
@@ -35,6 +36,7 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
   const publicListings = await getPublicListingsForServer();
   const results = filterListingCollection(publicListings, { ...input, categoryId, sort });
   const visibleResults = results.length ? results : filterListingCollection(publicListings, { city: input.city, cityId: input.cityId, sort });
+  const showingClosestMatches = !results.length && visibleResults.length > 0;
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-12">
@@ -55,14 +57,14 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
       <TrustBadges />
 
       <form className="sticky top-14 z-20 mt-0 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:top-16 md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.34)]">
-        <div className="grid grid-cols-[minmax(0,1fr)_7.75rem_auto] items-center gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto] md:items-end">
+        <div className="grid grid-cols-2 items-center gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto] md:items-end">
           <CitySelectField compact defaultCity={input.city} defaultCityId={input.cityId} dense />
           <FilterSelect label="When" name="when" options={[["tonight", "Tonight"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]]} value={input.when} compact dense />
-          <div className="hidden md:block">
+          <div className="col-span-2 md:col-span-1">
             <CategorySelectField compact defaultCategoryId={categoryId} includeAll />
           </div>
           <input name="sort" type="hidden" value={sort} />
-          <button className="h-12 rounded-2xl bg-lime-300 px-4 text-sm font-black leading-none text-[#070816] hover:bg-white md:px-5" type="submit">
+          <button className="col-span-2 h-12 rounded-2xl bg-lime-300 px-4 text-sm font-black leading-none text-[#070816] hover:bg-white md:col-span-1 md:px-5" type="submit">
             <span className="md:hidden">Show</span>
             <span className="hidden md:inline">Show Deals</span>
           </button>
@@ -107,11 +109,34 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
         </Link>
       </div>
 
-      <section className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {visibleResults.map((listing) => (
-          <DealCard key={listing.id} listing={listing} />
-        ))}
-      </section>
+      {showingClosestMatches ? (
+        <div className="mt-5">
+          <StatusBanner title="No exact match, showing the closest deals" tone="warning">
+            Try changing the category, budget, or timing to widen the search.
+          </StatusBanner>
+        </div>
+      ) : null}
+
+      {visibleResults.length ? (
+        <section className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {visibleResults.map((listing) => (
+            <DealCard key={listing.id} listing={listing} />
+          ))}
+        </section>
+      ) : (
+        <section className="mt-8">
+          <EmptyStatePanel
+            action={
+              <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/find">
+                Build a Plan Instead
+              </Link>
+            }
+            body="There are no approved deals for this combination yet. Change filters or use Find My Plan to get a fallback route."
+            icon={SearchX}
+            title="No approved deals found"
+          />
+        </section>
+      )}
     </main>
   );
 }

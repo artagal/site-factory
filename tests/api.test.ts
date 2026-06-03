@@ -5,19 +5,17 @@ import { POST as createAdminCategoryPost } from "../apps/website/src/app/api/adm
 import { POST as createAdminCityPost } from "../apps/website/src/app/api/admin/cities/route";
 import { POST as approvePartnerApplicationPost } from "../apps/website/src/app/api/admin/partner-applications/approve/route";
 import { POST as lookupAdminUserPost } from "../apps/website/src/app/api/admin/users/lookup/route";
-import { POST as billingPortalPost } from "../apps/website/src/app/api/billing/partner-portal/route";
+import { USER_DOCUMENT_SUBCOLLECTIONS, USER_OWNED_COLLECTIONS } from "../apps/website/src/lib/account-deletion";
 import { POST as bookingPost } from "../apps/website/src/app/api/booking-request/route";
 import { GET as citiesGet } from "../apps/website/src/app/api/cities/route";
 import { GET as categoriesGet } from "../apps/website/src/app/api/categories/route";
-import { POST as checkoutPost } from "../apps/website/src/app/api/checkout/partner-subscription/route";
 import { DELETE as partnerListingDelete, PATCH as partnerListingPatch, POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
 import { POST as partnerBookingStatusPost } from "../apps/website/src/app/api/partner/booking-requests/status/route";
 import { POST as partnerPost } from "../apps/website/src/app/api/partner-application/route";
+import { POST as eventsPost } from "../apps/website/src/app/api/events/route";
 import { GET as searchGet } from "../apps/website/src/app/api/search/route";
 import { POST as trackPost } from "../apps/website/src/app/api/track/route";
 import { POST as waitlistPost } from "../apps/website/src/app/api/waitlist/route";
-import { POST as stripeWebhookPost } from "../apps/website/src/app/api/webhooks/stripe/route";
-import Stripe from "stripe";
 
 function jsonRequest(url: string, body: Record<string, unknown>, headers: Record<string, string> = {}) {
   return new Request(url, {
@@ -35,6 +33,21 @@ async function readJson<T>(response: Response): Promise<T> {
 }
 
 describe("GoFunMotion Deals API routes", () => {
+  it("keeps account deletion scoped to current Deals user records", () => {
+    expect([...USER_DOCUMENT_SUBCOLLECTIONS]).toEqual([
+      "savedListings",
+      "savedPlans"
+    ]);
+    expect([...USER_OWNED_COLLECTIONS]).toEqual(expect.arrayContaining([
+      "savedListings",
+      "savedPlans",
+      "plans",
+      "bookingRequests"
+    ]));
+    expect([...USER_DOCUMENT_SUBCOLLECTIONS, ...USER_OWNED_COLLECTIONS]).not.toContain("completedChallenges");
+    expect([...USER_DOCUMENT_SUBCOLLECTIONS, ...USER_OWNED_COLLECTIONS]).not.toContain("savedChallenges");
+  });
+
   it("returns a rule-based plan from GET and POST", async () => {
     const getResponse = await planGet(new Request("https://site-factory.test/api/plan?city=Miami&who=date&budget=under50&vibe=romantic"));
     const getJson = await readJson<{ plan: { items: unknown[]; title: string } }>(getResponse);
@@ -145,30 +158,15 @@ describe("GoFunMotion Deals API routes", () => {
     expect(goodResponse.status).toBe(200);
   });
 
-  it("keeps paid partner checkout disabled until Stripe is configured", async () => {
-    const invalidTier = await checkoutPost(jsonRequest("https://site-factory.test/api/checkout/partner-subscription", {
-      tier: "starter"
+  it("keeps the legacy analytics endpoint compatible with current Deals events", async () => {
+    const response = await eventsPost(jsonRequest("https://site-factory.test/api/events", {
+      metadata: { placement: "compatibility-test" },
+      type: "plan_generated"
     }));
-    const invalidJson = await readJson<{ error: string }>(invalidTier);
+    const json = await readJson<{ ok: boolean }>(response);
 
-    expect(invalidTier.status).toBe(400);
-    expect(invalidJson.error).toContain("Growth or Pro");
-
-    const missingStripe = await checkoutPost(jsonRequest("https://site-factory.test/api/checkout/partner-subscription", {
-      tier: "growth"
-    }));
-    const missingJson = await readJson<{ error: string }>(missingStripe);
-
-    expect(missingStripe.status).toBe(503);
-    expect(missingJson.error).toContain("Stripe is not configured");
-  });
-
-  it("validates partner billing portal input", async () => {
-    const response = await billingPortalPost(jsonRequest("https://site-factory.test/api/billing/partner-portal", {}));
-    const json = await readJson<{ error: string }>(response);
-
-    expect(response.status).toBe(400);
-    expect(json.error).toContain("Choose a business");
+    expect(response.status).toBe(200);
+    expect(json.ok).toBe(true);
   });
 
   it("validates partner listing editor input", async () => {
@@ -253,50 +251,4 @@ describe("GoFunMotion Deals API routes", () => {
     expect(json.error).toContain("valid account email");
   });
 
-  it("verifies Stripe webhooks before requiring Firebase Admin sync", async () => {
-    const oldStripeKey = process.env.STRIPE_SECRET_KEY;
-    const oldWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    process.env.STRIPE_SECRET_KEY = "sk_test_gofunmotion";
-    process.env.STRIPE_WEBHOOK_SECRET = "whsec_gofunmotion";
-
-    try {
-      const payload = JSON.stringify({
-        data: {
-          object: {
-            customer: "cus_test",
-            id: "sub_test",
-            metadata: {
-              businessId: "business_test",
-              product: "partner_subscription",
-              tier: "growth"
-            },
-            object: "subscription",
-            status: "active"
-          }
-        },
-        id: "evt_test",
-        object: "event",
-        type: "customer.subscription.updated"
-      });
-      const signature = Stripe.webhooks.generateTestHeaderString({
-        payload,
-        secret: process.env.STRIPE_WEBHOOK_SECRET
-      });
-
-      const response = await stripeWebhookPost(new Request("https://site-factory.test/api/webhooks/stripe", {
-        body: payload,
-        headers: {
-          "stripe-signature": signature
-        },
-        method: "POST"
-      }));
-      const json = await readJson<{ error: string }>(response);
-
-      expect(response.status).toBe(503);
-      expect(json.error).toContain("Firebase Admin is not configured");
-    } finally {
-      process.env.STRIPE_SECRET_KEY = oldStripeKey;
-      process.env.STRIPE_WEBHOOK_SECRET = oldWebhookSecret;
-    }
-  });
 });

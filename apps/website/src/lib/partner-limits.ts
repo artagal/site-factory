@@ -41,7 +41,7 @@ export const PARTNER_TIER_CAPABILITIES: Record<PartnerTier, PartnerTierCapabilit
 };
 
 export function getEffectivePartnerTier(
-  business: Pick<Business, "paidAccessEnabled" | "pricingTier" | "subscriptionStatus">
+  business: Pick<Business, "paidAccessEnabled" | "pricingTier">
 ): PartnerTier {
   if (business.pricingTier === "pro" || business.pricingTier === "growth") {
     return business.paidAccessEnabled ? business.pricingTier : "starter";
@@ -51,19 +51,19 @@ export function getEffectivePartnerTier(
 }
 
 export function canFeatureListings(
-  business: Pick<Business, "paidAccessEnabled" | "pricingTier" | "subscriptionStatus">
+  business: Pick<Business, "paidAccessEnabled" | "pricingTier">
 ) {
   return getPartnerTierCapabilities(business).canUseFeaturedPlacement;
 }
 
 export function canPromoteListings(
-  business: Pick<Business, "paidAccessEnabled" | "pricingTier" | "subscriptionStatus">
+  business: Pick<Business, "paidAccessEnabled" | "pricingTier">
 ) {
   return getPartnerTierCapabilities(business).canUsePriorityPlacement;
 }
 
 export function getPartnerTierCapabilities(
-  business: Pick<Business, "paidAccessEnabled" | "pricingTier" | "subscriptionStatus">
+  business: Pick<Business, "paidAccessEnabled" | "pricingTier">
 ) {
   const tier = getEffectivePartnerTier(business);
   return {
@@ -88,7 +88,7 @@ export function formatActiveListingLimit(limit: number) {
 }
 
 export function getTierLimitMessage(
-  business: Pick<Business, "paidAccessEnabled" | "pricingTier" | "subscriptionStatus">,
+  business: Pick<Business, "paidAccessEnabled" | "pricingTier">,
   activeCount: number
 ) {
   const capabilities = getPartnerTierCapabilities(business);

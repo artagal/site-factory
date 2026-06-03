@@ -6,7 +6,7 @@ import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
   title: "Family Activities Near You | GoFunMotion",
-  description: "Find family activities, kids plans, indoor options, weekend ideas, and local demo deal cards.",
+  description: "Find family activities, kids plans, indoor options, weekend ideas, and request-based local deal cards for easier outings.",
   keywords: ["family activities", "kids activities", "rainy day family activities"],
   path: "/family"
 });
@@ -19,7 +19,7 @@ export default function FamilyPage() {
       <section className="max-w-3xl">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Family and kids</p>
         <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Find family plans that work today.</h1>
-        <p className="mt-5 text-lg leading-8 text-white/64">Filter for kids, indoor plans, weekend activities, and lower-stress options.</p>
+        <p className="mt-5 text-lg leading-8 text-white/64">Filter for kids, indoor plans, weekend activities, and lower-stress options with clear time windows and simple booking requests.</p>
       </section>
       <section className="mt-8">
         <PlanFinderForm defaultValues={{ budget: "under25", city: "San Diego", indoorOutdoor: "indoor", timeAvailable: "2hours", vibe: "family-friendly", when: "weekend", who: "family" }} />

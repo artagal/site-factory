@@ -3,7 +3,7 @@ import { LinkButton } from "../../components/gofunmotion/Button";
 import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "About GoFunMotion",
+  title: "About GoFunMotion Deals",
   description:
     "GoFunMotion Deals helps people find discounted last-minute activity openings, date night deals, family passes, and local experiences.",
   path: "/about"

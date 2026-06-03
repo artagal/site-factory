@@ -2,24 +2,27 @@ import Link from "next/link";
 import { Menu } from "lucide-react";
 import { AccountNav, MobileAccountLink } from "./AccountNav";
 import { LinkButton } from "./Button";
+import { ThemeToggle } from "../theme/theme-toggle";
 
 const links = [
+  { href: "/find", label: "Find" },
   { href: "/deals", label: "Deals" },
-  { href: "/find", label: "Help Me Choose" },
   { href: "/date-night", label: "Date Night" },
-  { href: "/friends", label: "Friends" },
   { href: "/family", label: "Family" },
   { href: "/partner", label: "Partner" }
 ];
 
 export function Logo() {
   return (
-    <Link aria-label="GoFunMotion home" className="group inline-flex min-h-11 items-center gap-2 text-lg font-black" href="/">
+    <Link aria-label="GoFunMotion home" className="group inline-flex min-h-11 min-w-0 shrink items-center gap-1.5 text-base font-black sm:gap-2 sm:text-lg" href="/">
+      <span className="flex size-9 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.06] shadow-[0_10px_30px_rgba(0,0,0,0.28)]">
+        <img alt="" aria-hidden="true" className="size-full" height={36} src="/brand/gofunmotion-mark.svg" width={36} />
+      </span>
       <span>Go</span>
       <span className="bg-gradient-to-r from-fuchsia-400 via-cyan-300 to-lime-300 bg-clip-text text-transparent">
         Fun
       </span>
-      <span className="relative">
+      <span className="relative max-[430px]:hidden">
         Motion
         <span className="absolute -right-8 top-1/2 hidden h-0.5 w-7 -translate-y-1/2 bg-gradient-to-r from-lime-300 to-transparent sm:block" />
       </span>
@@ -44,14 +47,16 @@ export function Navbar() {
           ))}
         </nav>
         <div className="hidden items-center gap-2 lg:flex">
+          <ThemeToggle />
           <AccountNav />
-          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/deals?when=tonight">
-            Tonight&apos;s Deals
+          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/find">
+            Find My Plan
           </LinkButton>
         </div>
-        <div className="flex items-center gap-2 lg:hidden">
-          <LinkButton className="min-h-11 rounded-full px-4 py-2" href="/deals?when=tonight" showArrow={false}>
-            Deals
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 lg:hidden">
+          <ThemeToggle />
+          <LinkButton className="min-h-11 rounded-full px-3 py-2 sm:px-4" href="/find" showArrow={false}>
+            Find
           </LinkButton>
           <details className="relative">
             <summary className="flex size-11 cursor-pointer list-none items-center justify-center rounded-full border border-white/10 bg-white/[0.07] text-white">

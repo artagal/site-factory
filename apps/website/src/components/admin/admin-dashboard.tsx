@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { BadgeCheck, Building2, CalendarClock, CheckCircle2, CreditCard, Eye, ListChecks, MapPinned, Megaphone, MousePointerClick, PauseCircle, ShieldCheck, Star, XCircle } from "lucide-react";
+import { BadgeCheck, Building2, CalendarClock, CheckCircle2, Eye, ListChecks, MapPinned, Megaphone, MousePointerClick, PauseCircle, ShieldCheck, Star, XCircle } from "lucide-react";
 import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
 import { demoBusinesses, demoCategories, demoCities, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
@@ -16,12 +16,11 @@ import {
   readAdminCities,
   readAdminListings,
   readAdminPartnerApplications,
-  readAdminPartnerSubscriptions,
   type BookingRequestRecord,
-  type PartnerApplicationRecord,
-  type PartnerSubscriptionRecord
+  type PartnerApplicationRecord
 } from "../../lib/firestore";
 import type { Business, Category, City, Listing } from "../../types/deals";
+import { EmptyStatePanel, LoadingRows, StatusBanner } from "../gofunmotion/product-states";
 
 export function AdminDashboard() {
   const [allowed, setAllowed] = useState(false);
@@ -33,7 +32,6 @@ export function AdminDashboard() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [bookingRequests, setBookingRequests] = useState<BookingRequestRecord[]>([]);
   const [status, setStatus] = useState("");
-  const [subscriptions, setSubscriptions] = useState<PartnerSubscriptionRecord[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => observeUser(setUser), []);
@@ -52,11 +50,10 @@ export function AdminDashboard() {
         }
 
         if (nextAllowed) {
-          const [nextApplications, nextBusinesses, nextListings, nextSubscriptions, nextBookingRequests, nextCities, nextCategories] = await Promise.all([
+          const [nextApplications, nextBusinesses, nextListings, nextBookingRequests, nextCities, nextCategories] = await Promise.all([
             readAdminPartnerApplications(),
             readAdminBusinesses(),
             readAdminListings(),
-            readAdminPartnerSubscriptions(),
             readAdminBookingRequests(),
             readAdminCities(),
             readAdminCategories()
@@ -66,7 +63,6 @@ export function AdminDashboard() {
             setApplications(nextApplications);
             setBusinesses(nextBusinesses);
             setListings(nextListings);
-            setSubscriptions(nextSubscriptions);
             setBookingRequests(nextBookingRequests);
             setCities(nextCities);
             setCategories(nextCategories);
@@ -104,8 +100,8 @@ export function AdminDashboard() {
         <p className="mt-3 text-sm leading-6 text-white/58">
           Sign in with an owner account. Approval controls are visible only to accounts marked as admins.
         </p>
-        {checking ? <p className="mt-4 text-sm font-bold text-white/58">Checking admin access...</p> : null}
-        {status ? <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
+        {checking ? <div className="mt-4"><LoadingRows rows={2} /></div> : null}
+        {status ? <div className="mt-4"><StatusBanner title="Admin access status" tone="warning">{status}</StatusBanner></div> : null}
         {!user ? (
           <Link className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/login?next=/admin">
             Sign In
@@ -125,26 +121,33 @@ export function AdminDashboard() {
     saves: visibleListings.reduce((sum, listing) => sum + (listing.saveCount ?? 0), 0),
     views: visibleListings.reduce((sum, listing) => sum + (listing.viewCount ?? 0), 0)
   };
-  const subscriptionItems = subscriptions.length
-    ? subscriptions.map((subscription) => {
-      const business = visibleBusinesses.find((item) => item.id === subscription.businessId);
-      const businessLabel = business?.name ?? subscription.businessId ?? "Unlinked business";
-      return `${businessLabel} - ${subscription.pricingTier ?? "unknown tier"} - ${subscription.subscriptionStatus}`;
-    })
-    : ["No paid partner subscriptions synced yet."];
+  const pendingApplications = applications.filter((application) => application.status !== "approved").length;
+  const pendingListings = visibleListings.filter((listing) => listing.approvalStatus !== "approved").length;
+  const publishedListings = visibleListings.filter((listing) => listing.status === "published").length;
+  const moderationListings = [...visibleListings].sort((a, b) => {
+    const aPending = a.approvalStatus !== "approved" ? 0 : 1;
+    const bPending = b.approvalStatus !== "approved" ? 0 : 1;
+    return aPending - bPending || a.title.localeCompare(b.title);
+  });
 
   return (
     <>
-      <section className="mt-8 grid gap-4 md:grid-cols-7">
+      {status ? <div className="mt-6"><StatusBanner title="Admin notice" tone="warning">{status}</StatusBanner></div> : null}
+      <section className="mt-8 grid gap-4 md:grid-cols-6">
         <AdminStat icon={ShieldCheck} label="Applications" value={String(applications.length || "Review")} />
         <AdminStat icon={Building2} label="Businesses" value={String(visibleBusinesses.length)} />
         <AdminStat icon={ListChecks} label="Listings" value={String(visibleListings.length)} />
         <AdminStat icon={MapPinned} label="Cities" value={String(visibleCities.length)} />
         <AdminStat icon={BadgeCheck} label="Categories" value={String(visibleCategories.length)} />
-        <AdminStat icon={CreditCard} label="Paid plans" value={String(subscriptions.filter((subscription) => subscription.paidAccessEnabled).length)} />
         <AdminStat icon={CalendarClock} label="Requests" value={String(bookingRequests.length)} />
       </section>
       <AdminMetricsPanel metrics={metrics} />
+      <ModerationQueueBar
+        live={Boolean(listings.length)}
+        pendingApplications={pendingApplications}
+        pendingListings={pendingListings}
+        publishedListings={publishedListings}
+      />
       <section className="mt-8 grid gap-5 lg:grid-cols-2">
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
           <h2 className="text-2xl font-black text-white">Partner applications</h2>
@@ -155,18 +158,17 @@ export function AdminDashboard() {
             {applications.length ? applications.map((application) => (
               <ApplicationApprovalCard application={application} key={application.id} onApproved={() => user && void refreshAdminData(user)} />
             )) : (
-              <div className="rounded-2xl bg-black/24 p-4 text-sm font-bold text-white/64">No live partner applications yet.</div>
+              <EmptyStatePanel body="New partner applications will appear here for account lookup and business creation." icon={Building2} title="No live partner applications yet" />
             )}
           </div>
         </div>
-        <AdminPanel title="Partner subscriptions" items={subscriptionItems} />
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
           <h2 className="text-2xl font-black text-white">{listings.length ? "Live listing approvals" : "Demo listing review state"}</h2>
           <p className="mt-2 text-sm font-bold leading-6 text-white/52">
             Approve, reject, publish, feature, promote, pause, or expire partner-created listings.
           </p>
           <div className="mt-4 grid gap-3">
-            {visibleListings.map((listing) => (
+            {moderationListings.length ? moderationListings.map((listing) => (
               <ListingModerationCard
                 business={visibleBusinesses.find((item) => item.id === listing.businessId) ?? null}
                 key={listing.id}
@@ -174,7 +176,9 @@ export function AdminDashboard() {
                 live={Boolean(listings.length)}
                 onModerated={() => user && void refreshAdminData(user)}
               />
-            ))}
+            )) : (
+              <EmptyStatePanel body="Partner-created listings will appear here after businesses start submitting deals." icon={ListChecks} title="No listings to moderate" />
+            )}
           </div>
         </div>
         <AdminCityCategoryManager
@@ -191,11 +195,10 @@ export function AdminDashboard() {
   async function refreshAdminData(nextUser: User) {
     setStatus("");
     try {
-      const [nextApplications, nextBusinesses, nextListings, nextSubscriptions, nextBookingRequests, nextCities, nextCategories] = await Promise.all([
+      const [nextApplications, nextBusinesses, nextListings, nextBookingRequests, nextCities, nextCategories] = await Promise.all([
         readAdminPartnerApplications(),
         readAdminBusinesses(),
         readAdminListings(),
-        readAdminPartnerSubscriptions(),
         readAdminBookingRequests(),
         readAdminCities(),
         readAdminCategories()
@@ -203,7 +206,6 @@ export function AdminDashboard() {
       setApplications(nextApplications);
       setBusinesses(nextBusinesses);
       setListings(nextListings);
-      setSubscriptions(nextSubscriptions);
       setBookingRequests(nextBookingRequests);
       setCities(nextCities);
       setCategories(nextCategories);
@@ -223,6 +225,46 @@ type ListingModerationAction =
   | "unfeature"
   | "promote"
   | "unpromote";
+
+function ModerationQueueBar({
+  live,
+  pendingApplications,
+  pendingListings,
+  publishedListings
+}: {
+  live: boolean;
+  pendingApplications: number;
+  pendingListings: number;
+  publishedListings: number;
+}) {
+  const items = [
+    { label: "Applications waiting", value: pendingApplications, tone: "text-lime-200" },
+    { label: "Listings to review", value: pendingListings, tone: "text-amber-100" },
+    { label: "Published listings", value: publishedListings, tone: "text-cyan-100" }
+  ];
+
+  return (
+    <section className="mt-5 rounded-2xl border border-white/10 bg-white/[0.055] p-4">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-lime-300">Moderation queue</p>
+          <h2 className="mt-2 text-2xl font-black text-white">{pendingApplications + pendingListings ? "Review the highest-risk items first." : "No urgent moderation work."}</h2>
+          <p className="mt-1 text-sm font-bold leading-6 text-white/52">
+            {live ? "Live records are active. Actions update Firestore and public visibility." : "Demo records are read-only until live Firestore data exists."}
+          </p>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[30rem]">
+          {items.map((item) => (
+            <div className="rounded-2xl bg-black/24 p-3" key={item.label}>
+              <p className={`text-2xl font-black ${item.tone}`}>{item.value}</p>
+              <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-white/42">{item.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function ListingModerationCard({
   business,
@@ -382,6 +424,10 @@ function ApplicationApprovalCard({
 
   async function lookupOwnerUid() {
     if (lookupBusy) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lookupEmail.trim())) {
+      setStatus("Enter a valid owner email before lookup.");
+      return;
+    }
     setLookupBusy(true);
     setStatus("");
     try {
@@ -417,6 +463,10 @@ function ApplicationApprovalCard({
 
   async function approveApplication() {
     if (approveBusy) return;
+    if (!ownerUid.trim() && !application.approvedBusinessId) {
+      setStatus("Find or paste the owner account UID before creating the business.");
+      return;
+    }
     setApproveBusy(true);
     setStatus("");
     try {
@@ -469,9 +519,12 @@ function ApplicationApprovalCard({
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
         <input
+          aria-label="Owner email"
           className="min-h-11 rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-bold text-white outline-none placeholder:text-white/32 focus:border-cyan-300/60"
           onChange={(event) => setLookupEmail(event.target.value)}
           placeholder="Owner email"
+          required
+          type="email"
           value={lookupEmail}
         />
         <button
@@ -483,6 +536,7 @@ function ApplicationApprovalCard({
           {lookupBusy ? "Searching..." : "Find UID"}
         </button>
         <input
+          aria-label="Owner account UID"
           className="min-h-11 rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-bold text-white outline-none placeholder:text-white/32 focus:border-lime-300/60"
           onChange={(event) => setOwnerUid(event.target.value)}
           placeholder="Owner account UID"
@@ -490,7 +544,7 @@ function ApplicationApprovalCard({
         />
         <button
           className="min-h-11 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
-          disabled={approveBusy || application.status === "approved"}
+          disabled={approveBusy || application.status === "approved" || (!ownerUid.trim() && !application.approvedBusinessId)}
           onClick={approveApplication}
           type="button"
         >
@@ -679,19 +733,6 @@ function AdminInput({
         type={type}
       />
     </label>
-  );
-}
-
-function AdminPanel({ items, title }: { items: string[]; title: string }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-      <h2 className="text-2xl font-black text-white">{title}</h2>
-      <div className="mt-4 grid gap-3">
-        {items.map((item) => (
-          <div className="rounded-2xl bg-black/24 p-4 text-sm font-bold text-white/64" key={item}>{item}</div>
-        ))}
-      </div>
-    </div>
   );
 }
 

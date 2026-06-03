@@ -14,9 +14,9 @@ export const metadata: Metadata = buildSeoMetadata({
 
 const partnerBenefits = [
   { icon: ClipboardList, title: "Post open slots", text: "Create clear last-minute offers for classes, events, experiences, and unused time windows." },
-  { icon: Send, title: "Receive requests", text: "Customers request the discounted window first, so your team can confirm availability before any consumer checkout." },
+  { icon: Send, title: "Receive requests", text: "Customers request the discounted window first, so your team can confirm availability before a visit is promised." },
   { icon: BadgeCheck, title: "Approval first", text: "Partner listings should require admin approval before public visibility." },
-  { icon: BarChart3, title: "Upgrade when ready", text: "Growth and Pro subscriptions unlock more active deals and paid placement eligibility." }
+  { icon: BarChart3, title: "Grow when ready", text: "Growth and Pro are planned tiers for more active deals, analytics, and future placement tools." }
 ];
 
 export default function PartnerPage() {
@@ -43,7 +43,7 @@ export default function PartnerPage() {
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
           <h2 className="text-2xl font-black text-white">Simple open-slot marketplace</h2>
           <p className="mt-3 text-sm leading-6 text-white/60">
-            Businesses can apply, prepare last-minute offers, and show was/now pricing. Public visibility requires admin approval. Paid partner upgrades are handled through Stripe.
+            Businesses can apply, prepare last-minute offers, and show was/now pricing. Public visibility requires admin approval. Payments are not active yet.
           </p>
         </div>
       </section>
@@ -107,7 +107,7 @@ export default function PartnerPage() {
         <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Partner application</p>
         <h2 className="mt-3 text-4xl font-black text-white">Start with a reviewed application.</h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-white/60">
-          The workflow is application, admin review, business profile, open-slot listing editor, booking requests, and dashboard. Paid placement still requires an active plan and admin approval.
+          The workflow is application, admin review, business profile, open-slot listing editor, booking requests, and dashboard. Future paid placement will still require an active plan and admin approval.
         </p>
         <Link className="mt-6 inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/partner/apply">
           Apply to List Your Business

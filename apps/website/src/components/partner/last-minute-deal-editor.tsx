@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { Clock, Edit3, PauseCircle, Plus, Send, Tag, Trash2, type LucideIcon } from "lucide-react";
 import { getCurrentUserIdToken } from "../../lib/auth";
+import { StatusBanner } from "../gofunmotion/product-states";
 import { demoCategories } from "../../lib/demoData";
 import {
   countLimitedListings,
@@ -134,6 +135,7 @@ export function LastMinuteDealEditor({
   const [form, setForm] = useState<DealFormState>(() => blankForm(primaryCategory, businessCityName));
   const [busyMode, setBusyMode] = useState<SaveMode | null>(null);
   const [busyListingId, setBusyListingId] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
   const [status, setStatus] = useState("");
 
   const isEditing = Boolean(form.listingId);
@@ -162,6 +164,13 @@ export function LastMinuteDealEditor({
 
   async function saveDeal(saveMode: SaveMode) {
     if (busyMode || business.isDemo) return;
+    const nextErrors = validateDealForm(form);
+    setErrors(nextErrors);
+    if (nextErrors.length) {
+      setStatus("Fix the deal details before saving.");
+      return;
+    }
+
     setBusyMode(saveMode);
     setStatus("");
 
@@ -195,6 +204,7 @@ export function LastMinuteDealEditor({
       }
 
       setStatus(saveMode === "draft" ? "Draft saved." : "Deal submitted for admin approval.");
+      setErrors([]);
       setForm((current) => ({ ...current, listingId: result?.listingId ?? current.listingId }));
       onSaved();
     } catch (error) {
@@ -307,6 +317,7 @@ export function LastMinuteDealEditor({
               className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white"
               onClick={() => {
                 setForm(blankForm(primaryCategory, businessCityName));
+                setErrors([]);
                 setStatus("");
               }}
               disabled={limitReached}
@@ -416,7 +427,7 @@ export function LastMinuteDealEditor({
 
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Deal title">
-              <input className={inputClass} onChange={(event) => update("title", event.target.value)} placeholder="Escape room open slot" value={form.title} />
+              <input className={inputClass} onChange={(event) => update("title", event.target.value)} placeholder="Escape room open slot" required value={form.title} />
             </Field>
             <Field label="City">
               <div className={`${inputClass} flex items-center text-white/70`}>
@@ -424,13 +435,13 @@ export function LastMinuteDealEditor({
               </div>
             </Field>
             <Field label="Available time">
-              <input className={inputClass} onChange={(event) => update("availableSlot", event.target.value)} placeholder="Tonight 8:30 PM" value={form.availableSlot} />
+              <input className={inputClass} onChange={(event) => update("availableSlot", event.target.value)} placeholder="Tonight 8:30 PM" required value={form.availableSlot} />
             </Field>
             <Field label="Was price">
               <input className={inputClass} inputMode="decimal" onChange={(event) => update("originalPrice", event.target.value)} placeholder="90" value={form.originalPrice} />
             </Field>
             <Field label="Now price">
-              <input className={inputClass} inputMode="decimal" onChange={(event) => update("price", event.target.value)} placeholder="39" value={form.price} />
+              <input className={inputClass} inputMode="decimal" onChange={(event) => update("price", event.target.value)} placeholder="39" required value={form.price} />
             </Field>
             <Field label="Spots/windows left">
               <input className={inputClass} inputMode="numeric" onChange={(event) => update("remainingSpots", event.target.value)} placeholder="2" value={form.remainingSpots} />
@@ -450,7 +461,7 @@ export function LastMinuteDealEditor({
           </ChipGroup>
 
           <Field label="Short card description">
-            <input className={inputClass} onChange={(event) => update("shortDescription", event.target.value)} placeholder="2 discounted spots for tonight only." value={form.shortDescription} />
+            <input className={inputClass} onChange={(event) => update("shortDescription", event.target.value)} placeholder="2 discounted spots for tonight only." required value={form.shortDescription} />
           </Field>
 
           <details className="rounded-2xl border border-white/10 bg-black/24 p-4">
@@ -524,6 +535,15 @@ export function LastMinuteDealEditor({
               {busyMode === "submit" ? "Submitting..." : isEditing ? "Resubmit for Approval" : "Submit for Approval"}
             </button>
           </div>
+          {errors.length ? (
+            <StatusBanner title="Deal needs a few fixes" tone="danger">
+              <ul className="list-inside list-disc">
+                {errors.map((error) => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
+            </StatusBanner>
+          ) : null}
           {limitBlocksCurrentForm ? <p className="rounded-2xl bg-amber-300/12 p-3 text-xs font-bold leading-5 text-amber-100">This plan is at its active deal limit. Edit an existing active deal, pause one, or upgrade before creating another.</p> : null}
           {business.isDemo ? <p className="rounded-2xl bg-black/24 p-3 text-xs font-bold leading-5 text-white/54">Demo businesses cannot create live inventory. Connect an approved business account first.</p> : null}
           {status ? <p className="rounded-2xl bg-black/24 p-3 text-xs font-bold leading-5 text-lime-100">{status}</p> : null}
@@ -593,4 +613,27 @@ function ActionButton({
       {busy ? "..." : label}
     </button>
   );
+}
+
+function validateDealForm(form: DealFormState) {
+  const errors: string[] = [];
+  const price = Number(form.price);
+  const originalPrice = form.originalPrice ? Number(form.originalPrice) : null;
+  const remainingSpots = form.remainingSpots ? Number(form.remainingSpots) : null;
+
+  if (form.title.trim().length < 4) errors.push("Add a clear deal title.");
+  if (form.availableSlot.trim().length < 4) errors.push("Add an available time or booking window.");
+  if (!Number.isFinite(price) || price < 0) errors.push("Now price must be a valid number.");
+  if (originalPrice !== null && (!Number.isFinite(originalPrice) || originalPrice < price)) {
+    errors.push("Was price must be blank or greater than the now price.");
+  }
+  if (remainingSpots !== null && (!Number.isInteger(remainingSpots) || remainingSpots < 0)) {
+    errors.push("Spots left must be a whole number.");
+  }
+  if (form.shortDescription.trim().length < 12) errors.push("Add a short card description.");
+  if (!form.categoryIds.length) errors.push("Select at least one category.");
+  if (!form.groupTypes.length) errors.push("Select at least one audience type.");
+  if (!form.vibeTags.length) errors.push("Select at least one vibe.");
+
+  return errors;
 }

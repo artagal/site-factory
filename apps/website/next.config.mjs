@@ -3,12 +3,12 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        destination: "/deals?when=tonight",
+        destination: "/find",
         permanent: false,
         source: "/challenge"
       },
       {
-        destination: "/deals?when=today",
+        destination: "/find?when=today",
         permanent: false,
         source: "/daily"
       },

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PartnerCheckoutButton } from "../../components/partner/partner-checkout-button";
 import { dealFormatExamples } from "../../lib/deal-taxonomy";
 import { partnerPricingTiers } from "../../lib/payments";
 import { buildSeoMetadata } from "../../lib/seo";
@@ -9,7 +8,7 @@ export const metadata: Metadata = buildSeoMetadata({
   title: "Partner Pricing | GoFunMotion Deals",
   description:
     "GoFunMotion Deals partner pricing for local activity businesses running discounted last-minute open-slot offers.",
-  keywords: ["partner pricing", "local business subscriptions", "promoted listings"],
+  keywords: ["partner pricing", "local business listings", "promoted listings"],
   path: "/pricing"
 });
 
@@ -17,32 +16,18 @@ const tiers = [
   ...partnerPricingTiers
 ];
 
-type PricingPageProps = {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
-
-export default async function PricingPage({ searchParams }: PricingPageProps) {
-  const resolvedSearchParams = (await searchParams) ?? {};
-  const checkoutStatus = Array.isArray(resolvedSearchParams.checkout) ? resolvedSearchParams.checkout[0] : resolvedSearchParams.checkout;
-
+export default function PricingPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
       <section className="max-w-3xl">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Future partner pricing</p>
         <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Partner pricing for open-slot deals.</h1>
         <p className="mt-5 text-lg leading-8 text-white/64">
-          Start with a reviewed free listing, then upgrade when you want recurring deal campaigns, better visibility, and more analytics. Stripe Checkout powers paid partner subscriptions when Stripe keys are configured.
+          Start with a reviewed free listing. Growth and Pro are planned partner tiers for more campaigns, better visibility, and deeper analytics. Payment checkout is intentionally not active yet.
         </p>
-        {checkoutStatus === "success" ? (
-          <p className="mt-5 rounded-2xl border border-lime-300/25 bg-lime-300/10 p-4 text-sm font-black text-lime-100">
-            Checkout completed. Stripe webhooks will verify the subscription and enable paid access for the connected business.
-          </p>
-        ) : null}
-        {checkoutStatus === "cancelled" ? (
-          <p className="mt-5 rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-sm font-bold text-white/70">
-            Checkout was cancelled. You can keep using Starter or try again later.
-          </p>
-        ) : null}
+        <p className="mt-5 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4 text-sm font-black text-cyan-100">
+          Current monetization mode: applications, reviewed listings, and booking requests first. No consumer checkout or paid partner checkout is enabled.
+        </p>
       </section>
       <section className="mt-10 grid gap-5 md:grid-cols-3">
         {tiers.map((tier) => (
@@ -57,20 +42,16 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                 </li>
               ))}
             </ul>
-            {tier.tier === "starter" ? (
-              <Link className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/partner/apply">
-                {tier.cta}
-              </Link>
-            ) : (
-              <PartnerCheckoutButton className="mt-6 min-h-12 w-full rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60" tier={tier.tier} />
-            )}
+            <Link className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href={`/partner/apply?plan=${tier.tier}`}>
+              {tier.tier === "starter" ? tier.cta : "Join upgrade waitlist"}
+            </Link>
           </article>
         ))}
       </section>
       <section className="mt-10 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-6">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-200">Recommended revenue order</p>
         <div className="mt-4 grid gap-3 md:grid-cols-4">
-          {["Partner subscriptions first", "Promoted deals second", "Lead fees after request quality is proven", "Booking commissions with Stripe Connect later"].map((item) => (
+          {["Applications first", "Reviewed listings second", "Lead fees after request quality is proven", "Booking commissions only after operations are ready"].map((item) => (
             <div className="rounded-2xl bg-black/28 p-4 text-sm font-black leading-6 text-white/76" key={item}>{item}</div>
           ))}
         </div>

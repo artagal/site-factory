@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Logo } from "./Navbar";
 
 const footerLinks = [
+  { href: "/find", label: "Find My Plan" },
   { href: "/deals", label: "Deals" },
-  { href: "/find", label: "Help Me Choose" },
   { href: "/date-night", label: "Date Night" },
   { href: "/friends", label: "Friends" },
   { href: "/family", label: "Family" },

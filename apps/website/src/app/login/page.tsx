@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { User } from "firebase/auth";
 import { trackEvent } from "../../lib/analytics";
-import { createEmailAccount, observeUser, signInEmail, signInGoogle, signInGuest, signOutUser } from "../../lib/auth";
+import { createEmailAccount, observeUser, signInApple, signInEmail, signInGoogle, signInGuest, signOutUser } from "../../lib/auth";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import { ensureUserProfile, isAdminUser } from "../../lib/firestore";
 import { Button } from "../../components/gofunmotion/Button";
@@ -106,6 +106,15 @@ function LoginContent() {
     if (resultUser || !firebaseReady) await finishSignIn(resultUser, "Google sign-in connected. Saved deals and booking requests are ready.");
   }
 
+  async function handleApple() {
+    trackEvent("login_clicked", {
+      firebaseConfigured: firebaseReady,
+      provider: "apple"
+    });
+    const resultUser = await runAuthAction(async () => (await signInApple())?.user ?? null);
+    if (resultUser || !firebaseReady) await finishSignIn(resultUser, "Apple sign-in connected. Saved deals and booking requests are ready.");
+  }
+
   async function handleEmail(mode: "login" | "signup") {
     trackEvent("login_clicked", {
       firebaseConfigured: firebaseReady,
@@ -173,6 +182,7 @@ function LoginContent() {
           <input className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none" onChange={(event) => setPassword(event.target.value)} placeholder="Password" type="password" value={password} />
           <div className="flex flex-wrap gap-3">
             <Button disabled={busy || !firebaseReady} onClick={handleGoogle} variant="secondary">Google</Button>
+            <Button disabled={busy || !firebaseReady} onClick={handleApple} variant="secondary">Apple</Button>
             <Button disabled={busy || !firebaseReady} onClick={() => handleEmail("login")}>Sign in</Button>
             <Button disabled={busy || !firebaseReady} onClick={() => handleEmail("signup")} variant="ghost">Signup</Button>
             <Button disabled={busy || !firebaseReady} onClick={handleGuest} variant="secondary">Guest</Button>
@@ -214,8 +224,9 @@ function formatAuthError(error: unknown) {
   if (message.includes("auth/user-not-found")) return "No account exists for that email yet. Use Signup or Google.";
   if (message.includes("auth/wrong-password")) return "Password is incorrect.";
   if (message.includes("auth/email-already-in-use")) return "That email already has an account. Use Sign in instead.";
-  if (message.includes("auth/popup-closed-by-user")) return "Google sign-in was closed before it finished.";
+  if (message.includes("auth/popup-closed-by-user")) return "The sign-in popup was closed before it finished.";
   if (message.includes("auth/unauthorized-domain")) return "This domain is not allowed for sign-in yet.";
+  if (message.includes("auth/operation-not-allowed")) return "This sign-in provider must be enabled in Firebase Authentication first.";
 
   return "Sign-in failed. Try again.";
 }

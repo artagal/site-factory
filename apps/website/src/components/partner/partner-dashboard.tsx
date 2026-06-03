@@ -5,14 +5,13 @@ import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
 import { BarChart3, ClipboardList, Crown, Eye, LockKeyhole, MousePointerClick, PlusCircle, Send, Star } from "lucide-react";
 import { LastMinuteDealEditor } from "./last-minute-deal-editor";
-import { PartnerBillingPortalButton } from "./partner-billing-portal-button";
-import { PartnerCheckoutButton } from "./partner-checkout-button";
 import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
 import { demoBusinesses, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import { readBookingRequestsForBusiness, readBusinessesForOwner, readListingsForBusiness, type BookingRequestRecord } from "../../lib/firestore";
 import { countLimitedListings, formatActiveListingLimit, getPartnerTierCapabilities, type PartnerTierCapabilities } from "../../lib/partner-limits";
 import type { Business, Listing } from "../../types/deals";
+import { EmptyStatePanel, LoadingRows, StatusBanner } from "../gofunmotion/product-states";
 
 export function PartnerDashboard() {
   const [bookingRequests, setBookingRequests] = useState<BookingRequestRecord[]>([]);
@@ -84,32 +83,40 @@ export function PartnerDashboard() {
 
   if (isFirebaseConfigured() && !user) {
     return (
-      <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-        <h2 className="text-3xl font-black text-white">Sign in to manage your business.</h2>
-        <p className="mt-3 text-sm leading-6 text-white/58">Partner dashboards are only available to authenticated business owners.</p>
-        <Link className="mt-5 inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/login?next=/partner/dashboard">
-          Sign In
-        </Link>
+      <section className="mt-8">
+        <EmptyStatePanel
+          action={
+            <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/login?next=/partner/dashboard">
+              Sign In
+            </Link>
+          }
+          body="Partner dashboards are only available to authenticated business owners."
+          icon={LockKeyhole}
+          title="Sign in to manage your business"
+        />
       </section>
     );
   }
 
   if (isFirebaseConfigured() && user && !loading && !businesses.length) {
     return (
-      <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-        <h2 className="text-3xl font-black text-white">No approved business is attached yet.</h2>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-white/58">
-          Apply first, then an admin can review the business and connect this account as an owner. Demo businesses are not shown as live owned inventory.
-        </p>
-        {status ? <p className="mt-4 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/partner/apply">
-            Apply to List Your Business
-          </Link>
-          <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.07] px-5 text-sm font-black text-white hover:bg-white/10" href="/partner">
-            See Partner Fit
-          </Link>
-        </div>
+      <section className="mt-8">
+        <EmptyStatePanel
+          action={
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="/partner/apply">
+                Apply to List Your Business
+              </Link>
+              <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.07] px-5 text-sm font-black text-white hover:bg-white/10" href="/partner">
+                See Partner Fit
+              </Link>
+            </div>
+          }
+          body="Apply first, then an admin can review the business and connect this account as an owner. Demo businesses are not shown as live owned inventory."
+          icon={PlusCircle}
+          title="No approved business is attached yet"
+        />
+        {status ? <div className="mt-4"><StatusBanner title="Partner account status" tone="warning">{status}</StatusBanner></div> : null}
       </section>
     );
   }
@@ -127,8 +134,8 @@ export function PartnerDashboard() {
 
   return (
     <>
-      {status ? <p className="mt-6 rounded-2xl bg-black/24 p-4 text-sm font-bold text-lime-100">{status}</p> : null}
-      {loading ? <p className="mt-6 text-sm font-bold text-white/58">Loading partner dashboard...</p> : null}
+      {status ? <div className="mt-6"><StatusBanner title="Dashboard notice" tone="warning">{status}</StatusBanner></div> : null}
+      {loading ? <div className="mt-6"><LoadingRows rows={3} /></div> : null}
       <section className="mt-8 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-5">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
@@ -142,13 +149,9 @@ export function PartnerDashboard() {
           </div>
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             {!business.isDemo && (limitReached || tierCapabilities.tier === "starter") ? (
-              <PartnerCheckoutButton
-                businessId={business.id}
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200 disabled:opacity-60"
-                email={user?.email}
-                label="Upgrade to unlock more deals"
-                tier="growth"
-              />
+              <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/pricing">
+                View future upgrades
+              </Link>
             ) : null}
             <a className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="#create-last-minute-deal">
               <PlusCircle aria-hidden="true" size={18} />
@@ -177,28 +180,11 @@ export function PartnerDashboard() {
             activeListingCount={activeListingCount}
             business={business}
             capabilities={tierCapabilities}
-            email={user?.email}
           />
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
           <h2 className="text-2xl font-black text-white">Listings</h2>
-          <div className="mt-4 grid gap-3">
-            {visibleListings.length ? visibleListings.map((listing) => (
-              <div className="rounded-2xl bg-black/24 p-4" key={listing.id}>
-                <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
-                  <div>
-                    <p className="font-black text-white">{listing.title}</p>
-                    <p className="mt-1 text-sm text-white/52">{listing.status} / {listing.approvalStatus}</p>
-                  </div>
-                  <Link className="text-sm font-black text-lime-200 hover:text-white" href={`/deals/${listing.slug}`}>View</Link>
-                </div>
-              </div>
-            )) : (
-              <p className="rounded-2xl bg-black/24 p-4 text-sm font-bold leading-6 text-white/58">
-                No live deals yet. Use the editor below to create a draft or submit the first last-minute offer for approval.
-              </p>
-            )}
-          </div>
+          <PartnerListingsTable listings={visibleListings} />
         </div>
       </section>
 
@@ -215,19 +201,12 @@ export function PartnerDashboard() {
       <section className="mt-8 rounded-2xl border border-white/10 bg-black/24 p-6">
         <ClipboardList aria-hidden="true" className="text-cyan-300" size={30} />
         <h2 className="mt-4 text-2xl font-black text-white">Booking requests</h2>
-        <div className="mt-3 grid gap-2">
-          {bookingRequests.length ? bookingRequests.map((request) => (
-            <PartnerBookingRequestCard
-              key={request.id}
-              onUpdated={() => {
-                if (user && isFirebaseConfigured()) void refreshDashboard(user);
-              }}
-              request={request}
-            />
-          )) : (
-            <p className="text-sm leading-6 text-white/58">Incoming requests will appear here with pending, contacted, confirmed, cancelled, or rejected status.</p>
-          )}
-        </div>
+        <PartnerBookingRequestsTable
+          onUpdated={() => {
+            if (user && isFirebaseConfigured()) void refreshDashboard(user);
+          }}
+          requests={bookingRequests}
+        />
       </section>
     </>
   );
@@ -235,18 +214,213 @@ export function PartnerDashboard() {
 
 type PartnerBookingStatusAction = "contacted" | "confirmed" | "cancelled";
 
+function PartnerListingsTable({ listings }: { listings: Listing[] }) {
+  if (!listings.length) {
+    return (
+      <div className="mt-4">
+        <EmptyStatePanel
+          body="Use the editor below to create a draft or submit the first last-minute offer for approval."
+          icon={PlusCircle}
+          title="No live deals yet"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4">
+      <div className="hidden overflow-hidden rounded-2xl border border-white/10 md:block">
+        <table className="w-full border-collapse text-left text-sm">
+          <thead className="bg-white/[0.06] text-xs font-black uppercase tracking-[0.12em] text-white/42">
+            <tr>
+              <th className="px-4 py-3">Deal</th>
+              <th className="px-4 py-3">State</th>
+              <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Demand</th>
+              <th className="px-4 py-3 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/10">
+            {listings.map((listing) => (
+              <tr className="bg-black/20 align-top" key={listing.id}>
+                <td className="px-4 py-4">
+                  <p className="font-black text-white">{listing.title}</p>
+                  <p className="mt-1 text-xs font-bold text-white/46">{listing.availableSlots[0] ?? "Set a time"} - {listing.cityName}</p>
+                </td>
+                <td className="px-4 py-4">
+                  <p className="font-black text-white/76">{listing.status}</p>
+                  <p className="mt-1 text-xs font-bold text-white/42">{listing.approvalStatus}</p>
+                </td>
+                <td className="px-4 py-4">
+                  <p className="font-black text-lime-200">${listing.price}</p>
+                  <p className="mt-1 text-xs font-bold text-white/42">{listing.originalPrice ? `was $${listing.originalPrice}` : "flexible was price"}</p>
+                </td>
+                <td className="px-4 py-4 text-xs font-bold text-white/52">
+                  {listing.viewCount} views / {listing.requestCount} requests
+                </td>
+                <td className="px-4 py-4 text-right">
+                  <Link className="text-sm font-black text-lime-200 hover:text-white" href={`/deals/${listing.slug}`}>View</Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="grid gap-3 md:hidden">
+        {listings.map((listing) => (
+          <div className="rounded-2xl bg-black/24 p-4" key={listing.id}>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-black text-white">{listing.title}</p>
+                <p className="mt-1 text-sm text-white/52">{listing.status} / {listing.approvalStatus}</p>
+              </div>
+              <Link className="text-sm font-black text-lime-200 hover:text-white" href={`/deals/${listing.slug}`}>View</Link>
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-2 text-xs font-black text-white/54">
+              <span className="rounded-xl bg-white/[0.06] p-2">${listing.price}</span>
+              <span className="rounded-xl bg-white/[0.06] p-2">{listing.viewCount} views</span>
+              <span className="rounded-xl bg-white/[0.06] p-2">{listing.requestCount} requests</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PartnerBookingRequestsTable({
+  onUpdated,
+  requests
+}: {
+  onUpdated: () => void;
+  requests: BookingRequestRecord[];
+}) {
+  if (!requests.length) {
+    return (
+      <div className="mt-4">
+        <EmptyStatePanel
+          body="Incoming requests will appear here with pending, contacted, confirmed, cancelled, or rejected status."
+          icon={ClipboardList}
+          title="No booking requests yet"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4">
+      <div className="hidden overflow-hidden rounded-2xl border border-white/10 lg:block">
+        <table className="w-full border-collapse text-left text-sm">
+          <thead className="bg-white/[0.06] text-xs font-black uppercase tracking-[0.12em] text-white/42">
+            <tr>
+              <th className="px-4 py-3">Request</th>
+              <th className="px-4 py-3">Customer</th>
+              <th className="px-4 py-3">When</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/10">
+            {requests.map((request) => (
+              <PartnerBookingRequestRow key={request.id} onUpdated={onUpdated} request={request} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="grid gap-2 lg:hidden">
+        {requests.map((request) => (
+          <PartnerBookingRequestCard key={request.id} onUpdated={onUpdated} request={request} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PartnerBookingRequestRow({
+  onUpdated,
+  request
+}: {
+  onUpdated: () => void;
+  request: BookingRequestRecord;
+}) {
+  const [busyAction, setBusyAction] = useState<PartnerBookingStatusAction | "">("");
+  const [status, setStatus] = useState("");
+
+  async function updateRequest(nextStatus: PartnerBookingStatusAction) {
+    if (busyAction) return;
+    setBusyAction(nextStatus);
+    setStatus("");
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in first.");
+        return;
+      }
+
+      const response = await fetch("/api/partner/booking-requests/status", {
+        body: JSON.stringify({ requestId: request.id, status: nextStatus }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string; status?: string } | null;
+
+      if (!response.ok) {
+        setStatus(result?.error ?? "Could not update.");
+        return;
+      }
+
+      setStatus(`Saved: ${result?.status ?? nextStatus}.`);
+      onUpdated();
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Could not update.");
+    } finally {
+      setBusyAction("");
+    }
+  }
+
+  return (
+    <tr className="bg-black/20 align-top">
+      <td className="px-4 py-4">
+        <p className="font-black text-white">{request.listingTitle ?? "Booking request"}</p>
+        {request.message ? <p className="mt-1 line-clamp-2 text-xs font-bold text-white/42">{request.message}</p> : null}
+      </td>
+      <td className="px-4 py-4 text-xs font-bold text-white/54">
+        {request.name}<br />
+        {request.email}<br />
+        party of {request.partySize}
+      </td>
+      <td className="px-4 py-4 text-xs font-bold text-white/54">
+        {request.requestedDate}<br />
+        {request.requestedTime}
+      </td>
+      <td className="px-4 py-4">
+        <RequestStatusBadge status={request.status} />
+        {status ? <p className="mt-2 text-xs font-bold text-lime-100">{status}</p> : null}
+      </td>
+      <td className="px-4 py-4">
+        <div className="flex flex-wrap gap-2">
+          <RequestStatusButton action="contacted" busyAction={busyAction} disabled={request.status === "contacted"} label="Contacted" onClick={updateRequest} />
+          <RequestStatusButton action="confirmed" busyAction={busyAction} disabled={request.status === "confirmed"} label="Confirmed" onClick={updateRequest} />
+          <RequestStatusButton action="cancelled" busyAction={busyAction} disabled={request.status === "cancelled"} label="Cancelled" onClick={updateRequest} />
+        </div>
+      </td>
+    </tr>
+  );
+}
+
 function PartnerPlanCard({
   activeLimitLabel,
   activeListingCount,
   business,
-  capabilities,
-  email
+  capabilities
 }: {
   activeLimitLabel: string;
   activeListingCount: number;
   business: Business;
   capabilities: PartnerTierCapabilities & { tier: "starter" | "growth" | "pro" };
-  email?: string | null;
 }) {
   const featureRows = [
     {
@@ -278,8 +452,8 @@ function PartnerPlanCard({
           <p className="text-sm font-black uppercase tracking-[0.16em] text-lime-300">Partner plan</p>
           <p className="mt-2 text-2xl font-black text-white">{capabilities.label}</p>
           <p className="mt-1 text-sm font-bold text-white/54">
-            Subscription: {business.subscriptionStatus ?? "not active"}.
-            {business.paidAccessEnabled ? " Stripe billing is synced to this business." : " Upgrade to unlock more deals and paid placement."}
+            Current access: {business.paidAccessEnabled ? "approved paid-access record" : "request-first marketplace access"}.
+            Payment checkout is not active yet.
           </p>
         </div>
         <span className="rounded-full bg-white/[0.08] px-3 py-1.5 text-xs font-black text-white/62">
@@ -301,29 +475,12 @@ function PartnerPlanCard({
 
       {business.isDemo ? null : (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {business.stripeCustomerId ? (
-            <PartnerBillingPortalButton
-              businessId={business.id}
-              className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
-            />
-          ) : (
-            <>
-              <PartnerCheckoutButton
-                businessId={business.id}
-                className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-60"
-                email={email}
-                label="Upgrade to Growth"
-                tier="growth"
-              />
-              <PartnerCheckoutButton
-                businessId={business.id}
-                className="min-h-11 w-full rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-black text-white hover:bg-white/12 disabled:opacity-60"
-                email={email}
-                label="Upgrade to Pro"
-                tier="pro"
-              />
-            </>
-          )}
+          <Link className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-center text-sm font-black leading-[44px] text-[#070816] hover:bg-white" href="/pricing">
+            Compare future tiers
+          </Link>
+          <Link className="min-h-11 w-full rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-center text-sm font-black leading-[44px] text-white hover:bg-white/12" href="/partner/apply">
+            Update partner interest
+          </Link>
         </div>
       )}
     </div>

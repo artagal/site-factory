@@ -69,11 +69,6 @@ export type Business = {
   slug: string;
   state: string;
   status: "pending" | "approved" | "rejected" | "suspended";
-  stripeCustomerId?: string | null;
-  stripeSubscriptionId?: string | null;
-  subscriptionCurrentPeriodEnd?: unknown;
-  subscriptionStatus?: string | null;
-  subscriptionUpdatedAt?: unknown;
   verificationStatus: "unverified" | "verified";
   website: string | null;
 };
@@ -84,7 +79,7 @@ export type Listing = {
   availableFrom: string | null;
   availableSlots: string[];
   availableUntil: string | null;
-  bookingMode: "request" | "external_link" | "phone" | "future_checkout";
+  bookingMode: "request" | "external_link" | "phone";
   bookingUrl: string | null;
   budgetTier: BudgetTier;
   businessId: string;

@@ -1,0 +1,3 @@
+[mcp_servers.flutterflow_ai]
+command = "dart"
+args = ["run", "C:\\Projects\\site-factory\\gofunmotion-ffai\\.flutterflow/sdk/flutterflow_ai\\mcp\\server.dart", "--dir", "C:\\Projects\\site-factory\\gofunmotion-ffai"]

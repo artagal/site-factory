@@ -119,6 +119,10 @@ dist
 # Firebase cache directory
 .firebase/
 
+# Playwright test artifacts
+test-results/
+playwright-report/
+
 # TernJS port file
 .tern-port
 
@@ -148,5 +152,13 @@ output/seo-audits/*
 output/wordpress-drafts/*
 output/content-calendars/*
 !output/**/.gitkeep
+
+# FlutterFlow AI local workspace generated artifacts
+gofunmotion-ffai/.dart_tool/
+gofunmotion-ffai/build/
+gofunmotion-ffai/generated_code/
+gofunmotion-ffai/.flutterflow/sdk/
+gofunmotion-ffai/.flutterflow/history/
+gofunmotion-ffai/.flutterflow/traces/
 
 .vercel

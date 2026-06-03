@@ -21,15 +21,10 @@ const appRoutes = [
   "/family",
   "/partner",
   "/partner/apply",
-  "/partner/dashboard",
   "/pricing",
-  "/saved",
-  "/profile",
   "/waitlist",
   "/about",
   "/blog",
-  "/admin",
-  "/login",
   "/privacy",
   "/terms"
 ];

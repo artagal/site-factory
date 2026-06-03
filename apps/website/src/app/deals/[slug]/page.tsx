@@ -7,6 +7,7 @@ import { ListingActionLink, ListingViewTracker } from "../../../components/listi
 import { SaveListingButton } from "../../../components/listings/save-listing-button";
 import { ShareButton } from "../../../components/shared/share-button";
 import { demoNotice, formatPrice, getCategoryById, getListingBySlug, listings } from "../../../lib/deals-data";
+import { buildListingSeoDescription } from "../../../lib/listing-seo";
 import { buildSeoMetadata } from "../../../lib/seo";
 import { getPublicBusinessForServer, getPublicListingBySlugForServer } from "../../../lib/server/public-listings";
 
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: DealDetailProps): Promise<Met
   }
 
   return buildSeoMetadata({
-    description: listing.shortDescription,
+    description: buildListingSeoDescription(listing),
     keywords: ["local activity deal", listing.title, listing.cityName, listing.businessName],
     path: `/deals/${listing.slug}`,
     title: `${listing.title} | GoFunMotion Deals`

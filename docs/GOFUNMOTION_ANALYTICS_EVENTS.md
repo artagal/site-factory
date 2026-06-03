@@ -16,13 +16,13 @@ In local development, events are also logged to the browser console:
 [GoFunMotion analytics]
 ```
 
-When Firebase Admin is configured in Vercel, the same events are also sent to:
+The `trackEvent` helper also sends events to:
 
 ```text
-/api/events
+/api/track
 ```
 
-That trusted server route writes sanitized event records and increments aggregate `globalStats/main` counters. If the route fails, the product loop continues and local events remain available.
+When Firebase Admin is configured in Vercel, that trusted route writes sanitized event records to `analyticsEvents`, increments selected `globalStats/main` counters, and updates approved listing counters for views, saves, and booking-intent clicks. If the route fails, the product loop continues and local events remain available.
 
 To inspect events:
 
@@ -39,35 +39,36 @@ localStorage.removeItem("gofunmotion:analytics-events")
 ## Current Events
 
 ```text
+booking_request_started
+booking_request_submitted
 hero_cta_click
-account_deleted
-challenge_generated
-challenge_started
-challenge_completed
-challenge_saved
-challenge_shared
-email_verification_sent
+listing_saved
+listing_viewed
 login_clicked
+partner_application_submitted
+plan_generated
+plan_saved
 waitlist_submitted
 ```
 
 ## Validation Use
 
-Track the short product loop:
+Track the primary product loop:
 
 ```text
-hero_cta_click -> challenge_generated -> challenge_started -> challenge_completed
+hero_cta_click -> plan_generated -> listing_viewed -> booking_request_started -> booking_request_submitted
 ```
 
 Secondary validation:
 
 ```text
-challenge_saved
-challenge_shared
+listing_saved
+plan_saved
 login_clicked
+partner_application_submitted
 waitlist_submitted
 ```
 
 ## Later Upgrade
 
-The `trackEvent` helper already forwards sanitized events to a trusted server endpoint. Keep external scripts out until validation needs real aggregated reporting through Firebase Analytics, PostHog, Plausible, or another vendor.
+Keep external scripts out until validation needs real aggregated reporting through Firebase Analytics, PostHog, Plausible, or another vendor. Do not add paid APIs or checkout tracking until the booking and partner payment policy is ready.

@@ -24,24 +24,24 @@ export function DealCard({ listing }: { listing: Listing }) {
         : `${listing.remainingSpots} spots left`;
 
   return (
-    <article className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl transition hover:-translate-y-1 hover:border-lime-300/35 hover:bg-white/[0.08] hover:shadow-[0_30px_95px_rgba(0,0,0,0.34)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl transition hover:-translate-y-1 hover:border-lime-300/35 hover:bg-white/[0.08] hover:shadow-[0_30px_95px_rgba(0,0,0,0.34)]">
       <div className="relative min-h-44 overflow-hidden bg-[radial-gradient(circle_at_18%_18%,rgba(190,242,100,0.36),transparent_30%),radial-gradient(circle_at_78%_6%,rgba(34,211,238,0.28),transparent_35%),linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.03))] p-4">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent,rgba(255,255,255,0.12),transparent)] opacity-60" />
         <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-2">
-          <span className="rounded-full bg-black/54 px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-white/82">
+          <span className="rounded-full bg-black/54 px-3 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.12em] text-white/82">
             {listing.isDemo ? "Demo / coming soon" : "Reviewed deal"}
           </span>
-          <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
+          <span className="shrink-0 rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
             {discountLabel}
           </span>
         </div>
         <div className="absolute bottom-4 left-4 right-4">
           <div className="flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-xs font-black text-white/84">
+            <span className="inline-flex min-h-8 min-w-0 items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-xs font-black text-white/84">
               <Clock aria-hidden="true" size={14} />
-              {timeWindowLabel}
+              <span className="truncate">{timeWindowLabel}</span>
             </span>
-            <span className="inline-flex items-center gap-2 rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
+            <span className="inline-flex min-h-8 items-center gap-2 rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
               <Users aria-hidden="true" size={14} />
               {remainingLabel}
             </span>
@@ -55,7 +55,7 @@ export function DealCard({ listing }: { listing: Listing }) {
           </div>
         </div>
       </div>
-      <div className="p-4">
+      <div className="flex flex-1 flex-col p-4">
         <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
           <div className="min-w-0">
             <h3 className="text-xl font-black leading-tight text-white">{listing.title}</h3>
@@ -63,7 +63,7 @@ export function DealCard({ listing }: { listing: Listing }) {
           </div>
           <div className="rounded-2xl border border-lime-300/24 bg-lime-300/12 p-3 text-left sm:min-w-32 sm:text-right">
             <p className="text-xs font-black uppercase tracking-[0.12em] text-lime-200">Now</p>
-            <p className="text-4xl font-black leading-none text-lime-200">{formatPrice(listing.price)}</p>
+            <p className="text-3xl font-black leading-none text-lime-200 md:text-4xl">{formatPrice(listing.price)}</p>
             <p className="mt-1 text-xs font-black text-white/45 line-through">Was {listing.originalPrice ? formatPrice(listing.originalPrice) : "Flexible"}</p>
           </div>
         </div>
@@ -95,8 +95,12 @@ export function DealCard({ listing }: { listing: Listing }) {
             </span>
           ))}
         </div>
+        <p className="mt-4 rounded-2xl bg-cyan-300/10 px-3 py-2 text-xs font-bold leading-5 text-cyan-100">
+          Request first. The partner confirms the slot before you commit.
+        </p>
         <Link
-          className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white text-sm font-black text-[#070816] transition hover:bg-lime-200"
+          aria-label={`View ${listing.title}`}
+          className="mt-auto inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white text-sm font-black text-[#070816] transition hover:bg-lime-200"
           href={`/deals/${listing.slug}`}
         >
           View Deal

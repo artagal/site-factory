@@ -114,18 +114,16 @@ export async function POST(request: Request): Promise<Response> {
 
     if (action === "feature" && !canFeatureListings({
       paidAccessEnabled: business.paidAccessEnabled === true,
-      pricingTier: business.pricingTier,
-      subscriptionStatus: typeof business.subscriptionStatus === "string" ? business.subscriptionStatus : null
+      pricingTier: business.pricingTier
     })) {
-      return jsonError("Featured placement requires an active Growth or Pro subscription.", 402);
+      return jsonError("Featured placement requires Growth or Pro access.", 402);
     }
 
     if (action === "promote" && !canPromoteListings({
       paidAccessEnabled: business.paidAccessEnabled === true,
-      pricingTier: business.pricingTier,
-      subscriptionStatus: typeof business.subscriptionStatus === "string" ? business.subscriptionStatus : null
+      pricingTier: business.pricingTier
     })) {
-      return jsonError("Promoted campaigns require an active Pro subscription.", 402);
+      return jsonError("Promoted campaigns require Pro access.", 402);
     }
   }
 

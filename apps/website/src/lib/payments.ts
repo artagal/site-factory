@@ -39,7 +39,3 @@ export const partnerPricingTiers: Array<{
 export const paidPartnerTiers = partnerPricingTiers.filter(
   (tier): tier is (typeof partnerPricingTiers)[number] & { tier: PaidPartnerPricingTier } => tier.tier !== "starter"
 );
-
-export function getStripePriceEnvName(tier: PaidPartnerPricingTier) {
-  return tier === "growth" ? "STRIPE_PRICE_GROWTH_MONTHLY" : "STRIPE_PRICE_PRO_MONTHLY";
-}

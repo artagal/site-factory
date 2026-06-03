@@ -7,8 +7,9 @@ import { buildSeoMetadata } from "../../lib/seo";
 export const metadata: Metadata = buildSeoMetadata({
   title: "Saved Deals And Plans | GoFunMotion",
   description:
-    "Saved local activity deals, plan helpers, and booking requests appear here after sign in.",
+    "Save local activity deals, helper plans, booking requests, and preferences after sign in to keep GoFunMotion planning synced.",
   keywords: ["saved deals", "activity wishlist", "saved activity deals"],
+  noIndex: true,
   path: "/saved"
 });
 

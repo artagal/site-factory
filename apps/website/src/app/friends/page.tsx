@@ -6,7 +6,7 @@ import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
   title: "Fun Things To Do With Friends | GoFunMotion",
-  description: "Find group-friendly activities, last-minute plans, and demo local deal cards for friends.",
+  description: "Find group-friendly activities, last-minute friend plans, open slots, and local activity deals that make it easier for everyone to say yes.",
   keywords: ["fun things to do with friends", "group activities", "weekend plans"],
   path: "/friends"
 });
@@ -19,7 +19,7 @@ export default function FriendsPage() {
       <section className="max-w-3xl">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Friends and groups</p>
         <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Make the group decision easier.</h1>
-        <p className="mt-5 text-lg leading-8 text-white/64">Use filters and demo deal cards to shape quick plans for friends, groups, and casual nights out.</p>
+        <p className="mt-5 text-lg leading-8 text-white/64">Use filters and deal cards to shape quick plans for friends, groups, and casual nights out without sending everyone another long list.</p>
       </section>
       <section className="mt-8">
         <PlanFinderForm defaultValues={{ budget: "under50", city: "Austin", indoorOutdoor: "either", timeAvailable: "2hours", vibe: "social", when: "tonight", who: "friends" }} />

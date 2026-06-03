@@ -11,7 +11,7 @@ function serializeListing(id: string, data: DocumentData): Listing {
     availableFrom: typeof data.availableFrom === "string" ? data.availableFrom : null,
     availableSlots: Array.isArray(data.availableSlots) ? data.availableSlots.map(String) : [],
     availableUntil: typeof data.availableUntil === "string" ? data.availableUntil : null,
-    bookingMode: data.bookingMode === "external_link" || data.bookingMode === "phone" || data.bookingMode === "future_checkout" ? data.bookingMode : "request",
+    bookingMode: data.bookingMode === "external_link" || data.bookingMode === "phone" ? data.bookingMode : "request",
     bookingUrl: typeof data.bookingUrl === "string" ? data.bookingUrl : null,
     budgetTier: data.budgetTier === "free" || data.budgetTier === "under25" || data.budgetTier === "under50" || data.budgetTier === "under100" || data.budgetTier === "premium" ? data.budgetTier : "under50",
     businessId: String(data.businessId ?? ""),

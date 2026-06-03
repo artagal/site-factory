@@ -101,10 +101,6 @@ export async function POST(request: Request) {
         slug: slugify(businessName) || businessId,
         state: cityState,
         status: approvalStatus === "approved" ? "approved" : "pending",
-        stripeCustomerId: null,
-        stripeSubscriptionId: null,
-        subscriptionCurrentPeriodEnd: null,
-        subscriptionStatus: null,
         updatedAt: now,
         verificationStatus: "unverified",
         website: clean(application.website, 180) || null

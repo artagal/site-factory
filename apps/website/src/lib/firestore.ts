@@ -43,18 +43,6 @@ export type PartnerApplicationRecord = PartnerApplication & {
   updatedAt?: unknown;
 };
 
-export type PartnerSubscriptionRecord = {
-  businessId: string | null;
-  customerEmail: string | null;
-  id: string;
-  paidAccessEnabled: boolean;
-  pricingTier: "growth" | "pro" | null;
-  stripeCustomerId: string | null;
-  stripeSubscriptionId: string;
-  subscriptionStatus: string;
-  updatedAt?: unknown;
-};
-
 export function getGoFunMotionDb() {
   const app = getFirebaseApp();
   return app ? getFirestore(app) : null;
@@ -220,26 +208,6 @@ export async function readAdminListings() {
   if (!db) return [];
   const snapshot = await getDocs(collection(db, "listings"));
   return snapshot.docs.map((listingDoc) => ({ id: listingDoc.id, ...listingDoc.data() }) as Listing);
-}
-
-export async function readAdminPartnerSubscriptions() {
-  const db = getGoFunMotionDb();
-  if (!db) return [];
-  const snapshot = await getDocs(collection(db, "partnerSubscriptions"));
-  return snapshot.docs.map((subscriptionDoc) => {
-    const data = subscriptionDoc.data();
-    return {
-      businessId: typeof data.businessId === "string" ? data.businessId : null,
-      customerEmail: typeof data.customerEmail === "string" ? data.customerEmail : null,
-      id: subscriptionDoc.id,
-      paidAccessEnabled: data.paidAccessEnabled === true,
-      pricingTier: data.pricingTier === "growth" || data.pricingTier === "pro" ? data.pricingTier : null,
-      stripeCustomerId: typeof data.stripeCustomerId === "string" ? data.stripeCustomerId : null,
-      stripeSubscriptionId: typeof data.stripeSubscriptionId === "string" ? data.stripeSubscriptionId : subscriptionDoc.id,
-      subscriptionStatus: typeof data.subscriptionStatus === "string" ? data.subscriptionStatus : "unknown",
-      updatedAt: data.updatedAt
-    } satisfies PartnerSubscriptionRecord;
-  });
 }
 
 export async function readAdminBookingRequests() {
