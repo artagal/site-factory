@@ -42,15 +42,15 @@ Use the actual local port shown by Next.js. If port `3000` is available, replace
 
 Recommended Vercel setup for this repo:
 
-- Root Directory: repository root.
+- Root Directory: `apps/website`.
 - Framework Preset: `Next.js`.
 - Install Command: `npm install`.
 - Build Command: `npm run build`.
-- Output Directory: `apps/website/.next`.
+- Output Directory: `.next`.
 - Production Branch: the intended launch branch only.
 - Production Domain: `gofunmotion.com`.
 
-The root `vercel.json` is aligned to this setup. If Vercel is instead configured with Root Directory `apps/website`, then the root `prebuild` script will not run automatically. In that case, make sure sitemap and robots files are generated before deploying or move equivalent generation into the website workspace build.
+The root `vercel.json` is aligned to this setup. Do not set Output Directory to `apps/website/.next` while Root Directory is `apps/website`; Vercel will resolve that as `apps/website/apps/website/.next` and fail after a successful Next.js build.
 
 ## Vercel Env Var Audit
 

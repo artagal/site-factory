@@ -9,7 +9,8 @@ For the production launch checklist, environment audit, smoke-test script, and r
 - Framework: Next.js
 - Install command: `npm install`
 - Build command: `npm run build`
-- Output directory: `apps/website/.next` when the Vercel project root is the repository root
+- Root directory: `apps/website`
+- Output directory: `.next`
 - Domain: `gofunmotion.com`
 
 ## Firebase

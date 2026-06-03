@@ -9,12 +9,12 @@ Current launch runbook: `docs/GOFUNMOTION_PRODUCTION_RELEASE_CHECKLIST.md`.
 - `vercel.json` keeps the project explicit for a workspace-style repository.
 - Install command: `npm install`
 - Build command: `npm run build`
-- Output directory: `apps/website/.next`
+- Output directory: `.next`
 - Framework preset: `nextjs`
 
 Vercel can auto-detect many frontend frameworks and lets projects customize build commands, install commands, and output directories. For monorepos, Vercel projects can be connected to a repository with project-specific build settings.
 
-This configuration assumes the Vercel project root directory is the repository root, so the root `prebuild` step regenerates sitemap and robots before the website workspace builds.
+This configuration matches the current Vercel project root directory of `apps/website`. With that root, Next.js writes its production build to `apps/website/.next` in the repository, but Vercel's Output Directory setting must stay relative to the selected root as `.next`.
 
 ## Environment Variables
 
