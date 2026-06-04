@@ -1,5 +1,10 @@
 import type { Firestore, QuerySnapshot } from "firebase-admin/firestore";
-import { USER_DOCUMENT_SUBCOLLECTIONS, USER_OWNED_COLLECTIONS } from "../../../../lib/account-deletion";
+import {
+  USER_DOCUMENT_SUBCOLLECTIONS,
+  USER_FIELD_OWNED_COLLECTIONS,
+  USER_OWNED_COLLECTIONS,
+  USER_TOP_LEVEL_DOCUMENTS
+} from "../../../../lib/account-deletion";
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { getFirebaseAdminAuth, getFirebaseAdminDb, isFirebaseAdminConfigured, verifyBearerToken } from "../../../../lib/server/firebase-admin";
 import { getClientIp, checkRateLimit } from "../../../../lib/server/rate-limit";
@@ -36,6 +41,14 @@ async function deleteKnownTopLevelUserRecords(userId: string) {
 
   for (const collectionName of USER_OWNED_COLLECTIONS) {
     await deleteQueryInBatches(db, () => db.collection(collectionName).where("userId", "==", userId).limit(400).get());
+  }
+
+  for (const collectionName of USER_TOP_LEVEL_DOCUMENTS) {
+    await db.collection(collectionName).doc(userId).delete();
+  }
+
+  for (const { collectionName, fieldPath } of USER_FIELD_OWNED_COLLECTIONS) {
+    await deleteQueryInBatches(db, () => db.collection(collectionName).where(fieldPath, "==", userId).limit(400).get());
   }
 
   return true;

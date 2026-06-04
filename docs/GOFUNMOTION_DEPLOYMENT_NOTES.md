@@ -46,7 +46,9 @@ Deploy only after confirming the Firebase project and release window:
 npm.cmd run firebase:deploy:firestore
 ```
 
-The rules support both the richer web schema and the FlutterFlow first-pass schema. Public listing reads are still restricted to approved/published records, so FlutterFlow list queries must be filtered to approved records before production live data is used.
+The rules support the richer web schema, the FlutterFlow first-pass schema, and the approved FlutterFlow-native Firebase schema. Web compatibility collections remain `businesses`, `listings`, `bookingRequests`, `savedListings`, and `savedPlans`. The approved mobile app collections are `customer_profiles`, `provider_profiles`, `drops`, `booking_requests`, `favorites`, `reviews`, `reports`, `admin_actions`, `device_tokens`, `subscriptions`, and `admin_users`.
+
+Public listing reads are still restricted to approved/published records. Public drop reads are restricted to active, approved, unexpired, available drops. FlutterFlow list queries must use approved-only and user-owned filters before production live data is used.
 
 FlutterFlow commit `Fo0wIyFfekjgrjknaTlF` temporarily disables broad public/user list reads on `DiscoverPage`, `DealsPage`, and `SavedPage`. Re-enable those list widgets only with approved-only and user-owned Builder query filters.
 
