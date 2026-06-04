@@ -94,7 +94,7 @@ This deploys `firestore.rules` and `firestore.indexes.json`.
 
 ## Deals Collections
 
-The current app is built around these primary collections:
+The web prototype still uses the first-pass collections below and remains compatible with them:
 
 ```text
 cities/{cityId}
@@ -116,6 +116,24 @@ admins/{userId}
 ```
 
 Public listing reads require `status == "published"` and `approvalStatus == "approved"`. Partner-created listings should remain pending until an admin approves them.
+
+The approved FlutterFlow/Firebase app model adds these canonical collections for the next mobile implementation pass:
+
+```text
+admin_users/{userId}
+customer_profiles/{userId}
+provider_profiles/{userId}
+drops/{dropId}
+booking_requests/{requestId}
+favorites/{favoriteId}
+reviews/{reviewId}
+reports/{reportId}
+admin_actions/{actionId}
+device_tokens/{tokenId}
+subscriptions/{userId}
+```
+
+Public drop reads require `status == "active"`, `moderationStatus == "approved"`, a non-expired `expiresAt` when present, and available spots when `spotsRemaining` is present. Provider-created drops must stay `draft` or `pending_review` until admin approval.
 
 ## Firebase Admin on Vercel
 

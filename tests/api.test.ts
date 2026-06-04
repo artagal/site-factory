@@ -5,7 +5,12 @@ import { POST as createAdminCategoryPost } from "../apps/website/src/app/api/adm
 import { POST as createAdminCityPost } from "../apps/website/src/app/api/admin/cities/route";
 import { POST as approvePartnerApplicationPost } from "../apps/website/src/app/api/admin/partner-applications/approve/route";
 import { POST as lookupAdminUserPost } from "../apps/website/src/app/api/admin/users/lookup/route";
-import { USER_DOCUMENT_SUBCOLLECTIONS, USER_OWNED_COLLECTIONS } from "../apps/website/src/lib/account-deletion";
+import {
+  USER_DOCUMENT_SUBCOLLECTIONS,
+  USER_FIELD_OWNED_COLLECTIONS,
+  USER_OWNED_COLLECTIONS,
+  USER_TOP_LEVEL_DOCUMENTS
+} from "../apps/website/src/lib/account-deletion";
 import { POST as bookingPost } from "../apps/website/src/app/api/booking-request/route";
 import { GET as citiesGet } from "../apps/website/src/app/api/cities/route";
 import { GET as categoriesGet } from "../apps/website/src/app/api/categories/route";
@@ -43,6 +48,17 @@ describe("GoFunMotion Deals API routes", () => {
       "savedPlans",
       "plans",
       "bookingRequests"
+    ]));
+    expect([...USER_TOP_LEVEL_DOCUMENTS]).toEqual([
+      "customer_profiles",
+      "provider_profiles",
+      "subscriptions"
+    ]);
+    expect([...USER_FIELD_OWNED_COLLECTIONS]).toEqual(expect.arrayContaining([
+      { collectionName: "favorites", fieldPath: "userId" },
+      { collectionName: "device_tokens", fieldPath: "userId" },
+      { collectionName: "booking_requests", fieldPath: "customerId" },
+      { collectionName: "drops", fieldPath: "providerId" }
     ]));
     expect([...USER_DOCUMENT_SUBCOLLECTIONS, ...USER_OWNED_COLLECTIONS]).not.toContain("completedChallenges");
     expect([...USER_DOCUMENT_SUBCOLLECTIONS, ...USER_OWNED_COLLECTIONS]).not.toContain("savedChallenges");
