@@ -7,9 +7,10 @@ Use this checklist for the GoFunMotion Deals website launch on Vercel with Fireb
 - Product: GoFunMotion Deals.
 - Production domain: `https://gofunmotion.com`.
 - Firebase project: `gofunmotion-prod` from `.firebaserc`.
-- Public launch routes: `/`, `/find`, `/deals`, `/date-night`, `/friends`, `/family`, `/partner`, `/partner/apply`, `/pricing`, `/waitlist`, `/about`, `/blog`, `/privacy`, `/terms`, deal detail pages, city pages, and category detail pages.
+- Public launch routes: `/`, `/find`, `/deals`, `/date-night`, `/friends`, `/family`, `/partner`, `/partner/apply`, `/pricing`, `/waitlist`, `/about`, `/support`, `/blog`, `/privacy`, `/terms`, deal detail pages, city pages, and category detail pages.
 - No public checkout in this release. Payments, Stripe, RevenueCat, PayPal, Square, partner payouts, and consumer booking checkout must stay disabled.
 - Protected or account surfaces must stay out of the sitemap and render `noindex`: `/login`, `/saved`, `/profile`, `/admin`, and `/partner/dashboard`.
+- Mobile App Store setup is tracked separately in `docs/APP_STORE_CONNECT_SETUP_GOFUNMOTION.md`. Do not use the generated placeholder bundle ID `com.mycompany.gofunmotiondeals` for production.
 
 ## Local Release Gates
 
@@ -25,9 +26,9 @@ npm.cmd run build
 
 Expected results:
 
-- `seo:audit` reports `47 pages with 0 issues`.
+- `seo:audit` reports `48 pages with 0 issues`.
 - `build` regenerates `apps/website/public/sitemap.xml` and `apps/website/public/robots.txt`.
-- `sitemap.xml` has 42 indexable routes and excludes `/challenge`, `/daily`, `/leaderboard`, `/categories`, `/login`, `/profile`, `/saved`, `/admin`, and `/partner/dashboard`.
+- `sitemap.xml` has 43 indexable routes and excludes `/challenge`, `/daily`, `/leaderboard`, `/categories`, `/login`, `/profile`, `/saved`, `/admin`, and `/partner/dashboard`.
 
 Run local smoke after starting the dev server:
 
@@ -178,6 +179,7 @@ npm.cmd run launch:smoke -- --base-url https://YOUR_PREVIEW_URL --canonical-base
 Preview acceptance:
 
 - Home, plan finder, deals, pricing, partner apply, blog, and deal detail pages return `200`.
+- Support page returns `200` at `/support` for App Store metadata.
 - Canonical URLs point to `https://gofunmotion.com`.
 - OG image points to `https://gofunmotion.com/og/gofunmotion-og.png`.
 - Login, saved, profile, admin, and partner dashboard render `noindex`.
