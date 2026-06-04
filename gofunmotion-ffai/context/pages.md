@@ -1,0 +1,58 @@
+## Pages (14)
+- ResetPasswordPage [`Scaffold_yw9xllbp`] → reset-password
+  - Components: SectionHeader
+  - State: email (String)
+- SignInPage [`Scaffold_f7kkzxs2`] → sign-in
+  - Navigates to: ResetPasswordPage
+  - Components: SectionHeader
+  - State: email (String), password (String), displayName (String), isSignup (Boolean)
+- WaitlistPage [`Scaffold_0u3vey3g`] → waitlist
+  - (no incoming navigation)
+  - Components: SectionHeader
+  - Queries: waitlist
+  - State: email (String), city (String), interest (String)
+- DealDetailPage [`Scaffold_2aacdkym`] → deal-detail
+  - Navigates to: SignInPage
+  - Components: SectionHeader
+  - Queries: bookingRequests, listings, savedListings
+  - Params: listingRef (DocumentReference)
+  - State: listing (Document<listings>), contactName (String), contactEmail (String), partySize (Integer), message (String)
+- DiscoverPage [`Scaffold_zvhlzk7l`]
+  - Navigates to: DealDetailPage, FindPlanPage, SavedPage
+  - Components: DealCard, SectionHeader
+  - State: featuredDeals (List<Document<listings>>)
+- FindPlanPage [`Scaffold_d7mhrhkb`] → find
+  - Navigates to: SignInPage
+  - Components: PlanStepCard, SectionHeader
+  - Queries: savedPlans
+  - State: city (String), persona (String), when (String), budget (String), vibe (String), planSummary (String)
+- DealsPage [`Scaffold_sau0xhtq`] → deals
+  - Navigates to: DealDetailPage, PartnerApplyPage
+  - Components: DealCard, EmptyState, SectionHeader
+  - State: city (String), category (String), deals (List<Document<listings>>)
+- SavedPage [`Scaffold_ygicpnxn`] → saved
+  - Navigates to: SignInPage
+  - Components: SectionHeader
+  - State: savedDeals (List<Document<savedListings>>), savedPlanItems (List<Document<savedPlans>>)
+- ProfilePage [`Scaffold_b2q817um`] → profile
+  - Navigates to: PartnerDashboardPage, SignInPage
+  - Components: EmptyState
+- PartnerPage [`Scaffold_loasfjz1`] → partner
+  - Navigates to: PartnerApplyPage, PartnerDashboardPage
+  - Components: PlanStepCard, SectionHeader
+- PartnerApplyPage [`Scaffold_3k50nr7m`] → partner/apply
+  - Navigates to: PartnerPage
+  - Components: SectionHeader
+  - Queries: partnerApplications
+  - State: businessName (String), contactName (String), contactEmail (String), city (String), category (String), description (String)
+- PartnerDashboardPage [`Scaffold_vq6ocq17`] → partner/dashboard
+  - Navigates to: SignInPage
+  - Components: EmptyState, SectionHeader
+- AdminPage [`Scaffold_zl253w6v`] → admin
+  - (no incoming navigation)
+  - Navigates to: SignInPage
+  - Components: EmptyState, SectionHeader
+  - Queries: listings, partnerApplications
+  - State: applications (List<Document<partnerApplications>>), adminListings (List<Document<listings>>)
+- SplashPage [`Scaffold_7vhocoab`] → splash [initial]
+  - Navigates to: DiscoverPage

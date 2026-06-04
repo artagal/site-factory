@@ -12,9 +12,13 @@
     "build": "npm --workspace @site-factory/website run build",
     "typecheck": "tsc --noEmit -p tsconfig.json && npm --workspace @site-factory/website run typecheck",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "seo:audit": "tsx scripts/audit-seo.ts",
+    "launch:smoke": "tsx scripts/smoke-launch.ts",
     "sitemap:generate": "tsx scripts/generate-sitemap.ts",
     "robots:generate": "tsx scripts/generate-robots.ts",
+    "firestore:seed-demo": "tsx scripts/seedFirestore.ts",
+    "admin:bootstrap": "tsx scripts/bootstrapAdmin.ts",
     "wordpress:draft": "tsx scripts/generate-wordpress-draft.ts",
     "content-calendar:generate": "tsx scripts/generate-content-calendar.ts",
     "firebase:login": "firebase login --no-localhost",
@@ -24,6 +28,8 @@
     "firebase:deploy:firestore": "firebase deploy --only firestore:rules,firestore:indexes"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.0",
+    "@playwright/test": "^1.56.0",
     "@types/node": "^24.0.0",
     "firebase-tools": "^15.18.0",
     "tsx": "^4.20.0",

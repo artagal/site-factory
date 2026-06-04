@@ -1,0 +1,17 @@
+## Collections (10)
+- users: display_name (String), photo_url (ImagePath), uid (String), created_time (DateTime), phone_number (String), email (String), role (String), city (String), createdAt (DateTime), updatedAt (DateTime)
+- cities: name (String), state (String), slug (String), isActive (Boolean), sortOrder (Integer)
+- categories: name (String), slug (String), icon (String), isActive (Boolean), sortOrder (Integer)
+- businesses: name (String), ownerUserId (String), contactEmail (String), city (String), status (String), description (String), createdAt (DateTime), updatedAt (DateTime)
+- listings: title (String), description (String), businessName (String), businessRef (DocumentReference), category (String), city (String), neighborhood (String), priceLabel (String), dealLabel (String), bookingMode (String), imageUrl (ImagePath), status (String), isApproved (Boolean), isDemo (Boolean), startsAt (DateTime), endsAt (DateTime), createdAt (DateTime), updatedAt (DateTime)
+  - Used by: AdminPage, DealDetailPage
+- savedListings: userId (String), listingRef (DocumentReference), listingTitle (String), city (String), createdAt (DateTime)
+  - Used by: DealDetailPage
+- savedPlans: userId (String), city (String), persona (String), when (String), budget (String), vibe (String), summary (String), createdAt (DateTime)
+  - Used by: FindPlanPage
+- bookingRequests: userId (String), listingRef (DocumentReference), listingTitle (String), contactName (String), contactEmail (String), partySize (Integer), message (String), status (String), createdAt (DateTime)
+  - Used by: DealDetailPage
+- partnerApplications: businessName (String), contactName (String), contactEmail (String), city (String), category (String), description (String), status (String), createdAt (DateTime)
+  - Used by: AdminPage, PartnerApplyPage
+- waitlist: email (String), city (String), interest (String), createdAt (DateTime)
+  - Used by: WaitlistPage

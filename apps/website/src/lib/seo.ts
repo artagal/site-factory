@@ -23,7 +23,7 @@ export type SeoInput = {
 };
 
 export const canonicalUrlPlaceholder = "https://gofunmotion.com";
-export const defaultOgImage = "/og/gofunmotion-og.svg";
+export const defaultOgImage = "/og/gofunmotion-og.png";
 
 export const faqSchemaPlaceholder = {
   "@context": "https://schema.org",

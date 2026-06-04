@@ -5,6 +5,7 @@ import {
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
+  OAuthProvider,
   sendEmailVerification,
   signInAnonymously,
   signInWithEmailAndPassword,
@@ -37,6 +38,15 @@ export async function signInGoogle() {
   if (!auth) return null;
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: "select_account" });
+  return signInWithPopup(auth, provider);
+}
+
+export async function signInApple() {
+  const auth = getGoFunMotionAuth();
+  if (!auth) return null;
+  const provider = new OAuthProvider("apple.com");
+  provider.addScope("email");
+  provider.addScope("name");
   return signInWithPopup(auth, provider);
 }
 

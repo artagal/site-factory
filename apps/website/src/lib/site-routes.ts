@@ -1,4 +1,5 @@
 import { blogPosts } from "./blog";
+import { categories, cities, listings } from "./deals-data";
 import { absoluteUrl, getCanonicalBaseUrl } from "./seo";
 
 export type SitemapRoute = {
@@ -13,16 +14,17 @@ export const defaultLastModified =
 
 const appRoutes = [
   "/",
-  "/challenge",
-  "/daily",
-  "/categories",
-  "/profile",
-  "/profile/settings",
-  "/leaderboard",
+  "/find",
+  "/deals",
+  "/date-night",
+  "/friends",
+  "/family",
+  "/partner",
+  "/partner/apply",
+  "/pricing",
   "/waitlist",
   "/about",
   "/blog",
-  "/login",
   "/privacy",
   "/terms"
 ];
@@ -47,10 +49,10 @@ function uniqueRoutes(routes: SitemapRoute[]) {
 
 export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRoute[] {
   const routes: SitemapRoute[] = appRoutes.map((path) => ({
-    changeFrequency: path === "/" || path === "/daily" ? "daily" : "weekly",
+    changeFrequency: path === "/" || path === "/find" || path === "/deals" ? "daily" : "weekly",
     lastModified,
     path,
-    priority: path === "/" ? 1 : path === "/challenge" ? 0.95 : 0.75
+    priority: path === "/" ? 1 : path === "/deals" ? 0.96 : path === "/find" ? 0.76 : 0.75
   }));
 
   const blogRoutes = blogPosts.map((post) => ({
@@ -60,7 +62,28 @@ export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRou
     priority: 0.68
   }));
 
-  return uniqueRoutes([...routes, ...blogRoutes]);
+  const dealRoutes = listings.map((listing) => ({
+    changeFrequency: "weekly" as const,
+    lastModified,
+    path: `/deals/${listing.slug}`,
+    priority: listing.featured ? 0.82 : 0.72
+  }));
+
+  const cityRoutes = cities.map((city) => ({
+    changeFrequency: "weekly" as const,
+    lastModified,
+    path: `/cities/${city.slug}`,
+    priority: city.active ? 0.76 : 0.55
+  }));
+
+  const categoryRoutes = categories.map((category) => ({
+    changeFrequency: "weekly" as const,
+    lastModified,
+    path: `/categories/${category.slug}`,
+    priority: 0.74
+  }));
+
+  return uniqueRoutes([...routes, ...dealRoutes, ...cityRoutes, ...categoryRoutes, ...blogRoutes]);
 }
 
 export function getAbsoluteFactoryRoutes(baseUrl = getCanonicalBaseUrl()) {

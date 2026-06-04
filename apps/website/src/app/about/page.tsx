@@ -3,33 +3,33 @@ import { LinkButton } from "../../components/gofunmotion/Button";
 import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "About GoFunMotion",
+  title: "About GoFunMotion Deals",
   description:
-    "GoFunMotion is a lifestyle movement brand using AI-powered real-life challenges to help people stop doomscrolling and start living.",
+    "GoFunMotion Deals helps people find discounted last-minute activity openings, date night deals, family passes, and local experiences.",
   path: "/about"
 });
 
 export default function AboutPage() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-12 md:px-8 md:py-20">
-      <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Mission</p>
+      <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">About</p>
       <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-7xl">
-        Your couch is comfortable. Your life is outside.
+        Make last-minute fun easier to find.
       </h1>
       <div className="mt-8 grid gap-5 text-lg leading-8 text-white/68">
         <p>
-          GoFunMotion exists because boredom should not automatically become scrolling. The product gives people tiny real-life missions that are safe, fun, social, active, and easy to start.
+          GoFunMotion Deals exists for the moment when someone wants to do something fun tonight and would rather compare clear discounted openings than search through tabs, maps, calendars, and group texts.
         </p>
         <p>
-          It is not about shame. It is about momentum. A two-minute mission can become a walk, a conversation, a date idea, a creative spark, or a better night.
+          The product direction is local open-slot deals: city and time in; was/now pricing, spots left, and booking requests out.
         </p>
         <p>
-          Today GoFunMotion is a website and web app. The architecture is prepared for Firebase, mobile apps, AI generation, premium challenge packs, groups, and creator modes later.
+          Today the site uses clearly marked demo scaffolding while live saves, booking requests, partner dashboards, and admin approval are connected.
         </p>
       </div>
       <div className="mt-8 flex flex-wrap gap-3">
-        <LinkButton href="/challenge">Generate a mission</LinkButton>
-        <LinkButton href="/waitlist" variant="ghost">Join app waitlist</LinkButton>
+        <LinkButton href="/deals?when=tonight">Browse Tonight&apos;s Deals</LinkButton>
+        <LinkButton href="/partner" variant="ghost">Partner With Us</LinkButton>
       </div>
     </main>
   );

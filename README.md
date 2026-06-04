@@ -1,10 +1,10 @@
 # GoFunMotion
 
-GoFunMotion is an AI-ready real-life challenges web service for `gofunmotion.com`.
+GoFunMotion is being pivoted into **GoFunMotion Deals**, a local discovery and activity deals app for `gofunmotion.com`.
 
-Positioning: **The internet that gets you moving.**
+Main promise: **Find something fun to do today.**
 
-The site includes a premium marketing homepage, interactive challenge generator, daily challenge, categories, profile progress, leaderboard preview, waitlist, blog, privacy, and terms pages.
+The current repo contains a Next.js web prototype in `apps/website`. Future FlutterFlow app work must stay Builder-first: use native FlutterFlow widgets, components, backend queries, native actions, conditional visibility, Page State, Component State, and Page Parameters before custom code.
 
 ## Tech
 
@@ -54,10 +54,9 @@ Production server routes also support Firebase Admin for trusted writes:
 
 ```env
 FIREBASE_SERVICE_ACCOUNT_JSON=
-GOFUNMOTION_ADMIN_CRON_SECRET=
 ```
 
-Use a base64-encoded Firebase service account JSON value in Vercel. If this is missing, the site still works, but `/api/events`, `/api/waitlist`, `/api/account/delete`, and `/api/admin/rebuild-leaderboard` cannot perform trusted Firestore/Auth admin writes.
+Use a base64-encoded Firebase service account JSON value in Vercel. If this is missing, the site still works for public browsing and local demo content, but trusted routes such as booking requests, partner applications, waitlist sync, admin approval tools, account deletion, and partner dashboard writes cannot perform live Firestore/Auth admin operations.
 
 Firebase project files are included:
 
@@ -79,7 +78,29 @@ Auth providers to enable in Firebase Console:
 
 - Anonymous
 - Google
+- Apple
 - Email/password
+
+## FlutterFlow Builder-First Docs
+
+Read these before any FlutterFlow implementation:
+
+- `docs/FLUTTERFLOW_BUILDER_FIRST_PLAN.md`
+- `docs/FLUTTERFLOW_CUSTOM_CODE_POLICY.md`
+- `docs/FLUTTERFLOW_APP_STATE_POLICY.md`
+- `docs/FLUTTERFLOW_BUILDER_FRIENDLY_AUDIT.md`
+
+FlutterFlow app:
+
+- Project: `GoFunMotion Deals`
+- Project ID: `go-fun-motion-deals-vl4mj8`
+- URL: `https://app.flutterflow.io/project/go-fun-motion-deals-vl4mj8`
+- Local workspace: `gofunmotion-ffai`
+- Main DSL: `gofunmotion-ffai/dsl/create.dart`
+
+Before future FlutterFlow edits, run a fresh project inspection from `gofunmotion-ffai`, update the audit if the live project changed, and treat manual Builder edits as source of truth.
+
+Do not rerun `gofunmotion-ffai/dsl/create.dart` against the bound live project; use `dsl/edit.dart` or Builder-native manual edits for follow-up changes.
 
 Production account controls now include profile display-name updates, email verification for email/password accounts, sign out, and server-side account deletion through `/profile/settings`.
 
@@ -89,5 +110,6 @@ Production account controls now include profile display-name updates, email veri
 - Build command: `npm run build`
 - Output directory: `.next` when the Vercel root is `apps/website`
 - Do not expose server-side AI keys in client code.
-- `/api/generate-challenge` currently uses local templates and is ready for a secure AI provider later.
+- `/api/plan` uses local rules and approved listing data. Do not add OpenAI, Gemini, Google Places, Ticketmaster, Eventbrite, Stripe, or paid APIs until the marketplace is validated.
+- Payment checkout is intentionally not implemented. Keep booking requests request-based until fulfillment, refund, confirmation, tax, and support policies are ready.
 - Server routes use best-effort per-instance rate limits. For high traffic, replace the in-memory limiter with a shared store such as Redis or a Firebase-backed throttle.

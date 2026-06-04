@@ -6,15 +6,15 @@ import { blogPosts } from "../../lib/blog";
 import { buildSeoMetadata } from "../../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "Things To Do Instead Of Scrolling | GoFunMotion Blog",
+  title: "Local Activity Ideas | GoFunMotion Blog",
   description:
-    "Read ideas for what to do instead of scrolling, fun things to do when bored, anti-doomscrolling habits, confidence challenges, and real-life missions.",
+    "Read local activity ideas, date night guides, family plans, last-minute deal strategy, and partner growth articles from GoFunMotion Deals.",
   keywords: [
-    "what to do instead of scrolling",
-    "fun things to do when bored",
-    "things to do instead of doomscrolling",
-    "anti doomscrolling",
-    "real life challenge ideas"
+    "things to do today",
+    "date night ideas",
+    "family activities",
+    "last minute activity deals",
+    "local business activity marketing"
   ],
   path: "/blog"
 });
@@ -25,17 +25,17 @@ export default function BlogPage() {
       <section className="rounded-[2.25rem] border border-white/10 bg-white/[0.045] p-5 md:p-8">
         <p className="inline-flex items-center gap-2 rounded-full bg-fuchsia-300/10 px-3 py-2 text-sm font-black uppercase tracking-[0.18em] text-fuchsia-200">
           <Search aria-hidden="true" size={16} />
-          SEO ideas that lead to action
+          Local ideas that lead to plans
         </p>
         <h1 className="mt-4 max-w-5xl text-5xl font-black leading-tight text-white md:text-7xl">
-          What to do instead of scrolling.
+          Ideas for last-minute deals and local fun.
         </h1>
         <p className="mt-5 max-w-3xl text-lg leading-8 text-white/64">
-          Start with an article, then generate a real-life mission. Every GoFunMotion post is designed to move the reader from search intent to action.
+          Start with an article, then browse discounted activity openings, compare time windows, or join the partner side.
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <LinkButton href="/challenge">Generate a mission</LinkButton>
-          <LinkButton href="/daily" variant="ghost">Try today's challenge</LinkButton>
+          <LinkButton href="/deals?when=tonight">Browse Tonight&apos;s Deals</LinkButton>
+          <LinkButton href="/find" variant="ghost">Help Me Choose</LinkButton>
         </div>
       </section>
 
@@ -53,13 +53,13 @@ export default function BlogPage() {
               Content loop
             </p>
             <h2 className="mt-2 text-2xl font-black text-white">
-              Search traffic should end in the generator.
+              Search traffic should end in a useful local plan.
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/62">
-              These starter articles target boredom, doomscrolling, confidence, movement, and real-life challenge queries. Each article links back into `/challenge`.
+              These articles target things to do tonight, date nights, family activity deals, local discounts, and partner growth. Each article points readers back to the deals screen or partner application.
             </p>
           </div>
-          <LinkButton href="/challenge" variant="secondary">Open generator</LinkButton>
+          <LinkButton href="/deals?when=tonight" variant="secondary">Browse Deals</LinkButton>
         </div>
       </section>
     </main>

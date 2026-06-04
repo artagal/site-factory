@@ -1,21 +1,47 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   getFirestore,
-  increment,
+  query,
   serverTimestamp,
   setDoc,
-  updateDoc,
-  type Firestore
+  where,
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { getFirebaseApp } from "./firebase";
-import type { Challenge, ChallengeCompletion, DailyChallengeRecord } from "../types/challenge";
-import type { LeaderboardSnapshot } from "./leaderboard";
-import type { GoFunMotionUserProgress } from "../types/user";
+import type { BookingRequest, Business, Category, City, GoFunMotionUserProfile, Listing, PartnerApplication, SuggestedPlan } from "../types/deals";
+
+export type SavedListingRecord = {
+  listingId: string;
+  listingSnapshot: Listing;
+  savedAt?: unknown;
+};
+
+export type SavedPlanRecord = {
+  planId: string;
+  planSnapshot: SuggestedPlan;
+  savedAt?: unknown;
+};
+
+export type BookingRequestRecord = BookingRequest & {
+  id: string;
+  createdAt?: unknown;
+  updatedAt?: unknown;
+};
+
+export type PartnerApplicationRecord = PartnerApplication & {
+  approvedBusinessId?: string;
+  approvedOwnerUid?: string;
+  id: string;
+  createdAt?: unknown;
+  reviewedAt?: unknown;
+  reviewedBy?: string;
+  updatedAt?: unknown;
+};
 
 export function getGoFunMotionDb() {
   const app = getFirebaseApp();
@@ -30,21 +56,16 @@ export async function ensureUserProfile(user: User) {
     doc(db, "users", user.uid),
     {
       createdAt: serverTimestamp(),
-      categoryStats: [],
-      displayName: user.displayName ?? "Motion Rookie",
+      displayName: user.displayName ?? "GoFunMotion user",
       email: user.email,
-      favoriteCategories: [],
       isAnonymous: user.isAnonymous,
       lastLoginAt: serverTimestamp(),
-      level: 1,
-      momentumScore: 0,
       photoURL: user.photoURL,
+      phone: null,
       preferredCategories: [],
-      recentActivity: [],
-      savedChallengeIds: [],
-      streak: 0,
-      totalChallengesCompleted: 0,
-      xp: 0
+      preferredCityId: null,
+      role: "user",
+      updatedAt: serverTimestamp()
     },
     { merge: true }
   );
@@ -52,238 +73,190 @@ export async function ensureUserProfile(user: User) {
   return user.uid;
 }
 
-export async function saveChallengeToFirestore(userId: string, challenge: Challenge) {
+export async function readUserProfile(userId: string): Promise<GoFunMotionUserProfile | null> {
   const db = getGoFunMotionDb();
   if (!db) return null;
 
-  await setDoc(doc(db, "users", userId, "savedChallenges", challenge.id), {
-    category: challenge.category,
-    challengeId: challenge.id,
-    description: challenge.description,
-    difficulty: challenge.difficulty,
-    intensity: challenge.intensity,
-    locationType: challenge.locationType,
-    moodTags: challenge.moodTags,
-    rarity: challenge.rarity,
-    savedAt: serverTimestamp(),
-    safetyNote: challenge.safetyNote ?? "",
-    timeEstimateMinutes: challenge.timeEstimateMinutes,
-    title: challenge.title,
-    whyItHelps: challenge.whyItHelps,
-    xpReward: challenge.xpReward
-  });
+  const snapshot = await getDoc(doc(db, "users", userId));
+  if (!snapshot.exists()) return null;
+  const data = snapshot.data();
 
-  return challenge.id;
-}
-
-export async function completeChallengeInFirestore(
-  userId: string,
-  challenge: Challenge,
-  reflection = "",
-  source: ChallengeCompletion["source"] = "generator",
-  xpEarned = challenge.xpReward
-) {
-  const db = getGoFunMotionDb();
-  if (!db) return null;
-
-  return addDoc(collection(db, "users", userId, "completedChallenges"), {
-    category: challenge.category,
-    challengeId: challenge.id,
-    completedAt: serverTimestamp(),
-    difficulty: challenge.difficulty,
-    rarity: challenge.rarity,
-    reflection,
-    source,
-    title: challenge.title,
-    xpEarned
-  });
-}
-
-export async function saveCompletionToFirestore(userId: string, completion: ChallengeCompletion) {
-  const db = getGoFunMotionDb();
-  if (!db) return null;
-
-  const completionId = `${completion.challengeId}-${completion.completedAt}`.replace(/[^a-zA-Z0-9_-]/g, "-");
-
-  return setDoc(doc(db, "users", userId, "completedChallenges", completionId), {
-    category: completion.category,
-    challengeId: completion.challengeId,
-    completedAt: completion.completedAt,
-    difficulty: completion.difficulty,
-    rarity: completion.rarity,
-    reflection: completion.reflection ?? "",
-    source: completion.source ?? "generator",
-    title: completion.title,
-    xpEarned: completion.xpEarned
-  });
-}
-
-export async function updateUserProgressInFirestore(userId: string, xpEarned: number) {
-  const db = getGoFunMotionDb();
-  if (!db) return null;
-
-  return updateDoc(doc(db, "users", userId), {
-    lastLoginAt: serverTimestamp(),
-    totalChallengesCompleted: increment(1),
-    xp: increment(xpEarned)
-  });
-}
-
-export async function syncUserProgressSummaryToFirestore(userId: string, progress: GoFunMotionUserProgress) {
-  const db = getGoFunMotionDb();
-  if (!db) return null;
-
-  return setDoc(
-    doc(db, "users", userId),
-    {
-      badges: progress.badges.map((badge) => badge.id),
-      categoryStats: progress.categoryStats,
-      favoriteCategories: progress.favoriteCategories,
-      lastProgressSyncAt: serverTimestamp(),
-      level: progress.level,
-      momentumScore: progress.momentumScore,
-      recentActivity: progress.recentActivity,
-      savedChallengeIds: progress.savedChallengeIds,
-      streak: progress.streak,
-      totalChallengesCompleted: progress.totalChallengesCompleted,
-      xp: progress.xp
-    },
-    { merge: true }
-  );
-}
-
-export async function updateUserProfileInFirestore(userId: string, updates: { displayName?: string; photoURL?: string | null }) {
-  const db = getGoFunMotionDb();
-  if (!db) return null;
-
-  return setDoc(
-    doc(db, "users", userId),
-    {
-      ...updates,
-      profileUpdatedAt: serverTimestamp()
-    },
-    { merge: true }
-  );
-}
-
-function toIsoString(value: unknown) {
-  if (typeof value === "string") return value;
-  if (value && typeof value === "object" && "toDate" in value && typeof value.toDate === "function") {
-    return value.toDate().toISOString();
-  }
-
-  return new Date().toISOString();
-}
-
-function challengeFromSavedData(id: string, data: Record<string, unknown>): Challenge {
   return {
-    category: (data.category as Challenge["category"]) ?? "Anti-Doomscroll",
-    description: String(data.description ?? "Saved GoFunMotion mission."),
-    difficulty: (data.difficulty as Challenge["difficulty"]) ?? "easy",
-    id: String(data.challengeId ?? id),
-    intensity: (data.intensity as Challenge["intensity"]) ?? "low",
-    locationType: Array.isArray(data.locationType) ? data.locationType.map(String) : ["anywhere"],
-    moodTags: Array.isArray(data.moodTags) ? data.moodTags.map(String) : ["bored"],
-    rarity: (data.rarity as Challenge["rarity"]) ?? "Common",
-    safetyNote: String(data.safetyNote ?? "Keep it safe, legal, respectful, and optional."),
-    timeEstimateMinutes: Number(data.timeEstimateMinutes ?? 5),
-    title: String(data.title ?? "Saved Mission"),
-    whyItHelps: String(data.whyItHelps ?? "This mission helps interrupt passive scrolling with one real action."),
-    xpReward: Number(data.xpReward ?? 30)
+    displayName: String(data.displayName ?? "GoFunMotion user"),
+    email: typeof data.email === "string" ? data.email : null,
+    phone: typeof data.phone === "string" ? data.phone : null,
+    photoURL: typeof data.photoURL === "string" ? data.photoURL : null,
+    preferredCategories: Array.isArray(data.preferredCategories) ? data.preferredCategories.map(String) : [],
+    preferredCityId: typeof data.preferredCityId === "string" ? data.preferredCityId : null,
+    role: data.role === "business" ? "business" : "user"
   };
 }
 
-function completionFromData(id: string, data: Record<string, unknown>): ChallengeCompletion {
-  return {
-    category: (data.category as ChallengeCompletion["category"]) ?? "Anti-Doomscroll",
-    challengeId: String(data.challengeId ?? id),
-    completedAt: toIsoString(data.completedAt),
-    difficulty: (data.difficulty as ChallengeCompletion["difficulty"]) ?? "easy",
-    reflection: String(data.reflection ?? ""),
-    rarity: (data.rarity as ChallengeCompletion["rarity"]) ?? "Common",
-    source: (data.source as ChallengeCompletion["source"]) ?? "generator",
-    title: String(data.title ?? "Completed Mission"),
-    xpEarned: Number(data.xpEarned ?? 30)
-  };
-}
-
-export async function readUserProgressFromFirestore(userId: string): Promise<GoFunMotionUserProgress | null> {
+export async function saveListingForUser(userId: string, listing: Listing) {
   const db = getGoFunMotionDb();
   if (!db) return null;
 
-  const userSnapshot = await getDoc(doc(db, "users", userId));
-  if (!userSnapshot.exists()) return null;
+  await setDoc(doc(db, "users", userId, "savedListings", listing.id), {
+    listingId: listing.id,
+    listingSnapshot: listing,
+    savedAt: serverTimestamp()
+  });
 
-  const userData = userSnapshot.data();
-  const [savedSnapshot, completedSnapshot] = await Promise.all([
-    getDocs(collection(db, "users", userId, "savedChallenges")),
-    getDocs(collection(db, "users", userId, "completedChallenges"))
-  ]);
-  const savedChallenges = savedSnapshot.docs.map((savedDoc) => challengeFromSavedData(savedDoc.id, savedDoc.data()));
-  const completedChallenges = completedSnapshot.docs
-    .map((completionDoc) => completionFromData(completionDoc.id, completionDoc.data()))
-    .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
-
-  return {
-    badges: [],
-    categoryStats: [],
-    completedChallenges,
-    displayName: String(userData.displayName ?? "Motion Rookie"),
-    favoriteCategories: [],
-    level: Number(userData.level ?? 1),
-    momentumScore: Number(userData.momentumScore ?? 0),
-    preferredCategories: Array.isArray(userData.preferredCategories) ? userData.preferredCategories : [],
-    recentActivity: [],
-    savedChallenges,
-    savedChallengeIds: savedChallenges.map((challenge) => challenge.id),
-    streak: Number(userData.streak ?? 0),
-    totalChallengesCompleted: completedChallenges.length,
-    xp: Number(userData.xp ?? 0)
-  };
+  return listing.id;
 }
 
-export async function incrementGlobalStats(db: Firestore, field: "challengesGenerated" | "challengesCompleted" | "peopleMovingToday" | "touchGrassCount") {
-  // TODO: move global stat increments to a trusted Cloud Function before public launch.
-  return updateDoc(doc(db, "globalStats", "main"), {
-    [field]: increment(1),
+export async function unsaveListingForUser(userId: string, listingId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+  await deleteDoc(doc(db, "users", userId, "savedListings", listingId));
+  return listingId;
+}
+
+export async function savePlanForUser(userId: string, plan: SuggestedPlan) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  await setDoc(doc(db, "users", userId, "savedPlans", plan.id), {
+    planId: plan.id,
+    planSnapshot: plan,
+    savedAt: serverTimestamp()
+  });
+
+  return plan.id;
+}
+
+export async function readSavedListings(userId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "users", userId, "savedListings"));
+  return snapshot.docs.map((savedDoc) => savedDoc.data() as SavedListingRecord);
+}
+
+export async function readSavedPlans(userId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "users", userId, "savedPlans"));
+  return snapshot.docs.map((savedDoc) => savedDoc.data() as SavedPlanRecord);
+}
+
+export async function readUserBookingRequests(userId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(query(collection(db, "bookingRequests"), where("userId", "==", userId)));
+  return snapshot.docs.map((requestDoc) => ({ id: requestDoc.id, ...requestDoc.data() }) as BookingRequestRecord);
+}
+
+export async function createBookingRequest(request: BookingRequest) {
+  const db = getGoFunMotionDb();
+  if (!db) return null;
+
+  return addDoc(collection(db, "bookingRequests"), {
+    ...request,
+    createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   });
 }
 
-export async function getDailyChallengeFromFirestore(dateId: string) {
+export async function createPartnerApplication(application: PartnerApplication) {
   const db = getGoFunMotionDb();
   if (!db) return null;
 
-  const snapshot = await getDoc(doc(db, "dailyChallenges", dateId));
-  if (!snapshot.exists()) return null;
-
-  return {
-    date: dateId,
-    ...snapshot.data()
-  } as DailyChallengeRecord;
+  return addDoc(collection(db, "partnerApplications"), {
+    ...application,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
 }
 
-export async function getLeaderboardSnapshotFromFirestore(periodId: string) {
+export async function isAdminUser(userId: string) {
   const db = getGoFunMotionDb();
-  if (!db) return null;
-
-  const snapshot = await getDoc(doc(db, "leaderboards", periodId));
-  if (!snapshot.exists()) return null;
-
-  return {
-    periodId,
-    ...snapshot.data()
-  } as LeaderboardSnapshot;
+  if (!db) return false;
+  const snapshot = await getDoc(doc(db, "admins", userId));
+  return snapshot.exists();
 }
 
-export async function addWaitlistEntry(email: string, interests: string[], source = "website") {
+export async function readAdminPartnerApplications() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "partnerApplications"));
+  return snapshot.docs.map((applicationDoc) => ({ id: applicationDoc.id, ...applicationDoc.data() }) as PartnerApplicationRecord);
+}
+
+export async function readAdminBusinesses() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "businesses"));
+  return snapshot.docs.map((businessDoc) => ({ id: businessDoc.id, ...businessDoc.data() }) as Business);
+}
+
+export async function readAdminCities() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "cities"));
+  return snapshot.docs.map((cityDoc) => ({ id: cityDoc.id, ...cityDoc.data() }) as City);
+}
+
+export async function readAdminCategories() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "categories"));
+  return snapshot.docs.map((categoryDoc) => ({ id: categoryDoc.id, ...categoryDoc.data() }) as Category);
+}
+
+export async function readAdminListings() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "listings"));
+  return snapshot.docs.map((listingDoc) => ({ id: listingDoc.id, ...listingDoc.data() }) as Listing);
+}
+
+export async function readAdminBookingRequests() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(collection(db, "bookingRequests"));
+  return snapshot.docs.map((requestDoc) => ({ id: requestDoc.id, ...requestDoc.data() }) as BookingRequestRecord);
+}
+
+export async function readBusinessesForOwner(userId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(query(collection(db, "businesses"), where("ownerIds", "array-contains", userId)));
+  return snapshot.docs.map((businessDoc) => ({ id: businessDoc.id, ...businessDoc.data() }) as Business);
+}
+
+export async function readListingsForBusiness(businessId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(query(collection(db, "listings"), where("businessId", "==", businessId)));
+  return snapshot.docs.map((listingDoc) => ({ id: listingDoc.id, ...listingDoc.data() }) as Listing);
+}
+
+export async function readBookingRequestsForBusiness(businessId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(query(collection(db, "bookingRequests"), where("businessId", "==", businessId)));
+  return snapshot.docs.map((requestDoc) => ({ id: requestDoc.id, ...requestDoc.data() }) as BookingRequestRecord);
+}
+
+export async function addMarketplaceWaitlistEntry({
+  city,
+  email,
+  interestType,
+  source = "website"
+}: {
+  city: string | null;
+  email: string;
+  interestType: "user" | "business";
+  source?: string;
+}) {
   const db = getGoFunMotionDb();
   if (!db) return null;
 
   return addDoc(collection(db, "waitlist"), {
+    city,
     createdAt: serverTimestamp(),
     email,
-    interests,
+    interestType,
     source
   });
 }
