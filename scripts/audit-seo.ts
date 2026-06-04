@@ -107,6 +107,13 @@ const staticSeoEntries: SeoEntry[] = [
   },
   {
     description:
+      "Get support for GoFunMotion accounts, saved activity plans, booking requests, partner applications, and local activity listings.",
+    path: "/support",
+    routeType: "static",
+    title: "Support | GoFunMotion"
+  },
+  {
+    description:
       "Read local activity ideas, date night guides, family plans, last-minute deal strategy, and partner growth articles from GoFunMotion Deals.",
     path: "/blog",
     routeType: "static",

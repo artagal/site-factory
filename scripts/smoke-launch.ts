@@ -359,6 +359,7 @@ async function smoke(options: CliOptions): Promise<Check[]> {
     { path: "/deals", text: "Last-minute fun, for less.", title: "Tonight's Last-Minute Fun Deals | GoFunMotion" },
     { path: "/pricing", text: "No consumer checkout or paid partner checkout is enabled.", title: "Partner Pricing | GoFunMotion Deals" },
     { path: "/partner/apply", text: "Listings stay pending until reviewed", title: "Apply To List Your Business | GoFunMotion Deals" },
+    { path: "/support", text: "Help for plans, deals, and partner listings.", title: "Support | GoFunMotion" },
     { path: "/blog/date-night-ideas-under-50", text: "Turn this article into action", title: "Date Night Ideas Under $50 | GoFunMotion" },
     { path: "/deals/pottery-date-night-demo", text: "Request availability", title: "Pottery Date Night - 25% Off | GoFunMotion Deals" }
   ];
@@ -399,7 +400,7 @@ async function smoke(options: CliOptions): Promise<Check[]> {
   checks.push({
     detail: "core routes",
     name: "sitemap includes launch routes",
-    ok: ["/", "/find", "/deals", "/pricing", "/partner/apply", "/blog/date-night-ideas-under-50"].every((route) =>
+    ok: ["/", "/find", "/deals", "/pricing", "/partner/apply", "/support", "/blog/date-night-ideas-under-50"].every((route) =>
       sitemap.includes(expectedCanonical(options, route))
     )
   });

@@ -24,6 +24,7 @@ const appRoutes = [
   "/pricing",
   "/waitlist",
   "/about",
+  "/support",
   "/blog",
   "/privacy",
   "/terms"

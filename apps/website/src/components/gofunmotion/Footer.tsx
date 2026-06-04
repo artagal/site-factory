@@ -12,6 +12,7 @@ const footerLinks = [
   { href: "/saved", label: "Saved" },
   { href: "/login", label: "Sign In" },
   { href: "/about", label: "About" },
+  { href: "/support", label: "Support" },
   { href: "/privacy", label: "Privacy" },
   { href: "/terms", label: "Terms" }
 ];
