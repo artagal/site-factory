@@ -1,14 +1,6 @@
-export type AnalyticsEventName =
-  | "booking_request_started"
-  | "booking_request_submitted"
-  | "hero_cta_click"
-  | "listing_saved"
-  | "listing_viewed"
-  | "login_clicked"
-  | "partner_application_submitted"
-  | "plan_generated"
-  | "plan_saved"
-  | "waitlist_submitted";
+import type { AnalyticsEventName } from "../types/deals";
+
+export type { AnalyticsEventName };
 
 export type AnalyticsEvent = {
   id: string;
