@@ -98,6 +98,7 @@ test.describe("GoFunMotion Deals smoke", () => {
     await expect(page.getByLabel("Business city")).toHaveValue("austin");
     await expect(page.getByLabel("Business category")).toHaveValue("date-night");
     await page.getByLabel("Business city").selectOption("miami");
+    await expect(page.getByLabel("Business city")).toHaveValue("miami");
     await page.getByPlaceholder("Website").fill("https://example.com");
     await page.getByPlaceholder("Average price").fill("$25");
     await page.getByPlaceholder(/pottery seats tonight/i).fill("A test open-slot workshop for deterministic E2E coverage.");

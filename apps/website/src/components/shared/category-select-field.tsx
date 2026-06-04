@@ -28,6 +28,7 @@ export function CategorySelectField({
   const initial = useMemo(() => normalizeCategorySelection({ category: defaultCategory, categoryId: defaultCategoryId, options: fallbackCategories }), [defaultCategory, defaultCategoryId]);
   const [categories, setCategories] = useState<CategoryOption[]>(fallbackCategories);
   const [selectedCategoryId, setSelectedCategoryId] = useState(includeAll && !defaultCategoryId ? "" : initial.categoryId);
+  const [hasUserSelectedCategory, setHasUserSelectedCategory] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,12 +40,13 @@ export function CategorySelectField({
         const nextCategories = Array.isArray(payload?.categories) && payload.categories.length ? payload.categories : fallbackCategories;
         if (cancelled) return;
         setCategories(nextCategories);
-        if (includeAll && !defaultCategoryId) {
-          setSelectedCategoryId("");
-          return;
-        }
-        const nextSelection = normalizeCategorySelection({ category: defaultCategory, categoryId: defaultCategoryId ?? initial.categoryId, options: nextCategories });
-        setSelectedCategoryId(nextSelection.categoryId);
+        setSelectedCategoryId((currentCategoryId) => {
+          if (hasUserSelectedCategory) {
+            return currentCategoryId ? normalizeCategorySelection({ category: defaultCategory, categoryId: currentCategoryId, options: nextCategories }).categoryId : "";
+          }
+          if (includeAll && !defaultCategoryId) return "";
+          return normalizeCategorySelection({ category: defaultCategory, categoryId: defaultCategoryId ?? initial.categoryId, options: nextCategories }).categoryId;
+        });
       } catch {
         if (!cancelled) setCategories(fallbackCategories);
       }
@@ -54,7 +56,7 @@ export function CategorySelectField({
     return () => {
       cancelled = true;
     };
-  }, [defaultCategory, defaultCategoryId, includeAll, initial.categoryId]);
+  }, [defaultCategory, defaultCategoryId, hasUserSelectedCategory, includeAll, initial.categoryId]);
 
   const selected = selectedCategoryId
     ? normalizeCategorySelection({ category: defaultCategory, categoryId: selectedCategoryId, options: categories })
@@ -66,7 +68,10 @@ export function CategorySelectField({
       <select
         className={`${dense ? "mt-0 h-12 rounded-2xl px-3 py-0 text-sm leading-[48px] md:mt-1 md:h-12 md:px-4" : `${compact ? "mt-1" : "mt-2"} h-12 rounded-2xl px-4 py-0 text-sm leading-[48px]`} w-full border border-white/10 bg-black/28 font-bold text-white outline-none transition focus:border-lime-300`}
         name={name}
-        onChange={(event) => setSelectedCategoryId(event.target.value)}
+        onChange={(event) => {
+          setHasUserSelectedCategory(true);
+          setSelectedCategoryId(event.target.value);
+        }}
         value={selectedCategoryId}
       >
         {includeAll ? <option className="bg-[#070816] text-white" value="">All categories</option> : null}

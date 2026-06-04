@@ -28,6 +28,7 @@ export function CitySelectField({
   const initial = useMemo(() => normalizeCitySelection({ city: defaultCity, cityId: defaultCityId, options: fallbackCities }), [defaultCity, defaultCityId]);
   const [cities, setCities] = useState<CityOption[]>(fallbackCities);
   const [selectedCityId, setSelectedCityId] = useState(initial.cityId);
+  const [hasUserSelectedCity, setHasUserSelectedCity] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,8 +40,14 @@ export function CitySelectField({
         const nextCities = Array.isArray(payload?.cities) && payload.cities.length ? payload.cities : fallbackCities;
         if (cancelled) return;
         setCities(nextCities);
-        const nextSelection = normalizeCitySelection({ city: defaultCity, cityId: defaultCityId ?? initial.cityId, options: nextCities });
-        setSelectedCityId(nextSelection.cityId);
+        setSelectedCityId((currentCityId) => {
+          const nextSelection = normalizeCitySelection({
+            city: defaultCity,
+            cityId: hasUserSelectedCity ? currentCityId : defaultCityId ?? initial.cityId,
+            options: nextCities
+          });
+          return nextSelection.cityId;
+        });
       } catch {
         if (!cancelled) setCities(fallbackCities);
       }
@@ -50,7 +57,7 @@ export function CitySelectField({
     return () => {
       cancelled = true;
     };
-  }, [defaultCity, defaultCityId, initial.cityId]);
+  }, [defaultCity, defaultCityId, hasUserSelectedCity, initial.cityId]);
 
   const selected = normalizeCitySelection({ city: defaultCity, cityId: selectedCityId, options: cities });
 
@@ -60,7 +67,10 @@ export function CitySelectField({
       <select
         className={`${dense ? "mt-0 h-12 rounded-2xl px-3 py-0 text-sm leading-[48px] md:mt-1 md:h-12 md:px-4" : `${compact ? "mt-1" : "mt-2"} h-12 rounded-2xl px-4 py-0 text-sm leading-[48px]`} w-full border border-white/10 bg-black/28 font-bold text-white outline-none transition focus:border-lime-300`}
         name={name}
-        onChange={(event) => setSelectedCityId(event.target.value)}
+        onChange={(event) => {
+          setHasUserSelectedCity(true);
+          setSelectedCityId(event.target.value);
+        }}
         required={required}
         value={selected.cityId}
       >
