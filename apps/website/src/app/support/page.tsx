@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SupportAssistant } from "../../components/ai/support-assistant";
 import { LinkButton } from "../../components/gofunmotion/Button";
 import { buildSeoMetadata } from "../../lib/seo";
 
@@ -51,6 +52,7 @@ export default function SupportPage() {
           <p className="mt-4 text-sm font-black text-lime-200">hello@gofunmotion.com</p>
         </div>
       </section>
+      <SupportAssistant />
       <div className="mt-8 flex flex-wrap gap-3">
         <LinkButton href="/deals">Browse Deals</LinkButton>
         <LinkButton href="/privacy" variant="ghost">Privacy Policy</LinkButton>

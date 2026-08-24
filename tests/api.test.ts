@@ -12,6 +12,11 @@ import {
   USER_TOP_LEVEL_DOCUMENTS
 } from "../apps/website/src/lib/account-deletion";
 import { POST as bookingPost } from "../apps/website/src/app/api/booking-request/route";
+import { POST as aiBookingMessagePost } from "../apps/website/src/app/api/ai/booking-message/route";
+import { POST as aiPartnerCopyPost } from "../apps/website/src/app/api/ai/partner-copy/route";
+import { POST as aiListingReviewPost } from "../apps/website/src/app/api/ai/review-listing/route";
+import { POST as aiSmartSearchPost } from "../apps/website/src/app/api/ai/smart-search/route";
+import { POST as aiSupportPost } from "../apps/website/src/app/api/ai/support/route";
 import { GET as citiesGet } from "../apps/website/src/app/api/cities/route";
 import { GET as categoriesGet } from "../apps/website/src/app/api/categories/route";
 import { DELETE as partnerListingDelete, PATCH as partnerListingPatch, POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
@@ -91,6 +96,45 @@ describe("GoFunMotion Deals API routes", () => {
     expect(response.status).toBe(200);
     expect(json.count).toBeGreaterThan(0);
     expect(json.listings.every((listing: { approvalStatus: string; status: string }) => listing.status === "published" && listing.approvalStatus === "approved")).toBe(true);
+  });
+
+  it("runs smart search and support with safe local fallbacks", async () => {
+    const smartResponse = await aiSmartSearchPost(jsonRequest("https://site-factory.test/api/ai/smart-search", {
+      query: "date night tonight under $50 in Miami"
+    }));
+    const smartJson = await readJson<{ filters: { cityId: string; maxPrice: number; when: string }; listings: Array<{ isDemo: boolean }> }>(smartResponse);
+
+    expect(smartResponse.status).toBe(200);
+    expect(smartJson.filters).toMatchObject({ cityId: "miami", maxPrice: 50, when: "tonight" });
+    expect(smartJson.listings.every((listing) => listing.isDemo)).toBe(true);
+
+    const supportResponse = await aiSupportPost(jsonRequest("https://site-factory.test/api/ai/support", {
+      messages: [{ content: "Where do I see my booking request status?", role: "user" }]
+    }));
+    const supportJson = await readJson<{ answer: string; provider: string }>(supportResponse);
+
+    expect(supportResponse.status).toBe(200);
+    expect(supportJson.answer).toContain("confirm availability");
+    expect(supportJson.provider).toBe("local_faq");
+  });
+
+  it("protects account and partner AI tools with Firebase auth", async () => {
+    const bookingMessage = await aiBookingMessagePost(jsonRequest("https://site-factory.test/api/ai/booking-message", {
+      listingId: "pottery-date-night-demo"
+    }));
+    const partnerCopy = await aiPartnerCopyPost(jsonRequest("https://site-factory.test/api/ai/partner-copy", {
+      businessId: "demo-clay-house",
+      field: "title",
+      text: "Pottery deal"
+    }));
+    const listingReview = await aiListingReviewPost(jsonRequest("https://site-factory.test/api/ai/review-listing", {
+      businessId: "demo-clay-house",
+      listing: { title: "Pottery deal" }
+    }));
+
+    expect(bookingMessage.status).toBe(401);
+    expect(partnerCopy.status).toBe(401);
+    expect(listingReview.status).toBe(401);
   });
 
   it("validates booking request auth and payload", async () => {

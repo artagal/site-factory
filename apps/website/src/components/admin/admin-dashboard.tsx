@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { BadgeCheck, Building2, CalendarClock, CheckCircle2, Eye, ListChecks, MapPinned, Megaphone, MousePointerClick, PauseCircle, ShieldCheck, Star, XCircle } from "lucide-react";
+import { BadgeCheck, Building2, CalendarClock, CheckCircle2, Eye, ListChecks, MapPinned, Megaphone, MousePointerClick, PauseCircle, ShieldCheck, Sparkles, Star, XCircle } from "lucide-react";
 import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
 import { demoBusinesses, demoCategories, demoCities, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
@@ -278,6 +278,8 @@ function ListingModerationCard({
   onModerated: () => void;
 }) {
   const [busyAction, setBusyAction] = useState<ListingModerationAction | "">("");
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const [aiReview, setAiReview] = useState<Listing["aiReview"]>(listing.aiReview);
   const [status, setStatus] = useState("");
   const canFeature = business ? canFeatureListings(business) : false;
   const canPromote = business ? canPromoteListings(business) : false;
@@ -322,6 +324,38 @@ function ListingModerationCard({
     }
   }
 
+  async function runAiReview() {
+    if (reviewBusy || !live) return;
+    setReviewBusy(true);
+    setStatus("");
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in as an admin before reviewing listings.");
+        return;
+      }
+      const response = await fetch("/api/ai/review-listing", {
+        body: JSON.stringify({ listingId: listing.id, persist: true }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string; review?: NonNullable<Listing["aiReview"]>; setupWarning?: string | null } | null;
+      if (!response.ok || !result?.review) {
+        setStatus(result?.error ?? "AI review failed.");
+        return;
+      }
+      setAiReview(result.review);
+      setStatus(result.setupWarning ?? "AI recommendation updated. Publication still requires your decision.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "AI review failed.");
+    } finally {
+      setReviewBusy(false);
+    }
+  }
+
   return (
     <div className="rounded-2xl bg-black/24 p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -353,6 +387,33 @@ function ListingModerationCard({
         <ModerationButton action="expire" busyAction={busyAction} disabled={!live || listing.status === "expired"} icon={XCircle} label="Expire" onClick={moderateListing} />
         <ModerationButton action={listing.featured ? "unfeature" : "feature"} busyAction={busyAction} disabled={!live || (!listing.featured && !canFeature)} icon={Star} label={listing.featured ? "Unfeature" : canFeature ? "Feature" : "Growth+ Feature"} onClick={moderateListing} />
         <ModerationButton action={listing.promoted ? "unpromote" : "promote"} busyAction={busyAction} disabled={!live || (!listing.promoted && !canPromote)} icon={Megaphone} label={listing.promoted ? "Unpromote" : canPromote ? "Promote" : "Pro Promote"} onClick={moderateListing} />
+      </div>
+      <div className="mt-4 rounded-2xl border border-cyan-300/18 bg-cyan-300/[0.06] p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-black text-white">Listing review copilot</p>
+            <p className="mt-1 text-xs font-bold leading-5 text-white/48">Checks facts and risks. It never approves or publishes a deal.</p>
+          </div>
+          <button
+            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-cyan-300 px-4 text-xs font-black text-[#070816] hover:bg-white disabled:opacity-55"
+            disabled={!live || reviewBusy}
+            onClick={() => void runAiReview()}
+            type="button"
+          >
+            <Sparkles aria-hidden="true" size={14} />
+            {reviewBusy ? "Reviewing..." : "Run AI Review"}
+          </button>
+        </div>
+        {aiReview ? (
+          <div className="mt-3 rounded-xl bg-black/24 p-3">
+            <div className="flex flex-wrap gap-2 text-xs font-black uppercase tracking-[0.1em]">
+              <span className="text-cyan-100">{aiReview.status.replace(/_/g, " ")}</span>
+              <span className="text-white/42">{aiReview.riskLevel} risk</span>
+            </div>
+            <p className="mt-2 text-sm font-bold leading-6 text-white/62">{aiReview.summary}</p>
+            {aiReview.issues.length ? <p className="mt-2 text-xs font-bold leading-5 text-amber-100">{aiReview.issues.join(" ")}</p> : null}
+          </div>
+        ) : null}
       </div>
       <div className="mt-4 grid gap-2 text-xs font-black text-white/54 sm:grid-cols-4">
         <MetricPill icon={Eye} label="Views" value={listing.viewCount ?? 0} />
