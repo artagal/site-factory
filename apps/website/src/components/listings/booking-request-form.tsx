@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Sparkles } from "lucide-react";
 import { getCurrentUserIdToken } from "../../lib/auth";
 import { trackEvent } from "../../lib/analytics";
 import type { Listing } from "../../types/deals";
@@ -9,7 +10,41 @@ import type { Listing } from "../../types/deals";
 export function BookingRequestForm({ listing }: { listing: Listing }) {
   const [status, setStatus] = useState("Sign in, choose a time, and request availability. No payment is collected.");
   const [busy, setBusy] = useState(false);
+  const [aiBusy, setAiBusy] = useState(false);
+  const [message, setMessage] = useState("");
   const [confirmation, setConfirmation] = useState<{ requestId: string; synced: boolean } | null>(null);
+
+  async function draftMessage() {
+    if (aiBusy || listing.isDemo) return;
+    setAiBusy(true);
+    setStatus("Drafting an editable note from your message...");
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in before using the booking message assistant.");
+        return;
+      }
+      const response = await fetch("/api/ai/booking-message", {
+        body: JSON.stringify({ intent: message, listingId: listing.id, listingSlug: listing.slug }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string; message?: string; setupWarning?: string | null } | null;
+      if (!response.ok || !result?.message) {
+        setStatus(result?.error ?? "Could not draft a message yet.");
+        return;
+      }
+      setMessage(result.message);
+      setStatus(result.setupWarning ?? "Draft ready. Review and edit it before sending your request.");
+    } catch {
+      setStatus("Could not draft a message yet. You can write your own note below.");
+    } finally {
+      setAiBusy(false);
+    }
+  }
 
   async function submit(formData: FormData) {
     if (busy) return;
@@ -61,6 +96,19 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
     );
   }
 
+  if (listing.isDemo) {
+    return (
+      <div className="rounded-2xl border border-amber-300/25 bg-amber-300/10 p-5">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-200">Demo listing</p>
+        <h2 className="mt-2 text-2xl font-black text-white">Booking requests are not open for this example.</h2>
+        <p className="mt-2 text-sm leading-6 text-white/60">Join the city waitlist and GoFunMotion will let you know when approved live partners are available.</p>
+        <Link className="mt-4 inline-flex min-h-11 items-center justify-center rounded-2xl bg-white px-4 text-sm font-black text-[#070816] hover:bg-lime-200" href={`/waitlist?city=${encodeURIComponent(listing.cityName)}`}>
+          Join city waitlist
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <form action={submit} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
       <h2 className="text-2xl font-black text-white">Request booking</h2>
@@ -97,10 +145,29 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
         </label>
         <Field min={1} max={50} name="partySize" placeholder="Party size" required type="number" />
       </div>
-      <label className="mt-3 block">
-        <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">Message</span>
-        <textarea className="mt-2 min-h-28 w-full rounded-2xl border border-white/10 bg-black/28 px-4 py-3 text-sm font-bold text-white outline-none focus:border-lime-300" name="message" placeholder="Anything the business should know?" />
-      </label>
+      <div className="mt-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <label className="text-xs font-black uppercase tracking-[0.14em] text-white/45" htmlFor={`booking-message-${listing.id}`}>Message</label>
+          <button
+            className="inline-flex min-h-9 items-center gap-2 rounded-full bg-cyan-300/12 px-3 text-xs font-black text-cyan-100 hover:bg-cyan-300/20 disabled:opacity-55"
+            disabled={aiBusy}
+            onClick={() => void draftMessage()}
+            type="button"
+          >
+            <Sparkles aria-hidden="true" size={14} />
+            {aiBusy ? "Drafting..." : "Draft with AI"}
+          </button>
+        </div>
+        <textarea
+          className="mt-2 min-h-28 w-full rounded-2xl border border-white/10 bg-black/28 px-4 py-3 text-sm font-bold text-white outline-none focus:border-lime-300"
+          id={`booking-message-${listing.id}`}
+          maxLength={600}
+          name="message"
+          onChange={(event) => setMessage(event.target.value)}
+          placeholder="Anything the business should know?"
+          value={message}
+        />
+      </div>
       <button className="mt-4 min-h-12 w-full rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-55" disabled={busy} type="submit">
         {busy ? "Sending..." : "Request Booking"}
       </button>

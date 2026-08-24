@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Send } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { PlanPanel } from "../../components/ai/plan-panel";
 import { DealCard } from "../../components/gofunmotion/deal-card";
 import { PlanFinderForm } from "../../components/gofunmotion/plan-finder-form";
-import { SavePlanButton } from "../../components/planner/save-plan-button";
-import { ShareButton } from "../../components/shared/share-button";
 import {
   buildSuggestedPlan,
   demoNotice,
   filterListings,
-  formatBudget,
   formatGroup,
-  formatIndoorOutdoor,
   formatVibe,
-  formatWhen,
   parsePlanFinderInput
 } from "../../lib/deals-data";
 import { buildSeoMetadata } from "../../lib/seo";
@@ -55,43 +51,7 @@ export default async function FindPage({ searchParams }: FindPageProps) {
         <PlanFinderForm compact defaultValues={input} />
       </section>
 
-      <section className="mt-10 rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-2xl md:p-7">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Suggested deal plan</p>
-            <h2 className="mt-3 text-4xl font-black leading-tight text-white">{plan.title}</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-white/60">{plan.summary}</p>
-          </div>
-          <div className="grid grid-cols-3 gap-2 text-center text-xs font-black text-white/58">
-            <span className="rounded-2xl bg-black/28 p-3">{formatWhen(input.when)}</span>
-            <span className="rounded-2xl bg-black/28 p-3">{formatBudget(input.budget)}</span>
-            <span className="rounded-2xl bg-black/28 p-3">{formatIndoorOutdoor(input.indoorOutdoor)}</span>
-          </div>
-        </div>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          {plan.items.map((item, index) => (
-            <article className="rounded-2xl border border-white/10 bg-black/24 p-5" key={`${item.title}-${index}`}>
-              <span className="text-xs font-black uppercase tracking-[0.16em] text-lime-200">Step {index + 1}</span>
-              <h3 className="mt-3 text-2xl font-black text-white">{item.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-white/60">{item.description}</p>
-              <div className="mt-4 flex flex-wrap gap-2 text-xs font-black text-white/58">
-                <span className="rounded-full bg-white/[0.07] px-3 py-1.5">{item.time}</span>
-                <span className="rounded-full bg-white/[0.07] px-3 py-1.5">{item.estimatedPrice}</span>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <SavePlanButton plan={plan} />
-          <ShareButton label="Share plan" text={plan.summary} title={plan.title} />
-          <Link className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/deals">
-            <Send aria-hidden="true" size={18} />
-            Browse tonight&apos;s deals
-          </Link>
-        </div>
-      </section>
+      <PlanPanel initialPlan={plan} input={input} />
 
       <section className="mt-12">
         <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-end">

@@ -74,6 +74,16 @@ export type Business = {
 };
 
 export type Listing = {
+  aiReview?: {
+    categoryMatch: boolean;
+    issues: string[];
+    provider: "openai" | "rules";
+    reviewedAt?: string | null;
+    riskLevel: "low" | "medium" | "high";
+    status: "approved" | "needs_changes" | "rejected" | "pending_admin_review";
+    suggestedFixes: string[];
+    summary: string;
+  };
   approvalStatus: "pending" | "approved" | "rejected";
   availableDays: string[];
   availableFrom: string | null;

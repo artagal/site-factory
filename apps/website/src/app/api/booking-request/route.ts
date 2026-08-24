@@ -36,6 +36,7 @@ export async function POST(request: Request) {
 
   const listing = await getPublicListingByIdOrSlugForServer({ listingId, listingSlug });
   if (!listing) return jsonError("This deal is not available for booking requests.", 404);
+  if (listing.isDemo) return jsonError("Demo deals are examples only and cannot receive booking requests.", 409);
 
   const emailPayload = {
     businessName: listing.businessName,

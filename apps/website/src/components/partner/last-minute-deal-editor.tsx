@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { Clock, Edit3, PauseCircle, Plus, Send, Tag, Trash2, type LucideIcon } from "lucide-react";
+import { Clock, Edit3, PauseCircle, Plus, Send, ShieldCheck, Sparkles, Tag, Trash2, type LucideIcon } from "lucide-react";
 import { getCurrentUserIdToken } from "../../lib/auth";
 import { StatusBanner } from "../gofunmotion/product-states";
 import { demoCategories } from "../../lib/demoData";
@@ -18,6 +18,14 @@ import type { Business, GroupType, IndoorOutdoor, Listing, PlanVibe } from "../.
 
 type SaveMode = "draft" | "submit";
 type ListingAction = "submit" | "pause" | "draft" | "expire";
+type CopyField = "title" | "short_description" | "description";
+type AiReview = {
+  issues: string[];
+  riskLevel: "low" | "medium" | "high";
+  status: "approved" | "needs_changes" | "rejected" | "pending_admin_review";
+  suggestedFixes: string[];
+  summary: string;
+};
 
 type DealFormState = {
   availableSlot: string;
@@ -135,6 +143,8 @@ export function LastMinuteDealEditor({
   const [form, setForm] = useState<DealFormState>(() => blankForm(primaryCategory, businessCityName));
   const [busyMode, setBusyMode] = useState<SaveMode | null>(null);
   const [busyListingId, setBusyListingId] = useState("");
+  const [aiBusy, setAiBusy] = useState<CopyField | "review" | "">("");
+  const [aiReview, setAiReview] = useState<AiReview | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [status, setStatus] = useState("");
 
@@ -150,6 +160,90 @@ export function LastMinuteDealEditor({
 
   function update<Key extends keyof DealFormState>(key: Key, value: DealFormState[Key]) {
     setForm((current) => ({ ...current, [key]: value }));
+    setAiReview(null);
+  }
+
+  async function improveCopy(field: CopyField) {
+    if (aiBusy || business.isDemo) return;
+    const key: "title" | "shortDescription" | "description" = field === "short_description" ? "shortDescription" : field;
+    const text = form[key];
+    if (!text.trim()) {
+      setStatus("Add text before asking the writing assistant to improve it.");
+      return;
+    }
+
+    setAiBusy(field);
+    setStatus("");
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in as the business owner before using the writing assistant.");
+        return;
+      }
+      const category = demoCategories.find((item) => item.id === form.categoryIds[0])?.name ?? "Activity";
+      const response = await fetch("/api/ai/partner-copy", {
+        body: JSON.stringify({ businessId: business.id, category, field, text }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string; setupWarning?: string | null; suggestion?: string; warnings?: string[] } | null;
+      if (!response.ok || !result?.suggestion) {
+        setStatus(result?.error ?? "Could not improve this text yet.");
+        return;
+      }
+      setForm((current) => ({ ...current, [key]: result.suggestion ?? current[key] }));
+      setAiReview(null);
+      setStatus(result.warnings?.[0] ?? result.setupWarning ?? "Suggestion applied. Review and edit it before saving.");
+    } catch {
+      setStatus("Could not improve this text yet.");
+    } finally {
+      setAiBusy("");
+    }
+  }
+
+  async function reviewCurrentDeal() {
+    if (aiBusy || business.isDemo) return;
+    setAiBusy("review");
+    setStatus("");
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setStatus("Sign in as the business owner before checking this deal.");
+        return;
+      }
+      const response = await fetch("/api/ai/review-listing", {
+        body: JSON.stringify({
+          businessId: business.id,
+          listing: {
+            ...form,
+            cityName: businessCityName,
+            description: form.description || form.shortDescription,
+            originalPrice: form.originalPrice || null,
+            price: form.price,
+            remainingSpots: form.remainingSpots || null
+          }
+        }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string; review?: AiReview; setupWarning?: string | null } | null;
+      if (!response.ok || !result?.review) {
+        setStatus(result?.error ?? "Could not review this deal yet.");
+        return;
+      }
+      setAiReview(result.review);
+      setStatus(result.setupWarning ?? "Review complete. This is guidance only; an admin still controls publication.");
+    } catch {
+      setStatus("Could not review this deal yet.");
+    } finally {
+      setAiBusy("");
+    }
   }
 
   function toggleArray<Key extends "categoryIds" | "groupTypes" | "vibeTags">(key: Key, value: DealFormState[Key][number]) {
@@ -196,9 +290,13 @@ export function LastMinuteDealEditor({
         },
         method: "POST"
       });
-      const result = (await response.json().catch(() => null)) as { error?: string; listingId?: string; status?: string } | null;
+      const result = (await response.json().catch(() => null)) as { aiReview?: AiReview; error?: string; listingId?: string; status?: string } | null;
 
       if (!response.ok) {
+        if (result?.aiReview) {
+          setAiReview(result.aiReview);
+          setErrors(result.aiReview.issues);
+        }
         setStatus(result?.error ?? "Could not save this deal.");
         return;
       }
@@ -426,7 +524,10 @@ export function LastMinuteDealEditor({
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Deal title">
+            <Field
+              action={<AiFieldButton busy={aiBusy === "title"} label="Improve" onClick={() => void improveCopy("title")} />}
+              label="Deal title"
+            >
               <input className={inputClass} onChange={(event) => update("title", event.target.value)} placeholder="Escape room open slot" required value={form.title} />
             </Field>
             <Field label="City">
@@ -460,14 +561,20 @@ export function LastMinuteDealEditor({
             ))}
           </ChipGroup>
 
-          <Field label="Short card description">
+          <Field
+            action={<AiFieldButton busy={aiBusy === "short_description"} label="Improve" onClick={() => void improveCopy("short_description")} />}
+            label="Short card description"
+          >
             <input className={inputClass} onChange={(event) => update("shortDescription", event.target.value)} placeholder="2 discounted spots for tonight only." required value={form.shortDescription} />
           </Field>
 
           <details className="rounded-2xl border border-white/10 bg-black/24 p-4">
             <summary className="cursor-pointer text-sm font-black text-white">Advanced details</summary>
             <div className="mt-4 grid gap-4">
-              <Field label="Full description">
+              <Field
+                action={<AiFieldButton busy={aiBusy === "description"} label="Improve" onClick={() => void improveCopy("description")} />}
+                label="Full description"
+              >
                 <textarea className={`${inputClass} min-h-28 py-3`} onChange={(event) => update("description", event.target.value)} placeholder="Optional. If blank, the short description is used." value={form.description} />
               </Field>
               <ChipGroup label="Great for">
@@ -515,6 +622,16 @@ export function LastMinuteDealEditor({
             </div>
           </details>
 
+          <button
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-cyan-300/30 bg-cyan-300/10 px-5 text-sm font-black text-cyan-100 hover:bg-cyan-300/18 disabled:opacity-55"
+            disabled={Boolean(aiBusy) || business.isDemo}
+            onClick={() => void reviewCurrentDeal()}
+            type="button"
+          >
+            <ShieldCheck aria-hidden="true" size={17} />
+            {aiBusy === "review" ? "Checking..." : "Check deal before submission"}
+          </button>
+          {aiReview ? <AiReviewPanel review={aiReview} /> : null}
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.08] px-5 text-sm font-black text-white hover:bg-white/12 disabled:opacity-60"
@@ -556,12 +673,59 @@ export function LastMinuteDealEditor({
 const inputClass =
   "min-h-12 w-full rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-sm font-bold text-white outline-none placeholder:text-white/30 focus:border-lime-300/60";
 
-function Field({ children, label }: { children: ReactNode; label: string }) {
+function Field({ action, children, label }: { action?: ReactNode; children: ReactNode; label: string }) {
   return (
-    <label className="grid gap-2">
-      <span className="text-xs font-black uppercase tracking-[0.14em] text-white/42">{label}</span>
-      {children}
-    </label>
+    <div className="grid gap-2">
+      <div className="flex min-h-9 items-center justify-between gap-2 text-xs font-black uppercase tracking-[0.14em] text-white/42">
+        {label}
+        {action}
+      </div>
+      <label className="contents">
+        <span className="sr-only">{label}</span>
+        {children}
+      </label>
+    </div>
+  );
+}
+
+function AiFieldButton({ busy, label, onClick }: { busy: boolean; label: string; onClick: () => void }) {
+  return (
+    <button
+      className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-cyan-300/12 px-3 text-[11px] font-black normal-case tracking-normal text-cyan-100 hover:bg-cyan-300/20 disabled:opacity-55"
+      disabled={busy}
+      onClick={(event) => {
+        event.preventDefault();
+        onClick();
+      }}
+      type="button"
+    >
+      <Sparkles aria-hidden="true" size={13} />
+      {busy ? "Working..." : label}
+    </button>
+  );
+}
+
+function AiReviewPanel({ review }: { review: AiReview }) {
+  const tone = review.status === "approved"
+    ? "border-lime-300/25 bg-lime-300/10 text-lime-100"
+    : review.status === "rejected"
+      ? "border-rose-300/25 bg-rose-300/10 text-rose-100"
+      : "border-amber-300/25 bg-amber-300/10 text-amber-100";
+
+  return (
+    <div className={`rounded-2xl border p-4 ${tone}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm font-black">AI review: {review.status.replace(/_/g, " ")}</p>
+        <span className="rounded-full bg-black/20 px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em]">{review.riskLevel} risk</span>
+      </div>
+      <p className="mt-2 text-sm font-bold leading-6 text-white/68">{review.summary}</p>
+      {review.issues.length ? (
+        <ul className="mt-3 grid gap-1 text-xs font-bold leading-5 text-white/62">
+          {review.issues.map((issue) => <li key={issue}>- {issue}</li>)}
+        </ul>
+      ) : null}
+      <p className="mt-3 text-xs font-bold leading-5 text-white/46">AI does not publish deals. Admin approval is always required.</p>
+    </div>
   );
 }
 

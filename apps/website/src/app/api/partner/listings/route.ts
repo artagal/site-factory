@@ -1,5 +1,6 @@
 import { slugify } from "../../../../lib/slug";
 import { normalizeAvailableDays } from "../../../../lib/availability";
+import { listingReviewInputFromRecord, reviewListingWithAi } from "../../../../lib/ai/listing-review-agent";
 import { countLimitedListings, getPartnerTierCapabilities, isLimitedListingStatus } from "../../../../lib/partner-limits";
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../../lib/server/firebase-admin";
@@ -82,7 +83,7 @@ type OwnedBusinessResult =
   | { error: Response };
 
 type OwnedListingResult =
-  | { db: Firestore; listing: DocumentData; listingRef: DocumentReference }
+  | { db: Firestore; listing: DocumentData; listingRef: DocumentReference; token: DecodedIdToken }
   | { error: Response };
 
 async function verifyOwnedBusiness(request: Request, businessId: string): Promise<OwnedBusinessResult> {
@@ -149,7 +150,7 @@ async function verifyOwnedListing(request: Request, businessId: string, listingI
     return { error: jsonError("Listing was not found for this business.", 404) };
   }
 
-  return { db: verified.db, listing, listingRef };
+  return { db: verified.db, listing, listingRef, token: verified.token };
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -180,8 +181,8 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError("Add title, category, descriptions, price, and at least one available time.", 400);
   }
 
-  if (originalPrice !== null && originalPrice < price) {
-    return jsonError("Original price should be greater than or equal to the deal price.", 400);
+  if (originalPrice !== null && originalPrice <= price) {
+    return jsonError("Original price must be greater than the deal price, or left blank.", 400);
   }
 
   const listingRef = listingId ? db.collection("listings").doc(listingId) : db.collection("listings").doc();
@@ -208,9 +209,43 @@ export async function POST(request: Request): Promise<Response> {
   const cityName = cityData ? clean(cityData.name, 120) : clean(business.cityName, 120) || titleizeSlug(cityId);
   const slug = `${slugify(title) || "last-minute-deal"}-${listingRef.id.slice(0, 6)}`;
   const now = FieldValue.serverTimestamp();
+  const reviewResult = saveMode === "submit"
+    ? await reviewListingWithAi({
+        input: listingReviewInputFromRecord({
+          availableSlot: availableSlots[0],
+          categoryIds,
+          cityName,
+          description,
+          originalPrice,
+          price,
+          remainingSpots: body?.remainingSpots,
+          shortDescription,
+          title
+        }),
+        scopeKey: token.uid
+      })
+    : null;
+
+  if (reviewResult && (reviewResult.review.status === "needs_changes" || reviewResult.review.status === "rejected")) {
+    return jsonError("Fix the listing review issues before submitting it for admin approval.", 422, {
+      aiReview: reviewResult.review,
+      provider: reviewResult.provider,
+      setupWarning: reviewResult.setupWarning
+    });
+  }
 
   await listingRef.set(
     {
+      ...(reviewResult
+        ? {
+            aiReview: {
+              ...reviewResult.review,
+              provider: reviewResult.provider,
+              reviewedAt: now,
+              version: 1
+            }
+          }
+        : {}),
       approvalStatus: "pending",
       availableDays,
       availableFrom: cleanNullable(body?.availableFrom, 40),
@@ -304,9 +339,28 @@ export async function PATCH(request: Request): Promise<Response> {
       if (limitError) return limitError;
     }
 
+    const reviewResult = await reviewListingWithAi({
+      input: listingReviewInputFromRecord(verified.listing as Record<string, unknown>),
+      scopeKey: verified.token.uid
+    });
+
+    if (reviewResult.review.status === "needs_changes" || reviewResult.review.status === "rejected") {
+      return jsonError("Fix the listing review issues before submitting it for admin approval.", 422, {
+        aiReview: reviewResult.review,
+        provider: reviewResult.provider,
+        setupWarning: reviewResult.setupWarning
+      });
+    }
+
     await verified.listingRef.set(
       {
         approvalStatus: "pending",
+        aiReview: {
+          ...reviewResult.review,
+          provider: reviewResult.provider,
+          reviewedAt: now,
+          version: 1
+        },
         featured: false,
         promoted: false,
         status: "pending_approval",

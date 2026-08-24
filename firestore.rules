@@ -911,6 +911,16 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Written only by trusted server routes through Firebase Admin.
+    match /aiUsage/{usageId} {
+      allow read, write: if false;
+    }
+
+    // Audit records contain operational metadata, never prompts or response text.
+    match /aiAuditEvents/{eventId} {
+      allow read, write: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

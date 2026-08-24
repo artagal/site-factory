@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Clock3, SearchX, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import { SmartSearch } from "../../components/ai/smart-search";
 import { DealCard } from "../../components/gofunmotion/deal-card";
 import { EmptyStatePanel, StatusBanner } from "../../components/gofunmotion/product-states";
 import { CategorySelectField } from "../../components/shared/category-select-field";
@@ -55,23 +56,24 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
       </section>
 
       <TrustBadges />
+      <SmartSearch cityId={input.cityId} />
 
-      <form className="sticky top-14 z-20 mt-0 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:top-16 md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.34)]">
+      <form className="sticky top-16 z-20 mt-0 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.34)]">
         <div className="grid grid-cols-2 items-center gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto] md:items-end">
           <CitySelectField compact defaultCity={input.city} defaultCityId={input.cityId} dense />
           <FilterSelect label="When" name="when" options={[["tonight", "Tonight"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]]} value={input.when} compact dense />
-          <div className="col-span-2 md:col-span-1">
-            <CategorySelectField compact defaultCategoryId={categoryId} includeAll />
+          <div className="col-span-1">
+            <CategorySelectField compact defaultCategoryId={categoryId} dense includeAll />
           </div>
           <input name="sort" type="hidden" value={sort} />
-          <button className="col-span-2 h-12 rounded-2xl bg-lime-300 px-4 text-sm font-black leading-none text-[#070816] hover:bg-white md:col-span-1 md:px-5" type="submit">
+          <button className="col-span-1 h-12 rounded-2xl bg-lime-300 px-4 text-sm font-black leading-none text-[#070816] hover:bg-white md:px-5" type="submit">
             <span className="md:hidden">Show</span>
             <span className="hidden md:inline">Show Deals</span>
           </button>
         </div>
       </form>
 
-      <nav aria-label="Quick deal filters" className="mt-4 flex gap-2 overflow-x-auto pb-1">
+      <nav aria-label="Quick deal filters" className="scrollbar-none mt-4 flex gap-2 overflow-x-auto pb-1">
         <QuickFilter href="/deals?cityId=miami&when=tonight&sort=tonight" label="Miami tonight" />
         <QuickFilter href="/deals?when=tonight&who=date&sort=date-night" label="Date night" />
         <QuickFilter href="/deals?when=tonight&who=friends&sort=tonight" label="Friends" />
@@ -173,7 +175,7 @@ function TrustBadges() {
   ];
 
   return (
-    <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
+    <div className="scrollbar-none mt-5 flex gap-2 overflow-x-auto pb-1">
       {items.map((item) => {
         const Icon = item.icon;
         return (
