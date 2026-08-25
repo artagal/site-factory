@@ -1,7 +1,7 @@
 import type { Business, Category, City, Listing } from "../types/deals";
 
 export const demoNotice =
-  "Demo scaffolding only. These example listings are not production partners or live bookable inventory.";
+  "Demo examples are clearly labeled and never treated as real partners. Only reviewed live deals accept booking requests.";
 
 export const demoCities: City[] = [
   {

@@ -104,18 +104,22 @@ function blankForm(primaryCategory = "date-night", cityName = "Your city"): Deal
 }
 
 function formFromListing(listing: Listing): DealFormState {
+  const categoryIds = Array.isArray(listing.categoryIds) && listing.categoryIds.length ? listing.categoryIds : ["date-night"];
+  const groupTypes: GroupType[] = Array.isArray(listing.groupTypes) && listing.groupTypes.length ? listing.groupTypes : ["date", "friends"];
+  const vibeTags: PlanVibe[] = Array.isArray(listing.vibeTags) && listing.vibeTags.length ? listing.vibeTags : ["social"];
+
   return {
-    availableSlot: listing.availableSlots[0] ?? "",
+    availableSlot: Array.isArray(listing.availableSlots) ? listing.availableSlots[0] ?? "" : "",
     bookingMode: listing.bookingMode === "external_link" ? "external_link" : "request",
     bookingUrl: listing.bookingUrl ?? "",
     cancellationNote: listing.cancellationNote,
     capacity: listing.capacity === null ? "" : String(listing.capacity),
-    categoryIds: listing.categoryIds.length ? listing.categoryIds : ["date-night"],
+    categoryIds,
     cityName: listing.cityName,
     description: listing.description,
     durationMinutes: String(listing.durationMinutes),
     groupSize: listing.groupSize,
-    groupTypes: listing.groupTypes,
+    groupTypes,
     indoorOutdoor: listing.indoorOutdoor,
     listingId: listing.id,
     originalPrice: listing.originalPrice === null ? "" : String(listing.originalPrice),
@@ -124,7 +128,7 @@ function formFromListing(listing: Listing): DealFormState {
     shortDescription: listing.shortDescription,
     terms: listing.terms,
     title: listing.title,
-    vibeTags: listing.vibeTags,
+    vibeTags,
     whyItFits: listing.whyItFits
   };
 }
@@ -138,8 +142,9 @@ export function LastMinuteDealEditor({
   listings: Listing[];
   onSaved: () => void;
 }) {
-  const primaryCategory = business.categories[0] ?? "date-night";
-  const businessCityName = business.cityName ?? (business.state ? `${titleizeSlug(business.cityId)}, ${business.state}` : titleizeSlug(business.cityId));
+  const primaryCategory = Array.isArray(business.categories) ? business.categories[0] ?? "date-night" : "date-night";
+  const cityId = typeof business.cityId === "string" ? business.cityId : "";
+  const businessCityName = business.cityName ?? (cityId ? (business.state ? `${titleizeSlug(cityId)}, ${business.state}` : titleizeSlug(cityId)) : "Your city");
   const [form, setForm] = useState<DealFormState>(() => blankForm(primaryCategory, businessCityName));
   const [busyMode, setBusyMode] = useState<SaveMode | null>(null);
   const [busyListingId, setBusyListingId] = useState("");
@@ -466,7 +471,7 @@ export function LastMinuteDealEditor({
                 <div className="mt-3 flex flex-wrap gap-2 text-xs font-black">
                   <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">Was {listing.originalPrice ? `$${listing.originalPrice}` : "n/a"}</span>
                   <span className="rounded-full bg-lime-300 px-3 py-1 text-[#070816]">Now ${listing.price}</span>
-                  <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">{listing.availableSlots[0] ?? "Set time"}</span>
+                  <span className="rounded-full bg-white/[0.08] px-3 py-1 text-white/62">{Array.isArray(listing.availableSlots) ? listing.availableSlots[0] ?? "Set time" : "Set time"}</span>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Link className="inline-flex min-h-9 items-center rounded-full bg-white/[0.08] px-3 text-xs font-black text-lime-200 hover:text-white" href={`/deals/${listing.slug}`}>

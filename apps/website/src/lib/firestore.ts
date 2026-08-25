@@ -1,11 +1,14 @@
 import {
   addDoc,
   collection,
+  connectFirestoreEmulator,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
   getFirestore,
+  limit,
+  orderBy,
   query,
   serverTimestamp,
   setDoc,
@@ -13,7 +16,10 @@ import {
 } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { getFirebaseApp } from "./firebase";
-import type { BookingRequest, Business, Category, City, GoFunMotionUserProfile, Listing, PartnerApplication, SuggestedPlan } from "../types/deals";
+import { normalizeBusinessDocument, normalizeCategoryDocument, normalizeCityDocument, normalizeListingDocument } from "./firestore-model";
+import type { BookingRequest, Business, GoFunMotionUserProfile, Listing, PartnerApplication, SuggestedPlan } from "../types/deals";
+
+const emulatorConnectedDb = new WeakSet<object>();
 
 export type SavedListingRecord = {
   listingId: string;
@@ -43,32 +49,75 @@ export type PartnerApplicationRecord = PartnerApplication & {
   updatedAt?: unknown;
 };
 
+export type AdminAuditLogRecord = {
+  action: string;
+  actorUid: string;
+  createdAt?: unknown;
+  id: string;
+  metadata?: Record<string, boolean | number | string | null>;
+  targetId: string;
+  targetType: "bookingRequest" | "business" | "category" | "city" | "listing" | "partnerApplication" | "user";
+};
+
 export function getGoFunMotionDb() {
   const app = getFirebaseApp();
-  return app ? getFirestore(app) : null;
+  if (!app) return null;
+
+  const db = getFirestore(app);
+  const emulatorHost = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST;
+  if (
+    process.env.NODE_ENV !== "production"
+    && emulatorHost
+    && !emulatorConnectedDb.has(db)
+  ) {
+    const [host, portValue] = emulatorHost.split(":");
+    const port = Number(portValue);
+    if (host && Number.isInteger(port) && port > 0) {
+      connectFirestoreEmulator(db, host, port);
+      emulatorConnectedDb.add(db);
+    }
+  }
+
+  return db;
 }
 
 export async function ensureUserProfile(user: User) {
   const db = getGoFunMotionDb();
   if (!db) return null;
 
-  await setDoc(
-    doc(db, "users", user.uid),
-    {
-      createdAt: serverTimestamp(),
-      displayName: user.displayName ?? "GoFunMotion user",
-      email: user.email,
-      isAnonymous: user.isAnonymous,
-      lastLoginAt: serverTimestamp(),
-      photoURL: user.photoURL,
-      phone: null,
-      preferredCategories: [],
-      preferredCityId: null,
-      role: "user",
-      updatedAt: serverTimestamp()
-    },
-    { merge: true }
-  );
+  const profileRef = doc(db, "users", user.uid);
+  const existingProfile = await getDoc(profileRef);
+  const sharedFields = {
+    displayName: user.displayName ?? "GoFunMotion user",
+    email: user.email,
+    isAnonymous: user.isAnonymous,
+    lastLoginAt: serverTimestamp(),
+    photoURL: user.photoURL,
+    updatedAt: serverTimestamp()
+  };
+
+  try {
+    await setDoc(profileRef, existingProfile.exists()
+      ? sharedFields
+      : {
+        ...sharedFields,
+        accountStatus: "active",
+        createdAt: serverTimestamp(),
+        phone: null,
+        preferredCategories: [],
+        preferredCityId: null,
+        role: "user"
+      },
+      { merge: true }
+    );
+  } catch {
+    const idToken = await user.getIdToken();
+    const response = await fetch("/api/account/profile/sync", {
+      headers: { Authorization: `Bearer ${idToken}` },
+      method: "POST"
+    });
+    if (!response.ok) throw new Error("Could not synchronize your account profile.");
+  }
 
   return user.uid;
 }
@@ -186,28 +235,28 @@ export async function readAdminBusinesses() {
   const db = getGoFunMotionDb();
   if (!db) return [];
   const snapshot = await getDocs(collection(db, "businesses"));
-  return snapshot.docs.map((businessDoc) => ({ id: businessDoc.id, ...businessDoc.data() }) as Business);
+  return snapshot.docs.map((businessDoc) => normalizeBusinessDocument(businessDoc.id, businessDoc.data()));
 }
 
 export async function readAdminCities() {
   const db = getGoFunMotionDb();
   if (!db) return [];
   const snapshot = await getDocs(collection(db, "cities"));
-  return snapshot.docs.map((cityDoc) => ({ id: cityDoc.id, ...cityDoc.data() }) as City);
+  return snapshot.docs.map((cityDoc) => normalizeCityDocument(cityDoc.id, cityDoc.data()));
 }
 
 export async function readAdminCategories() {
   const db = getGoFunMotionDb();
   if (!db) return [];
   const snapshot = await getDocs(collection(db, "categories"));
-  return snapshot.docs.map((categoryDoc) => ({ id: categoryDoc.id, ...categoryDoc.data() }) as Category);
+  return snapshot.docs.map((categoryDoc) => normalizeCategoryDocument(categoryDoc.id, categoryDoc.data()));
 }
 
 export async function readAdminListings() {
   const db = getGoFunMotionDb();
   if (!db) return [];
   const snapshot = await getDocs(collection(db, "listings"));
-  return snapshot.docs.map((listingDoc) => ({ id: listingDoc.id, ...listingDoc.data() }) as Listing);
+  return snapshot.docs.map((listingDoc) => normalizeListingDocument(listingDoc.id, listingDoc.data()));
 }
 
 export async function readAdminBookingRequests() {
@@ -217,18 +266,25 @@ export async function readAdminBookingRequests() {
   return snapshot.docs.map((requestDoc) => ({ id: requestDoc.id, ...requestDoc.data() }) as BookingRequestRecord);
 }
 
+export async function readAdminAuditLogs() {
+  const db = getGoFunMotionDb();
+  if (!db) return [];
+  const snapshot = await getDocs(query(collection(db, "adminAuditLogs"), orderBy("createdAt", "desc"), limit(30)));
+  return snapshot.docs.map((auditDoc) => ({ id: auditDoc.id, ...auditDoc.data() }) as AdminAuditLogRecord);
+}
+
 export async function readBusinessesForOwner(userId: string) {
   const db = getGoFunMotionDb();
   if (!db) return [];
   const snapshot = await getDocs(query(collection(db, "businesses"), where("ownerIds", "array-contains", userId)));
-  return snapshot.docs.map((businessDoc) => ({ id: businessDoc.id, ...businessDoc.data() }) as Business);
+  return snapshot.docs.map((businessDoc) => normalizeBusinessDocument(businessDoc.id, businessDoc.data()));
 }
 
 export async function readListingsForBusiness(businessId: string) {
   const db = getGoFunMotionDb();
   if (!db) return [];
   const snapshot = await getDocs(query(collection(db, "listings"), where("businessId", "==", businessId)));
-  return snapshot.docs.map((listingDoc) => ({ id: listingDoc.id, ...listingDoc.data() }) as Listing);
+  return snapshot.docs.map((listingDoc) => normalizeListingDocument(listingDoc.id, listingDoc.data()));
 }
 
 export async function readBookingRequestsForBusiness(businessId: string) {

@@ -7,6 +7,7 @@ import { ListingActionLink, ListingViewTracker } from "../../../components/listi
 import { SaveListingButton } from "../../../components/listings/save-listing-button";
 import { ShareButton } from "../../../components/shared/share-button";
 import { demoNotice, formatPrice, getCategoryById, getListingBySlug, listings } from "../../../lib/deals-data";
+import { isDemoDataEnabled } from "../../../lib/demo-mode";
 import { buildListingSeoDescription } from "../../../lib/listing-seo";
 import { buildSeoMetadata } from "../../../lib/seo";
 import { getPublicBusinessForServer, getPublicListingBySlugForServer } from "../../../lib/server/public-listings";
@@ -16,7 +17,7 @@ type DealDetailProps = {
 };
 
 export function generateStaticParams() {
-  return listings.map((listing) => ({ slug: listing.slug }));
+  return isDemoDataEnabled() ? listings.map((listing) => ({ slug: listing.slug })) : [];
 }
 
 export async function generateMetadata({ params }: DealDetailProps): Promise<Metadata> {
@@ -66,9 +67,11 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
       <section className="mt-6 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <div className="min-h-[360px] rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_20%_20%,rgba(190,242,100,0.32),transparent_34%),radial-gradient(circle_at_80%_12%,rgba(34,211,238,0.26),transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.02))] p-5">
-            <span className="rounded-full bg-black/52 px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-white/80">
-              Demo listing
-            </span>
+            {listing.isDemo ? (
+              <span className="rounded-full bg-black/52 px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-white/80">
+                Demo listing
+              </span>
+            ) : null}
           </div>
         </div>
         <div>
@@ -137,7 +140,11 @@ export default async function DealDetailPage({ params }: DealDetailProps) {
           <p className="mt-3 text-sm leading-6 text-white/58">
             Exact location, distance, and mapping are intentionally placeholder-only until live partner data is approved. No paid location APIs are connected.
           </p>
-          <p className="mt-4 text-sm leading-6 text-white/52">{demoNotice}</p>
+          <p className="mt-4 text-sm leading-6 text-white/52">
+            {listing.isDemo
+              ? demoNotice
+              : "Availability is confirmed by request. GoFunMotion does not collect payment for this booking request."}
+          </p>
         </div>
       </section>
 

@@ -11,6 +11,7 @@
 }
 
 :root {
+  --app-header-height: 4rem;
   color-scheme: dark;
   --background: #070816;
   --foreground: #ffffff;

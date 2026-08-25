@@ -11,13 +11,13 @@ Project: GoFunMotion Deals (`go-fun-motion-deals-vl4mj8`)
 | Components | 4 |
 | Collections | 10 |
 | Enums | 0 |
-| Data Structs | 0 |
+| Data Structs | 15 |
 | App State | 2 |
 | Action Blocks | 0 |
 | Custom Functions | 0 |
 | Custom Actions | 0 |
-| API Groups | 0 |
-| API Endpoints | 0 |
+| API Groups | 1 |
+| API Endpoints | 13 |
 | App Events | 0 |
 | App Constants | 4 |
 | Custom Widgets | 0 |

@@ -3,7 +3,7 @@
 AdminPage → SignInPage
 DealDetailPage → SignInPage
 DealsPage → DealDetailPage, PartnerApplyPage
-DiscoverPage → DealDetailPage, FindPlanPage, SavedPage
+DiscoverPage → AdminPage, DealDetailPage, FindPlanPage, PartnerDashboardPage, SavedPage
 FindPlanPage → SignInPage
 PartnerApplyPage → PartnerPage
 PartnerDashboardPage → SignInPage

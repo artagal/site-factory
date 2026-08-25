@@ -28,6 +28,7 @@ type TransactionalEmail = {
   idempotencyKey?: string;
   replyTo?: string | null;
   subject: string;
+  tags?: Record<string, string>;
   text: string;
   to: string[];
 };
@@ -41,7 +42,8 @@ function getEmailFrom() {
 }
 
 function getReplyTo() {
-  return clean(process.env.EMAIL_REPLY_TO || process.env.RESEND_REPLY_TO || process.env.NEXT_PUBLIC_SITE_URL || "", 180) || null;
+  const replyTo = clean(process.env.EMAIL_REPLY_TO || process.env.RESEND_REPLY_TO || "", 180).toLowerCase();
+  return isEmail(replyTo) ? replyTo : null;
 }
 
 function isEmail(value: string) {
@@ -89,6 +91,12 @@ export async function sendTransactionalEmail(email: TransactionalEmail): Promise
       html: email.html,
       reply_to: email.replyTo ?? getReplyTo() ?? undefined,
       subject: email.subject,
+      tags: email.tags
+        ? Object.entries(email.tags).slice(0, 10).map(([name, value]) => ({
+          name: clean(name.replace(/[^a-zA-Z0-9_-]/g, "_"), 256),
+          value: clean(value.replace(/[^a-zA-Z0-9_-]/g, "_"), 256)
+        }))
+        : undefined,
       text: email.text,
       to
     }),
@@ -97,7 +105,8 @@ export async function sendTransactionalEmail(email: TransactionalEmail): Promise
       "Content-Type": "application/json",
       ...(email.idempotencyKey ? { "Idempotency-Key": email.idempotencyKey } : {})
     },
-    method: "POST"
+    method: "POST",
+    signal: AbortSignal.timeout(8_000)
   });
 
   const result = (await response.json().catch(() => null)) as { id?: string; message?: string; name?: string } | null;
@@ -168,6 +177,10 @@ export function buildBusinessBookingRequestEmail({
     idempotencyKey: `booking-request-business-${requestId}`,
     replyTo: request.email,
     subject,
+    tags: {
+      booking_request_id: requestId,
+      category: "booking_request_business"
+    },
     text,
     to: [recipient]
   };
@@ -217,6 +230,10 @@ export function buildCustomerBookingRequestEmail({
     html,
     idempotencyKey: `booking-request-customer-${requestId}`,
     subject,
+    tags: {
+      booking_request_id: requestId,
+      category: "booking_request_customer"
+    },
     text,
     to: [request.email]
   };
@@ -288,6 +305,10 @@ export function buildCustomerStatusEmail({
     html,
     idempotencyKey: `booking-status-${status}-${requestId}`,
     subject,
+    tags: {
+      booking_request_id: requestId,
+      category: `booking_status_${status}`
+    },
     text,
     to: [request.email]
   };

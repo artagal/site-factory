@@ -1,4 +1,5 @@
 import { demoBusinesses, demoCategories, demoCities, demoListings } from "./demoData";
+import { isDemoDataEnabled } from "./demo-mode";
 import { canReadApprovedBusiness, canReadPublishedListing } from "./permissions";
 import type { Listing, PlanFinderInput } from "../types/deals";
 
@@ -22,7 +23,7 @@ export type ListingSearchInput = Partial<PlanFinderInput> & {
 };
 
 export function getPublishedListings() {
-  return demoListings.filter(canReadPublishedListing);
+  return isDemoDataEnabled() ? demoListings.filter(canReadPublishedListing) : [];
 }
 
 export function getListingBySlug(slug: string) {
@@ -42,6 +43,7 @@ export function getCityBySlug(slug: string) {
 }
 
 export function getBusinessById(id: string) {
+  if (!isDemoDataEnabled()) return undefined;
   const business = demoBusinesses.find((item) => item.id === id);
   return business && canReadApprovedBusiness(business) ? business : undefined;
 }

@@ -46,19 +46,15 @@ function expectIndex(collectionGroup: string, fields: IndexField[]) {
 
 describe("Firebase production readiness", () => {
   it("keeps account deletion scoped to Deals user-owned records", () => {
-    expect([...USER_DOCUMENT_SUBCOLLECTIONS]).toEqual(["savedListings", "savedPlans"]);
-    expect([...USER_OWNED_COLLECTIONS]).toEqual(["savedListings", "savedPlans", "plans", "bookingRequests"]);
-    expect([...USER_TOP_LEVEL_DOCUMENTS]).toEqual(["customer_profiles", "provider_profiles", "subscriptions"]);
-    expect([...USER_FIELD_OWNED_COLLECTIONS]).toEqual(expect.arrayContaining([
-      { collectionName: "favorites", fieldPath: "userId" },
-      { collectionName: "device_tokens", fieldPath: "userId" },
-      { collectionName: "reports", fieldPath: "reporterId" },
-      { collectionName: "booking_requests", fieldPath: "customerId" },
-      { collectionName: "booking_requests", fieldPath: "providerId" },
-      { collectionName: "reviews", fieldPath: "customerId" },
-      { collectionName: "reviews", fieldPath: "providerId" },
-      { collectionName: "drops", fieldPath: "providerId" }
-    ]));
+    expect([...USER_DOCUMENT_SUBCOLLECTIONS]).toEqual([
+      "deviceTokens",
+      "notifications",
+      "savedListings",
+      "savedPlans"
+    ]);
+    expect([...USER_OWNED_COLLECTIONS]).toEqual(["plans", "bookingRequests"]);
+    expect([...USER_TOP_LEVEL_DOCUMENTS]).toEqual([]);
+    expect([...USER_FIELD_OWNED_COLLECTIONS]).toEqual([]);
     expect([...USER_DOCUMENT_SUBCOLLECTIONS, ...USER_OWNED_COLLECTIONS]).not.toContain("completedChallenges");
     expect([...USER_DOCUMENT_SUBCOLLECTIONS, ...USER_OWNED_COLLECTIONS]).not.toContain("savedChallenges");
   });
@@ -67,39 +63,31 @@ describe("Firebase production readiness", () => {
     expect(rules).toContain("match /users/{userId}");
     expect(rules).toContain("match /savedListings/{listingId}");
     expect(rules).toContain("match /savedPlans/{planId}");
-    expect(rules).toContain("match /savedListings/{savedListingId}");
-    expect(rules).toContain("match /savedPlans/{savedPlanId}");
+    expect(rules).toContain("match /deviceTokens/{tokenId}");
+    expect(rules).toContain("match /notifications/{notificationId}");
+    expect(rules).toContain("allow read: if isAdmin() || resource.data.active == true || resource.data.comingSoon == true");
+    expect(rules).toContain("allow read: if isAdmin() || resource.data.active == true");
     expect(rules).toContain("resource.data.userId == request.auth.uid");
 
-    expect(rules).toContain("function validBookingListingLink()");
-    expect(rules).toContain("canReadPublishedListing(get(/databases/$(database)/documents/listings/$(request.resource.data.listingId)).data)");
+    expect(rules).toContain("function validBookingCreate()");
+    expect(rules).toContain("isPublishedListingData( get(/databases/$(database)/documents/listings/$(request.resource.data.listingId)).data )");
     expect(rules).toContain("request.resource.data.businessId == get(/databases/$(database)/documents/listings/$(request.resource.data.listingId)).data.businessId");
     expect(rules).toContain("request.resource.data.cityId == get(/databases/$(database)/documents/listings/$(request.resource.data.listingId)).data.cityId");
-    expect(rules).toContain("canPartnerUpdateBookingRequest(resource.data)");
-    expect(rules).toContain("request.resource.data.diff(data).changedKeys().hasOnly([ \"status\", \"updatedAt\" ])");
+    expect(rules).toContain("allow update, delete: if isAdmin()");
     expect(rules).toContain("allow delete: if isAdmin()");
 
     expect(rules).toContain("function validPartnerListingCreate()");
-    expect(rules).toContain("function partnerListingReviewFieldsLocked(data)");
-    expect(rules).toContain("request.resource.data.approvalStatus == data.approvalStatus");
-    expect(rules).toContain("request.resource.data.featured == data.featured");
-    expect(rules).toContain("request.resource.data.promoted == data.promoted");
-    expect(rules).toContain("allow update: if isAdmin() || validPartnerListingUpdate(resource.data)");
+    expect(rules).toContain("request.resource.data.approvalStatus == resource.data.approvalStatus");
+    expect(rules).toContain("request.resource.data.featured == resource.data.featured");
+    expect(rules).toContain("request.resource.data.promoted == resource.data.promoted");
+    expect(rules).toContain("allow update: if isAdmin() || validPartnerListingUpdate()");
 
-    expect(rules).toContain("match /admin_users/{userId}");
-    expect(rules).toContain("match /customer_profiles/{userId}");
-    expect(rules).toContain("match /provider_profiles/{userId}");
-    expect(rules).toContain("match /drops/{dropId}");
-    expect(rules).toContain("match /booking_requests/{requestId}");
-    expect(rules).toContain("match /favorites/{favoriteId}");
-    expect(rules).toContain("match /reviews/{reviewId}");
-    expect(rules).toContain("match /reports/{reportId}");
-    expect(rules).toContain("match /admin_actions/{actionId}");
-    expect(rules).toContain("match /device_tokens/{tokenId}");
-    expect(rules).toContain("match /subscriptions/{userId}");
-    expect(rules).toContain("function validGoFunBookingCreate()");
-    expect(rules).toContain("isApprovedActiveDrop(get(/databases/$(database)/documents/drops/$(request.resource.data.dropId)).data)");
-    expect(rules).toContain("request.resource.data.moderationStatus in [\"draft\", \"pending_review\"]");
+    expect(rules).toContain("match /adminAuditLogs/{eventId}");
+    expect(rules).toContain("match /emailDeliveryEvents/{eventId}");
+    expect(rules).toContain("match /{document=**}");
+    expect(rules).not.toContain("match /drops/{dropId}");
+    expect(rules).not.toContain("match /booking_requests/{requestId}");
+    expect(rules).not.toContain("match /favorites/{favoriteId}");
   });
 
   it("ships composite indexes for public, saved, booking, partner, and admin query paths", () => {
@@ -121,22 +109,9 @@ describe("Firebase production readiness", () => {
       { fieldPath: "businessId", order: "ASCENDING" },
       { fieldPath: "updatedAt", order: "DESCENDING" }
     ]);
-    expectIndex("listings", [
-      { fieldPath: "isApproved", order: "ASCENDING" },
-      { fieldPath: "status", order: "ASCENDING" },
-      { fieldPath: "createdAt", order: "DESCENDING" }
-    ]);
     expectIndex("businesses", [
       { fieldPath: "ownerIds", arrayConfig: "CONTAINS" },
       { fieldPath: "status", order: "ASCENDING" }
-    ]);
-    expectIndex("savedListings", [
-      { fieldPath: "userId", order: "ASCENDING" },
-      { fieldPath: "createdAt", order: "DESCENDING" }
-    ]);
-    expectIndex("savedPlans", [
-      { fieldPath: "userId", order: "ASCENDING" },
-      { fieldPath: "createdAt", order: "DESCENDING" }
     ]);
     expectIndex("bookingRequests", [
       { fieldPath: "userId", order: "ASCENDING" },
@@ -154,50 +129,7 @@ describe("Firebase production readiness", () => {
       { fieldPath: "status", order: "ASCENDING" },
       { fieldPath: "createdAt", order: "DESCENDING" }
     ]);
-    expectIndex("drops", [
-      { fieldPath: "moderationStatus", order: "ASCENDING" },
-      { fieldPath: "status", order: "ASCENDING" },
-      { fieldPath: "city", order: "ASCENDING" },
-      { fieldPath: "startAt", order: "ASCENDING" }
-    ]);
-    expectIndex("drops", [
-      { fieldPath: "moderationStatus", order: "ASCENDING" },
-      { fieldPath: "status", order: "ASCENDING" },
-      { fieldPath: "category", order: "ASCENDING" },
-      { fieldPath: "startAt", order: "ASCENDING" }
-    ]);
-    expectIndex("drops", [
-      { fieldPath: "providerId", order: "ASCENDING" },
-      { fieldPath: "status", order: "ASCENDING" },
-      { fieldPath: "updatedAt", order: "DESCENDING" }
-    ]);
-    expectIndex("booking_requests", [
-      { fieldPath: "customerId", order: "ASCENDING" },
-      { fieldPath: "createdAt", order: "DESCENDING" }
-    ]);
-    expectIndex("booking_requests", [
-      { fieldPath: "providerId", order: "ASCENDING" },
-      { fieldPath: "status", order: "ASCENDING" },
-      { fieldPath: "createdAt", order: "DESCENDING" }
-    ]);
-    expectIndex("favorites", [
-      { fieldPath: "userId", order: "ASCENDING" },
-      { fieldPath: "createdAt", order: "DESCENDING" }
-    ]);
-    expectIndex("favorites", [
-      { fieldPath: "userId", order: "ASCENDING" },
-      { fieldPath: "dropId", order: "ASCENDING" }
-    ]);
-    expectIndex("reviews", [
-      { fieldPath: "providerId", order: "ASCENDING" },
-      { fieldPath: "moderationStatus", order: "ASCENDING" },
-      { fieldPath: "createdAt", order: "DESCENDING" }
-    ]);
-    expectIndex("reports", [
-      { fieldPath: "status", order: "ASCENDING" },
-      { fieldPath: "createdAt", order: "ASCENDING" }
-    ]);
-    expectIndex("admin_actions", [
+    expectIndex("adminAuditLogs", [
       { fieldPath: "targetType", order: "ASCENDING" },
       { fieldPath: "targetId", order: "ASCENDING" },
       { fieldPath: "createdAt", order: "DESCENDING" }
@@ -209,7 +141,6 @@ describe("Firebase production readiness", () => {
       "`status + approvalStatus`, public approved listing feeds",
       "`slug + status + approvalStatus`, public listing detail lookup",
       "`businessId + updatedAt`, partner dashboard sorting",
-      "`isApproved + status + createdAt`, FlutterFlow first-pass approved listing feeds",
       "`ownerIds + status`, web partner dashboard owner filters",
       "`businessOwnerIds + createdAt`"
     ]) {
@@ -218,16 +149,14 @@ describe("Firebase production readiness", () => {
 
     for (const requiredLine of [
       "## users/{uid}",
-      "## customer_profiles/{uid}",
-      "## provider_profiles/{uid}",
-      "## drops/{dropId}",
-      "## booking_requests/{requestId}",
-      "## favorites/{favoriteId}",
-      "## reviews/{reviewId}",
-      "## reports/{reportId}",
-      "## admin_actions/{actionId}",
-      "## device_tokens/{tokenId}",
-      "## subscriptions/{userId}"
+      "## businesses/{businessId}",
+      "## listings/{listingId}",
+      "## bookingRequests/{requestId}",
+      "## users/{uid}/savedListings/{listingId}",
+      "## users/{uid}/savedPlans/{planId}",
+      "## users/{uid}/deviceTokens/{tokenId}",
+      "## users/{uid}/notifications/{notificationId}",
+      "## adminAuditLogs/{eventId}"
     ]) {
       expect(targetDataModelDoc).toContain(requiredLine);
     }

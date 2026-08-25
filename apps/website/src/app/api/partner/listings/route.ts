@@ -153,6 +153,26 @@ async function verifyOwnedListing(request: Request, businessId: string, listingI
   return { db: verified.db, listing, listingRef, token: verified.token };
 }
 
+export async function GET(request: Request): Promise<Response> {
+  const token = await verifyBearerToken(request);
+  if (!token) return jsonError("Sign in as a business owner to load listings.", 401);
+
+  const db = getFirebaseAdminDb();
+  if (!db) return jsonError("Live partner tools are not connected yet.", 503);
+
+  const snapshot = await db.collection("listings").where("ownerIds", "array-contains", token.uid).get();
+  const listings = snapshot.docs
+    .map((listingDoc): DocumentData & { id: string } => ({ id: listingDoc.id, ...listingDoc.data() }))
+    .sort((left, right) => {
+      const leftMillis = typeof left.updatedAt?.toMillis === "function" ? left.updatedAt.toMillis() : 0;
+      const rightMillis = typeof right.updatedAt?.toMillis === "function" ? right.updatedAt.toMillis() : 0;
+      return rightMillis - leftMillis;
+    })
+    .slice(0, 100);
+
+  return jsonOk({ listings });
+}
+
 export async function POST(request: Request): Promise<Response> {
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
   const businessId = clean(body?.businessId, 140);

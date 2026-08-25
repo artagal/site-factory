@@ -1,13 +1,14 @@
 import { demoCities, demoListings } from "./demoData";
 import { normalizeCitySelection } from "./cities";
+import { isDemoDataEnabled } from "./demo-mode";
 import { formatBudget, formatDuration, formatGroup, formatPrice, formatVibe, formatWhen } from "./format";
 import { filterListings } from "./search";
 import type { BudgetTier, IndoorOutdoor, PlanFinderInput, PlanVibe, PlanWhen, SuggestedPlan } from "../types/deals";
 
 export const defaultPlanFinderInput: PlanFinderInput = {
   budget: "under50",
-  city: "Miami",
-  cityId: "miami",
+  city: "",
+  cityId: "",
   indoorOutdoor: "either",
   timeAvailable: "2hours",
   vibe: "surprise-me",
@@ -43,9 +44,11 @@ export function parsePlanFinderInput(searchParams: Record<string, string | strin
 }
 
 export function buildSuggestedPlan(input: PlanFinderInput): SuggestedPlan {
+  const cityName = input.city || "your city";
   const directMatches = filterListings(input);
   const cityMatches = filterListings({ city: input.city, cityId: input.cityId });
-  const fallbackListings = directMatches.length ? directMatches : cityMatches.length ? cityMatches : demoListings.slice(0, 4);
+  const demoFallback = isDemoDataEnabled() ? demoListings.slice(0, 4) : [];
+  const fallbackListings = directMatches.length ? directMatches : cityMatches.length ? cityMatches : demoFallback;
   const selected = [...new Map(fallbackListings.map((listing) => [listing.id, listing])).values()].slice(0, 4);
   const first = selected[0];
   const activeCity = demoCities.find((city) => city.slug === input.cityId || city.name.toLowerCase() === input.city.toLowerCase());
@@ -55,7 +58,7 @@ export function buildSuggestedPlan(input: PlanFinderInput): SuggestedPlan {
     backupSuggestions: buildBackups(input),
     estimatedTotalBudget: estimateBudget(selected.map((listing) => listing.price)),
     estimatedTotalTime: estimateTime(selected.map((listing) => listing.durationMinutes), input.timeAvailable),
-    id: `plan-${input.city.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${input.when}-${input.who}-${input.vibe}`,
+    id: `plan-${cityName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${input.when}-${input.who}-${input.vibe}`,
     input,
     items: [
       {
@@ -92,8 +95,8 @@ export function buildSuggestedPlan(input: PlanFinderInput): SuggestedPlan {
     source: selected.length > 0 && selected.every((listing) => listing.isDemo) ? "demo" : "local_rules",
     summary:
       first
-        ? `A ${formatVibe(input.vibe)} ${formatGroup(input.who).toLowerCase()} plan in ${input.city}, anchored by ${first.title}.`
-        : `A curated ${formatGroup(input.who).toLowerCase()} plan for ${input.city}, with local deals coming soon.`,
+        ? `A ${formatVibe(input.vibe)} ${formatGroup(input.who).toLowerCase()} plan in ${cityName}, anchored by ${first.title}.`
+        : `A curated ${formatGroup(input.who).toLowerCase()} plan for ${cityName}, with local deals coming soon.`,
     title: buildPlanTitle(input),
     waitlistRecommended,
     whyItFits: `Matched on ${formatWhen(input.when).toLowerCase()}, ${formatGroup(input.who).toLowerCase()}, ${formatBudget(input.budget).toLowerCase()}, ${formatVibe(input.vibe)}, and ${input.indoorOutdoor}.`
@@ -105,8 +108,9 @@ export function getBudgetRangeLabel(budget: BudgetTier | "flexible") {
 }
 
 function buildBackups(input: PlanFinderInput) {
+  const cityName = input.city || "your city";
   return [
-    `${input.city} coffee or dessert stop`,
+    `${cityName} coffee or dessert stop`,
     input.indoorOutdoor === "outdoor" ? "Indoor cafe backup if weather changes" : "Nearby walk if you want to extend the plan",
     "Join the city waitlist if live partner availability is thin"
   ];
@@ -121,7 +125,8 @@ function buildBackupLine(input: PlanFinderInput) {
 
 function buildPlanTitle(input: PlanFinderInput) {
   const vibe = input.vibe === "surprise-me" ? "fun" : formatVibe(input.vibe);
-  return `${vibe[0].toUpperCase()}${vibe.slice(1)} ${formatGroup(input.who).toLowerCase()} plan in ${input.city} ${formatBudget(input.budget).toLowerCase()}`;
+  const cityName = input.city || "your city";
+  return `${vibe[0].toUpperCase()}${vibe.slice(1)} ${formatGroup(input.who).toLowerCase()} plan in ${cityName} ${formatBudget(input.budget).toLowerCase()}`;
 }
 
 function buildWarmup(input: PlanFinderInput) {

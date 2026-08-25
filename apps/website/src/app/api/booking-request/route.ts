@@ -1,12 +1,29 @@
 import { jsonError, jsonOk } from "../../../lib/server/api-response";
+import { isDemoDataEnabled } from "../../../lib/demo-mode";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../lib/server/firebase-admin";
 import { getClientIp, checkRateLimit } from "../../../lib/server/rate-limit";
 import { getPublicListingByIdOrSlugForServer } from "../../../lib/server/public-listings";
 import { incrementServerGlobalStats } from "../../../lib/server/stats";
 import { sendBookingRequestNotifications } from "../../../lib/server/email";
+import { sendPushToUsers } from "../../../lib/server/push";
 
 function clean(value: unknown, max = 180) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+
+function isValidRequestedSlot(dateValue: string, timeValue: string) {
+  const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue);
+  const timeMatch = /^(\d{2}):(\d{2})$/.exec(timeValue);
+  if (!dateMatch || !timeMatch) return false;
+  const date = new Date(`${dateValue}T00:00:00.000Z`);
+  const hour = Number(timeMatch[1]);
+  const minute = Number(timeMatch[2]);
+  return !Number.isNaN(date.getTime())
+    && date.toISOString().slice(0, 10) === dateValue
+    && hour >= 0
+    && hour <= 23
+    && minute >= 0
+    && minute <= 59;
 }
 
 export async function POST(request: Request) {
@@ -30,7 +47,7 @@ export async function POST(request: Request) {
   const message = clean(body?.message, 600);
   const partySize = Number(body?.partySize ?? 0);
 
-  if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !requestedDate || !requestedTime || !Number.isInteger(partySize) || partySize < 1 || partySize > 50) {
+  if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !isValidRequestedSlot(requestedDate, requestedTime) || !Number.isInteger(partySize) || partySize < 1 || partySize > 50) {
     return jsonError("Add name, valid email, date/time, and party size.", 400);
   }
 
@@ -63,7 +80,10 @@ export async function POST(request: Request) {
   };
 
   const db = getFirebaseAdminDb();
-  if (!db) return jsonOk({ requestId: `local-${Date.now()}`, synced: false });
+  if (!db) {
+    if (isDemoDataEnabled()) return jsonOk({ demo: true, requestId: `local-${Date.now()}`, synced: false });
+    return jsonError("Booking requests are temporarily unavailable.", 503);
+  }
 
   const docRef = await db.collection("bookingRequests").add(requestPayload);
   if (requestPayload.listingId) {
@@ -75,25 +95,47 @@ export async function POST(request: Request) {
       { merge: true }
     );
   }
-  const notification = await sendBookingRequestNotifications({
-    listing,
-    request: emailPayload,
-    requestId: docRef.id
-  }).catch((error) => ({
-    configured: false,
-    results: [{ attempted: true, error: error instanceof Error ? error.message : "Could not send notification.", ok: false, provider: "resend" as const, to: [] }],
-    status: "partial"
-  }));
+  const [notification, businessPush, customerPush] = await Promise.all([
+    sendBookingRequestNotifications({
+      listing,
+      request: emailPayload,
+      requestId: docRef.id
+    }).catch((error) => ({
+      configured: false,
+      results: [{ attempted: true, error: error instanceof Error ? error.message : "Could not send notification.", ok: false, provider: "resend" as const, to: [] }],
+      status: "partial"
+    })),
+    sendPushToUsers({
+      body: `${name} requested ${requestedDate} at ${requestedTime} for ${partySize}.`,
+      data: { bookingRequestId: docRef.id, link: "/partner/dashboard", type: "booking_request_new" },
+      notificationId: `booking-request-new-${docRef.id}`,
+      title: `New request: ${listing.title}`,
+      userIds: listing.ownerIds
+    }).catch(() => ({ attempted: 0, failed: 0, inAppCreated: 0, sent: 0, status: "skipped" as const })),
+    sendPushToUsers({
+      body: `${listing.businessName} will confirm availability before anything is charged.`,
+      data: { bookingRequestId: docRef.id, link: "/profile", type: "booking_request_pending" },
+      notificationId: `booking-request-pending-${docRef.id}`,
+      title: "Booking request sent",
+      userIds: [token.uid]
+    }).catch(() => ({ attempted: 0, failed: 0, inAppCreated: 0, sent: 0, status: "skipped" as const }))
+  ]);
 
   await docRef.set(
     {
       notificationResults: notification.results,
       notificationStatus: notification.status,
-      notificationUpdatedAt: FieldValue.serverTimestamp()
+      notificationUpdatedAt: FieldValue.serverTimestamp(),
+      pushResults: { business: businessPush, customer: customerPush }
     },
     { merge: true }
   );
 
   void incrementServerGlobalStats(["bookingRequests"]).catch(() => false);
-  return jsonOk({ notificationStatus: notification.status, requestId: docRef.id, synced: true }, 201);
+  return jsonOk({
+    notificationStatus: notification.status,
+    pushStatus: businessPush.status === "sent" || customerPush.status === "sent" ? "sent" : "skipped",
+    requestId: docRef.id,
+    synced: true
+  }, 201);
 }

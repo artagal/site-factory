@@ -5,13 +5,15 @@ import 'dart:io';
 import 'package:flutterflow_ai/flutterflow_ai.dart';
 import 'package:flutterflow_ai/src/helpers/collection_helpers.dart'
     show findCollectionField;
+import 'package:flutterflow_ai/src/helpers/data_schema_helpers.dart'
+    show findDataStruct, updateDataStructField;
 import 'package:flutterflow_ai/src/helpers/data_type_helpers.dart' as ff_types;
 import 'package:flutterflow_ai/src/helpers/ensure_helpers.dart'
     show ensureCollectionField;
 import 'package:flutterflow_ai/src/helpers/project_helpers.dart'
     show setInitialPage;
 import 'package:flutterflow_ai/src/helpers/variable_helpers.dart'
-    show varFromAuthUser;
+    show generatorVarField;
 
 Future<void> main(List<String> args) async {
   final options = _parseCliOptions(args);
@@ -142,12 +144,520 @@ bool _keepValidationError(error) =>
     !error.message.contains('config files are not uploaded');
 
 void buildGoFunMotionDealsQueryGuard(App app) {
+  final api = _ensureGoFunMotionApi(app);
   _ensureAnimatedSplash(app);
+  _ensureMobileAppIdentity(app);
+  _ensureCompatibleMobileDependencies(app);
   _ensureFirebaseAuth(app);
+  _ensurePushRegistrationAction(app);
   _ensureProductionCollectionFields(app);
-  _wireProductionQueries(app);
+  _wireProductionQueries(app, api);
   _removeQueryGuardNotices(app);
-  _wireSaferSaveAndBookingActions(app);
+  _wireSaferSaveAndBookingActions(app, api);
+  _wireRoleRouting(app, api);
+  _wireAiAssistants(app, api);
+}
+
+void _ensureCompatibleMobileDependencies(App app) {
+  app.raw((project) {
+    for (final dependency
+        in const {
+          'crypto': '3.0.7',
+          'firebase_messaging': '15.2.7',
+          // FlutterFlow's generated icon helpers still use the pre-v11 API.
+          'font_awesome_flutter': '10.12.0',
+          'page_transition': '2.2.2',
+        }.entries) {
+      final existing = findPubDependency(project, name: dependency.key);
+      if (existing == null) {
+        addPubDependency(
+          project,
+          name: dependency.key,
+          version: dependency.value,
+        );
+      } else if (existing.version != dependency.value) {
+        updatePubDependency(
+          project,
+          name: dependency.key,
+          newVersion: dependency.value,
+        );
+      }
+    }
+  });
+}
+
+void _ensurePushRegistrationAction(App app) {
+  app.raw((project) {
+    const name = 'registerGoFunMotionPushToken';
+    const description =
+        'Requests notification permission and registers this signed-in device with GoFunMotion.';
+    if (findCustomAction(project, name: name) == null) {
+      addCustomAction(
+        project,
+        name: name,
+        code: _registerGoFunMotionPushTokenCode,
+        includeContext: true,
+        description: description,
+      );
+      return;
+    }
+    updateCustomAction(
+      project,
+      name: name,
+      code: _registerGoFunMotionPushTokenCode,
+      arguments: const [],
+      includeContext: true,
+      description: description,
+    );
+  });
+
+  app.editPage('ProfilePage', (page) {
+    page.ensureInsertedBefore(
+      page.findByText('Logout'),
+      Button(
+        'Enable Notifications',
+        name: 'EnableNotificationsButton',
+        icon: 'notifications_active',
+        variant: ButtonVariant.outlined,
+        width: double.infinity,
+        borderRadius: 8,
+        onTap: CallCustomAction.named('registerGoFunMotionPushToken'),
+      ),
+    );
+  });
+}
+
+void _ensureMobileAppIdentity(App app) {
+  app.raw((project) {
+    const packageName = 'com.gofunmotion.app';
+    const displayName = 'GoFunMotion Deals';
+
+    final allNames = project.ensureAllAppNames();
+    if (allNames.appNames.isEmpty) {
+      final environmentKey =
+          project
+              .ensureAppSettings()
+              .ensureEnvironmentSettings()
+              .ensureCurrentEnvironment()
+              .key;
+      allNames.appNames[environmentKey] = FFAppNames(
+        packageName: packageName,
+        displayName: displayName,
+      );
+    } else {
+      for (final names in allNames.appNames.values) {
+        names.packageName = packageName;
+        names.displayName = displayName;
+      }
+    }
+  });
+}
+
+final class _GoFunMotionApi {
+  const _GoFunMotionApi({
+    required this.bookingRequest,
+    required this.getAccess,
+    required this.getPartnerBookingRequests,
+    required this.getPartnerListings,
+    required this.getSavedListings,
+    required this.getSavedPlans,
+    required this.partnerApplication,
+    required this.partnerCopyDescription,
+    required this.partnerCopyTitle,
+    required this.plan,
+    required this.saveListing,
+    required this.savePlan,
+    required this.partnerBookingRequest,
+    required this.smartSearch,
+  });
+
+  final Endpoint bookingRequest;
+  final Endpoint getAccess;
+  final Endpoint getPartnerBookingRequests;
+  final Endpoint getPartnerListings;
+  final Endpoint getSavedListings;
+  final Endpoint getSavedPlans;
+  final Endpoint partnerApplication;
+  final Endpoint partnerCopyDescription;
+  final Endpoint partnerCopyTitle;
+  final Endpoint plan;
+  final Endpoint saveListing;
+  final Endpoint savePlan;
+  final StructHandle partnerBookingRequest;
+  final Endpoint smartSearch;
+}
+
+_GoFunMotionApi _ensureGoFunMotionApi(App app) {
+  final accessBusiness = app.struct('MobileBusinessAccess', {
+    'id': string,
+    'name': string,
+    'status': string,
+  });
+  final accessResponse = app.struct('MobileAccessResponse', {
+    'businesses': listOf(accessBusiness),
+    'defaultRoute': string,
+    'isAdmin': bool_,
+    'primaryBusinessId': string,
+    'role': string,
+    'uid': string,
+  });
+  final smartSearchResponse = app.struct('MobileSmartSearchResponse', {
+    'assistantMessage': string,
+    'count': int_,
+    'provider': string,
+    'setupWarning': string,
+  });
+  final planResult = app.struct('MobilePlanResult', {
+    'summary': string,
+    'title': string,
+  });
+  final planResponse = app.struct('MobilePlanResponse', {
+    'plan': planResult,
+    'provider': string,
+    'setupWarning': string,
+  });
+  final savedListingItem = app.struct('MobileSavedListingItem', {
+    'city': string,
+    'id': string,
+    'listingId': string,
+    'listingTitle': string,
+  });
+  final savedPlanItem = app.struct('MobileSavedPlanItem', {
+    'city': string,
+    'id': string,
+    'persona': string,
+    'planId': string,
+    'summary': string,
+    'title': string,
+  });
+  final partnerListingItem = app.struct('MobilePartnerListingItem', {
+    'approvalStatus': string,
+    'availableSlots': listOf(string),
+    'businessId': string,
+    'businessName': string,
+    'categoryIds': listOf(string),
+    'cityId': string,
+    'cityName': string,
+    'discountPercent': int_,
+    'id': string,
+    'originalPrice': double_,
+    'price': double_,
+    'remainingSpots': int_,
+    'shortDescription': string,
+    'slug': string,
+    'status': string,
+    'title': string,
+  });
+  final savedListingsResponse = app.existingStruct(
+    'MobileSavedListingsResponse',
+  );
+  final savedPlansResponse = app.existingStruct('MobileSavedPlansResponse');
+  final bookingRequestItem = app.struct('MobileBookingRequest', {
+    'businessName': string,
+    'id': string,
+    'listingTitle': string,
+    'requestedDate': string,
+    'requestedTime': string,
+    'status': string,
+  });
+  final bookingRequestsResponse = app.struct('MobileBookingRequestsResponse', {
+    'bookingRequests': listOf(bookingRequestItem),
+  });
+  final partnerListingsResponse = app.existingStruct(
+    'MobilePartnerListingsResponse',
+  );
+  final copyResponse = app.struct('MobilePartnerCopyResponse', {
+    'provider': string,
+    'setupWarning': string,
+    'text': string,
+  });
+  final writeResponse = app.struct('MobileWriteResponse', {
+    'applicationId': string,
+    'listingId': string,
+    'planId': string,
+    'requestId': string,
+    'saved': bool_,
+    'synced': bool_,
+  });
+
+  app.raw((project) {
+    _migrateApiResponseListField(
+      project,
+      responseStructName: 'MobileSavedListingsResponse',
+      fieldName: 'savedListings',
+      itemStructName: savedListingItem.name,
+    );
+    _migrateApiResponseListField(
+      project,
+      responseStructName: 'MobileSavedPlansResponse',
+      fieldName: 'savedPlans',
+      itemStructName: savedPlanItem.name,
+    );
+    _migrateApiResponseListField(
+      project,
+      responseStructName: 'MobilePartnerListingsResponse',
+      fieldName: 'listings',
+      itemStructName: partnerListingItem.name,
+    );
+  });
+
+  const authSettings = EndpointSettings(requireAuthentication: true);
+  const authHeaders = {
+    'Authorization': 'Bearer [token]',
+    'Content-Type': 'application/json',
+  };
+
+  final getAccess = Endpoint.get(
+    'GetMyAccess',
+    '/api/me/access',
+    variables: {'token': string},
+    headers: authHeaders,
+    settings: authSettings,
+    response: accessResponse,
+  );
+  final smartSearch = Endpoint.post(
+    'SmartSearchDeals',
+    '/api/ai/smart-search',
+    variables: {'query': string},
+    body: const {'query': '<query>'},
+    response: smartSearchResponse,
+  );
+  final plan = Endpoint.post(
+    'BuildAiPlan',
+    '/api/ai/plan',
+    variables: {
+      'budget': string,
+      'city': string,
+      'vibe': string,
+      'when': string,
+      'who': string,
+    },
+    body: const {
+      'budget': '<budget>',
+      'city': '<city>',
+      'vibe': '<vibe>',
+      'when': '<when>',
+      'who': '<who>',
+    },
+    response: planResponse,
+  );
+  final partnerCopyTitle = Endpoint.post(
+    'ImprovePartnerTitle',
+    '/api/ai/partner-copy',
+    variables: {
+      'businessId': string,
+      'category': string,
+      'text': string,
+      'token': string,
+    },
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {
+      'businessId': '<businessId>',
+      'category': '<category>',
+      'field': 'title',
+      'text': '<text>',
+    },
+    response: copyResponse,
+  );
+  final partnerCopyDescription = Endpoint.post(
+    'ImprovePartnerDescription',
+    '/api/ai/partner-copy',
+    variables: {
+      'businessId': string,
+      'category': string,
+      'text': string,
+      'token': string,
+    },
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {
+      'businessId': '<businessId>',
+      'category': '<category>',
+      'field': 'description',
+      'text': '<text>',
+    },
+    response: copyResponse,
+  );
+  final getSavedListings = Endpoint.get(
+    'GetSavedListings',
+    '/api/me/saved-listings',
+    variables: {'token': string},
+    headers: authHeaders,
+    settings: authSettings,
+    response: savedListingsResponse,
+  );
+  final saveListing = Endpoint.post(
+    'SaveListing',
+    '/api/me/saved-listings',
+    variables: {'listingId': string, 'token': string},
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {'listingId': '<listingId>'},
+    response: writeResponse,
+  );
+  final getSavedPlans = Endpoint.get(
+    'GetSavedPlans',
+    '/api/me/saved-plans',
+    variables: {'token': string},
+    headers: authHeaders,
+    settings: authSettings,
+    response: savedPlansResponse,
+  );
+  final savePlan = Endpoint.post(
+    'SavePlan',
+    '/api/me/saved-plans',
+    variables: {
+      'budget': string,
+      'city': string,
+      'persona': string,
+      'summary': string,
+      'token': string,
+      'vibe': string,
+      'when': string,
+    },
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {
+      'plan': {
+        'input': {
+          'budget': '<budget>',
+          'city': '<city>',
+          'vibe': '<vibe>',
+          'when': '<when>',
+          'who': '<persona>',
+        },
+        'persona': '<persona>',
+        'summary': '<summary>',
+        'title': '<persona>',
+      },
+    },
+    response: writeResponse,
+  );
+  final bookingRequest = Endpoint.post(
+    'CreateBookingRequest',
+    '/api/booking-request',
+    variables: {
+      'email': string,
+      'listingId': string,
+      'message': string,
+      'name': string,
+      'partySize': int_,
+      'requestedDate': string,
+      'requestedTime': string,
+      'token': string,
+    },
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {
+      'email': '<email>',
+      'listingId': '<listingId>',
+      'message': '<message>',
+      'name': '<name>',
+      'partySize': '<partySize>',
+      'requestedDate': '<requestedDate>',
+      'requestedTime': '<requestedTime>',
+    },
+    response: writeResponse,
+  );
+  final getPartnerListings = Endpoint.get(
+    'GetPartnerListings',
+    '/api/partner/listings',
+    variables: {'token': string},
+    headers: authHeaders,
+    settings: authSettings,
+    response: partnerListingsResponse,
+  );
+  final getPartnerBookingRequests = Endpoint.get(
+    'GetPartnerBookingRequests',
+    '/api/partner/booking-requests',
+    variables: {'token': string},
+    headers: authHeaders,
+    settings: authSettings,
+    response: bookingRequestsResponse,
+  );
+  final registerPushToken = Endpoint.post(
+    'RegisterPushToken',
+    '/api/push/register',
+    variables: {
+      'appVersion': string,
+      'deviceLabel': string,
+      'platform': string,
+      'pushToken': string,
+      'token': string,
+    },
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {
+      'appVersion': '<appVersion>',
+      'deviceLabel': '<deviceLabel>',
+      'platform': '<platform>',
+      'provider': 'fcm',
+      'token': '<pushToken>',
+    },
+    response: writeResponse,
+  );
+  final partnerApplication = Endpoint.post(
+    'CreatePartnerApplication',
+    '/api/partner-application',
+    variables: {
+      'businessName': string,
+      'category': string,
+      'city': string,
+      'description': string,
+      'email': string,
+      'ownerName': string,
+    },
+    body: const {
+      'businessName': '<businessName>',
+      'category': '<category>',
+      'city': '<city>',
+      'description': '<description>',
+      'email': '<email>',
+      'offersLastMinuteDeals': true,
+      'ownerName': '<ownerName>',
+    },
+    response: writeResponse,
+  );
+
+  app.apiGroup(
+    'GoFunMotionWeb',
+    baseUrl: 'https://gofunmotion.com',
+    headers: const {'Accept': 'application/json'},
+    endpoints: [
+      getAccess,
+      smartSearch,
+      plan,
+      partnerCopyTitle,
+      partnerCopyDescription,
+      getSavedListings,
+      saveListing,
+      getSavedPlans,
+      savePlan,
+      bookingRequest,
+      getPartnerListings,
+      getPartnerBookingRequests,
+      registerPushToken,
+      partnerApplication,
+    ],
+  );
+
+  return _GoFunMotionApi(
+    bookingRequest: bookingRequest,
+    getAccess: getAccess,
+    getPartnerBookingRequests: getPartnerBookingRequests,
+    getPartnerListings: getPartnerListings,
+    getSavedListings: getSavedListings,
+    getSavedPlans: getSavedPlans,
+    partnerApplication: partnerApplication,
+    partnerCopyDescription: partnerCopyDescription,
+    partnerCopyTitle: partnerCopyTitle,
+    plan: plan,
+    saveListing: saveListing,
+    savePlan: savePlan,
+    partnerBookingRequest: bookingRequestItem,
+    smartSearch: smartSearch,
+  );
 }
 
 void _ensureFirebaseAuth(App app) {
@@ -167,7 +677,21 @@ void _ensureFirebaseAuth(App app) {
 
 void _ensureProductionCollectionFields(App app) {
   app.raw((project) {
-    for (final field in ['id', 'businessId', 'cityId']) {
+    for (final field in [
+      'approvalStatus',
+      'bookingMode',
+      'businessId',
+      'businessName',
+      'cityId',
+      'cityName',
+      'currency',
+      'description',
+      'id',
+      'shortDescription',
+      'slug',
+      'status',
+      'title',
+    ]) {
       ensureCollectionField(
         project,
         collectionName: 'listings',
@@ -180,6 +704,32 @@ void _ensureProductionCollectionFields(App app) {
       collectionName: 'listings',
       fieldName: 'ownerIds',
       type: ff_types.listOf(ff_types.stringType),
+    );
+    ensureCollectionField(
+      project,
+      collectionName: 'listings',
+      fieldName: 'categoryIds',
+      type: ff_types.listOf(ff_types.stringType),
+    );
+    ensureCollectionField(
+      project,
+      collectionName: 'listings',
+      fieldName: 'isDemo',
+      type: ff_types.boolType,
+    );
+    for (final field in ['price', 'originalPrice', 'discountPercent']) {
+      ensureCollectionField(
+        project,
+        collectionName: 'listings',
+        fieldName: field,
+        type: ff_types.doubleType,
+      );
+    }
+    ensureCollectionField(
+      project,
+      collectionName: 'listings',
+      fieldName: 'remainingSpots',
+      type: ff_types.intType,
     );
 
     for (final field in ['listingId', 'businessId', 'cityId']) {
@@ -197,31 +747,99 @@ void _ensureProductionCollectionFields(App app) {
       type: ff_types.listOf(ff_types.stringType),
     );
 
-    for (final field in ['listingId', 'savedAt']) {
+    for (final field in ['cityId', 'cityName', 'name', 'status']) {
       ensureCollectionField(
         project,
-        collectionName: 'savedListings',
+        collectionName: 'businesses',
         fieldName: field,
-        type: field == 'savedAt' ? ff_types.dateTimeType : ff_types.stringType,
+        type: ff_types.stringType,
       );
     }
     ensureCollectionField(
       project,
-      collectionName: 'savedPlans',
-      fieldName: 'savedAt',
-      type: ff_types.dateTimeType,
+      collectionName: 'businesses',
+      fieldName: 'ownerIds',
+      type: ff_types.listOf(ff_types.stringType),
     );
   });
 }
 
-void _wireProductionQueries(App app) {
+void _wireProductionQueries(App app, _GoFunMotionApi api) {
   final listings = app.existingCollection('listings');
-  final savedListings = app.existingCollection('savedListings');
-  final savedPlans = app.existingCollection('savedPlans');
+  final savedListingItem = app.existingStruct('MobileSavedListingItem');
+  final savedPlanItem = app.existingStruct('MobileSavedPlanItem');
+
+  app.editPageState('SavedPage', (state) {
+    state.ensureField('savedDeals', listOf(savedListingItem));
+    state.ensureField('savedPlanItems', listOf(savedPlanItem));
+  });
+  app.raw((project) {
+    _bindSavedStructText(
+      project,
+      listNodeKey: 'ListView_7ht4psv0',
+      textNodeKey: 'Text_iw3juq1h',
+      fieldName: 'title',
+    );
+    _bindSavedStructText(
+      project,
+      listNodeKey: 'ListView_7ht4psv0',
+      textNodeKey: 'Text_hplaocqi',
+      fieldName: 'summary',
+    );
+    _bindSavedStructText(
+      project,
+      listNodeKey: 'ListView_7ht4psv0',
+      textNodeKey: 'Text_fqeir46q',
+      fieldName: 'city',
+    );
+    _bindSavedStructText(
+      project,
+      listNodeKey: 'ListView_te29ughq',
+      textNodeKey: 'Text_u5mqatei',
+      fieldName: 'listingTitle',
+    );
+    _bindSavedStructText(
+      project,
+      listNodeKey: 'ListView_te29ughq',
+      textNodeKey: 'Text_2s2iqyyu',
+      fieldName: 'city',
+    );
+  });
 
   app.editPageOnLoad('DiscoverPage', [
     FirestoreQuery(listings, limit: 12, outputAs: 'approvedFeaturedDeals'),
     SetState('featuredDeals', const ActionOutput('approvedFeaturedDeals')),
+    If(
+      const Global(GlobalProperty.isUserLoggedIn),
+      then: [
+        ApiCall(
+          api.getAccess,
+          outputAs: 'discoverRoleAccess',
+          params: {'token': const AuthUser(AuthUserField.jwtToken)},
+          onSuccess:
+              (result) => [
+                If(
+                  Equals(result['role'], 'admin'),
+                  then: [
+                    Navigate('AdminPage', allowBack: false, replaceRoute: true),
+                  ],
+                  orElse: [
+                    If(
+                      Equals(result['role'], 'business'),
+                      then: [
+                        Navigate(
+                          'PartnerDashboardPage',
+                          allowBack: false,
+                          replaceRoute: true,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+        ),
+      ],
+    ),
   ]);
 
   app.editPageOnLoad('DealsPage', [
@@ -233,15 +851,26 @@ void _wireProductionQueries(App app) {
     If(
       const Global(GlobalProperty.isUserLoggedIn),
       then: [
-        FirestoreQuery(savedPlans, limit: 50, outputAs: 'loadedSavedPlans'),
-        SetState('savedPlanItems', const ActionOutput('loadedSavedPlans')),
-        FirestoreQuery(savedListings, limit: 50, outputAs: 'loadedSavedDeals'),
-        SetState('savedDeals', const ActionOutput('loadedSavedDeals')),
+        ApiCall(
+          api.getSavedPlans,
+          outputAs: 'spApi2',
+          params: {'token': const AuthUser(AuthUserField.jwtToken)},
+          onSuccess:
+              (result) => [
+                SetState('savedPlanItems', result['savedPlans']),
+                ApiCall(
+                  api.getSavedListings,
+                  outputAs: 'slApi2',
+                  params: {'token': const AuthUser(AuthUserField.jwtToken)},
+                  onSuccess:
+                      (savedResult) => [
+                        SetState('savedDeals', savedResult['savedListings']),
+                      ],
+                ),
+              ],
+        ),
       ],
-      orElse: [
-        SetState.clear('savedPlanItems'),
-        SetState.clear('savedDeals'),
-      ],
+      orElse: [SetState.clear('savedPlanItems'), SetState.clear('savedDeals')],
     ),
   ]);
 
@@ -252,8 +881,9 @@ void _wireProductionQueries(App app) {
       collectionName: 'listings',
       outputVariableName: 'approvedFeaturedDeals',
       filters: const [
-        _QueryFilter(fieldName: 'isApproved', staticValue: 'true'),
-        _QueryFilter(fieldName: 'status', staticValue: 'approved'),
+        _QueryFilter(fieldName: 'approvalStatus', staticValue: 'approved'),
+        _QueryFilter(fieldName: 'isDemo', staticValue: 'false'),
+        _QueryFilter(fieldName: 'status', staticValue: 'published'),
       ],
       orderByFieldName: 'createdAt',
     );
@@ -263,46 +893,57 @@ void _wireProductionQueries(App app) {
       collectionName: 'listings',
       outputVariableName: 'approvedDeals',
       filters: const [
-        _QueryFilter(fieldName: 'isApproved', staticValue: 'true'),
-        _QueryFilter(fieldName: 'status', staticValue: 'approved'),
-      ],
-      orderByFieldName: 'createdAt',
-    );
-    _patchFirestoreQueryAction(
-      project,
-      pageName: 'SavedPage',
-      collectionName: 'savedPlans',
-      outputVariableName: 'loadedSavedPlans',
-      filters: [
-        _QueryFilter(
-          fieldName: 'userId',
-          variable: varFromAuthUser(FFAuthVariable_AuthProperty.USER_ID),
-        ),
-      ],
-      orderByFieldName: 'createdAt',
-    );
-    _patchFirestoreQueryAction(
-      project,
-      pageName: 'SavedPage',
-      collectionName: 'savedListings',
-      outputVariableName: 'loadedSavedDeals',
-      filters: [
-        _QueryFilter(
-          fieldName: 'userId',
-          variable: varFromAuthUser(FFAuthVariable_AuthProperty.USER_ID),
-        ),
+        _QueryFilter(fieldName: 'approvalStatus', staticValue: 'approved'),
+        _QueryFilter(fieldName: 'isDemo', staticValue: 'false'),
+        _QueryFilter(fieldName: 'status', staticValue: 'published'),
       ],
       orderByFieldName: 'createdAt',
     );
   });
 }
 
+void _migrateApiResponseListField(
+  FFProject project, {
+  required String responseStructName,
+  required String fieldName,
+  required String itemStructName,
+}) {
+  final itemStruct = findDataStruct(project, name: itemStructName);
+  if (itemStruct == null) {
+    throw StateError('Data struct "$itemStructName" was not found.');
+  }
+
+  updateDataStructField(
+    project,
+    structName: responseStructName,
+    fieldName: fieldName,
+    type: ff_types.dataStructType(itemStruct.identifier),
+    isList: true,
+  );
+}
+
+void _bindSavedStructText(
+  FFProject project, {
+  required String listNodeKey,
+  required String textNodeKey,
+  required String fieldName,
+}) {
+  final page = findPage(project, name: 'SavedPage');
+  if (page == null) throw StateError('Page "SavedPage" was not found.');
+  final textNode = findByKey(page.node, textNodeKey);
+  if (textNode == null) {
+    throw StateError('Text node "$textNodeKey" was not found on SavedPage.');
+  }
+  textNode.props.text.textValue = FFStringValue(
+    variable: generatorVarField(listNodeKey, fieldName),
+  );
+}
+
 final class _QueryFilter {
-  const _QueryFilter({required this.fieldName, this.staticValue, this.variable});
+  const _QueryFilter({required this.fieldName, required this.staticValue});
 
   final String fieldName;
-  final String? staticValue;
-  final FFVariable? variable;
+  final String staticValue;
 }
 
 void _patchFirestoreQueryAction(
@@ -320,7 +961,8 @@ void _patchFirestoreQueryAction(
 
   FFAction? action;
   for (final triggerAction in page.node.triggerActions) {
-    if (triggerAction.trigger.triggerType != FFActionTriggerType.ON_INIT_STATE ||
+    if (triggerAction.trigger.triggerType !=
+            FFActionTriggerType.ON_INIT_STATE ||
         !triggerAction.hasRootAction()) {
       continue;
     }
@@ -352,7 +994,6 @@ void _patchFirestoreQueryAction(
             collectionName: collectionName,
             fieldName: filter.fieldName,
             staticValue: filter.staticValue,
-            variable: filter.variable,
           ),
         ),
     ],
@@ -371,7 +1012,10 @@ void _patchFirestoreQueryAction(
     );
 }
 
-FFAction? _findActionByOutputName(FFActionNode root, String outputVariableName) {
+FFAction? _findActionByOutputName(
+  FFActionNode root,
+  String outputVariableName,
+) {
   if (root.hasAction() &&
       root.action.outputVariableName == outputVariableName) {
     return root.action;
@@ -423,8 +1067,7 @@ FFFirestoreFilter _firestoreFilter(
   FFProject project, {
   required String collectionName,
   required String fieldName,
-  String? staticValue,
-  FFVariable? variable,
+  required String staticValue,
 }) {
   final filter = FFFirestoreFilter(
     collectionFieldIdentifier: _fieldIdentifier(
@@ -434,13 +1077,7 @@ FFFirestoreFilter _firestoreFilter(
     ),
     relation: FFFirestoreFilter_Relation.EQUAL_TO,
   );
-  if (variable != null) {
-    filter.variable = variable;
-  } else if (staticValue != null) {
-    filter.inputValue = FFParameterValue(serializedValue: staticValue);
-  } else {
-    throw ArgumentError('Filter "$collectionName.$fieldName" has no value.');
-  }
+  filter.inputValue = FFParameterValue(serializedValue: staticValue);
   return filter;
 }
 
@@ -474,12 +1111,7 @@ void _removeQueryGuardNotices(App app) {
   });
 }
 
-void _wireSaferSaveAndBookingActions(App app) {
-  final listings = app.existingCollection('listings');
-  final savedListings = app.existingCollection('savedListings');
-  final savedPlans = app.existingCollection('savedPlans');
-  final bookingRequests = app.existingCollection('bookingRequests');
-
+void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
   app.editPage('FindPlanPage', (page) {
     page.ensureActions(
       page.findByName('SavePlanButton'),
@@ -488,30 +1120,31 @@ void _wireSaferSaveAndBookingActions(App app) {
         If(
           const Global(GlobalProperty.isUserLoggedIn),
           then: [
-            FirestoreCreate(
-              savedPlans,
-              fields: {
-                'userId': const AuthUser(AuthUserField.userId),
+            ApiCall(
+              api.savePlan,
+              outputAs: 'savedPlan',
+              params: {
+                'budget': State('budget'),
                 'city': State('city'),
                 'persona': State('persona'),
-                'when': State('when'),
-                'budget': State('budget'),
-                'vibe': State('vibe'),
                 'summary': State('planSummary'),
-                'createdAt': const Global(GlobalProperty.currentTimestamp),
-                'savedAt': const Global(GlobalProperty.currentTimestamp),
+                'token': const AuthUser(AuthUserField.jwtToken),
+                'vibe': State('vibe'),
+                'when': State('when'),
               },
-              outputAs: 'savedPlan',
+              onSuccess: (_) => [Snackbar('Plan saved.')],
+              onFailure: [Snackbar('Plan could not be saved yet.')],
             ),
-            Snackbar('Plan saved.'),
           ],
-          orElse: [
-            Snackbar('Sign in to save plans.'),
-            Navigate('SignInPage'),
-          ],
+          orElse: [Snackbar('Sign in to save plans.'), Navigate('SignInPage')],
         ),
       ],
     );
+  });
+
+  app.editPageState('DealDetailPage', (state) {
+    state.ensureField('requestedDate', string);
+    state.ensureField('requestedTime', string);
   });
 
   app.editPage('DealDetailPage', (page) {
@@ -522,20 +1155,16 @@ void _wireSaferSaveAndBookingActions(App app) {
         If(
           const Global(GlobalProperty.isUserLoggedIn),
           then: [
-            FirestoreCreate(
-              savedListings,
-              fields: {
-                'userId': const AuthUser(AuthUserField.userId),
-                'listingRef': PageParam('listingRef'),
-                'listingId': State('listing')['id'],
-                'listingTitle': State('listing')['title'],
-                'city': State('listing')['city'],
-                'createdAt': const Global(GlobalProperty.currentTimestamp),
-                'savedAt': const Global(GlobalProperty.currentTimestamp),
-              },
+            ApiCall(
+              api.saveListing,
               outputAs: 'savedDeal',
+              params: {
+                'listingId': State('listing')['id'],
+                'token': const AuthUser(AuthUserField.jwtToken),
+              },
+              onSuccess: (_) => [Snackbar('Deal saved.')],
+              onFailure: [Snackbar('Only approved live deals can be saved.')],
             ),
-            Snackbar('Deal saved.'),
           ],
           orElse: [
             Snackbar('Sign in to save this deal.'),
@@ -552,32 +1181,27 @@ void _wireSaferSaveAndBookingActions(App app) {
         If(
           const Global(GlobalProperty.isUserLoggedIn),
           then: [
-            FirestoreCreate(
-              bookingRequests,
-              fields: {
-                'userId': const AuthUser(AuthUserField.userId),
-                'listingRef': PageParam('listingRef'),
-                'listingId': State('listing')['id'],
-                'listingTitle': State('listing')['title'],
-                'businessId': State('listing')['businessId'],
-                'cityId': State('listing')['cityId'],
-                'contactName': State('contactName'),
-                'contactEmail': State('contactEmail'),
-                'partySize': State('partySize'),
-                'message': State('message'),
-                'status': 'new',
-                'createdAt': const Global(GlobalProperty.currentTimestamp),
-              },
+            ApiCall(
+              api.bookingRequest,
               outputAs: 'bookingRequest',
-            ),
-            FirestoreUpdate(
-              PageParam('listingRef'),
-              collection: listings,
-              fields: {
-                'updatedAt': const Global(GlobalProperty.currentTimestamp),
+              params: {
+                'email': State('contactEmail'),
+                'listingId': State('listing')['id'],
+                'message': State('message'),
+                'name': State('contactName'),
+                'partySize': State('partySize'),
+                'requestedDate': State('requestedDate'),
+                'requestedTime': State('requestedTime'),
+                'token': const AuthUser(AuthUserField.jwtToken),
               },
+              onSuccess:
+                  (_) => [
+                    Snackbar(
+                      'Request sent. The business will confirm availability.',
+                    ),
+                  ],
+              onFailure: [Snackbar('Check the details and try again.')],
             ),
-            Snackbar('Booking request sent.'),
           ],
           orElse: [
             Snackbar('Sign in to send booking requests.'),
@@ -585,6 +1209,337 @@ void _wireSaferSaveAndBookingActions(App app) {
           ],
         ),
       ],
+    );
+
+    page.ensureInsertedBefore(
+      page.findByName('SendBookingRequestButton'),
+      Column(
+        name: 'BookingDateTimeFields',
+        spacing: 12,
+        children: [
+          TextField(
+            name: 'RequestedDateField',
+            label: 'Requested date (YYYY-MM-DD)',
+            onChanged: SetState('requestedDate', const TextValue()),
+          ),
+          TextField(
+            name: 'RequestedTimeField',
+            label: 'Requested time',
+            onChanged: SetState('requestedTime', const TextValue()),
+          ),
+        ],
+      ),
+    );
+  });
+
+  app.editPage('PartnerApplyPage', (page) {
+    page.ensureActions(
+      page.findByText('Submit Application'),
+      triggerType: FFActionTriggerType.ON_TAP,
+      actions: [
+        ApiCall(
+          api.partnerApplication,
+          outputAs: 'submittedPartnerApplication',
+          params: {
+            'businessName': State('businessName'),
+            'category': State('category'),
+            'city': State('city'),
+            'description': State('description'),
+            'email': State('contactEmail'),
+            'ownerName': State('contactName'),
+          },
+          onSuccess:
+              (_) => [
+                Snackbar('Application submitted for admin review.'),
+                Navigate('PartnerPage'),
+              ],
+          onFailure: [
+            Snackbar('Choose a supported city/category and check the form.'),
+          ],
+        ),
+      ],
+    );
+  });
+}
+
+void _wireRoleRouting(App app, _GoFunMotionApi api) {
+  app.editPageState('AdminPage', (state) {
+    state.ensureField('isAdmin', bool_.withDefault(false));
+  });
+  final partnerApplications = app.existingCollection('partnerApplications');
+  final listings = app.existingCollection('listings');
+  app.editPageOnLoad('AdminPage', [
+    If(
+      const Global(GlobalProperty.isUserLoggedIn),
+      then: [
+        ApiCall(
+          api.getAccess,
+          outputAs: 'adminAccess',
+          params: {'token': const AuthUser(AuthUserField.jwtToken)},
+          onSuccess:
+              (result) => [
+                SetState('isAdmin', result['isAdmin']),
+                If(
+                  Equals(result['isAdmin'], true),
+                  then: [
+                    FirestoreQuery(
+                      partnerApplications,
+                      limit: 25,
+                      outputAs: 'adminApps',
+                    ),
+                    SetState('applications', const ActionOutput('adminApps')),
+                    FirestoreQuery(
+                      listings,
+                      limit: 25,
+                      outputAs: 'adminListingsQuery',
+                    ),
+                    SetState(
+                      'adminListings',
+                      const ActionOutput('adminListingsQuery'),
+                    ),
+                  ],
+                  orElse: [
+                    Snackbar('This account does not have admin access.'),
+                  ],
+                ),
+              ],
+        ),
+      ],
+      orElse: [SetState('isAdmin', false)],
+    ),
+  ]);
+  app.editPage('AdminPage', (page) {
+    page.bindVisible(
+      page.findByName('AdminApplicationsList'),
+      State('isAdmin'),
+    );
+    page.bindVisible(page.findByName('AdminListingsList'), State('isAdmin'));
+    page.ensureActions(
+      page.findByText('Publish'),
+      triggerType: FFActionTriggerType.ON_TAP,
+      actions: [
+        Snackbar('Use the web admin to publish with a complete audit log.'),
+      ],
+    );
+    page.ensureActions(
+      page.findByText('Hide'),
+      triggerType: FFActionTriggerType.ON_TAP,
+      actions: [
+        Snackbar('Use the web admin to pause with a complete audit log.'),
+      ],
+    );
+  });
+}
+
+void _wireAiAssistants(App app, _GoFunMotionApi api) {
+  app.editPage('FindPlanPage', (page) {
+    page.ensureActions(
+      page.findByName('FindMyPlanButton'),
+      triggerType: FFActionTriggerType.ON_TAP,
+      actions: [
+        ApiCall(
+          api.plan,
+          outputAs: 'aiPlanResult',
+          params: {
+            'budget': State('budget'),
+            'city': State('city'),
+            'vibe': State('vibe'),
+            'when': State('when'),
+            'who': State('persona'),
+          },
+          onSuccess:
+              (result) => [
+                SetState('planSummary', result['plan']['summary']),
+                Snackbar('Plan matched against approved deals.'),
+              ],
+          onFailure: [Snackbar('Your safe built-in plan is still available.')],
+        ),
+      ],
+    );
+  });
+
+  app.editPageState('DealsPage', (state) {
+    state.ensureField('smartQuery', string);
+    state.ensureField('smartSearchSummary', string);
+  });
+  app.editPage('DealsPage', (page) {
+    page.ensureInsertedBefore(
+      page.findByName('DealsList'),
+      Container(
+        name: 'MobileSmartSearchPanel',
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 10,
+          children: [
+            Text('Tell us what sounds fun', style: Styles.titleMedium),
+            TextField(
+              name: 'MobileSmartSearchField',
+              label: 'Date night tonight under \$50',
+              onChanged: SetState('smartQuery', const TextValue()),
+            ),
+            Button(
+              'Smart Search',
+              name: 'MobileSmartSearchButton',
+              width: double.infinity,
+              height: 46,
+              icon: 'search',
+              borderRadius: 8,
+              onTap: ApiCall(
+                api.smartSearch,
+                outputAs: 'mobileSmartSearchResult',
+                params: {'query': State('smartQuery')},
+                onSuccess:
+                    (result) => [
+                      SetState(
+                        'smartSearchSummary',
+                        result['assistantMessage'],
+                      ),
+                      Snackbar('Filters interpreted. Showing approved deals.'),
+                    ],
+                onFailure: [Snackbar('Try a more specific search.')],
+              ),
+            ),
+            Text(
+              State('smartSearchSummary'),
+              style: Styles.bodySmall,
+              color: Colors.secondaryText,
+            ),
+          ],
+        ),
+      ),
+    );
+  });
+
+  app.editPageState('PartnerDashboardPage', (state) {
+    state.ensureField('currentBusinessId', string);
+    state.ensureField('copyCategory', string.withDefault('classes'));
+    state.ensureField('draftDescription', string);
+    state.ensureField('draftTitle', string);
+    state.ensureField('partnerRequests', listOf(api.partnerBookingRequest));
+  });
+  app.editPageOnLoad('PartnerDashboardPage', [
+    If(
+      const Global(GlobalProperty.isUserLoggedIn),
+      then: [
+        ApiCall(
+          api.getAccess,
+          outputAs: 'partnerAccess',
+          params: {'token': const AuthUser(AuthUserField.jwtToken)},
+          onSuccess:
+              (result) => [
+                SetState('currentBusinessId', result['primaryBusinessId']),
+                ApiCall(
+                  api.getPartnerBookingRequests,
+                  outputAs: 'pbrApi2',
+                  params: {'token': const AuthUser(AuthUserField.jwtToken)},
+                  onSuccess:
+                      (requestResult) => [
+                        SetState(
+                          'partnerRequests',
+                          requestResult['bookingRequests'],
+                        ),
+                      ],
+                ),
+              ],
+        ),
+      ],
+    ),
+  ]);
+  app.editPage('PartnerDashboardPage', (page) {
+    page.ensureInsertedBefore(
+      page.findByText('Request Listing Setup'),
+      Container(
+        name: 'PartnerCopyAssistantPanel',
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 12,
+          children: [
+            Text('Partner Copy Assistant', style: Styles.titleMedium),
+            Text(
+              'Improve wording only. Price, time, discount, and availability are never invented.',
+              style: Styles.bodySmall,
+              color: Colors.secondaryText,
+            ),
+            TextField(
+              name: 'PartnerDraftTitleField',
+              label: 'Deal title',
+              onChanged: SetState('draftTitle', const TextValue()),
+            ),
+            Button(
+              'Improve Title',
+              name: 'ImprovePartnerTitleButton',
+              width: double.infinity,
+              height: 44,
+              icon: 'auto_awesome',
+              borderRadius: 8,
+              onTap: ApiCall(
+                api.partnerCopyTitle,
+                outputAs: 'partnerTitleCopy',
+                params: {
+                  'businessId': State('currentBusinessId'),
+                  'category': State('copyCategory'),
+                  'text': State('draftTitle'),
+                  'token': const AuthUser(AuthUserField.jwtToken),
+                },
+                onSuccess:
+                    (result) => [
+                      SetState('draftTitle', result['text']),
+                      Snackbar('Title improved. Review it before saving.'),
+                    ],
+                onFailure: [
+                  Snackbar('Add a title and approved business first.'),
+                ],
+              ),
+            ),
+            TextField(
+              name: 'PartnerDraftDescriptionField',
+              label: 'Deal description',
+              maxLines: 4,
+              onChanged: SetState('draftDescription', const TextValue()),
+            ),
+            Button(
+              'Improve Description',
+              name: 'ImprovePartnerDescriptionButton',
+              width: double.infinity,
+              height: 44,
+              icon: 'edit_note',
+              borderRadius: 8,
+              onTap: ApiCall(
+                api.partnerCopyDescription,
+                outputAs: 'partnerDescriptionCopy',
+                params: {
+                  'businessId': State('currentBusinessId'),
+                  'category': State('copyCategory'),
+                  'text': State('draftDescription'),
+                  'token': const AuthUser(AuthUserField.jwtToken),
+                },
+                onSuccess:
+                    (result) => [
+                      SetState('draftDescription', result['text']),
+                      Snackbar(
+                        'Description improved. Review it before saving.',
+                      ),
+                    ],
+                onFailure: [
+                  Snackbar('Add a description and approved business first.'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   });
 }
@@ -628,3 +1583,122 @@ void _ensureAnimatedSplash(App app) {
     settings.downloadUnusedAssets = true;
   });
 }
+
+const _registerGoFunMotionPushTokenCode = r'''
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+
+const _goFunMotionPushEndpoint =
+    'https://gofunmotion.com/api/push/register';
+
+void _showGoFunMotionPushMessage(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message)),
+  );
+}
+
+String? _goFunMotionPushPlatform() {
+  if (kIsWeb) return null;
+  return switch (defaultTargetPlatform) {
+    TargetPlatform.android => 'android',
+    TargetPlatform.iOS => 'ios',
+    _ => null,
+  };
+}
+
+String _goFunMotionPushResponseMessage(http.Response response) {
+  try {
+    final decoded = jsonDecode(response.body);
+    if (decoded is Map && decoded['error'] is String) {
+      return decoded['error'] as String;
+    }
+  } catch (_) {
+    // Fall through to a safe, user-facing message.
+  }
+  return response.statusCode >= 200 && response.statusCode < 300
+      ? 'Notifications are enabled on this device.'
+      : 'Notifications could not be enabled. Try again.';
+}
+
+Future<void> registerGoFunMotionPushToken(BuildContext context) async {
+  final user = FirebaseAuth.instance.currentUser;
+  final platform = _goFunMotionPushPlatform();
+  if (user == null) {
+    _showGoFunMotionPushMessage(context, 'Sign in to enable notifications.');
+    return;
+  }
+  if (platform == null) {
+    _showGoFunMotionPushMessage(
+      context,
+      'Enable notifications from the iOS or Android app.',
+    );
+    return;
+  }
+
+  try {
+    final messaging = FirebaseMessaging.instance;
+    final permission = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    if (permission.authorizationStatus == AuthorizationStatus.denied) {
+      if (context.mounted) {
+        _showGoFunMotionPushMessage(
+          context,
+          'Notifications are disabled in your device settings.',
+        );
+      }
+      return;
+    }
+
+    final pushToken = await messaging.getToken();
+    final authToken = await user.getIdToken();
+    if (pushToken == null || pushToken.length <= 20 || authToken == null) {
+      if (context.mounted) {
+        _showGoFunMotionPushMessage(
+          context,
+          'A notification token is not available yet. Try again shortly.',
+        );
+      }
+      return;
+    }
+
+    final response = await http
+        .post(
+          Uri.parse(_goFunMotionPushEndpoint),
+          headers: {
+            'Authorization': 'Bearer $authToken',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'appVersion': 'flutterflow',
+            'locale': WidgetsBinding.instance.platformDispatcher.locale
+                .toLanguageTag(),
+            'platform': platform,
+            'provider': 'fcm',
+            'token': pushToken,
+          }),
+        )
+        .timeout(const Duration(seconds: 10));
+    if (context.mounted) {
+      _showGoFunMotionPushMessage(
+        context,
+        _goFunMotionPushResponseMessage(response),
+      );
+    }
+  } catch (_) {
+    if (context.mounted) {
+      _showGoFunMotionPushMessage(
+        context,
+        'Notifications could not be enabled. Try again.',
+      );
+    }
+  }
+}
+''';
