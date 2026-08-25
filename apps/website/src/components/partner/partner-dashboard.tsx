@@ -245,7 +245,7 @@ function PartnerListingsTable({ listings }: { listings: Listing[] }) {
               <tr className="bg-black/20 align-top" key={listing.id}>
                 <td className="px-4 py-4">
                   <p className="font-black text-white">{listing.title}</p>
-                  <p className="mt-1 text-xs font-bold text-white/46">{listing.availableSlots[0] ?? "Set a time"} - {listing.cityName}</p>
+                  <p className="mt-1 text-xs font-bold text-white/46">{Array.isArray(listing.availableSlots) ? listing.availableSlots[0] ?? "Set a time" : "Set a time"} - {listing.cityName}</p>
                 </td>
                 <td className="px-4 py-4">
                   <p className="font-black text-white/76">{listing.status}</p>

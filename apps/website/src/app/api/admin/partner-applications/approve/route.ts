@@ -3,6 +3,7 @@ import { normalizeCitySelection } from "../../../../../lib/cities";
 import { normalizeCategorySelection } from "../../../../../lib/categories";
 import { jsonError, jsonOk } from "../../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminAuth, getFirebaseAdminDb, verifyBearerToken } from "../../../../../lib/server/firebase-admin";
+import { writeAdminAuditLog } from "../../../../../lib/server/admin-audit";
 
 function clean(value: unknown, max = 180) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -130,6 +131,15 @@ export async function POST(request: Request) {
       },
       { merge: true }
     );
+  });
+
+  await writeAdminAuditLog({
+    action: `partnerApplication.${approvalStatus}`,
+    actorUid: adminToken.uid,
+    metadata: { businessId, ownerUid },
+    request,
+    targetId: applicationId,
+    targetType: "partnerApplication"
   });
 
   return jsonOk({ businessId, status: approvalStatus }, 201);

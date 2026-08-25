@@ -2,6 +2,7 @@
 
 import {
   createUserWithEmailAndPassword,
+  connectAuthEmulator,
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -16,9 +17,24 @@ import {
 } from "firebase/auth";
 import { getFirebaseApp, isFirebaseConfigured } from "./firebase";
 
+const emulatorConnectedAuth = new WeakSet<object>();
+
 export function getGoFunMotionAuth() {
   const app = getFirebaseApp();
-  return app ? getAuth(app) : null;
+  if (!app) return null;
+
+  const auth = getAuth(app);
+  const emulatorHost = process.env.NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST;
+  if (
+    process.env.NODE_ENV !== "production"
+    && emulatorHost
+    && !emulatorConnectedAuth.has(auth)
+  ) {
+    connectAuthEmulator(auth, `http://${emulatorHost}`, { disableWarnings: true });
+    emulatorConnectedAuth.add(auth);
+  }
+
+  return auth;
 }
 
 export async function signInGuest() {

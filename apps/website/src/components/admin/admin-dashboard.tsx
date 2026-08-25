@@ -3,19 +3,20 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { BadgeCheck, Building2, CalendarClock, CheckCircle2, Eye, ListChecks, MapPinned, Megaphone, MousePointerClick, PauseCircle, ShieldCheck, Sparkles, Star, XCircle } from "lucide-react";
+import { BadgeCheck, Building2, CalendarClock, CheckCircle2, Eye, History, ListChecks, MapPinned, Megaphone, MousePointerClick, PauseCircle, ShieldCheck, Sparkles, Star, XCircle } from "lucide-react";
 import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
-import { demoBusinesses, demoCategories, demoCities, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import { canFeatureListings, canPromoteListings, getPartnerTierCapabilities } from "../../lib/partner-limits";
 import {
   isAdminUser,
+  readAdminAuditLogs,
   readAdminBookingRequests,
   readAdminBusinesses,
   readAdminCategories,
   readAdminCities,
   readAdminListings,
   readAdminPartnerApplications,
+  type AdminAuditLogRecord,
   type BookingRequestRecord,
   type PartnerApplicationRecord
 } from "../../lib/firestore";
@@ -24,6 +25,7 @@ import { EmptyStatePanel, LoadingRows, StatusBanner } from "../gofunmotion/produ
 
 export function AdminDashboard() {
   const [allowed, setAllowed] = useState(false);
+  const [auditLogs, setAuditLogs] = useState<AdminAuditLogRecord[]>([]);
   const [applications, setApplications] = useState<PartnerApplicationRecord[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -50,13 +52,14 @@ export function AdminDashboard() {
         }
 
         if (nextAllowed) {
-          const [nextApplications, nextBusinesses, nextListings, nextBookingRequests, nextCities, nextCategories] = await Promise.all([
+          const [nextApplications, nextBusinesses, nextListings, nextBookingRequests, nextCities, nextCategories, nextAuditLogs] = await Promise.all([
             readAdminPartnerApplications(),
             readAdminBusinesses(),
             readAdminListings(),
             readAdminBookingRequests(),
             readAdminCities(),
-            readAdminCategories()
+            readAdminCategories(),
+            readAdminAuditLogs()
           ]);
 
           if (!cancelled) {
@@ -66,6 +69,7 @@ export function AdminDashboard() {
             setBookingRequests(nextBookingRequests);
             setCities(nextCities);
             setCategories(nextCategories);
+            setAuditLogs(nextAuditLogs);
           }
         }
       } catch (error) {
@@ -111,10 +115,11 @@ export function AdminDashboard() {
     );
   }
 
-  const visibleBusinesses = businesses.length ? businesses : demoBusinesses;
-  const visibleListings = listings.length ? listings : demoListings;
-  const visibleCities = cities.length ? cities : demoCities;
-  const visibleCategories = categories.length ? categories : demoCategories;
+  const visibleBusinesses = businesses;
+  const visibleListings = listings;
+  const visibleCities = cities;
+  const visibleCategories = categories;
+  const live = true;
   const metrics = {
     clicks: visibleListings.reduce((sum, listing) => sum + (listing.clickCount ?? 0), 0),
     requests: bookingRequests.length || visibleListings.reduce((sum, listing) => sum + (listing.requestCount ?? 0), 0),
@@ -134,7 +139,7 @@ export function AdminDashboard() {
     <>
       {status ? <div className="mt-6"><StatusBanner title="Admin notice" tone="warning">{status}</StatusBanner></div> : null}
       <section className="mt-8 grid gap-4 md:grid-cols-6">
-        <AdminStat icon={ShieldCheck} label="Applications" value={String(applications.length || "Review")} />
+        <AdminStat icon={ShieldCheck} label="Applications" value={String(applications.length)} />
         <AdminStat icon={Building2} label="Businesses" value={String(visibleBusinesses.length)} />
         <AdminStat icon={ListChecks} label="Listings" value={String(visibleListings.length)} />
         <AdminStat icon={MapPinned} label="Cities" value={String(visibleCities.length)} />
@@ -143,7 +148,7 @@ export function AdminDashboard() {
       </section>
       <AdminMetricsPanel metrics={metrics} />
       <ModerationQueueBar
-        live={Boolean(listings.length)}
+        live
         pendingApplications={pendingApplications}
         pendingListings={pendingListings}
         publishedListings={publishedListings}
@@ -163,7 +168,7 @@ export function AdminDashboard() {
           </div>
         </div>
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-          <h2 className="text-2xl font-black text-white">{listings.length ? "Live listing approvals" : "Demo listing review state"}</h2>
+          <h2 className="text-2xl font-black text-white">Live listing approvals</h2>
           <p className="mt-2 text-sm font-bold leading-6 text-white/52">
             Approve, reject, publish, feature, promote, pause, or expire partner-created listings.
           </p>
@@ -173,7 +178,7 @@ export function AdminDashboard() {
                 business={visibleBusinesses.find((item) => item.id === listing.businessId) ?? null}
                 key={listing.id}
                 listing={listing}
-                live={Boolean(listings.length)}
+                live
                 onModerated={() => user && void refreshAdminData(user)}
               />
             )) : (
@@ -184,10 +189,11 @@ export function AdminDashboard() {
         <AdminCityCategoryManager
           categories={visibleCategories}
           cities={visibleCities}
-          live={Boolean(cities.length || categories.length)}
+          live
           onCreated={() => user && void refreshAdminData(user)}
         />
         <AdminBookingRequestsPanel requests={bookingRequests} />
+        <AdminAuditLogPanel logs={auditLogs} />
       </section>
     </>
   );
@@ -195,13 +201,14 @@ export function AdminDashboard() {
   async function refreshAdminData(nextUser: User) {
     setStatus("");
     try {
-      const [nextApplications, nextBusinesses, nextListings, nextBookingRequests, nextCities, nextCategories] = await Promise.all([
+      const [nextApplications, nextBusinesses, nextListings, nextBookingRequests, nextCities, nextCategories, nextAuditLogs] = await Promise.all([
         readAdminPartnerApplications(),
         readAdminBusinesses(),
         readAdminListings(),
         readAdminBookingRequests(),
         readAdminCities(),
-        readAdminCategories()
+        readAdminCategories(),
+        readAdminAuditLogs()
       ]);
       setApplications(nextApplications);
       setBusinesses(nextBusinesses);
@@ -209,6 +216,7 @@ export function AdminDashboard() {
       setBookingRequests(nextBookingRequests);
       setCities(nextCities);
       setCategories(nextCategories);
+      setAuditLogs(nextAuditLogs);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Could not refresh admin data.");
     }
@@ -827,6 +835,56 @@ function AdminBookingRequestsPanel({ requests }: { requests: BookingRequestRecor
       </div>
     </div>
   );
+}
+
+function AdminAuditLogPanel({ logs }: { logs: AdminAuditLogRecord[] }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6 lg:col-span-2">
+      <div className="flex items-start gap-3">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-cyan-300/12 text-cyan-200">
+          <History aria-hidden="true" size={20} />
+        </span>
+        <div>
+          <h2 className="text-2xl font-black text-white">Admin audit log</h2>
+          <p className="mt-1 text-sm font-bold leading-6 text-white/52">Latest moderation, approval, city, and category changes.</p>
+        </div>
+      </div>
+      <div className="mt-5 grid gap-2">
+        {logs.length ? logs.map((log) => {
+          const details = Object.entries(log.metadata ?? {}).slice(0, 3).map(([key, value]) => `${key}: ${String(value)}`);
+          return (
+            <div className="grid gap-2 rounded-2xl bg-black/24 p-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center" key={log.id}>
+              <div className="min-w-0">
+                <p className="font-black text-white">{log.action}</p>
+                <p className="mt-1 break-words text-xs font-bold text-white/48">
+                  {log.targetType} / {log.targetId}{details.length ? ` - ${details.join(" - ")}` : ""}
+                </p>
+              </div>
+              <div className="text-left md:text-right">
+                <p className="text-xs font-black text-cyan-100">{formatAuditTime(log.createdAt)}</p>
+                <p className="mt-1 text-[11px] font-bold text-white/36">Actor {log.actorUid.slice(0, 8)}...</p>
+              </div>
+            </div>
+          );
+        }) : (
+          <div className="rounded-2xl bg-black/24 p-4 text-sm font-bold text-white/58">Moderation actions will appear here.</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function formatAuditTime(value: unknown) {
+  let date: Date | null = null;
+  if (typeof value === "object" && value !== null && "toDate" in value) {
+    const timestamp = value as { toDate?: unknown };
+    if (typeof timestamp.toDate === "function") date = (timestamp as { toDate: () => Date }).toDate();
+  } else if (typeof value === "string" || typeof value === "number") {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) date = parsed;
+  }
+
+  return date ? date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "Pending timestamp";
 }
 
 function AdminRequestStatusBadge({ status }: { status: BookingRequestRecord["status"] }) {

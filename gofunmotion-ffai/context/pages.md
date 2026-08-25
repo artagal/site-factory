@@ -14,26 +14,27 @@
 - DealDetailPage [`Scaffold_2aacdkym`] → deal-detail
   - Navigates to: SignInPage
   - Components: SectionHeader
-  - Queries: bookingRequests, listings, savedListings
+  - Queries: listings
   - Params: listingRef (DocumentReference)
-  - State: listing (Document<listings>), contactName (String), contactEmail (String), partySize (Integer), message (String)
+  - State: listing (Document<listings>), contactName (String), contactEmail (String), partySize (Integer), message (String), requestedDate (String), requestedTime (String)
 - DiscoverPage [`Scaffold_zvhlzk7l`]
-  - Navigates to: DealDetailPage, FindPlanPage, SavedPage
+  - Navigates to: AdminPage, DealDetailPage, FindPlanPage, PartnerDashboardPage, SavedPage
   - Components: DealCard, SectionHeader
+  - Queries: listings
   - State: featuredDeals (List<Document<listings>>)
 - FindPlanPage [`Scaffold_d7mhrhkb`] → find
   - Navigates to: SignInPage
   - Components: PlanStepCard, SectionHeader
-  - Queries: savedPlans
   - State: city (String), persona (String), when (String), budget (String), vibe (String), planSummary (String)
 - DealsPage [`Scaffold_sau0xhtq`] → deals
   - Navigates to: DealDetailPage, PartnerApplyPage
   - Components: DealCard, EmptyState, SectionHeader
-  - State: city (String), category (String), deals (List<Document<listings>>)
+  - Queries: listings
+  - State: city (String), category (String), deals (List<Document<listings>>), smartQuery (String), smartSearchSummary (String)
 - SavedPage [`Scaffold_ygicpnxn`] → saved
   - Navigates to: SignInPage
   - Components: SectionHeader
-  - State: savedDeals (List<Document<savedListings>>), savedPlanItems (List<Document<savedPlans>>)
+  - State: savedDeals (List<DataStruct<?>>), savedPlanItems (List<DataStruct<?>>)
 - ProfilePage [`Scaffold_b2q817um`] → profile
   - Navigates to: PartnerDashboardPage, SignInPage
   - Components: EmptyState
@@ -43,16 +44,15 @@
 - PartnerApplyPage [`Scaffold_3k50nr7m`] → partner/apply
   - Navigates to: PartnerPage
   - Components: SectionHeader
-  - Queries: partnerApplications
   - State: businessName (String), contactName (String), contactEmail (String), city (String), category (String), description (String)
 - PartnerDashboardPage [`Scaffold_vq6ocq17`] → partner/dashboard
   - Navigates to: SignInPage
   - Components: EmptyState, SectionHeader
+  - State: currentBusinessId (String), copyCategory (String), draftDescription (String), draftTitle (String), partnerRequests (List<DataStruct<?>>)
 - AdminPage [`Scaffold_zl253w6v`] → admin
-  - (no incoming navigation)
   - Navigates to: SignInPage
   - Components: EmptyState, SectionHeader
   - Queries: listings, partnerApplications
-  - State: applications (List<Document<partnerApplications>>), adminListings (List<Document<listings>>)
+  - State: applications (List<Document<partnerApplications>>), adminListings (List<Document<listings>>), isAdmin (Boolean)
 - SplashPage [`Scaffold_7vhocoab`] → splash [initial]
   - Navigates to: DiscoverPage

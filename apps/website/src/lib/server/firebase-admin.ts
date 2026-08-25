@@ -1,6 +1,7 @@
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import { getMessaging } from "firebase-admin/messaging";
 
 type ServiceAccountShape = {
   clientEmail: string;
@@ -52,20 +53,38 @@ function getServiceAccount(): ServiceAccountShape | null {
   return serviceAccount;
 }
 
+function getEmulatorProjectId() {
+  if (
+    process.env.NODE_ENV === "production"
+    || !process.env.FIRESTORE_EMULATOR_HOST
+    || !process.env.FIREBASE_AUTH_EMULATOR_HOST
+  ) {
+    return null;
+  }
+
+  return process.env.FIREBASE_PROJECT_ID
+    ?? process.env.GCLOUD_PROJECT
+    ?? process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    ?? null;
+}
+
 export function isFirebaseAdminConfigured() {
-  return Boolean(getServiceAccount());
+  return Boolean(getServiceAccount() || getEmulatorProjectId());
 }
 
 export function getFirebaseAdminApp(): App | null {
   if (getApps().length) return getApps()[0] ?? null;
 
   const serviceAccount = getServiceAccount();
-  if (!serviceAccount) return null;
+  if (serviceAccount) {
+    return initializeApp({
+      credential: cert(serviceAccount),
+      projectId: serviceAccount.projectId
+    });
+  }
 
-  return initializeApp({
-    credential: cert(serviceAccount),
-    projectId: serviceAccount.projectId
-  });
+  const emulatorProjectId = getEmulatorProjectId();
+  return emulatorProjectId ? initializeApp({ projectId: emulatorProjectId }) : null;
 }
 
 export function getFirebaseAdminAuth() {
@@ -76,6 +95,11 @@ export function getFirebaseAdminAuth() {
 export function getFirebaseAdminDb() {
   const app = getFirebaseAdminApp();
   return app ? getFirestore(app) : null;
+}
+
+export function getFirebaseAdminMessaging() {
+  const app = getFirebaseAdminApp();
+  return app ? getMessaging(app) : null;
 }
 
 export async function verifyBearerToken(request: Request) {

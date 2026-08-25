@@ -1,0 +1,49 @@
+## API Calls
+### Group: GoFunMotionWeb (https://gofunmotion.com)
+- GetMyAccess [GET] /api/me/access
+  - Variables: token (String)
+  - Response: DataStruct<MobileAccessResponse>
+- SmartSearchDeals [POST] /api/ai/smart-search
+  - Variables: query (String)
+  - Body: JSON
+  - Response: DataStruct<MobileSmartSearchResponse>
+- BuildAiPlan [POST] /api/ai/plan
+  - Variables: budget (String), city (String), vibe (String), when (String), who (String)
+  - Body: JSON
+  - Response: DataStruct<MobilePlanResponse>
+- ImprovePartnerTitle [POST] /api/ai/partner-copy
+  - Variables: businessId (String), category (String), text (String), token (String)
+  - Body: JSON
+  - Response: DataStruct<MobilePartnerCopyResponse>
+- ImprovePartnerDescription [POST] /api/ai/partner-copy
+  - Variables: businessId (String), category (String), text (String), token (String)
+  - Body: JSON
+  - Response: DataStruct<MobilePartnerCopyResponse>
+- GetSavedListings [GET] /api/me/saved-listings
+  - Variables: token (String)
+  - Response: DataStruct<MobileSavedListingsResponse>
+- SaveListing [POST] /api/me/saved-listings
+  - Variables: listingId (String), token (String)
+  - Body: JSON
+  - Response: DataStruct<MobileWriteResponse>
+- GetSavedPlans [GET] /api/me/saved-plans
+  - Variables: token (String)
+  - Response: DataStruct<MobileSavedPlansResponse>
+- SavePlan [POST] /api/me/saved-plans
+  - Variables: budget (String), city (String), persona (String), summary (String), token (String), vibe (String), when (String)
+  - Body: JSON
+  - Response: DataStruct<MobileWriteResponse>
+- CreateBookingRequest [POST] /api/booking-request
+  - Variables: email (String), listingId (String), message (String), name (String), partySize (Integer), requestedDate (String), requestedTime (String), token (String)
+  - Body: JSON
+  - Response: DataStruct<MobileWriteResponse>
+- GetPartnerListings [GET] /api/partner/listings
+  - Variables: token (String)
+  - Response: DataStruct<MobilePartnerListingsResponse>
+- GetPartnerBookingRequests [GET] /api/partner/booking-requests
+  - Variables: token (String)
+  - Response: DataStruct<MobileBookingRequestsResponse>
+- CreatePartnerApplication [POST] /api/partner-application
+  - Variables: businessName (String), category (String), city (String), description (String), email (String), ownerName (String)
+  - Body: JSON
+  - Response: DataStruct<MobileWriteResponse>

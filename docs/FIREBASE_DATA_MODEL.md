@@ -1,294 +1,122 @@
-# Firebase Data Model
+# GoFunMotion Deals Firebase Data Model
 
-Date: 2026-06-04
+Date: 2026-08-24
 
-## Scope
-
-This is the target Firebase data model for the GoFunMotion FlutterFlow app. It is intentionally Firebase-native and should not copy BeautyDrop's Supabase table/RPC design.
-
-The existing web prototype has some `businesses`, `listings`, and `bookingRequests` terminology. Future FlutterFlow-first work should normalize around `provider_profiles`, `drops`, and `booking_requests`. If the web app remains active during migration, keep a compatibility adapter or clearly documented mapping.
-
-## Common Field Rules
-
-- Use Firebase Auth uid for user-owned records.
-- Use Firestore `Timestamp` values for `createdAt`, `updatedAt`, `deletedAt`, status timestamps, and expiry fields.
-- Use explicit status strings instead of booleans for lifecycle state.
-- Keep private contact information out of public drop documents unless it is intentionally public business contact info.
-- Store moderation and admin-only fields behind admin rules.
-- Store media in Firebase Storage and save public/download URLs or storage paths in Firestore.
-
-## users/{uid}
-
-Purpose: auth-backed identity, role, account status, and cross-role routing.
-
-Fields:
-
-- `uid`: string
-- `role`: `customer` | `provider` | `admin`
-- `displayName`: string
-- `email`: string
-- `phone`: string
-- `photoUrl`: string
-- `accountStatus`: `active` | `suspended` | `deleted` | `pending`
-- `onboardingComplete`: boolean
-- `createdAt`: timestamp
-- `updatedAt`: timestamp
-- `deletedAt`: timestamp | null
-
-Notes:
-
-- Admin role should also be backed by `admin_users/{uid}` or custom claims before sensitive actions are allowed.
-- Soft-deleted users should keep minimal audit-safe metadata and anonymized personal fields.
-
-## customer_profiles/{uid}
-
-Purpose: customer preferences and notification settings.
-
-Fields:
-
-- `uid`: string
-- `preferredCategories`: array<string>
-- `city`: string
-- `location`: geopoint | null
-- `notificationPreferences`: map
-- `createdAt`: timestamp
-- `updatedAt`: timestamp
-
-## provider_profiles/{uid}
-
-Purpose: provider/host business profile, location, media, verification, ratings, and reliability.
-
-Fields:
-
-- `uid`: string
-- `businessName`: string
-- `hostName`: string
-- `description`: string
-- `phone`: string
-- `website`: string
-- `socialLinks`: map
-- `businessAddress`: string
-- `city`: string
-- `state`: string
-- `postalCode`: string
-- `country`: string
-- `latitude`: number | null
-- `longitude`: number | null
-- `placeId`: string
-- `timezone`: string
-- `avatarUrl`: string
-- `coverImageUrl`: string
-- `verificationStatus`: `unverified` | `pending` | `verified` | `rejected` | `suspended`
-- `ratingAverage`: number
-- `ratingCount`: number
-- `reliabilityScore`: number
-- `reliabilityLabel`: string
-- `createdAt`: timestamp
-- `updatedAt`: timestamp
-
-Notes:
-
-- Public UI can show safe positive labels only.
-- Raw reliability score and admin notes should be admin/provider-only.
-
-## drops/{dropId}
-
-Purpose: active marketplace inventory.
-
-Fields:
-
-- `id`: string
-- `providerId`: string
-- `title`: string
-- `description`: string
-- `category`: string
-- `activityType`: string
-- `dealType`: `last_minute` | `cancellation` | `slow_time` | `limited_spot` | `discount` | `experience`
-- `status`: `draft` | `active` | `requested` | `booked` | `expired` | `cancelled` | `completed`
-- `moderationStatus`: `draft` | `pending_review` | `approved` | `rejected` | `flagged`
-- `startAt`: timestamp
-- `endAt`: timestamp
-- `durationMinutes`: number
-- `regularPrice`: number
-- `dealPrice`: number
-- `discountPercent`: number
-- `capacity`: number
-- `spotsRemaining`: number
-- `confirmationMode`: `instant_reserve` | `request_to_confirm`
-- `locationFormatted`: string
-- `city`: string
-- `state`: string
-- `postalCode`: string
-- `latitude`: number | null
-- `longitude`: number | null
-- `placeId`: string
-- `timezone`: string
-- `imageUrl`: string
-- `createdAt`: timestamp
-- `updatedAt`: timestamp
-- `expiresAt`: timestamp
-
-Public query eligibility:
-
-- `status == active`
-- `moderationStatus == approved`
-- `expiresAt > now`
-- `spotsRemaining > 0`
-
-## booking_requests/{requestId}
-
-Purpose: request-to-confirm workflow.
-
-Fields:
-
-- `id`: string
-- `customerId`: string
-- `providerId`: string
-- `dropId`: string
-- `status`: `pending` | `accepted` | `declined` | `cancelled_by_customer` | `cancelled_by_provider` | `completed` | `no_response` | `expired`
-- `customerName`: string
-- `customerPhone`: string
-- `customerEmail`: string
-- `message`: string
-- `partySize`: number
-- `createdAt`: timestamp
-- `updatedAt`: timestamp
-- `acceptedAt`: timestamp | null
-- `declinedAt`: timestamp | null
-- `completedAt`: timestamp | null
-
-Notes:
-
-- Customers can read their own requests.
-- Providers can read requests for their drops.
-- Accepted request contact details should be shown only to the intended participants.
-
-## favorites/{favoriteId}
-
-Purpose: user-owned saved drops.
-
-Fields:
-
-- `id`: string
-- `userId`: string
-- `dropId`: string
-- `createdAt`: timestamp
-
-Recommended id:
-
-```text
-{userId}_{dropId}
-```
-
-This makes toggles idempotent and avoids duplicate favorites.
-
-## reviews/{reviewId}
-
-Purpose: reviews after completed booking requests.
-
-Fields:
-
-- `id`: string
-- `bookingRequestId`: string
-- `customerId`: string
-- `providerId`: string
-- `dropId`: string
-- `rating`: number
-- `text`: string
-- `tags`: array<string>
-- `wouldBookAgain`: boolean
-- `moderationStatus`: `pending` | `approved` | `hidden` | `rejected`
-- `createdAt`: timestamp
-- `updatedAt`: timestamp
-
-Rules:
-
-- One review per completed booking request.
-- Customer must own the completed booking request.
-- Public surfaces show approved reviews only.
-
-## reports/{reportId}
-
-Purpose: user-submitted moderation reports.
-
-Fields:
-
-- `id`: string
-- `reporterId`: string
-- `targetType`: `drop` | `provider` | `review` | `booking_request` | `user`
-- `targetId`: string
-- `reason`: string
-- `message`: string
-- `status`: `new` | `in_review` | `resolved` | `dismissed`
-- `createdAt`: timestamp
-- `updatedAt`: timestamp
-
-## admin_actions/{actionId}
-
-Purpose: audit log for admin decisions.
-
-Fields:
-
-- `id`: string
-- `adminId`: string
-- `actionType`: string
-- `targetType`: string
-- `targetId`: string
-- `reason`: string
-- `createdAt`: timestamp
-
-Admin action logs should be append-only from trusted code or strict admin rules.
-
-## device_tokens/{tokenId}
-
-Purpose: FCM device token registration.
-
-Fields:
-
-- `id`: string
-- `userId`: string
-- `token`: string
-- `platform`: `ios` | `android` | `web`
-- `isActive`: boolean
-- `lastSeenAt`: timestamp
-- `createdAt`: timestamp
-
-Recommended id:
-
-```text
-{userId}_{platform}_{tokenHash}
-```
-
-Do not expose tokens to other users.
-
-## subscriptions/{userId}
-
-Purpose: provider plan and entitlement cache.
-
-Fields:
-
-- `userId`: string
-- `plan`: `free_starter` | `pro_motion` | `venue_team_growth`
-- `entitlement`: string
-- `status`: `active` | `trialing` | `past_due` | `cancelled` | `expired` | `none`
-- `currentPeriodEnd`: timestamp | null
-- `source`: `manual` | `app_store` | `play_store` | `billing_provider` | `migration`
-- `updatedAt`: timestamp
-
-Notes:
-
-- No payment checkout is part of the MVP unless explicitly approved later.
-- Plan limits should be enforced through trusted logic and reflected in provider UI.
-
-## Suggested Composite Indexes
-
-- `drops`: `moderationStatus ASC`, `status ASC`, `city ASC`, `startAt ASC`
-- `drops`: `moderationStatus ASC`, `status ASC`, `category ASC`, `startAt ASC`
-- `drops`: `providerId ASC`, `status ASC`, `updatedAt DESC`
-- `booking_requests`: `customerId ASC`, `createdAt DESC`
-- `booking_requests`: `providerId ASC`, `status ASC`, `createdAt DESC`
-- `favorites`: `userId ASC`, `createdAt DESC`
-- `favorites`: `userId ASC`, `dropId ASC`
-- `reviews`: `providerId ASC`, `moderationStatus ASC`, `createdAt DESC`
-- `reports`: `status ASC`, `createdAt ASC`
-- `admin_actions`: `targetType ASC`, `targetId ASC`, `createdAt DESC`
+This is the canonical Firestore model used by the web app and FlutterFlow app. Legacy BeautyDrop-style collections such as `drops`, `favorites`, `booking_requests`, `provider_profiles`, and `customer_profiles` are not part of GoFunMotion Deals.
+
+## Identity And Access
+
+### users/{uid}
+
+Auth-backed profile. The `role` field is `user` or `business`; administrator access is never inferred from this field.
+
+Core fields: `displayName`, `email`, `photoURL`, `phone`, `preferredCityId`, `preferredCategories`, `role`, `accountStatus`, `createdAt`, `updatedAt`, and `lastLoginAt`.
+
+### admins/{uid}
+
+Server-authoritative administrator record with `role` set to `admin` or `superadmin`. The first record is bootstrapped manually.
+
+## Marketplace
+
+### cities/{cityId}
+
+Canonical city registry. IDs and `slug` values are normalized. `normalizedKey` is derived from normalized city, state, and country so capitalization and spacing cannot create duplicate cities.
+
+Core fields: `name`, `slug`, `state`, `country`, `timezone`, `active`, `comingSoon`, `heroImageUrl`, `description`, `normalizedName`, `normalizedKey`, `createdAt`, and `updatedAt`.
+
+### categories/{categoryId}
+
+Canonical category registry with `name`, `slug`, `icon`, `description`, `accentColor`, `active`, and `sortOrder`.
+
+### businesses/{businessId}
+
+Partner profile and subscription entitlement source.
+
+Core fields: `name`, `slug`, `description`, `ownerIds`, contact and address fields, `cityId`, `cityName`, `categories`, media fields, `status`, `verificationStatus`, `pricingTier`, `subscriptionStatus`, `stripeCustomerId`, `stripeSubscriptionId`, `paidAccessEnabled`, `isDemo`, `createdAt`, and `updatedAt`.
+
+Public reads require `status == approved` and `isDemo != true`. Owners can edit profile fields but cannot change approval, verification, billing, or demo state.
+
+### listings/{listingId}
+
+Canonical deal/activity inventory.
+
+Core fields: `id`, `businessId`, `businessName`, `ownerIds`, `cityId`, `cityName`, `title`, `slug`, `description`, `shortDescription`, `listingType`, `categoryIds`, `vibeTags`, `groupTypes`, `indoorOutdoor`, `durationMinutes`, `price`, `originalPrice`, `currency`, `discountPercent`, `budgetTier`, availability fields, `capacity`, `remainingSpots`, media and terms, booking contact fields, `bookingMode`, `status`, `approvalStatus`, `isDemo`, `featured`, `promoted`, metric counters, `createdAt`, and `updatedAt`.
+
+Public reads require all of:
+
+- `status == published`
+- `approvalStatus == approved`
+- `isDemo != true`
+
+Partner-created listings start as `draft` or `pending_approval`, with `approvalStatus == pending`, `featured == false`, `promoted == false`, and `isDemo == false`.
+
+## User Activity
+
+### plans/{planId}
+
+Generated plan persistence with `userId`, optional `sessionId`, `cityId`, validated planner `input`, generated copy, `items`, `listingIds`, `source`, `saved`, and `createdAt`. AI plans may only reference approved listing IDs supplied to the model.
+
+### users/{uid}/savedListings/{listingId}
+
+Idempotent saved listing with `listingId`, `savedAt`, and `listingSnapshot`.
+
+### users/{uid}/savedPlans/{planId}
+
+Idempotent saved plan with `planId`, `savedAt`, and `planSnapshot`.
+
+### bookingRequests/{requestId}
+
+Request-to-confirm booking record with `userId`, listing/business/city IDs, `businessOwnerIds`, contact fields, requested date/time, `partySize`, editable `message`, `status`, optional email-delivery state, `createdAt`, and `updatedAt`.
+
+Statuses: `pending`, `contacted`, `confirmed`, `cancelled`, or `rejected`. Public clients cannot update status directly; the partner status API verifies ownership and sends notifications.
+
+### users/{uid}/deviceTokens/{tokenId}
+
+FCM registration with `token`, `platform`, `enabled`, `createdAt`, `updatedAt`, and `lastSeenAt`. A user can only manage their own tokens.
+
+### users/{uid}/notifications/{notificationId}
+
+Server-created in-app notification. Clients can only read their own notifications and update `isRead` and `readAt`.
+
+## Intake And Operations
+
+### partnerApplications/{applicationId}
+
+Public business application using canonical `cityId` and `categoryId`, contact details, listing intent, status, and timestamps. Only admins can read or review applications.
+
+### waitlist/{entryId}
+
+Public create-only city interest with `email`, optional `cityId`, `city`, `interestType`, `source`, and `createdAt`.
+
+### adminAuditLogs/{eventId}
+
+Immutable server-side moderation audit record with actor, action, target, bounded metadata, request fingerprint, and timestamp. Admins may read but clients cannot write.
+
+### emailDeliveryEvents/{eventId}
+
+Idempotent, signature-verified Resend webhook events. Clients cannot read or write these records.
+
+### analyticsEvents/{eventId}
+
+Server-only product analytics events. No direct client access.
+
+### globalStats/main
+
+Read-only aggregate counts for public presentation. Only trusted server/admin operations write this document.
+
+## Deletion Contract
+
+Account deletion removes:
+
+- `users/{uid}/deviceTokens`
+- `users/{uid}/notifications`
+- `users/{uid}/savedListings`
+- `users/{uid}/savedPlans`
+- top-level `plans` where `userId == uid`
+- top-level `bookingRequests` where `userId == uid`
+
+Business records and immutable audit/delivery evidence require an explicit administrative retention workflow instead of silent client deletion.
+
+## Compatibility Policy
+
+Both clients must use this model. Do not add compatibility writes to legacy top-level saves, `drops`, `favorites`, `booking_requests`, or profile split collections. During migration, reads from old records may be handled by a one-time trusted migration script, never by weakening public security rules.

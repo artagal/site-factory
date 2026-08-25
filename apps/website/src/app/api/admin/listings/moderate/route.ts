@@ -1,6 +1,7 @@
 import { jsonError, jsonOk } from "../../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../../../lib/server/firebase-admin";
 import { canFeatureListings, canPromoteListings } from "../../../../../lib/partner-limits";
+import { writeAdminAuditLog } from "../../../../../lib/server/admin-audit";
 
 const ACTIONS = new Set([
   "approve",
@@ -55,6 +56,14 @@ export async function POST(request: Request): Promise<Response> {
     lastModeratedBy: adminToken.uid,
     updatedAt: now
   };
+  const audit = (nextAction: string, metadata: Record<string, boolean | number | string | null> = {}) => writeAdminAuditLog({
+    action: `listing.${nextAction}`,
+    actorUid: adminToken.uid,
+    metadata,
+    request,
+    targetId: listingId,
+    targetType: "listing"
+  });
 
   if (action === "approve") {
     await listingRef.set(
@@ -66,6 +75,7 @@ export async function POST(request: Request): Promise<Response> {
       },
       { merge: true }
     );
+    await audit(action, { approvalStatus: "approved", status: "published" });
     return jsonOk({ action, approvalStatus: "approved", listingId, status: "published" });
   }
 
@@ -81,6 +91,7 @@ export async function POST(request: Request): Promise<Response> {
       },
       { merge: true }
     );
+    await audit(action, { approvalStatus: "rejected", status: "paused" });
     return jsonOk({ action, approvalStatus: "rejected", listingId, status: "paused" });
   }
 
@@ -90,16 +101,19 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     await listingRef.set({ ...moderationBase, status: "published" }, { merge: true });
+    await audit(action, { status: "published" });
     return jsonOk({ action, listingId, status: "published" });
   }
 
   if (action === "pause") {
     await listingRef.set({ ...moderationBase, status: "paused" }, { merge: true });
+    await audit(action, { status: "paused" });
     return jsonOk({ action, listingId, status: "paused" });
   }
 
   if (action === "expire") {
     await listingRef.set({ ...moderationBase, featured: false, promoted: false, status: "expired" }, { merge: true });
+    await audit(action, { status: "expired" });
     return jsonOk({ action, listingId, status: "expired" });
   }
 
@@ -129,19 +143,23 @@ export async function POST(request: Request): Promise<Response> {
 
   if (action === "feature") {
     await listingRef.set({ ...moderationBase, featured: true }, { merge: true });
+    await audit(action, { featured: true });
     return jsonOk({ action, featured: true, listingId });
   }
 
   if (action === "unfeature") {
     await listingRef.set({ ...moderationBase, featured: false }, { merge: true });
+    await audit(action, { featured: false });
     return jsonOk({ action, featured: false, listingId });
   }
 
   if (action === "promote") {
     await listingRef.set({ ...moderationBase, promoted: true }, { merge: true });
+    await audit(action, { promoted: true });
     return jsonOk({ action, listingId, promoted: true });
   }
 
   await listingRef.set({ ...moderationBase, promoted: false }, { merge: true });
+  await audit(action, { promoted: false });
   return jsonOk({ action, listingId, promoted: false });
 }

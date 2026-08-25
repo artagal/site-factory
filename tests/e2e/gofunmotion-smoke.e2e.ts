@@ -19,10 +19,10 @@ test.describe("GoFunMotion Deals smoke", () => {
     await page.goto("/find");
 
     await expect(page.getByRole("heading", { name: /Tell us what sounds fun/i })).toBeVisible();
-    await expect(page.getByText("Suggested deal plan")).toBeVisible();
+    await expect(page.getByText("Your deal plan")).toBeVisible();
 
     const form = page.locator("main form").first();
-    await expect(form.getByLabel("City")).toHaveValue("austin");
+    await form.getByLabel("City").selectOption("austin");
     await form.getByLabel("When").selectOption("tonight");
     await form.getByLabel("Who's going").selectOption("friends");
     await form.getByLabel("Budget").selectOption("under25");
@@ -46,7 +46,9 @@ test.describe("GoFunMotion Deals smoke", () => {
     await expect(page.getByRole("heading", { name: /Last-minute fun, for less/i })).toBeVisible();
     await expect(page.getByText(/Reviewed partners/i)).toBeVisible();
 
-    const browseForm = page.locator("main form").first();
+    const browseForm = page.locator("main form").filter({
+      has: page.getByRole("button", { exact: true, name: "Show Deals" })
+    }).first();
     await expect(browseForm.getByLabel("City")).toHaveValue("austin");
     await browseForm.getByLabel("When").selectOption("weekend");
     await browseForm.getByRole("button", { name: /Show/i }).click();

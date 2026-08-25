@@ -1,6 +1,7 @@
 import { jsonError, jsonOk } from "../../../../../lib/server/api-response";
 import { sendBookingStatusNotification } from "../../../../../lib/server/email";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../../../lib/server/firebase-admin";
+import { sendPushToUsers } from "../../../../../lib/server/push";
 
 const STATUSES = ["contacted", "confirmed", "cancelled", "rejected"] as const;
 type BookingStatusUpdate = typeof STATUSES[number];
@@ -58,8 +59,7 @@ export async function POST(request: Request): Promise<Response> {
     { merge: true }
   );
 
-  const notification = await sendBookingStatusNotification({
-    request: {
+  const notificationPayload = {
       businessName: typeof requestData.businessName === "string" ? requestData.businessName : "Local business",
       email: typeof requestData.email === "string" ? requestData.email : "",
       listingId: typeof requestData.listingId === "string" ? requestData.listingId : "",
@@ -70,23 +70,35 @@ export async function POST(request: Request): Promise<Response> {
       phone: typeof requestData.phone === "string" ? requestData.phone : null,
       requestedDate: typeof requestData.requestedDate === "string" ? requestData.requestedDate : "",
       requestedTime: typeof requestData.requestedTime === "string" ? requestData.requestedTime : ""
-    },
-    requestId,
-    status: nextStatus
-  }).catch((error) => ({
-    configured: false,
-    results: [{ attempted: true, error: error instanceof Error ? error.message : "Could not send notification.", ok: false, provider: "resend" as const, to: [] }],
-    status: "partial"
-  }));
+  };
+  const [notification, push] = await Promise.all([
+    sendBookingStatusNotification({
+      request: notificationPayload,
+      requestId,
+      status: nextStatus
+    }).catch((error) => ({
+      configured: false,
+      results: [{ attempted: true, error: error instanceof Error ? error.message : "Could not send notification.", ok: false, provider: "resend" as const, to: [] }],
+      status: "partial"
+    })),
+    sendPushToUsers({
+      body: `${notificationPayload.businessName} marked your request ${nextStatus}.`,
+      data: { bookingRequestId: requestId, link: "/profile", status: nextStatus, type: "booking_status_changed" },
+      notificationId: `booking-status-${nextStatus}-${requestId}`,
+      title: `Request ${nextStatus}`,
+      userIds: typeof requestData.userId === "string" ? [requestData.userId] : []
+    }).catch(() => ({ attempted: 0, failed: 0, inAppCreated: 0, sent: 0, status: "skipped" as const }))
+  ]);
 
   await requestRef.set(
     {
       lastStatusNotificationResults: notification.results,
       lastStatusNotificationStatus: notification.status,
-      lastStatusNotificationUpdatedAt: FieldValue.serverTimestamp()
+      lastStatusNotificationUpdatedAt: FieldValue.serverTimestamp(),
+      lastStatusPushResult: push
     },
     { merge: true }
   );
 
-  return jsonOk({ notificationStatus: notification.status, requestId, status: nextStatus });
+  return jsonOk({ notificationStatus: notification.status, pushStatus: push.status, requestId, status: nextStatus });
 }

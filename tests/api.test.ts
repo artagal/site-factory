@@ -19,13 +19,21 @@ import { POST as aiSmartSearchPost } from "../apps/website/src/app/api/ai/smart-
 import { POST as aiSupportPost } from "../apps/website/src/app/api/ai/support/route";
 import { GET as citiesGet } from "../apps/website/src/app/api/cities/route";
 import { GET as categoriesGet } from "../apps/website/src/app/api/categories/route";
-import { DELETE as partnerListingDelete, PATCH as partnerListingPatch, POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
+import { GET as meAccessGet } from "../apps/website/src/app/api/me/access/route";
+import { GET as meBookingRequestsGet } from "../apps/website/src/app/api/me/booking-requests/route";
+import { GET as meNotificationsGet } from "../apps/website/src/app/api/me/notifications/route";
+import { GET as meSavedListingsGet } from "../apps/website/src/app/api/me/saved-listings/route";
+import { GET as meSavedPlansGet } from "../apps/website/src/app/api/me/saved-plans/route";
+import { GET as partnerBookingRequestsGet } from "../apps/website/src/app/api/partner/booking-requests/route";
+import { DELETE as partnerListingDelete, GET as partnerListingsGet, PATCH as partnerListingPatch, POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
 import { POST as partnerBookingStatusPost } from "../apps/website/src/app/api/partner/booking-requests/status/route";
 import { POST as partnerPost } from "../apps/website/src/app/api/partner-application/route";
+import { POST as pushRegisterPost } from "../apps/website/src/app/api/push/register/route";
 import { POST as eventsPost } from "../apps/website/src/app/api/events/route";
 import { GET as searchGet } from "../apps/website/src/app/api/search/route";
 import { POST as trackPost } from "../apps/website/src/app/api/track/route";
 import { POST as waitlistPost } from "../apps/website/src/app/api/waitlist/route";
+import { POST as resendWebhookPost } from "../apps/website/src/app/api/webhooks/resend/route";
 
 function jsonRequest(url: string, body: Record<string, unknown>, headers: Record<string, string> = {}) {
   return new Request(url, {
@@ -45,26 +53,14 @@ async function readJson<T>(response: Response): Promise<T> {
 describe("GoFunMotion Deals API routes", () => {
   it("keeps account deletion scoped to current Deals user records", () => {
     expect([...USER_DOCUMENT_SUBCOLLECTIONS]).toEqual([
+      "deviceTokens",
+      "notifications",
       "savedListings",
       "savedPlans"
     ]);
-    expect([...USER_OWNED_COLLECTIONS]).toEqual(expect.arrayContaining([
-      "savedListings",
-      "savedPlans",
-      "plans",
-      "bookingRequests"
-    ]));
-    expect([...USER_TOP_LEVEL_DOCUMENTS]).toEqual([
-      "customer_profiles",
-      "provider_profiles",
-      "subscriptions"
-    ]);
-    expect([...USER_FIELD_OWNED_COLLECTIONS]).toEqual(expect.arrayContaining([
-      { collectionName: "favorites", fieldPath: "userId" },
-      { collectionName: "device_tokens", fieldPath: "userId" },
-      { collectionName: "booking_requests", fieldPath: "customerId" },
-      { collectionName: "drops", fieldPath: "providerId" }
-    ]));
+    expect([...USER_OWNED_COLLECTIONS]).toEqual(["plans", "bookingRequests"]);
+    expect([...USER_TOP_LEVEL_DOCUMENTS]).toEqual([]);
+    expect([...USER_FIELD_OWNED_COLLECTIONS]).toEqual([]);
     expect([...USER_DOCUMENT_SUBCOLLECTIONS, ...USER_OWNED_COLLECTIONS]).not.toContain("completedChallenges");
     expect([...USER_DOCUMENT_SUBCOLLECTIONS, ...USER_OWNED_COLLECTIONS]).not.toContain("savedChallenges");
   });
@@ -147,6 +143,49 @@ describe("GoFunMotion Deals API routes", () => {
     }));
 
     expect(missingAuth.status).toBe(401);
+  });
+
+  it("protects all account and partner collection reads", async () => {
+    const request = new Request("https://site-factory.test/api/private");
+    const responses = await Promise.all([
+      meAccessGet(request),
+      meBookingRequestsGet(request),
+      meNotificationsGet(request),
+      meSavedListingsGet(request),
+      meSavedPlansGet(request),
+      partnerBookingRequestsGet(request),
+      partnerListingsGet(request)
+    ]);
+
+    expect(responses.every((response) => response.status === 401)).toBe(true);
+  });
+
+  it("requires auth before registering a push token", async () => {
+    const response = await pushRegisterPost(jsonRequest("https://site-factory.test/api/push/register", {
+      platform: "ios",
+      token: "test-device-token-that-is-long-enough"
+    }));
+
+    expect(response.status).toBe(401);
+  });
+
+  it("rejects unsigned Resend delivery events", async () => {
+    const previousSecret = process.env.RESEND_WEBHOOK_SECRET;
+    process.env.RESEND_WEBHOOK_SECRET = "whsec_dGVzdF9vbmx5X3NlY3JldA==";
+
+    try {
+      const response = await resendWebhookPost(jsonRequest("https://site-factory.test/api/webhooks/resend", {
+        data: { email_id: "email-test" },
+        type: "email.delivered"
+      }));
+      const json = await readJson<{ error: string }>(response);
+
+      expect(response.status).toBe(400);
+      expect(json.error).toContain("signature");
+    } finally {
+      if (previousSecret === undefined) delete process.env.RESEND_WEBHOOK_SECRET;
+      else process.env.RESEND_WEBHOOK_SECRET = previousSecret;
+    }
   });
 
   it("accepts partner application and waitlist payloads without paid services", async () => {

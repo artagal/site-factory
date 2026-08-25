@@ -2,16 +2,30 @@
 - users: display_name (String), photo_url (ImagePath), uid (String), created_time (DateTime), phone_number (String), email (String), role (String), city (String), createdAt (DateTime), updatedAt (DateTime)
 - cities: name (String), state (String), slug (String), isActive (Boolean), sortOrder (Integer)
 - categories: name (String), slug (String), icon (String), isActive (Boolean), sortOrder (Integer)
-- businesses: name (String), ownerUserId (String), contactEmail (String), city (String), status (String), description (String), createdAt (DateTime), updatedAt (DateTime)
-- listings: title (String), description (String), businessName (String), businessRef (DocumentReference), category (String), city (String), neighborhood (String), priceLabel (String), dealLabel (String), bookingMode (String), imageUrl (ImagePath), status (String), isApproved (Boolean), isDemo (Boolean), startsAt (DateTime), endsAt (DateTime), createdAt (DateTime), updatedAt (DateTime)
-  - Used by: AdminPage, DealDetailPage
-- savedListings: userId (String), listingRef (DocumentReference), listingTitle (String), city (String), createdAt (DateTime)
-  - Used by: DealDetailPage
-- savedPlans: userId (String), city (String), persona (String), when (String), budget (String), vibe (String), summary (String), createdAt (DateTime)
-  - Used by: FindPlanPage
-- bookingRequests: userId (String), listingRef (DocumentReference), listingTitle (String), contactName (String), contactEmail (String), partySize (Integer), message (String), status (String), createdAt (DateTime)
-  - Used by: DealDetailPage
+- businesses: name (String), ownerUserId (String), contactEmail (String), city (String), status (String), description (String), createdAt (DateTime), updatedAt (DateTime), cityId (String), cityName (String), ownerIds (List<String>)
+- listings: title (String), description (String), businessName (String), businessRef (DocumentReference), category (String), city (String), neighborhood (String), priceLabel (String), dealLabel (String), bookingMode (String), imageUrl (ImagePath), status (String), isApproved (Boolean), isDemo (Boolean), startsAt (DateTime), endsAt (DateTime), createdAt (DateTime), updatedAt (DateTime), id (String), businessId (String), cityId (String), ownerIds (List<String>), approvalStatus (String), cityName (String), currency (String), shortDescription (String), slug (String), categoryIds (List<String>), price (Double), originalPrice (Double), discountPercent (Double), remainingSpots (Integer)
+  - Used by: AdminPage, DealDetailPage, DealsPage, DiscoverPage
+- savedListings: userId (String), listingRef (DocumentReference), listingTitle (String), city (String), createdAt (DateTime), listingId (String), savedAt (DateTime)
+- savedPlans: userId (String), city (String), persona (String), when (String), budget (String), vibe (String), summary (String), createdAt (DateTime), savedAt (DateTime)
+- bookingRequests: userId (String), listingRef (DocumentReference), listingTitle (String), contactName (String), contactEmail (String), partySize (Integer), message (String), status (String), createdAt (DateTime), listingId (String), businessId (String), cityId (String), businessOwnerIds (List<String>)
 - partnerApplications: businessName (String), contactName (String), contactEmail (String), city (String), category (String), description (String), status (String), createdAt (DateTime)
-  - Used by: AdminPage, PartnerApplyPage
+  - Used by: AdminPage
 - waitlist: email (String), city (String), interest (String), createdAt (DateTime)
   - Used by: WaitlistPage
+
+## Data Structs (15)
+- MobileBusinessAccess: id (String), name (String), status (String)
+- MobileAccessResponse: businesses (List<DataStruct<?>>), defaultRoute (String), isAdmin (Boolean), primaryBusinessId (String), role (String), uid (String)
+- MobileSmartSearchResponse: assistantMessage (String), count (Integer), provider (String), setupWarning (String)
+- MobilePlanResult: summary (String), title (String)
+- MobilePlanResponse: plan (DataStruct<MobilePlanResult>), provider (String), setupWarning (String)
+- MobileSavedListingsResponse: savedListings (List<DataStruct<?>>)
+- MobileSavedPlansResponse: savedPlans (List<DataStruct<?>>)
+- MobileBookingRequest: businessName (String), id (String), listingTitle (String), requestedDate (String), requestedTime (String), status (String)
+- MobileBookingRequestsResponse: bookingRequests (List<DataStruct<?>>)
+- MobilePartnerListingsResponse: listings (List<DataStruct<?>>)
+- MobilePartnerCopyResponse: provider (String), setupWarning (String), text (String)
+- MobileWriteResponse: applicationId (String), listingId (String), planId (String), requestId (String), saved (Boolean), synced (Boolean)
+- MobileSavedListingItem: city (String), id (String), listingId (String), listingTitle (String)
+- MobileSavedPlanItem: city (String), id (String), persona (String), planId (String), summary (String), title (String)
+- MobilePartnerListingItem: approvalStatus (String), availableSlots (List<String>), businessId (String), businessName (String), categoryIds (List<String>), cityId (String), cityName (String), discountPercent (Integer), id (String), originalPrice (Double), price (Double), remainingSpots (Integer), shortDescription (String), slug (String), status (String), title (String)

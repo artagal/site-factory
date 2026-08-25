@@ -12,9 +12,9 @@ import { filterListingCollection } from "../lib/search";
 import { buildSeoMetadata, createFaqSchema, createSchemaGraph, createWebPageSchema } from "../lib/seo";
 
 export const metadata: Metadata = buildSeoMetadata({
-  title: "GoFunMotion - Find Fun Things To Do Today",
+  title: "GoFunMotion Deals - Last-Minute Fun Deals Near You",
   description:
-    "Discover local activities, last-minute deals, date ideas, family fun, and spontaneous plans based on your mood, time, budget, and city.",
+    "Save on activities, date nights, family fun, and local experiences with open spots today.",
   image: "/og/gofunmotion-og.png",
   keywords: [
     "things to do today",
@@ -40,8 +40,8 @@ const heroDeals = [
 
 const dealStats = [
   { icon: BadgeCheck, label: "Reviewed partners" },
-  { icon: Clock3, label: "Plans for today, tonight, or weekend" },
-  { icon: ShieldCheck, label: "No endless searching. No fake points." }
+  { icon: Clock3, label: "Tonight, this weekend, or nearby" },
+  { icon: ShieldCheck, label: "No payment until the slot is confirmed" }
 ];
 
 const howItWorks = [
@@ -116,25 +116,25 @@ export default async function HomePage() {
             GoFunMotion Deals
           </p>
           <h1 className="mt-5 max-w-4xl text-5xl font-black leading-[0.95] text-white md:text-7xl">
-            Find something fun to do today.
+            Find last-minute fun deals near you.
           </h1>
           <p className="mt-5 max-w-2xl text-lg font-semibold leading-8 text-white/68 md:text-xl">
-            Tell us your city, mood, time, budget, and who&apos;s going. GoFunMotion finds real plans, local activities, and last-minute deals you can actually do.
+            Save on activities, date nights, family fun, and local experiences with open spots today.
           </p>
-          <p className="mt-4 text-sm font-black uppercase tracking-[0.14em] text-cyan-200">No endless searching. No fake points. Just real things to do.</p>
+          <p className="mt-4 text-sm font-black uppercase tracking-[0.14em] text-cyan-200">Was. Now. Time. Spots left. Everything you need to decide.</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-6 text-base font-black text-[#070816] transition hover:bg-white"
-              href="/find"
+              href="/deals?when=tonight"
             >
-              Find My Plan
+              See Tonight&apos;s Deals
               <ArrowRight aria-hidden="true" size={19} />
             </Link>
             <Link
               className="inline-flex min-h-14 items-center justify-center rounded-2xl border border-white/12 bg-white/[0.07] px-6 text-base font-black text-white transition hover:bg-white/12"
-              href="/deals?when=tonight"
+              href="/find"
             >
-              Browse Deals
+              Help Me Choose
             </Link>
           </div>
           <div className="mt-7 flex flex-wrap gap-2">
@@ -155,10 +155,10 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:42px_42px] opacity-55 [mask-image:radial-gradient(circle_at_center,black,transparent_80%)]" />
           <div className="relative flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-black/30 p-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Today&apos;s plan board</p>
-              <p className="mt-1 text-2xl font-black text-white">Deals, ideas, and backup plans</p>
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200">Tonight&apos;s open slots</p>
+              <p className="mt-1 text-2xl font-black text-white">Last-minute fun, for less</p>
             </div>
-            <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">Find my plan</span>
+            <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">Open spots</span>
           </div>
           <div className="relative mt-4 grid gap-3">
             {heroDeals.map((deal) => (
@@ -183,17 +183,17 @@ export default async function HomePage() {
             ))}
           </div>
           <p className="relative mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4 text-sm font-black text-lime-100">
-            Plan-first discovery: one simple plan, one local activity idea, one deal when available, and a backup if the city is still coming soon.
+            Request the slot first. The partner confirms availability before you treat it as booked.
           </p>
         </div>
       </section>
 
-      <section className="sticky top-14 z-20 mx-auto max-w-7xl px-3 pb-2 pt-0 md:top-16 md:px-8 md:pb-4 md:pt-0">
-        <form action="/find" className="grid grid-cols-[minmax(0,1fr)_7.75rem_auto] items-center gap-2 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:grid-cols-[1fr_0.9fr_1.1fr_auto] md:items-end md:gap-3 md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.32)]">
-          <CitySelectField defaultCityId="miami" dense />
+      <section className="sticky top-[var(--app-header-height)] z-30 mx-auto max-w-7xl px-3 pb-2 pt-0 md:px-8 md:pb-4">
+        <form action="/deals" className="grid grid-cols-[minmax(0,1fr)_minmax(6.5rem,0.55fr)_auto] items-center gap-1.5 rounded-2xl border border-white/10 bg-[#090d1d]/95 p-1.5 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:grid-cols-[1fr_0.9fr_1.1fr_auto] md:items-end md:gap-3 md:p-3 md:shadow-[0_20px_70px_rgba(0,0,0,0.32)]">
+          <CitySelectField dense />
           <label className="block">
             <span className="sr-only md:not-sr-only md:text-xs md:font-black md:uppercase md:tracking-[0.14em] md:text-white/45">When</span>
-            <select className="h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-3 py-0 text-sm font-bold leading-[48px] text-white outline-none focus:border-lime-300 md:mt-2 md:px-4" defaultValue="tonight" name="when">
+            <select className="h-11 w-full rounded-xl border border-white/10 bg-black/28 px-3 py-0 text-sm font-bold leading-normal text-white outline-none focus:border-lime-300 md:mt-2 md:h-12 md:rounded-2xl md:px-4" defaultValue="tonight" name="when">
               <option className="bg-[#070816]" value="tonight">Tonight</option>
               <option className="bg-[#070816]" value="today">Today</option>
               <option className="bg-[#070816]" value="tomorrow">Tomorrow</option>
@@ -203,9 +203,10 @@ export default async function HomePage() {
           <div className="hidden md:block">
             <CategorySelectField includeAll />
           </div>
-          <button className="inline-flex h-12 items-center justify-center rounded-2xl bg-lime-300 px-4 text-sm font-black leading-none text-[#070816] hover:bg-white md:mt-auto md:px-5" type="submit">
-            <span className="md:hidden">Find</span>
-            <span className="hidden md:inline">Find My Plan</span>
+          <input name="sort" type="hidden" value="tonight" />
+          <button className="inline-flex h-11 items-center justify-center rounded-xl bg-lime-300 px-3 text-sm font-black leading-none text-[#070816] hover:bg-white md:mt-auto md:h-12 md:rounded-2xl md:px-5" type="submit">
+            <span className="md:hidden">Show</span>
+            <span className="hidden md:inline">Show Deals</span>
           </button>
         </form>
       </section>

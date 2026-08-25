@@ -7,15 +7,8 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment
 } from "@firebase/rules-unit-testing";
-import { beforeAll, beforeEach, afterAll, describe, expect, it } from "vitest";
-import {
-  deleteDoc,
-  doc,
-  getDoc,
-  setDoc,
-  Timestamp,
-  updateDoc
-} from "firebase/firestore";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { doc, getDoc, serverTimestamp, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 
 const repoRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const hasFirestoreEmulator = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
@@ -23,53 +16,137 @@ const describeWithEmulator = hasFirestoreEmulator ? describe : describe.skip;
 
 let testEnv: RulesTestEnvironment;
 
-const future = Timestamp.fromDate(new Date(Date.now() + 60 * 60 * 1000));
-const past = Timestamp.fromDate(new Date(Date.now() - 60 * 60 * 1000));
-const startAt = Timestamp.fromDate(new Date(Date.now() + 15 * 60 * 1000));
-const endAt = Timestamp.fromDate(new Date(Date.now() + 75 * 60 * 1000));
-
-function drop(overrides: Record<string, unknown> = {}) {
+function city() {
   return {
-    capacity: 8,
-    category: "comedy",
-    city: "Austin",
-    confirmationMode: "request_to_confirm",
+    active: true,
+    comingSoon: false,
+    country: "US",
+    name: "Austin",
+    slug: "austin",
+    state: "TX",
+    timezone: "America/Chicago"
+  };
+}
+
+function category() {
+  return {
+    active: true,
+    name: "Comedy",
+    slug: "comedy"
+  };
+}
+
+function business(overrides: Record<string, unknown> = {}) {
+  return {
+    addressLine1: "",
+    addressLine2: null,
+    categories: ["comedy"],
+    categoryNames: ["Comedy"],
+    cityId: "austin",
+    cityName: "Austin",
+    country: "US",
     createdAt: Timestamp.now(),
-    dealPrice: 22,
-    description: "Last-minute comedy table opening.",
-    endAt,
-    expiresAt: future,
-    locationFormatted: "Downtown Austin",
-    moderationStatus: "approved",
-    providerId: "provider-a",
-    regularPrice: 35,
-    spotsRemaining: 4,
-    startAt,
-    status: "active",
-    title: "Comedy night seats",
+    description: "Independent comedy venue with last-minute seats.",
+    email: "partner@example.com",
+    instagram: null,
+    isDemo: false,
+    latitude: null,
+    logoUrl: null,
+    longitude: null,
+    name: "Test Comedy Club",
+    ownerIds: ["owner-a"],
+    paidAccessEnabled: false,
+    phone: null,
+    photos: [],
+    postalCode: "",
+    pricingTier: "starter",
+    slug: "test-comedy-club",
+    state: "TX",
+    status: "approved",
     updatedAt: Timestamp.now(),
+    verificationStatus: "unverified",
+    website: null,
+    ...overrides
+  };
+}
+
+function listing(overrides: Record<string, unknown> = {}) {
+  return {
+    approvalStatus: "approved",
+    availableDays: ["today", "tonight"],
+    availableFrom: null,
+    availableSlots: ["8:30 PM"],
+    availableUntil: null,
+    bookingMode: "request",
+    bookingUrl: null,
+    budgetTier: "under50",
+    businessId: "business-a",
+    businessName: "Test Comedy Club",
+    cancellationNote: "Availability requires confirmation.",
+    capacity: 20,
+    categoryIds: ["comedy"],
+    cityId: "austin",
+    cityName: "Austin",
+    clickCount: 0,
+    createdAt: Timestamp.now(),
+    currency: "USD",
+    description: "Last-minute comedy tickets for tonight.",
+    discountPercent: 50,
+    durationMinutes: 90,
+    email: "partner@example.com",
+    featured: false,
+    groupSize: "1-6",
+    groupTypes: ["date", "friends"],
+    id: "listing-a",
+    images: [],
+    indoorOutdoor: "indoor",
+    isDemo: false,
+    listingType: "event",
+    originalPrice: 50,
+    ownerIds: ["owner-a"],
+    phone: null,
+    price: 25,
+    promoted: false,
+    remainingSpots: 4,
+    requestCount: 0,
+    saveCount: 0,
+    shortDescription: "Tonight-only comedy seats.",
+    slug: "comedy-night-test",
+    status: "published",
+    terms: "Partner confirmation required.",
+    title: "Comedy Night - 50% Off",
+    updatedAt: Timestamp.now(),
+    vibeTags: ["social"],
+    viewCount: 0,
+    whyItFits: "A clear plan for tonight.",
     ...overrides
   };
 }
 
 function bookingRequest(overrides: Record<string, unknown> = {}) {
   return {
-    createdAt: Timestamp.now(),
-    customerEmail: "customer@example.com",
-    customerId: "customer-a",
-    customerName: "Customer A",
-    customerPhone: "555-0100",
-    dropId: "drop-a",
+    businessId: "business-a",
+    businessName: "Test Comedy Club",
+    businessOwnerIds: ["owner-a"],
+    cityId: "austin",
+    createdAt: serverTimestamp(),
+    email: "customer@example.com",
+    listingId: "listing-a",
+    listingTitle: "Comedy Night - 50% Off",
     message: "Two seats if available.",
+    name: "Customer A",
     partySize: 2,
-    providerId: "provider-a",
+    phone: null,
+    requestedDate: "2026-08-24",
+    requestedTime: "8:30 PM",
     status: "pending",
-    updatedAt: Timestamp.now(),
+    updatedAt: serverTimestamp(),
+    userId: "customer-a",
     ...overrides
   };
 }
 
-describeWithEmulator("GoFunMotion Firestore rules", () => {
+describeWithEmulator("GoFunMotion Deals Firestore rules", () => {
   beforeAll(async () => {
     const [host, portText] = process.env.FIRESTORE_EMULATOR_HOST!.split(":");
     testEnv = await initializeTestEnvironment({
@@ -90,201 +167,179 @@ describeWithEmulator("GoFunMotion Firestore rules", () => {
     await testEnv?.cleanup();
   });
 
-  it("allows public reads only for approved active available drops", async () => {
+  it("exposes only approved live listings and hides demos", async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const db = context.firestore();
-      await setDoc(doc(db, "drops", "drop-a"), drop());
-      await setDoc(doc(db, "drops", "draft-drop"), drop({ moderationStatus: "pending_review" }));
-      await setDoc(doc(db, "drops", "expired-drop"), drop({ expiresAt: past }));
+      await setDoc(doc(db, "listings", "listing-a"), listing());
+      await setDoc(doc(db, "listings", "pending"), listing({ approvalStatus: "pending", status: "pending_approval" }));
+      await setDoc(doc(db, "listings", "demo"), listing({ id: "demo", isDemo: true }));
     });
 
     const publicDb = testEnv.unauthenticatedContext().firestore();
-
-    await assertSucceeds(getDoc(doc(publicDb, "drops", "drop-a")));
-    await assertFails(getDoc(doc(publicDb, "drops", "draft-drop")));
-    await assertFails(getDoc(doc(publicDb, "drops", "expired-drop")));
+    await assertSucceeds(getDoc(doc(publicDb, "listings", "listing-a")));
+    await assertFails(getDoc(doc(publicDb, "listings", "pending")));
+    await assertFails(getDoc(doc(publicDb, "listings", "demo")));
   });
 
-  it("lets providers create drops but blocks self-approval", async () => {
-    const providerDb = testEnv.authenticatedContext("provider-a").firestore();
-
-    await assertSucceeds(setDoc(doc(providerDb, "drops", "draft-drop"), drop({
-      moderationStatus: "pending_review",
-      providerId: "provider-a",
-      status: "draft"
-    })));
-
-    await assertFails(setDoc(doc(providerDb, "drops", "self-approved"), drop({
-      moderationStatus: "approved",
-      providerId: "provider-a",
-      status: "active"
-    })));
-  });
-
-  it("allows booking requests only from the customer against approved active drops", async () => {
+  it("lets owners submit listings but blocks self-approval and city spoofing", async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const db = context.firestore();
-      await setDoc(doc(db, "drops", "drop-a"), drop());
-      await setDoc(doc(db, "drops", "pending-drop"), drop({
-        moderationStatus: "pending_review",
-        providerId: "provider-a"
-      }));
+      await setDoc(doc(db, "cities", "austin"), city());
+      await setDoc(doc(db, "businesses", "business-a"), business());
     });
 
-    const customerDb = testEnv.authenticatedContext("customer-a").firestore();
-    const otherCustomerDb = testEnv.authenticatedContext("customer-b").firestore();
-
-    await assertSucceeds(setDoc(doc(customerDb, "booking_requests", "request-a"), bookingRequest()));
-    await assertFails(setDoc(doc(otherCustomerDb, "booking_requests", "spoofed-request"), bookingRequest()));
-    await assertFails(setDoc(doc(customerDb, "booking_requests", "pending-drop-request"), bookingRequest({
-      dropId: "pending-drop"
+    const ownerDb = testEnv.authenticatedContext("owner-a").firestore();
+    await assertSucceeds(setDoc(doc(ownerDb, "listings", "draft"), listing({
+      approvalStatus: "pending",
+      id: "draft",
+      status: "pending_approval"
+    })));
+    await assertFails(setDoc(doc(ownerDb, "listings", "self-approved"), listing({ id: "self-approved" })));
+    await assertFails(setDoc(doc(ownerDb, "listings", "wrong-city"), listing({
+      approvalStatus: "pending",
+      cityId: "miami",
+      id: "wrong-city",
+      status: "pending_approval"
     })));
   });
 
-  it("keeps booking request reads and status updates scoped to participants", async () => {
+  it("keeps profiles, saves, and push tokens scoped to their user", async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
-      const db = context.firestore();
-      await setDoc(doc(db, "booking_requests", "request-a"), bookingRequest());
+      await setDoc(doc(context.firestore(), "listings", "listing-a"), listing());
     });
 
-    const customerDb = testEnv.authenticatedContext("customer-a").firestore();
-    const providerDb = testEnv.authenticatedContext("provider-a").firestore();
+    const userDb = testEnv.authenticatedContext("customer-a").firestore();
     const strangerDb = testEnv.authenticatedContext("stranger").firestore();
-
-    await assertSucceeds(getDoc(doc(customerDb, "booking_requests", "request-a")));
-    await assertSucceeds(getDoc(doc(providerDb, "booking_requests", "request-a")));
-    await assertFails(getDoc(doc(strangerDb, "booking_requests", "request-a")));
-
-    await assertSucceeds(updateDoc(doc(providerDb, "booking_requests", "request-a"), {
-      acceptedAt: Timestamp.now(),
-      status: "accepted",
-      updatedAt: Timestamp.now()
+    await assertSucceeds(setDoc(doc(userDb, "users", "customer-a"), {
+      accountStatus: "active",
+      createdAt: serverTimestamp(),
+      displayName: "Customer A",
+      email: "customer@example.com",
+      isAnonymous: false,
+      lastLoginAt: serverTimestamp(),
+      notificationPreferences: {},
+      phone: null,
+      photoURL: null,
+      preferredCategories: [],
+      preferredCityId: "austin",
+      role: "user",
+      updatedAt: serverTimestamp()
     }));
-    await assertFails(updateDoc(doc(strangerDb, "booking_requests", "request-a"), {
-      status: "declined",
-      updatedAt: Timestamp.now()
+    await assertSucceeds(setDoc(doc(userDb, "users", "customer-a", "savedListings", "listing-a"), {
+      listingId: "listing-a",
+      listingSnapshot: { title: "Comedy Night - 50% Off" },
+      savedAt: serverTimestamp()
+    }));
+    await assertFails(getDoc(doc(strangerDb, "users", "customer-a", "savedListings", "listing-a")));
+    await assertSucceeds(setDoc(doc(userDb, "users", "customer-a", "deviceTokens", "ios-token"), {
+      appVersion: "1.0.0",
+      createdAt: serverTimestamp(),
+      enabled: true,
+      lastSeenAt: serverTimestamp(),
+      locale: "en-US",
+      platform: "ios",
+      token: "test-device-token-with-more-than-twenty-characters",
+      updatedAt: serverTimestamp()
+    }));
+    await assertFails(setDoc(doc(strangerDb, "users", "customer-a", "deviceTokens", "spoofed"), {
+      appVersion: "1.0.0",
+      createdAt: serverTimestamp(),
+      enabled: true,
+      lastSeenAt: serverTimestamp(),
+      locale: "en-US",
+      platform: "ios",
+      token: "another-test-token-with-more-than-twenty-characters",
+      updatedAt: serverTimestamp()
     }));
   });
 
-  it("keeps favorites and device tokens user-owned", async () => {
-    const customerDb = testEnv.authenticatedContext("customer-a").firestore();
-    const strangerDb = testEnv.authenticatedContext("stranger").firestore();
-
-    await assertSucceeds(setDoc(doc(customerDb, "favorites", "customer-a_drop-a"), {
-      createdAt: Timestamp.now(),
-      dropId: "drop-a",
-      id: "customer-a_drop-a",
-      userId: "customer-a"
-    }));
-    await assertFails(getDoc(doc(strangerDb, "favorites", "customer-a_drop-a")));
-    await assertFails(deleteDoc(doc(strangerDb, "favorites", "customer-a_drop-a")));
-
-    await assertSucceeds(setDoc(doc(customerDb, "device_tokens", "customer-a_ios_token"), {
-      createdAt: Timestamp.now(),
-      id: "customer-a_ios_token",
-      isActive: true,
-      lastSeenAt: Timestamp.now(),
-      platform: "ios",
-      token: "fake-token",
-      userId: "customer-a"
-    }));
-    await assertFails(setDoc(doc(strangerDb, "device_tokens", "spoofed-token"), {
-      createdAt: Timestamp.now(),
-      id: "spoofed-token",
-      isActive: true,
-      lastSeenAt: Timestamp.now(),
-      platform: "ios",
-      token: "fake-token",
-      userId: "customer-a"
-    }));
-  });
-
-  it("allows reviews only after completed booking requests and keeps pending reviews private", async () => {
+  it("accepts valid booking requests and keeps updates behind the trusted API", async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const db = context.firestore();
-      await setDoc(doc(db, "booking_requests", "completed-request"), bookingRequest({
-        status: "completed"
-      }));
-      await setDoc(doc(db, "booking_requests", "pending-request"), bookingRequest({
-        status: "pending"
-      }));
+      await setDoc(doc(db, "businesses", "business-a"), business());
+      await setDoc(doc(db, "listings", "listing-a"), listing());
     });
 
     const customerDb = testEnv.authenticatedContext("customer-a").firestore();
-    const publicDb = testEnv.unauthenticatedContext().firestore();
-
-    await assertSucceeds(setDoc(doc(customerDb, "reviews", "completed-request"), {
-      bookingRequestId: "completed-request",
-      createdAt: Timestamp.now(),
-      customerId: "customer-a",
-      dropId: "drop-a",
-      id: "completed-request",
-      moderationStatus: "pending",
-      providerId: "provider-a",
-      rating: 5,
-      tags: ["Fast response"],
-      text: "Great night out.",
-      updatedAt: Timestamp.now(),
-      wouldBookAgain: true
+    const ownerDb = testEnv.authenticatedContext("owner-a").firestore();
+    const strangerDb = testEnv.authenticatedContext("stranger").firestore();
+    await assertSucceeds(setDoc(doc(customerDb, "bookingRequests", "request-a"), bookingRequest()));
+    await assertFails(setDoc(doc(strangerDb, "bookingRequests", "spoofed"), bookingRequest()));
+    await assertSucceeds(getDoc(doc(ownerDb, "bookingRequests", "request-a")));
+    await assertFails(getDoc(doc(strangerDb, "bookingRequests", "request-a")));
+    await assertFails(updateDoc(doc(ownerDb, "bookingRequests", "request-a"), {
+      status: "confirmed",
+      updatedAt: serverTimestamp()
     }));
-    await assertFails(setDoc(doc(customerDb, "reviews", "pending-request"), {
-      bookingRequestId: "pending-request",
-      createdAt: Timestamp.now(),
-      customerId: "customer-a",
-      dropId: "drop-a",
-      id: "pending-request",
-      moderationStatus: "pending",
-      providerId: "provider-a",
-      rating: 5,
-      text: "Too early.",
-      updatedAt: Timestamp.now(),
-      wouldBookAgain: true
-    }));
-    await assertFails(getDoc(doc(publicDb, "reviews", "completed-request")));
   });
 
-  it("allows admin users to moderate and write audit records", async () => {
+  it("allows admins to moderate while blocking owners from review fields", async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const db = context.firestore();
-      await setDoc(doc(db, "admin_users", "admin-a"), {
-        createdAt: Timestamp.now(),
-        displayName: "Admin A",
-        email: "admin@example.com",
-        role: "admin",
-        updatedAt: Timestamp.now()
-      });
-      await setDoc(doc(db, "drops", "drop-a"), drop({ moderationStatus: "pending_review" }));
+      await setDoc(doc(db, "admins", "admin-a"), { role: "admin" });
+      await setDoc(doc(db, "businesses", "business-a"), business());
+      await setDoc(doc(db, "listings", "pending"), listing({ approvalStatus: "pending", id: "pending", status: "pending_approval" }));
     });
 
     const adminDb = testEnv.authenticatedContext("admin-a").firestore();
-    const providerDb = testEnv.authenticatedContext("provider-a").firestore();
+    const ownerDb = testEnv.authenticatedContext("owner-a").firestore();
+    await assertSucceeds(updateDoc(doc(adminDb, "listings", "pending"), {
+      approvalStatus: "approved",
+      status: "published"
+    }));
+    await assertFails(updateDoc(doc(ownerDb, "listings", "pending"), {
+      approvalStatus: "approved",
+      status: "published"
+    }));
+  });
 
-    await assertSucceeds(updateDoc(doc(adminDb, "drops", "drop-a"), {
-      moderationStatus: "approved",
-      status: "active",
-      updatedAt: Timestamp.now()
+  it("allows canonical partner applications only for known city/category IDs", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await setDoc(doc(db, "cities", "austin"), city());
+      await setDoc(doc(db, "categories", "comedy"), category());
+    });
+
+    const publicDb = testEnv.unauthenticatedContext().firestore();
+    const application = {
+      averagePrice: "$25",
+      businessName: "Test Comedy Club",
+      category: "Comedy",
+      categoryId: "comedy",
+      categoryName: "Comedy",
+      city: "Austin, TX",
+      cityId: "austin",
+      cityName: "Austin",
+      createdAt: serverTimestamp(),
+      description: "A local comedy venue with unused same-day seats.",
+      email: "partner@example.com",
+      instagram: null,
+      message: "",
+      offersLastMinuteDeals: true,
+      ownerName: "Owner A",
+      phone: null,
+      status: "new",
+      updatedAt: serverTimestamp(),
+      website: null
+    };
+    await assertSucceeds(setDoc(doc(publicDb, "partnerApplications", "application-a"), application));
+    await assertFails(setDoc(doc(publicDb, "partnerApplications", "unknown-city"), {
+      ...application,
+      cityId: "unknown"
     }));
-    await assertSucceeds(setDoc(doc(adminDb, "admin_actions", "action-a"), {
-      actionType: "approve_drop",
-      adminId: "admin-a",
-      createdAt: Timestamp.now(),
-      reason: "Rules smoke test",
-      targetId: "drop-a",
-      targetType: "drop"
-    }));
-    await assertFails(setDoc(doc(providerDb, "admin_actions", "spoofed-action"), {
-      actionType: "approve_drop",
-      adminId: "provider-a",
-      createdAt: Timestamp.now(),
-      reason: "Not allowed",
-      targetId: "drop-a",
-      targetType: "drop"
-    }));
+  });
+
+  it("denies the retired challenge-era/BeautyDrop collection model", async () => {
+    const ownerDb = testEnv.authenticatedContext("owner-a").firestore();
+    await assertFails(setDoc(doc(ownerDb, "drops", "legacy"), { status: "active" }));
+    await assertFails(setDoc(doc(ownerDb, "booking_requests", "legacy"), { status: "pending" }));
+    await assertFails(setDoc(doc(ownerDb, "favorites", "legacy"), { userId: "owner-a" }));
+    await assertFails(setDoc(doc(ownerDb, "savedListings", "legacy"), { userId: "owner-a" }));
   });
 });
 
 if (!hasFirestoreEmulator) {
-  describe("GoFunMotion Firestore rules", () => {
+  describe("GoFunMotion Deals Firestore rules", () => {
     it("skips emulator smoke tests unless FIRESTORE_EMULATOR_HOST is set", () => {
       expect(hasFirestoreEmulator).toBe(false);
     });

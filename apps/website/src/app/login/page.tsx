@@ -147,12 +147,14 @@ function LoginContent() {
   return (
     <main className="mx-auto grid max-w-5xl gap-6 px-4 py-12 md:px-8 md:py-20 lg:grid-cols-[0.9fr_1.1fr]">
       <div>
-        <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Sign in</p>
+        <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">{user ? "Account" : "Sign in"}</p>
         <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-7xl">
-          Save plans and deals when you need them.
+          {user ? "You're signed in." : "Save plans and deals when you need them."}
         </h1>
         <p className="mt-5 text-lg leading-8 text-white/62">
-          Browse GoFunMotion Deals without an account. Sign in only when you want saved deals, booking requests, partner tools, or admin access.
+          {user
+            ? "Open your account to see saved deals and booking updates, or continue browsing tonight's openings."
+            : "Browse GoFunMotion Deals without an account. Sign in only when you want saved deals, booking requests, partner tools, or admin access."}
         </p>
       </div>
       <div className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-2xl">
@@ -177,24 +179,30 @@ function LoginContent() {
             </div>
           </div>
         ) : null}
-        <div className="mt-5 grid gap-3">
-          <input className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none" onChange={(event) => setEmail(event.target.value)} placeholder="Email" type="email" value={email} />
-          <input className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none" onChange={(event) => setPassword(event.target.value)} placeholder="Password" type="password" value={password} />
-          <div className="flex flex-wrap gap-3">
-            <Button disabled={busy || !firebaseReady} onClick={handleGoogle} variant="secondary">Google</Button>
-            <Button disabled={busy || !firebaseReady} onClick={handleApple} variant="secondary">Apple</Button>
-            <Button disabled={busy || !firebaseReady} onClick={() => handleEmail("login")}>Sign in</Button>
-            <Button disabled={busy || !firebaseReady} onClick={() => handleEmail("signup")} variant="ghost">Signup</Button>
-            <Button disabled={busy || !firebaseReady} onClick={handleGuest} variant="secondary">Guest</Button>
-            {user ? <Button disabled={busy} onClick={handleSignOut} variant="ghost">Sign out</Button> : null}
+        {user ? (
+          <div className="mt-5 grid gap-3">
+            <p className="text-sm font-bold leading-6 text-lime-200">Your account is connected on this device.</p>
+            <Button disabled={busy} onClick={handleSignOut} variant="ghost">Sign out</Button>
           </div>
-          {!firebaseReady ? (
-            <p className="rounded-2xl border border-orange-300/20 bg-orange-300/10 p-4 text-sm font-bold leading-6 text-orange-50">
-              Live account features are not connected yet. Deal browsing still works without an account.
-            </p>
-          ) : null}
-          <p className="text-sm font-bold text-lime-200">{status}</p>
-        </div>
+        ) : (
+          <div className="mt-5 grid gap-3">
+            <input className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none" onChange={(event) => setEmail(event.target.value)} placeholder="Email" type="email" value={email} />
+            <input className="min-h-12 rounded-2xl border border-white/10 bg-black/24 px-4 text-white outline-none" onChange={(event) => setPassword(event.target.value)} placeholder="Password" type="password" value={password} />
+            <div className="flex flex-wrap gap-3">
+              <Button disabled={busy || !firebaseReady} onClick={handleGoogle} variant="secondary">Google</Button>
+              <Button disabled={busy || !firebaseReady} onClick={handleApple} variant="secondary">Apple</Button>
+              <Button disabled={busy || !firebaseReady} onClick={() => handleEmail("login")}>Sign in</Button>
+              <Button disabled={busy || !firebaseReady} onClick={() => handleEmail("signup")} variant="ghost">Signup</Button>
+              <Button disabled={busy || !firebaseReady} onClick={handleGuest} variant="secondary">Guest</Button>
+            </div>
+            {!firebaseReady ? (
+              <p className="rounded-2xl border border-orange-300/20 bg-orange-300/10 p-4 text-sm font-bold leading-6 text-orange-50">
+                Live account features are not connected yet. Deal browsing still works without an account.
+              </p>
+            ) : null}
+            <p className="text-sm font-bold text-lime-200">{status}</p>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -1,6 +1,7 @@
 import { slugify } from "../../../../lib/slug";
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../../lib/server/firebase-admin";
+import { writeAdminAuditLog } from "../../../../lib/server/admin-audit";
 
 function clean(value: unknown, max = 180) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -50,6 +51,15 @@ export async function POST(request: Request): Promise<Response> {
     },
     { merge: true }
   );
+
+  await writeAdminAuditLog({
+    action: "category.upsert",
+    actorUid: adminToken.uid,
+    metadata: { active: body?.active !== false, sortOrder },
+    request,
+    targetId: categoryId,
+    targetType: "category"
+  });
 
   return jsonOk({ categoryId, slug }, 201);
 }

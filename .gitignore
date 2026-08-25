@@ -162,3 +162,6 @@ gofunmotion-ffai/.flutterflow/history/
 gofunmotion-ffai/.flutterflow/traces/
 
 .vercel
+
+# Local Firebase mobile app configs (upload to FlutterFlow; never commit here)
+.firebase-mobile-config/

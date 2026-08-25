@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Clock3, SearchX, ShieldCheck, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, BadgeCheck, Clock3, Search, SearchX, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { SmartSearch } from "../../components/ai/smart-search";
 import { DealCard } from "../../components/gofunmotion/deal-card";
 import { EmptyStatePanel, StatusBanner } from "../../components/gofunmotion/product-states";
@@ -58,23 +58,24 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
       <TrustBadges />
       <SmartSearch cityId={input.cityId} />
 
-      <form className="sticky top-16 z-20 mt-0 rounded-3xl border border-white/10 bg-[#090d1d]/95 p-2 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:rounded-2xl md:p-4 md:shadow-[0_20px_70px_rgba(0,0,0,0.34)]">
-        <div className="grid grid-cols-2 items-center gap-2 md:grid-cols-[1fr_1fr_1.2fr_auto] md:items-end">
-          <CitySelectField compact defaultCity={input.city} defaultCityId={input.cityId} dense />
+      <form className="sticky top-[var(--app-header-height)] z-30 mt-0 rounded-2xl border border-white/10 bg-[#090d1d]/95 p-1.5 shadow-[0_16px_48px_rgba(0,0,0,0.30)] backdrop-blur-2xl md:p-3 md:shadow-[0_20px_70px_rgba(0,0,0,0.34)]">
+        <div className="grid grid-cols-[minmax(0,1fr)_minmax(6.5rem,0.55fr)_2.75rem] items-center gap-1.5 md:grid-cols-[1fr_1fr_1.2fr_auto] md:items-end md:gap-3">
+          <CitySelectField compact defaultCity={input.city} defaultCityId={input.cityId} dense required={false} />
           <FilterSelect label="When" name="when" options={[["tonight", "Tonight"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]]} value={input.when} compact dense />
-          <div className="col-span-1">
+          <div className="hidden md:block">
             <CategorySelectField compact defaultCategoryId={categoryId} dense includeAll />
           </div>
           <input name="sort" type="hidden" value={sort} />
-          <button className="col-span-1 h-12 rounded-2xl bg-lime-300 px-4 text-sm font-black leading-none text-[#070816] hover:bg-white md:px-5" type="submit">
-            <span className="md:hidden">Show</span>
+          <button className="inline-flex h-11 items-center justify-center rounded-xl bg-lime-300 px-0 text-sm font-black leading-none text-[#070816] hover:bg-white md:h-12 md:rounded-2xl md:px-5" type="submit">
+            <Search aria-hidden="true" className="md:hidden" size={18} />
+            <span className="sr-only md:hidden">Show Deals</span>
             <span className="hidden md:inline">Show Deals</span>
           </button>
         </div>
       </form>
 
       <nav aria-label="Quick deal filters" className="scrollbar-none mt-4 flex gap-2 overflow-x-auto pb-1">
-        <QuickFilter href="/deals?cityId=miami&when=tonight&sort=tonight" label="Miami tonight" />
+        <QuickFilter href="/deals?when=tonight&sort=tonight" label="All cities tonight" />
         <QuickFilter href="/deals?when=tonight&who=date&sort=date-night" label="Date night" />
         <QuickFilter href="/deals?when=tonight&who=friends&sort=tonight" label="Friends" />
         <QuickFilter href="/deals?when=weekend&who=family&sort=family-friendly" label="Family weekend" />
@@ -90,8 +91,8 @@ export default async function DealsPage({ searchParams }: DealsPageProps) {
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
           <input name="cityId" type="hidden" value={input.cityId} />
           <input name="city" type="hidden" value={input.city} />
-          <input name="categoryId" type="hidden" value={categoryId ?? ""} />
           <input name="when" type="hidden" value={input.when} />
+          <CategorySelectField defaultCategoryId={categoryId} includeAll />
           <FilterSelect label="Who" name="who" options={[["solo", "Solo"], ["date", "Date"], ["friends", "Friends"], ["family", "Family"], ["kids", "Kids"]]} value={input.who} />
           <FilterSelect label="Budget" name="budget" options={[["flexible", "Flexible"], ["free", "Free"], ["under25", "Under $25"], ["under50", "Under $50"], ["under100", "Under $100"]]} value={input.budget} />
           <FilterSelect label="Sort" name="sort" options={[["tonight", "Tonight first"], ["featured", "Featured"], ["biggest-discount", "Biggest discount"], ["under25", "Under $25"], ["date-night", "Date night"], ["family-friendly", "Family-friendly"]]} value={sort} />
@@ -207,7 +208,7 @@ function FilterSelect({
   return (
     <label className="block">
       <span className={dense ? "sr-only md:not-sr-only md:text-xs md:font-black md:uppercase md:tracking-[0.14em] md:text-white/45" : "text-xs font-black uppercase tracking-[0.14em] text-white/45"}>{label}</span>
-      <select className={`${dense ? "mt-0 h-12 rounded-2xl px-3 py-0 text-sm leading-[48px] md:mt-1 md:px-4" : `${compact ? "mt-1" : "mt-2"} h-12 rounded-2xl px-4 py-0 text-sm leading-[48px]`} w-full border border-white/10 bg-black/28 font-bold text-white outline-none focus:border-lime-300`} defaultValue={value} name={name}>
+      <select className={`${dense ? "mt-0 h-11 rounded-xl px-3 py-0 text-sm leading-normal md:mt-1 md:h-12 md:rounded-2xl md:px-4" : `${compact ? "mt-1" : "mt-2"} h-12 rounded-2xl px-4 py-0 text-sm leading-normal`} w-full border border-white/10 bg-black/28 font-bold text-white outline-none focus:border-lime-300`} defaultValue={value} name={name}>
         {options.map(([optionValue, optionLabel]) => (
           <option className="bg-[#070816] text-white" key={optionValue} value={optionValue}>
             {optionLabel}

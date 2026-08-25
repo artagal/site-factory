@@ -25,7 +25,7 @@ export default defineConfig({
     ? undefined
     : {
         command: `${npmCommand} --workspace @site-factory/website run dev -- -p ${port}`,
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: false,
         timeout: 180_000,
         url: baseURL
       },
