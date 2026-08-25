@@ -1,5 +1,6 @@
 import { deleteApp, initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, signInWithCustomToken } from "firebase/auth";
+import Stripe from "stripe";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { POST as approvePartnerApplication } from "../apps/website/src/app/api/admin/partner-applications/approve/route";
 import { POST as moderateListing } from "../apps/website/src/app/api/admin/listings/moderate/route";
@@ -11,12 +12,14 @@ import { GET as getPartnerBookingRequests } from "../apps/website/src/app/api/pa
 import { POST as updateBookingStatus } from "../apps/website/src/app/api/partner/booking-requests/status/route";
 import { POST as createPartnerListing } from "../apps/website/src/app/api/partner/listings/route";
 import { GET as searchListings } from "../apps/website/src/app/api/search/route";
+import { POST as processStripeWebhook } from "../apps/website/src/app/api/webhooks/stripe/route";
 import { getFirebaseAdminAuth, getFirebaseAdminDb } from "../apps/website/src/lib/server/firebase-admin";
 
 const hasFirebaseEmulators = Boolean(
   process.env.FIRESTORE_EMULATOR_HOST && process.env.FIREBASE_AUTH_EMULATOR_HOST
 );
 const describeWithEmulators = hasFirebaseEmulators ? describe : describe.skip;
+const stripeWebhookSecret = "whsec_marketplace_flow";
 
 function jsonRequest(
   url: string,
@@ -54,6 +57,10 @@ describeWithEmulators("GoFunMotion marketplace lifecycle", () => {
     process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID = projectId;
     delete process.env.OPENAI_API_KEY;
     delete process.env.RESEND_API_KEY;
+    process.env.STRIPE_SECRET_KEY = "sk_test_marketplace_flow";
+    process.env.STRIPE_WEBHOOK_SECRET = stripeWebhookSecret;
+    process.env.STRIPE_GROWTH_PRICE_ID = "price_growth_marketplace_flow";
+    process.env.STRIPE_PRO_PRICE_ID = "price_pro_marketplace_flow";
 
     connectAuthEmulator(clientAuth, `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}`, {
       disableWarnings: true
@@ -224,15 +231,107 @@ describeWithEmulators("GoFunMotion marketplace lifecycle", () => {
       expect.objectContaining({ id: booking.requestId, status: "confirmed" })
     ]));
 
-    const [auditLogs, customerNotifications, ownerNotifications, savedListing] = await Promise.all([
+    const activeStripeEvent = {
+      api_version: "2026-07-29.dahlia",
+      created: Math.floor(Date.now() / 1000),
+      data: {
+        object: {
+          cancel_at_period_end: false,
+          customer: "cus_marketplace_flow",
+          id: "sub_marketplace_flow",
+          items: {
+            data: [{
+              current_period_end: Math.floor(Date.now() / 1000) + 2_592_000,
+              id: "si_marketplace_flow",
+              object: "subscription_item",
+              price: { id: "price_growth_marketplace_flow", object: "price" }
+            }],
+            has_more: false,
+            object: "list",
+            url: "/v1/subscription_items?subscription=sub_marketplace_flow"
+          },
+          metadata: { gofunmotionBusinessId: approval.businessId },
+          object: "subscription",
+          status: "active"
+        }
+      },
+      id: "evt_marketplace_flow",
+      livemode: false,
+      object: "event",
+      pending_webhooks: 1,
+      request: null,
+      type: "customer.subscription.updated"
+    };
+    const stripeEvent = JSON.stringify(activeStripeEvent);
+    const stripeSignature = Stripe.webhooks.generateTestHeaderString({
+      payload: stripeEvent,
+      secret: stripeWebhookSecret
+    });
+    const stripeRequest = () => new Request("https://gofunmotion.test/api/webhooks/stripe", {
+      body: stripeEvent,
+      headers: { "stripe-signature": stripeSignature },
+      method: "POST"
+    });
+    const stripeResponse = await processStripeWebhook(stripeRequest());
+    expect(stripeResponse.status).toBe(200);
+    const duplicateStripeResponse = await processStripeWebhook(stripeRequest());
+    const duplicateStripe = await responseJson<{ result: { duplicate: boolean } }>(duplicateStripeResponse);
+    expect(duplicateStripe.result.duplicate).toBe(true);
+
+    const staleStripeEvent = JSON.stringify({
+      ...activeStripeEvent,
+      created: activeStripeEvent.created - 60,
+      data: {
+        object: {
+          ...activeStripeEvent.data.object,
+          status: "canceled"
+        }
+      },
+      id: "evt_marketplace_flow_stale"
+    });
+    const staleStripeSignature = Stripe.webhooks.generateTestHeaderString({
+      payload: staleStripeEvent,
+      secret: stripeWebhookSecret
+    });
+    const staleStripeResponse = await processStripeWebhook(new Request(
+      "https://gofunmotion.test/api/webhooks/stripe",
+      {
+        body: staleStripeEvent,
+        headers: { "stripe-signature": staleStripeSignature },
+        method: "POST"
+      }
+    ));
+    const staleStripe = await responseJson<{ result: { stale: boolean } }>(staleStripeResponse);
+    expect(staleStripe.result.stale).toBe(true);
+
+    const [auditLogs, billing, business, customerNotifications, ownerNotifications, savedListing, staleStripeWebhookEvent, stripeWebhookEvent] = await Promise.all([
       db.collection("adminAuditLogs").get(),
+      db.collection("businessBilling").doc(approval.businessId).get(),
+      db.collection("businesses").doc(approval.businessId).get(),
       db.collection("users").doc(customerUid).collection("notifications").get(),
       db.collection("users").doc(ownerUid).collection("notifications").get(),
-      db.collection("users").doc(customerUid).collection("savedListings").doc(listing.listingId).get()
+      db.collection("users").doc(customerUid).collection("savedListings").doc(listing.listingId).get(),
+      db.collection("stripeWebhookEvents").doc("evt_marketplace_flow_stale").get(),
+      db.collection("stripeWebhookEvents").doc("evt_marketplace_flow").get()
     ]);
     expect(auditLogs.size).toBeGreaterThanOrEqual(2);
+    expect(billing.data()).toMatchObject({
+      pricingTier: "growth",
+      stripeCustomerId: "cus_marketplace_flow",
+      stripeSubscriptionId: "sub_marketplace_flow",
+      subscriptionStatus: "active"
+    });
+    expect(business.data()).toMatchObject({
+      paidAccessEnabled: true,
+      pricingTier: "growth"
+    });
+    expect(business.data()).not.toHaveProperty("stripeCustomerId");
+    expect(business.data()).not.toHaveProperty("stripeSubscriptionId");
+    expect(business.data()).not.toHaveProperty("subscriptionStatus");
     expect(customerNotifications.size).toBeGreaterThanOrEqual(2);
     expect(ownerNotifications.size).toBeGreaterThanOrEqual(1);
     expect(savedListing.exists).toBe(true);
+    expect(staleStripeWebhookEvent.data()?.ignoredReason).toBe("stale_event");
+    expect(stripeWebhookEvent.exists).toBe(true);
   }, 60_000);
 });

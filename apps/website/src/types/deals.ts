@@ -6,6 +6,16 @@ export type IndoorOutdoor = "indoor" | "outdoor" | "either";
 
 export type ListingType = "deal" | "activity" | "event" | "class" | "experience";
 
+export type PartnerSubscriptionStatus =
+  | "active"
+  | "trialing"
+  | "past_due"
+  | "unpaid"
+  | "canceled"
+  | "incomplete"
+  | "incomplete_expired"
+  | "paused";
+
 export type PlanWhen = "today" | "tonight" | "tomorrow" | "weekend" | "custom";
 
 export type PlanVibe =

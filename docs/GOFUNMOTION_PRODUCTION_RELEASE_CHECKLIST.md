@@ -8,7 +8,7 @@ Use this checklist for the GoFunMotion Deals website launch on Vercel with Fireb
 - Production domain: `https://gofunmotion.com`.
 - Firebase project: `gofunmotion-prod` from `.firebaserc`.
 - Public launch routes: `/`, `/find`, `/deals`, `/date-night`, `/friends`, `/family`, `/partner`, `/partner/apply`, `/pricing`, `/waitlist`, `/about`, `/support`, `/blog`, `/privacy`, `/terms`, deal detail pages, city pages, and category detail pages.
-- No public checkout in this release. Payments, Stripe, RevenueCat, PayPal, Square, partner payouts, and consumer booking checkout must stay disabled.
+- Consumer checkout and partner payouts remain disabled. Approved businesses may use hosted Stripe Checkout only for Growth/Pro subscriptions after webhook and entitlement QA pass.
 - Protected or account surfaces must stay out of the sitemap and render `noindex`: `/login`, `/saved`, `/profile`, `/admin`, and `/partner/dashboard`.
 - Mobile App Store setup is tracked separately in `docs/APP_STORE_CONNECT_SETUP_GOFUNMOTION.md`. Do not use the generated placeholder bundle ID `com.mycompany.gofunmotiondeals` for production.
 

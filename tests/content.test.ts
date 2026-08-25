@@ -9,19 +9,24 @@ import { slugify } from "../apps/website/src/lib/slug";
 import { getFactoryRoutes } from "../apps/website/src/lib/site-routes";
 
 describe("GoFunMotion Deals marketplace content", () => {
-  it("keeps paid checkout implementation out of the validation build", () => {
+  it("keeps Stripe scoped to authenticated partner subscriptions", () => {
     const websitePackage = JSON.parse(
       readFileSync(path.join(process.cwd(), "apps", "website", "package.json"), "utf8")
     ) as { dependencies?: Record<string, string> };
     const envExample = readFileSync(path.join(process.cwd(), "apps", "website", ".env.example"), "utf8");
     const schemaDoc = readFileSync(path.join(process.cwd(), "docs", "FIREBASE_SCHEMA_GOFUNMOTION_DEALS.md"), "utf8");
 
-    expect(websitePackage.dependencies?.stripe).toBeUndefined();
-    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "checkout", "partner-subscription", "route.ts"))).toBe(false);
-    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "billing", "partner-portal", "route.ts"))).toBe(false);
-    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "webhooks", "stripe", "route.ts"))).toBe(false);
+    expect(websitePackage.dependencies?.stripe).toBeDefined();
+    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "partner", "billing", "checkout", "route.ts"))).toBe(true);
+    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "partner", "billing", "portal", "route.ts"))).toBe(true);
+    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "webhooks", "stripe", "route.ts"))).toBe(true);
+    expect(existsSync(path.join(process.cwd(), "apps", "website", "src", "app", "api", "checkout", "route.ts"))).toBe(false);
     expect(existsSync(path.join(process.cwd(), "apps", "website", "public", "og", "gofunmotion-og.svg"))).toBe(false);
-    expect(envExample).not.toContain("STRIPE_");
+    expect(envExample).toContain("STRIPE_SECRET_KEY=");
+    expect(envExample).toContain("STRIPE_WEBHOOK_SECRET=");
+    expect(envExample).toContain("STRIPE_GROWTH_PRICE_ID=");
+    expect(envExample).toContain("STRIPE_PRO_PRICE_ID=");
+    expect(envExample).not.toContain("NEXT_PUBLIC_STRIPE");
     expect(envExample).not.toContain("GOFUNMOTION_ADMIN_CRON_SECRET");
     expect(schemaDoc).not.toContain("future_checkout");
   });

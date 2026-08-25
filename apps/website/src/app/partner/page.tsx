@@ -16,7 +16,7 @@ const partnerBenefits = [
   { icon: ClipboardList, title: "Post open slots", text: "Create clear last-minute offers for classes, events, experiences, and unused time windows." },
   { icon: Send, title: "Receive requests", text: "Customers request the discounted window first, so your team can confirm availability before a visit is promised." },
   { icon: BadgeCheck, title: "Approval first", text: "Partner listings should require admin approval before public visibility." },
-  { icon: BarChart3, title: "Grow when ready", text: "Growth and Pro are planned tiers for more active deals, analytics, and future placement tools." }
+  { icon: BarChart3, title: "Grow when ready", text: "Approved partners can activate Growth or Pro for more active deals, analytics, and placement eligibility." }
 ];
 
 export default function PartnerPage() {
@@ -43,7 +43,7 @@ export default function PartnerPage() {
         <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
           <h2 className="text-2xl font-black text-white">Simple open-slot marketplace</h2>
           <p className="mt-3 text-sm leading-6 text-white/60">
-            Businesses can apply, prepare last-minute offers, and show was/now pricing. Public visibility requires admin approval. Payments are not active yet.
+            Businesses apply, create clear was/now offers, and receive booking requests. Public visibility requires admin approval; approved partners can manage subscriptions from their dashboard.
           </p>
         </div>
       </section>

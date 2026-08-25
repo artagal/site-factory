@@ -124,7 +124,7 @@ Current server env vars:
 
 - `FIREBASE_SERVICE_ACCOUNT_JSON`
 
-There is no active Stripe, checkout, or admin cron-secret env requirement.
+Partner Stripe Billing uses server-only `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_GROWTH_PRICE_ID`, and `STRIPE_PRO_PRICE_ID`. Consumer booking checkout remains disabled.
 
 Current Firestore rules support:
 

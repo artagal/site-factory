@@ -20,13 +20,13 @@ export default function PricingPage() {
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
       <section className="max-w-3xl">
-        <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Future partner pricing</p>
+        <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Partner pricing</p>
         <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Partner pricing for open-slot deals.</h1>
         <p className="mt-5 text-lg leading-8 text-white/64">
-          Start with a reviewed free listing. Growth and Pro are planned partner tiers for more campaigns, better visibility, and deeper analytics. Payment checkout is intentionally not active yet.
+          Start with one reviewed deal. Approved partners can activate Growth or Pro from their business dashboard for more campaigns, visibility, and analytics.
         </p>
         <p className="mt-5 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4 text-sm font-black text-cyan-100">
-          Current monetization mode: applications, reviewed listings, and booking requests first. No consumer checkout or paid partner checkout is enabled.
+          Partner subscriptions never change consumer booking: customers still request availability and pay the business only after confirmation.
         </p>
       </section>
       <section className="mt-10 grid gap-5 md:grid-cols-3">
@@ -42,8 +42,8 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <Link className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href={`/partner/apply?plan=${tier.tier}`}>
-              {tier.tier === "starter" ? tier.cta : "Join upgrade waitlist"}
+            <Link className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href={tier.tier === "starter" ? "/partner/apply?plan=starter" : `/partner/dashboard?upgrade=${tier.tier}`}>
+              {tier.cta}
             </Link>
           </article>
         ))}

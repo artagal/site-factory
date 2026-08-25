@@ -25,6 +25,9 @@ import { GET as meNotificationsGet } from "../apps/website/src/app/api/me/notifi
 import { GET as meSavedListingsGet } from "../apps/website/src/app/api/me/saved-listings/route";
 import { GET as meSavedPlansGet } from "../apps/website/src/app/api/me/saved-plans/route";
 import { GET as partnerBookingRequestsGet } from "../apps/website/src/app/api/partner/booking-requests/route";
+import { GET as partnerBillingGet } from "../apps/website/src/app/api/partner/billing/route";
+import { POST as partnerBillingCheckoutPost } from "../apps/website/src/app/api/partner/billing/checkout/route";
+import { POST as partnerBillingPortalPost } from "../apps/website/src/app/api/partner/billing/portal/route";
 import { DELETE as partnerListingDelete, GET as partnerListingsGet, PATCH as partnerListingPatch, POST as partnerListingPost } from "../apps/website/src/app/api/partner/listings/route";
 import { POST as partnerBookingStatusPost } from "../apps/website/src/app/api/partner/booking-requests/status/route";
 import { POST as partnerPost } from "../apps/website/src/app/api/partner-application/route";
@@ -34,6 +37,7 @@ import { GET as searchGet } from "../apps/website/src/app/api/search/route";
 import { POST as trackPost } from "../apps/website/src/app/api/track/route";
 import { POST as waitlistPost } from "../apps/website/src/app/api/waitlist/route";
 import { POST as resendWebhookPost } from "../apps/website/src/app/api/webhooks/resend/route";
+import { POST as stripeWebhookPost } from "../apps/website/src/app/api/webhooks/stripe/route";
 
 function jsonRequest(url: string, body: Record<string, unknown>, headers: Record<string, string> = {}) {
   return new Request(url, {
@@ -154,6 +158,7 @@ describe("GoFunMotion Deals API routes", () => {
       meSavedListingsGet(request),
       meSavedPlansGet(request),
       partnerBookingRequestsGet(request),
+      partnerBillingGet(new Request("https://site-factory.test/api/partner/billing?businessId=business-1")),
       partnerListingsGet(request)
     ]);
 
@@ -186,6 +191,33 @@ describe("GoFunMotion Deals API routes", () => {
       if (previousSecret === undefined) delete process.env.RESEND_WEBHOOK_SECRET;
       else process.env.RESEND_WEBHOOK_SECRET = previousSecret;
     }
+  });
+
+  it("validates and protects partner Stripe billing routes", async () => {
+    const missingBusiness = await partnerBillingCheckoutPost(jsonRequest("https://site-factory.test/api/partner/billing/checkout", {
+      tier: "growth"
+    }));
+    expect(missingBusiness.status).toBe(400);
+
+    const missingTier = await partnerBillingCheckoutPost(jsonRequest("https://site-factory.test/api/partner/billing/checkout", {
+      businessId: "business-1"
+    }));
+    expect(missingTier.status).toBe(400);
+
+    const unauthorizedCheckout = await partnerBillingCheckoutPost(jsonRequest("https://site-factory.test/api/partner/billing/checkout", {
+      businessId: "business-1",
+      tier: "growth"
+    }));
+    expect(unauthorizedCheckout.status).toBe(401);
+
+    const missingPortalBusiness = await partnerBillingPortalPost(jsonRequest("https://site-factory.test/api/partner/billing/portal", {}));
+    expect(missingPortalBusiness.status).toBe(400);
+
+    const missingStripeSignature = await stripeWebhookPost(new Request("https://site-factory.test/api/webhooks/stripe", {
+      body: "{}",
+      method: "POST"
+    }));
+    expect(missingStripeSignature.status).toBe(400);
   });
 
   it("accepts partner application and waitlist payloads without paid services", async () => {

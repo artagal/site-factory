@@ -329,6 +329,31 @@ describeWithEmulator("GoFunMotion Deals Firestore rules", () => {
     }));
   });
 
+  it("keeps Stripe identifiers and webhook idempotency records server-only", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await setDoc(doc(db, "admins", "admin-a"), { role: "admin" });
+      await setDoc(doc(db, "businessBilling", "business-a"), {
+        stripeCustomerId: "cus_test",
+        stripeSubscriptionId: "sub_test"
+      });
+      await setDoc(doc(db, "stripeWebhookEvents", "evt_test"), {
+        businessId: "business-a",
+        eventType: "customer.subscription.updated"
+      });
+    });
+
+    for (const db of [
+      testEnv.unauthenticatedContext().firestore(),
+      testEnv.authenticatedContext("owner-a").firestore(),
+      testEnv.authenticatedContext("admin-a").firestore()
+    ]) {
+      await assertFails(getDoc(doc(db, "businessBilling", "business-a")));
+      await assertFails(getDoc(doc(db, "stripeWebhookEvents", "evt_test")));
+      await assertFails(setDoc(doc(db, "businessBilling", "spoofed"), { stripeCustomerId: "cus_spoofed" }));
+    }
+  });
+
   it("denies the retired challenge-era/BeautyDrop collection model", async () => {
     const ownerDb = testEnv.authenticatedContext("owner-a").firestore();
     await assertFails(setDoc(doc(ownerDb, "drops", "legacy"), { status: "active" }));
