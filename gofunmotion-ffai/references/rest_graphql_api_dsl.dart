@@ -161,6 +161,21 @@ void buildRestGraphqlApp(App app) {
     endpoints: [getRepo, getCurrentUser],
   );
 
+  // KEY PATTERN: drive a group's base URL from a project environment value so
+  // each environment (Dev/Prod) hits a different URL. `baseUrlFromEnvironment`
+  // names a public environment value; `environmentBaseUrls` seeds it per
+  // environment. The app resolves the URL for the build's current environment.
+  final health = Endpoint.get('Health', '/health');
+  app.apiGroup(
+    'AppBackend',
+    baseUrlFromEnvironment: 'API_BASE_URL',
+    environmentBaseUrls: const {
+      'DEV': 'https://dev-api.example.com',
+      'PROD': 'https://api.example.com',
+    },
+    endpoints: [health],
+  );
+
   // ---------------------------------------------------------------------------
   // 4. GraphQL — single factory for query/mutation, lowered to POST + JSON
   // ---------------------------------------------------------------------------

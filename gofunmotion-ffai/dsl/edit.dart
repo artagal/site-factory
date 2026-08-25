@@ -3,6 +3,7 @@ library;
 import 'dart:io';
 
 import 'package:flutterflow_ai/flutterflow_ai.dart';
+import '../lib/flutterflow_project.dart' as ff;
 import 'package:flutterflow_ai/src/helpers/collection_helpers.dart'
     show findCollectionField;
 import 'package:flutterflow_ai/src/helpers/data_schema_helpers.dart'
@@ -211,7 +212,7 @@ void _ensurePushRegistrationAction(App app) {
     );
   });
 
-  app.editPage('ProfilePage', (page) {
+  app.editPage(ff.Pages.profilePage, (page) {
     page.ensureInsertedBefore(
       page.findByText('Logout'),
       Button(
@@ -348,10 +349,8 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     'status': string,
     'title': string,
   });
-  final savedListingsResponse = app.existingStruct(
-    'MobileSavedListingsResponse',
-  );
-  final savedPlansResponse = app.existingStruct('MobileSavedPlansResponse');
+  final savedListingsResponse = ff.Structs.mobileSavedListingsResponse;
+  final savedPlansResponse = ff.Structs.mobileSavedPlansResponse;
   final bookingRequestItem = app.struct('MobileBookingRequest', {
     'businessName': string,
     'id': string,
@@ -363,9 +362,7 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
   final bookingRequestsResponse = app.struct('MobileBookingRequestsResponse', {
     'bookingRequests': listOf(bookingRequestItem),
   });
-  final partnerListingsResponse = app.existingStruct(
-    'MobilePartnerListingsResponse',
-  );
+  final partnerListingsResponse = ff.Structs.mobilePartnerListingsResponse;
   final copyResponse = app.struct('MobilePartnerCopyResponse', {
     'provider': string,
     'setupWarning': string,
@@ -765,11 +762,11 @@ void _ensureProductionCollectionFields(App app) {
 }
 
 void _wireProductionQueries(App app, _GoFunMotionApi api) {
-  final listings = app.existingCollection('listings');
-  final savedListingItem = app.existingStruct('MobileSavedListingItem');
-  final savedPlanItem = app.existingStruct('MobileSavedPlanItem');
+  final listings = ff.Collections.listings;
+  final savedListingItem = ff.Structs.mobileSavedListingItem;
+  final savedPlanItem = ff.Structs.mobileSavedPlanItem;
 
-  app.editPageState('SavedPage', (state) {
+  app.editPageState(ff.Pages.savedPage, (state) {
     state.ensureField('savedDeals', listOf(savedListingItem));
     state.ensureField('savedPlanItems', listOf(savedPlanItem));
   });
@@ -806,9 +803,12 @@ void _wireProductionQueries(App app, _GoFunMotionApi api) {
     );
   });
 
-  app.editPageOnLoad('DiscoverPage', [
+  app.editPageOnLoad(ff.Pages.discoverPage, [
     FirestoreQuery(listings, limit: 12, outputAs: 'approvedFeaturedDeals'),
-    SetState('featuredDeals', const ActionOutput('approvedFeaturedDeals')),
+    SetState(
+      ff.Pages.discoverPage.state.featuredDeals,
+      const ActionOutput('approvedFeaturedDeals'),
+    ),
     If(
       const Global(GlobalProperty.isUserLoggedIn),
       then: [
@@ -821,14 +821,18 @@ void _wireProductionQueries(App app, _GoFunMotionApi api) {
                 If(
                   Equals(result['role'], 'admin'),
                   then: [
-                    Navigate('AdminPage', allowBack: false, replaceRoute: true),
+                    Navigate(
+                      ff.Pages.adminPage,
+                      allowBack: false,
+                      replaceRoute: true,
+                    ),
                   ],
                   orElse: [
                     If(
                       Equals(result['role'], 'business'),
                       then: [
                         Navigate(
-                          'PartnerDashboardPage',
+                          ff.Pages.partnerDashboardPage,
                           allowBack: false,
                           replaceRoute: true,
                         ),
@@ -842,12 +846,15 @@ void _wireProductionQueries(App app, _GoFunMotionApi api) {
     ),
   ]);
 
-  app.editPageOnLoad('DealsPage', [
+  app.editPageOnLoad(ff.Pages.dealsPage, [
     FirestoreQuery(listings, limit: 50, outputAs: 'approvedDeals'),
-    SetState('deals', const ActionOutput('approvedDeals')),
+    SetState(
+      ff.Pages.dealsPage.state.deals,
+      const ActionOutput('approvedDeals'),
+    ),
   ]);
 
-  app.editPageOnLoad('SavedPage', [
+  app.editPageOnLoad(ff.Pages.savedPage, [
     If(
       const Global(GlobalProperty.isUserLoggedIn),
       then: [
@@ -1098,23 +1105,23 @@ FFIdentifier _fieldIdentifier(
 }
 
 void _removeQueryGuardNotices(App app) {
-  app.editPage('DiscoverPage', (page) {
+  app.editPage(ff.Pages.discoverPage, (page) {
     page.ensureRemoved(page.findByName('DiscoverApprovedQueryNotice'));
   });
 
-  app.editPage('DealsPage', (page) {
+  app.editPage(ff.Pages.dealsPage, (page) {
     page.ensureRemoved(page.findByName('DealsApprovedQueryNotice'));
   });
 
-  app.editPage('SavedPage', (page) {
+  app.editPage(ff.Pages.savedPage, (page) {
     page.ensureRemoved(page.findByName('SavedUserScopedQueryNotice'));
   });
 }
 
 void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
-  app.editPage('FindPlanPage', (page) {
+  app.editPage(ff.Pages.findPlanPage, (page) {
     page.ensureActions(
-      page.findByName('SavePlanButton'),
+      ff.Pages.findPlanPage.widgets.byKey('Button_lo6ifm7w').single,
       triggerType: FFActionTriggerType.ON_TAP,
       actions: [
         If(
@@ -1136,20 +1143,23 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
               onFailure: [Snackbar('Plan could not be saved yet.')],
             ),
           ],
-          orElse: [Snackbar('Sign in to save plans.'), Navigate('SignInPage')],
+          orElse: [
+            Snackbar('Sign in to save plans.'),
+            Navigate(ff.Pages.signInPage),
+          ],
         ),
       ],
     );
   });
 
-  app.editPageState('DealDetailPage', (state) {
+  app.editPageState(ff.Pages.dealDetailPage, (state) {
     state.ensureField('requestedDate', string);
     state.ensureField('requestedTime', string);
   });
 
-  app.editPage('DealDetailPage', (page) {
+  app.editPage(ff.Pages.dealDetailPage, (page) {
     page.ensureActions(
-      page.findByName('SaveDealButton'),
+      ff.Pages.dealDetailPage.widgets.byKey('Button_8mdxzpn5').single,
       triggerType: FFActionTriggerType.ON_TAP,
       actions: [
         If(
@@ -1168,14 +1178,14 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
           ],
           orElse: [
             Snackbar('Sign in to save this deal.'),
-            Navigate('SignInPage'),
+            Navigate(ff.Pages.signInPage),
           ],
         ),
       ],
     );
 
     page.ensureActions(
-      page.findByName('SendBookingRequestButton'),
+      ff.Pages.dealDetailPage.widgets.byKey('Button_md8o2kqd').single,
       triggerType: FFActionTriggerType.ON_TAP,
       actions: [
         If(
@@ -1205,14 +1215,14 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
           ],
           orElse: [
             Snackbar('Sign in to send booking requests.'),
-            Navigate('SignInPage'),
+            Navigate(ff.Pages.signInPage),
           ],
         ),
       ],
     );
 
     page.ensureInsertedBefore(
-      page.findByName('SendBookingRequestButton'),
+      ff.Pages.dealDetailPage.widgets.byKey('Button_md8o2kqd').single,
       Column(
         name: 'BookingDateTimeFields',
         spacing: 12,
@@ -1232,7 +1242,7 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
     );
   });
 
-  app.editPage('PartnerApplyPage', (page) {
+  app.editPage(ff.Pages.partnerApplyPage, (page) {
     page.ensureActions(
       page.findByText('Submit Application'),
       triggerType: FFActionTriggerType.ON_TAP,
@@ -1251,7 +1261,7 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
           onSuccess:
               (_) => [
                 Snackbar('Application submitted for admin review.'),
-                Navigate('PartnerPage'),
+                Navigate(ff.Pages.partnerPage),
               ],
           onFailure: [
             Snackbar('Choose a supported city/category and check the form.'),
@@ -1263,12 +1273,12 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
 }
 
 void _wireRoleRouting(App app, _GoFunMotionApi api) {
-  app.editPageState('AdminPage', (state) {
+  app.editPageState(ff.Pages.adminPage, (state) {
     state.ensureField('isAdmin', bool_.withDefault(false));
   });
-  final partnerApplications = app.existingCollection('partnerApplications');
-  final listings = app.existingCollection('listings');
-  app.editPageOnLoad('AdminPage', [
+  final partnerApplications = ff.Collections.partnerApplications;
+  final listings = ff.Collections.listings;
+  app.editPageOnLoad(ff.Pages.adminPage, [
     If(
       const Global(GlobalProperty.isUserLoggedIn),
       then: [
@@ -1308,12 +1318,15 @@ void _wireRoleRouting(App app, _GoFunMotionApi api) {
       orElse: [SetState('isAdmin', false)],
     ),
   ]);
-  app.editPage('AdminPage', (page) {
+  app.editPage(ff.Pages.adminPage, (page) {
     page.bindVisible(
-      page.findByName('AdminApplicationsList'),
+      ff.Pages.adminPage.widgets.byKey('ListView_sh90m1dy').single,
       State('isAdmin'),
     );
-    page.bindVisible(page.findByName('AdminListingsList'), State('isAdmin'));
+    page.bindVisible(
+      ff.Pages.adminPage.widgets.byKey('ListView_20dqsmgf').single,
+      State('isAdmin'),
+    );
     page.ensureActions(
       page.findByText('Publish'),
       triggerType: FFActionTriggerType.ON_TAP,
@@ -1332,9 +1345,9 @@ void _wireRoleRouting(App app, _GoFunMotionApi api) {
 }
 
 void _wireAiAssistants(App app, _GoFunMotionApi api) {
-  app.editPage('FindPlanPage', (page) {
+  app.editPage(ff.Pages.findPlanPage, (page) {
     page.ensureActions(
-      page.findByName('FindMyPlanButton'),
+      ff.Pages.findPlanPage.widgets.byKey('Button_id060slz').single,
       triggerType: FFActionTriggerType.ON_TAP,
       actions: [
         ApiCall(
@@ -1358,13 +1371,13 @@ void _wireAiAssistants(App app, _GoFunMotionApi api) {
     );
   });
 
-  app.editPageState('DealsPage', (state) {
+  app.editPageState(ff.Pages.dealsPage, (state) {
     state.ensureField('smartQuery', string);
     state.ensureField('smartSearchSummary', string);
   });
-  app.editPage('DealsPage', (page) {
+  app.editPage(ff.Pages.dealsPage, (page) {
     page.ensureInsertedBefore(
-      page.findByName('DealsList'),
+      ff.Pages.dealsPage.widgets.byKey('ListView_zze2o7q7').single,
       Container(
         name: 'MobileSmartSearchPanel',
         width: double.infinity,
@@ -1416,14 +1429,14 @@ void _wireAiAssistants(App app, _GoFunMotionApi api) {
     );
   });
 
-  app.editPageState('PartnerDashboardPage', (state) {
+  app.editPageState(ff.Pages.partnerDashboardPage, (state) {
     state.ensureField('currentBusinessId', string);
     state.ensureField('copyCategory', string.withDefault('classes'));
     state.ensureField('draftDescription', string);
     state.ensureField('draftTitle', string);
     state.ensureField('partnerRequests', listOf(api.partnerBookingRequest));
   });
-  app.editPageOnLoad('PartnerDashboardPage', [
+  app.editPageOnLoad(ff.Pages.partnerDashboardPage, [
     If(
       const Global(GlobalProperty.isUserLoggedIn),
       then: [
@@ -1451,7 +1464,7 @@ void _wireAiAssistants(App app, _GoFunMotionApi api) {
       ],
     ),
   ]);
-  app.editPage('PartnerDashboardPage', (page) {
+  app.editPage(ff.Pages.partnerDashboardPage, (page) {
     page.ensureInsertedBefore(
       page.findByText('Request Listing Setup'),
       Container(
@@ -1552,7 +1565,7 @@ void _ensureAnimatedSplash(App app) {
     isInitial: true,
     onLoad: [
       const Wait(2300),
-      Navigate('DiscoverPage', allowBack: false, replaceRoute: true),
+      Navigate(ff.Pages.discoverPage, allowBack: false, replaceRoute: true),
     ],
     body: Scaffold(
       body: Container(
