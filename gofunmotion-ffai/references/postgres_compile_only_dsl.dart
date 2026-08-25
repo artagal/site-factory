@@ -76,6 +76,21 @@ App buildPostgresCompileOnly(App app) {
             ],
           ),
           Button(
+            'Upsert Ticket',
+            name: 'UpsertTicketButton',
+            onTap: [
+              PostgresUpsert(
+                tickets,
+                fields: {
+                  'title': State('title'),
+                  'priority': State('priority'),
+                },
+                onConflictColumns: const ['title'],
+                outputAs: 'upsertedTicket',
+              ),
+            ],
+          ),
+          Button(
             'Resolve High Priority',
             name: 'ResolveButton',
             onTap: [

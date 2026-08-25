@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "flutterflow_ai": {
+      "command": "C:\\Users\\Administrator\\development\\flutter\\bin\\cache\\dart-sdk\\bin\\dart.exe",
+      "args": [
+        "C:\\Projects\\site-factory\\gofunmotion-ffai\\.flutterflow/sdk/flutterflow_ai\\mcp\\server.dill",
+        "--dir",
+        "C:\\Projects\\site-factory\\gofunmotion-ffai"
+      ],
+      "env": {}
+    }
+  }
+}

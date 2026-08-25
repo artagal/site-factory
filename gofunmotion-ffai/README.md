@@ -30,25 +30,27 @@ flutterflow ai run dsl/edit.dart --project-id <project-id> --commit-message "Upd
 - `test/app_test.dart`: starter compile test
 - `references/`: working DSL examples copied locally into the workspace
 - `patterns/`: edit helper patterns
-- `PROJECT_CONTEXT.md`: project summary for bound edit workspaces
-- `context/`: expanded project details written by FlutterFlow AI context generation
+- `lib/flutterflow_project.dart`: generated typed project SDK for authoring and inspection in bound edit workspaces
+- `PROJECT_CONTEXT.md`: tiny onboarding pointer to the generated typed SDK
 - `generated_code/`: local Flutter export snapshot when `flutterflow_cli` is available during `flutterflow ai init --project <id>`
 - `.flutterflow/` (SDK-managed: run artifacts, plus router-managed config): local runtime artifacts such as history, traces, and support outputs
 
 ## Edit Context
 
-- `flutterflow ai init --project <id>` writes `PROJECT_CONTEXT.md` when credentials are available.
-- After the first successful push from a new unbound workspace, FlutterFlow AI also exports `generated_code/` when `flutterflow` CLI is available.
+- `flutterflow ai init --project <id>` writes `lib/flutterflow_project.dart` when credentials are available.
+- Import the generated SDK as `package:<workspace>/flutterflow_project.dart` and prefer `ff.Pages.*`, `ff.Components.*`, `ff.Collections.*`, `ff.Tables.*`, `ff.AppState.*`, and widget handles over raw strings.
+- Successful `flutterflow ai run` pushes refresh `lib/flutterflow_project.dart` automatically.
+- Successful pushes also refresh `generated_code/` by default when `flutterflow` CLI is available. If codegen is skipped or the export fails, the snapshot is marked stale instead.
 - Treat `generated_code/` as read-only reference context. Use it to inspect generated structure and map generated files back to FlutterFlow entities.
 - Do not edit files in `generated_code/` directly. Apply changes in FlutterFlow AI-managed source such as `dsl/edit.dart`, then push with `flutterflow ai run`.
 - If a task starts from a generated Dart file, use that file to identify the relevant page, component, or resource, then make the change through FlutterFlow AI instead of patching generated output.
-- After a successful FlutterFlow AI push, `generated_code/` is marked stale instead of silently treated as current.
 - Run `flutterflow ai codegen status` to see whether the snapshot is fresh or stale and which entities/files are likely affected.
 - Run `flutterflow ai codegen refresh` to regenerate `generated_code/` for the bound project when you need a fresh snapshot.
-- Run `flutterflow ai refresh-context <project-id>` after meaningful remote changes.
-- Run `flutterflow ai context-check` if you are not sure whether local context is current.
-- Use `flutterflow ai inspect` and `flutterflow ai resources` for exact current page, component, and resource details.
-- Use `flutterflow ai inspect --dsl-json`, `--tree`, `--outline`, `--debug`, or `--deep` when you need a specific inspection mode rather than the default whole-project summary.
+- Run `flutterflow ai refresh-context <project-id>` after meaningful remote changes made outside this workspace.
+- Run `flutterflow ai context-check` if you are not sure whether the generated typed SDK is current.
+- For general discovery — pages, components, collections, state, params, widget selectors — read `lib/flutterflow_project.dart`. Do NOT default to `flutterflow ai inspect <id> --dsl-json` for this; the typed SDK already carries it.
+- Use plain `flutterflow ai inspect <id>` or `flutterflow ai resources <id>` for human-readable debug/export views when the typed SDK is insufficient.
+- `flutterflow ai inspect --dsl-json` is reserved for two cases: (1) resolving a pasted FlutterFlow AI Selector v1 block via `--selector-path` (see workflow below), and (2) explicit machine-readable snapshots when you genuinely need raw FFNode shape. `--tree`, `--outline`, `--debug`, and `--deep` are similarly opt-in inspection modes.
 - Use `flutterflow ai inspect --selector-path <path>` or `--selector-key <key>` (with `--page` or `--component`) to target a single widget directly.
 
 ## FlutterFlow AI Selector Workflow
@@ -68,10 +70,14 @@ node_type: Button
 
 1. Run: `flutterflow ai inspect abc123 --page HomePage --selector-path "HomePage.body[0].children[1]" --dsl-json`
 2. Verify the returned widget matches expectations.
-3. Patch with `findByPath(...)` in `dsl/edit.dart`:
+3. Patch through the generated typed widget tree in `dsl/edit.dart`:
    ```dart
-   app.editPage('HomePage', (page) {
-     page.findByPath('HomePage.body[0].children[1]').update((patch) {
+   import 'package:<workspace>/flutterflow_project.dart' as ff;
+
+   app.editPage(ff.Pages.homePage, (page) {
+     page.find(
+       ff.Pages.homePage.widgets.byPath('HomePage.body[0].children[1]').single,
+     ).update((patch) {
        // modify properties
      });
    });
