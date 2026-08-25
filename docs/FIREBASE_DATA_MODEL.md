@@ -32,9 +32,17 @@ Canonical category registry with `name`, `slug`, `icon`, `description`, `accentC
 
 Partner profile and subscription entitlement source.
 
-Core fields: `name`, `slug`, `description`, `ownerIds`, contact and address fields, `cityId`, `cityName`, `categories`, media fields, `status`, `verificationStatus`, `pricingTier`, `subscriptionStatus`, `stripeCustomerId`, `stripeSubscriptionId`, `paidAccessEnabled`, `isDemo`, `createdAt`, and `updatedAt`.
+Core fields: `name`, `slug`, `description`, `ownerIds`, contact and address fields, `cityId`, `cityName`, `categories`, media fields, `status`, `verificationStatus`, `pricingTier`, `paidAccessEnabled`, `isDemo`, `createdAt`, and `updatedAt`.
 
 Public reads require `status == approved` and `isDemo != true`. Owners can edit profile fields but cannot change approval, verification, billing, or demo state.
+
+### businessBilling/{businessId}
+
+Private server-only Stripe linkage. Core fields: `stripeCustomerId`, `stripeSubscriptionId`, `subscriptionStatus`, `subscriptionCurrentPeriodEnd`, `subscriptionCancelAtPeriodEnd`, `pricingTier`, `lastStripeEventId`, and `updatedAt`. Stripe identifiers and detailed billing state never live on publicly readable business documents.
+
+### stripeWebhookEvents/{eventId}
+
+Immutable server-only idempotency record for signature-verified Stripe events. No client reads or writes are allowed.
 
 ### listings/{listingId}
 

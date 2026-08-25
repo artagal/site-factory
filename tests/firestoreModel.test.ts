@@ -16,6 +16,22 @@ describe("Firestore marketplace model normalization", () => {
     expect(business.pricingTier).toBe("starter");
   });
 
+  it("normalizes public partner entitlement fields without private Stripe state", () => {
+    const business = normalizeBusinessDocument("business-2", {
+      name: "Growth Studio",
+      paidAccessEnabled: true,
+      pricingTier: "growth"
+    });
+
+    expect(business).toMatchObject({
+      paidAccessEnabled: true,
+      pricingTier: "growth"
+    });
+    expect(business).not.toHaveProperty("stripeCustomerId");
+    expect(business).not.toHaveProperty("stripeSubscriptionId");
+    expect(business).not.toHaveProperty("subscriptionStatus");
+  });
+
   it("normalizes historical listings into the canonical marketplace shape", () => {
     const listing = normalizeListingDocument("listing-1", {
       approvalStatus: "approved",

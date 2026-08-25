@@ -76,7 +76,7 @@ Website integration includes:
 
 Payments are intentionally not implemented in this validation build.
 
-Do not configure Stripe, consumer checkout, partner checkout, Stripe Connect, or payment webhook environment variables yet. Current booking flow stays request-based: users request availability, partners confirm manually, and no payment is collected by GoFunMotion.
+Stripe may be configured only for approved partner Growth/Pro subscriptions. Consumer booking remains request-based: users request availability, partners confirm manually, and GoFunMotion does not collect consumer booking payment.
 
 Growth and Pro pricing can remain visible as future partner packaging, but paid access should not be sold or automatically enabled until real partner fulfillment, refund, confirmation, tax, and support policies are ready.
 

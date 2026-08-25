@@ -86,4 +86,4 @@ All intake surfaces use a selected `cityId`; free-form city text is display/supp
 - OpenAI calls remain server-side and receive validated listing facts.
 - Resend delivery webhooks require Svix signature verification over the raw body.
 - FCM device tokens are user-owned; pushes are sent only by Firebase Admin.
-- Stripe subscription state, when enabled, belongs on `businesses/{businessId}` and is updated only by verified webhooks.
+- Stripe entitlement state belongs on `businesses/{businessId}`; private customer/subscription IDs belong in `businessBilling/{businessId}`. Both are updated only by signature-verified webhooks.

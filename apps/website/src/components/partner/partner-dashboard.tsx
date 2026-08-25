@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
 import { BarChart3, ClipboardList, Crown, Eye, LockKeyhole, MousePointerClick, PlusCircle, Send, Star } from "lucide-react";
 import { LastMinuteDealEditor } from "./last-minute-deal-editor";
+import { PartnerBillingControls } from "./partner-billing-controls";
 import { getCurrentUserIdToken, observeUser } from "../../lib/auth";
 import { demoBusinesses, demoListings } from "../../lib/demoData";
 import { isFirebaseConfigured } from "../../lib/firebase";
@@ -150,7 +151,7 @@ export function PartnerDashboard() {
           <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
             {!business.isDemo && (limitReached || tierCapabilities.tier === "starter") ? (
               <Link className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-white px-5 text-sm font-black text-[#070816] hover:bg-lime-200" href="/pricing">
-                View future upgrades
+                Compare plans
               </Link>
             ) : null}
             <a className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white" href="#create-last-minute-deal">
@@ -452,8 +453,7 @@ function PartnerPlanCard({
           <p className="text-sm font-black uppercase tracking-[0.16em] text-lime-300">Partner plan</p>
           <p className="mt-2 text-2xl font-black text-white">{capabilities.label}</p>
           <p className="mt-1 text-sm font-bold text-white/54">
-            Current access: {business.paidAccessEnabled ? "approved paid-access record" : "request-first marketplace access"}.
-            Payment checkout is not active yet.
+            Current access: {business.paidAccessEnabled ? "paid partner subscription" : "Starter marketplace access"}.
           </p>
         </div>
         <span className="rounded-full bg-white/[0.08] px-3 py-1.5 text-xs font-black text-white/62">
@@ -473,10 +473,12 @@ function PartnerPlanCard({
         })}
       </div>
 
+      <PartnerBillingControls business={business} />
+
       {business.isDemo ? null : (
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <Link className="min-h-11 w-full rounded-2xl bg-lime-300 px-4 text-center text-sm font-black leading-[44px] text-[#070816] hover:bg-white" href="/pricing">
-            Compare future tiers
+            Compare plan details
           </Link>
           <Link className="min-h-11 w-full rounded-2xl border border-white/10 bg-white/[0.08] px-4 text-center text-sm font-black leading-[44px] text-white hover:bg-white/12" href="/partner/apply">
             Update partner interest

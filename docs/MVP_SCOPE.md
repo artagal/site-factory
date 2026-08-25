@@ -77,7 +77,7 @@ Launch a lightweight last-minute entertainment and activity marketplace where cu
 - Complex chat.
 - AI itinerary generation beyond simple rule-based plan finding.
 - Google Places, Ticketmaster, Eventbrite, or paid API integrations.
-- Stripe checkout or direct payment flows.
+- Consumer Stripe checkout, direct booking payments, and partner payouts.
 
 ## Acceptance Rules
 

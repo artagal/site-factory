@@ -194,7 +194,7 @@ npx.cmd vercel env add FIREBASE_SERVICE_ACCOUNT_JSON production
 
 Repeat for `preview` if needed.
 
-Do not configure Stripe, consumer checkout, partner checkout, Stripe Connect, or payment webhook environment variables yet. Booking stays request-based until fulfillment, refund, confirmation, tax, and support policies are ready.
+Configure Stripe only for approved partner Growth/Pro subscriptions. Consumer booking stays request-based; Stripe Connect, partner payouts, and consumer checkout remain disabled.
 
 ## Verification Checklist
 
@@ -217,8 +217,10 @@ npm.cmd run dev -- --port 3004 --hostname 127.0.0.1
    - `/find` can generate a plan without login.
    - `/deals` shows approved/demo deals.
    - `/login` offers Google, Apple, and email options.
-   - `/pricing` says checkout is not active.
-   - `/api/checkout/partner-subscription` returns `404`.
+   - `/pricing` explains Starter, Growth, and Pro without offering consumer checkout.
+   - Approved business owners can open Stripe Checkout from `/partner/dashboard` when the four server-only Stripe variables are configured.
+   - `/api/partner/billing`, `/api/partner/billing/checkout`, and `/api/partner/billing/portal` reject unauthenticated users.
+   - `/api/webhooks/stripe` rejects unsigned events and updates only server-owned billing records.
    - A signed-in user can save a plan or deal.
    - A signed-in user can create a booking request.
    - `/profile/settings` redirects unauthenticated users to `/profile` and exposes account actions after login.
