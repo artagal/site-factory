@@ -14,7 +14,7 @@ Project ID: `go-fun-motion-deals-vl4mj8`
 
 Project URL: `https://app.flutterflow.io/project/go-fun-motion-deals-vl4mj8`
 
-Last pushed FlutterFlow commit: `qubBLrHzUI6Dz1opc20a`
+Last pushed FlutterFlow commit: `lVx6wdUETSPp7umcZP0m`
 
 Current FlutterFlow AI SDK: `0.0.40`
 
@@ -41,6 +41,10 @@ refused an older release-channel artifact. No SDK rollback was performed.
 Commit `qubBLrHzUI6Dz1opc20a` fixes the old literal typography colors so headings and
 body text follow the light/dark theme. The corrected dark preview was verified in
 FlutterFlow Builder after the push.
+
+Commit `lVx6wdUETSPp7umcZP0m` replaces the oversized home hero with a compact
+native deal-first header and one Tonight's Deals CTA. The edit validation and both
+Dart tests passed; generated code was refreshed successfully.
 
 Additional checks on 2026-08-25:
 
@@ -122,6 +126,7 @@ and actions.
 | Surface | Status | Notes |
 | --- | --- | --- |
 | GoFunMotion theme | Built | Cyan, pink, and lime accents with light/dark surfaces and semantic typography colors. |
+| Deal-first home | Built | Compact native header; Tonight's Deals opens DealsPage. The plan finder remains a helper tab. |
 | Public deal discovery | Built | Discovery, deals, deal detail, and plan finder are available before login. |
 | Role-aware auth routing | Built | User, business, and admin access is resolved by the secure web API after Firebase auth. |
 | Smart Search and AI Plan | Built | Calls the web AI endpoints; plan facts are constrained by supplied listings. |
@@ -131,7 +136,7 @@ and actions.
 | Customer request history | Built | `SavedPage` independently loads requests and displays current status. |
 | Booking request | Built | `DealDetailPage` sends a request, not a consumer payment. |
 | Partner application | Built | Public application enters the approval workflow. |
-| Partner deal editor | Built | Title, description, category, was/now price, date/time, and spots are editable. |
+| Partner deal editor | Create flow built | Title, description, category, was/now price, slot text, and spots can be submitted for review. Existing-listing editing and structured date/expiry controls remain next. |
 | Listing approval boundary | Built | Partner submissions go to server-enforced review; mobile UI cannot approve itself. |
 | Partner listing list | Built | Partner dashboard loads the authenticated business listings. |
 | Partner request inbox | Built | Business can mark requests contacted, confirmed, or cancelled. |
@@ -202,7 +207,8 @@ remain the next scoped Builder work.
 2. Add dedicated notification, settings, request-detail, and subscription screens using
    the existing API contracts and page-local state.
 3. Split the dense partner dashboard into mobile-first editor, listings, inbox, and
-   analytics pages after confirming the current workflow in Builder.
+   analytics pages after confirming the current workflow in Builder. Add existing-deal
+   editing with page parameters and native date/expiry pickers.
 4. Complete Firebase mobile configuration and test email, Google, Apple, and guest auth
    on physical devices.
 5. Build Android Internal Testing and iOS TestFlight artifacts only after fresh signed

@@ -148,6 +148,7 @@ bool _keepValidationError(error) =>
 
 void buildGoFunMotionDealsQueryGuard(App app) {
   _ensureGoFunMotionTheme(app);
+  _alignDealFirstDiscovery(app);
   final api = _ensureGoFunMotionApi(app);
   _ensureAnimatedSplash(app);
   _ensureMobileAppIdentity(app);
@@ -162,6 +163,42 @@ void buildGoFunMotionDealsQueryGuard(App app) {
   _wireAiAssistants(app, api);
   _wireCustomerBookingHistory(app, api);
   _wirePartnerDealWorkflow(app, api);
+}
+
+void _alignDealFirstDiscovery(App app) {
+  app.editPage(ff.Pages.discoverPage, (page) {
+    page.ensureReplaced(
+      ff.Pages.discoverPage.widgets.byKey('Container_5si7c46x').single,
+      Column(
+        name: 'DealFirstDiscoveryHeader',
+        crossAxis: CrossAxis.start,
+        spacing: 12,
+        children: [
+          Text(
+            'Last-minute fun deals near you.',
+            name: 'DealFirstDiscoveryTitle',
+            style: Styles.headlineSmall,
+            maxLines: 3,
+          ),
+          Text(
+            'Save on activities, date nights, and family fun with open spots today.',
+            name: 'DealFirstDiscoverySubtitle',
+            style: Styles.bodyMedium,
+            color: Colors.secondaryText,
+          ),
+          Button(
+            "Tonight's Deals",
+            name: 'HeroDealsButton',
+            width: double.infinity,
+            height: 48,
+            borderRadius: 8,
+            icon: 'local_offer',
+            onTap: Navigate(ff.Pages.dealsPage),
+          ),
+        ],
+      ),
+    );
+  });
 }
 
 void _ensureGoFunMotionTheme(App app) {
