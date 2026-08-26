@@ -10,6 +10,8 @@
     "dev": "npm --workspace @site-factory/website run dev",
     "prebuild": "npm run sitemap:generate && npm run robots:generate",
     "build": "npm --workspace @site-factory/website run build",
+    "postbuild": "npm run check:server-runtime",
+    "check:server-runtime": "node --no-experimental-require-module scripts/check-server-runtime.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json && npm --workspace @site-factory/website run typecheck",
     "test": "vitest run",
     "test:firestore-rules": "firebase emulators:exec --only firestore \"vitest run tests/firestoreRules.test.ts\"",

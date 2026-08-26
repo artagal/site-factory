@@ -63,6 +63,7 @@ The refreshed export was inspected for the actual generated action chains.
 | --- | --- |
 | `npm.cmd run typecheck` | Passed |
 | `npm.cmd run build` | Passed, 83 prerendered pages generated |
+| `npm.cmd run check:server-runtime` | Passed, 6 built route handlers loaded without Node `require(esm)` |
 | `npm.cmd test` | 191 passed, 9 emulator-dependent tests skipped |
 | `npm.cmd run seo:audit` | 48 pages, 0 issues |
 | FlutterFlow DSL analysis | No issues |
@@ -95,6 +96,24 @@ The Playwright suite source was updated but not run as a standalone browser
 session. Emulator integration tests and authenticated physical-device QA remain
 separate gates. All 17 app pages were inspected structurally; this is not a claim
 that every page has passed interactive runtime testing.
+
+## Preview Runtime Follow-up
+
+The first Preview (`9ed8f17`) reached READY but its mobile feed returned 500.
+Vercel runtime logs identified `ERR_REQUIRE_ESM` while Firebase Admin Auth loaded
+`jwks-rsa -> jose`. The same failure was reproduced locally with
+`node --no-experimental-require-module` against the built route's lazy userland.
+
+`next.config.mjs` now bundles that dependency chain using `transpilePackages`.
+No SDK downgrade or weakened token validation was used. The new
+`scripts/check-server-runtime.mjs` is also a root `postbuild` gate and checks six
+compiled handlers without calling them or performing external writes.
+
+This approach follows Next's [package bundling configuration](https://nextjs.org/docs/app/api-reference/config/next-config-js/serverExternalPackages)
+and accounts for the [jwks-rsa runtime requirement](https://github.com/auth0/node-jwks-rsa/blob/master/CHANGELOG.md).
+Preview HTTP verification remains separate from build success. The browser
+requires the user's Vercel login before visual Preview inspection; local browser
+QA is not described as remote visual QA.
 
 ## Remaining Release Work
 
