@@ -13,8 +13,8 @@ async function expectNoHorizontalOverflow(page: Page) {
 
 async function signIn(page: Page, email: string, nextPath: string) {
   await page.goto(`/login?next=${encodeURIComponent(nextPath)}`);
-  await page.getByPlaceholder("Email").fill(email);
-  await page.getByPlaceholder("Password").fill(roleQaPassword ?? "");
+  await page.getByLabel("Email", { exact: true }).fill(email);
+  await page.getByLabel("Password", { exact: true }).fill(roleQaPassword ?? "");
   await page.getByRole("button", { exact: true, name: "Sign in" }).click();
   await expect(page).toHaveURL(new RegExp(`${nextPath.replaceAll("/", "\\/")}$`));
 }
@@ -32,7 +32,7 @@ test.describe("authenticated marketplace roles", () => {
   test("customer sees saved inventory and confirmed booking status", async ({ page }, testInfo) => {
     await signIn(page, process.env.ROLE_QA_CUSTOMER_EMAIL ?? "customer.qa@gofunmotion.test", "/profile");
 
-    await expect(page.getByRole("heading", { name: /Your deals, plans, and requests/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Your account" })).toBeVisible();
     await expect(page.getByText("Pottery Night - Two Seats Left", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("confirmed", { exact: true }).first()).toBeVisible();
     await expectNoHorizontalOverflow(page);

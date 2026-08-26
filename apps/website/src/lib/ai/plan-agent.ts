@@ -48,7 +48,7 @@ function buildVerifiedPlan(
   listings: Listing[],
   source: SuggestedPlan["source"]
 ): SuggestedPlan {
-  const baseline = buildSuggestedPlan(input);
+  const baseline = buildSuggestedPlan(input, []);
   const selected = listings.slice(0, 4);
   const totalPrice = selected.reduce((sum, listing) => sum + listing.price, 0);
   const duration = selected.reduce((sum, listing) => sum + listing.durationMinutes, 0);
@@ -101,13 +101,13 @@ export async function generatePlanWithAi({
 }): Promise<{ dailyLimit: number | null; plan: SuggestedPlan; provider: "openai" | "rules"; remaining: number | null; setupWarning: string | null }> {
   const candidates = eligibleLiveListings(listings, input).filter((listing) => fitPlanBounds(input, [listing]).length > 0);
   if (!candidates.length) {
-    const fallback = buildSuggestedPlan(input);
+    const fallback = buildSuggestedPlan(input, []);
     return {
       dailyLimit: null,
       plan: { ...fallback, waitlistRecommended: true },
       provider: "rules",
       remaining: null,
-      setupWarning: "No approved live partner listings match yet. Showing clearly marked demo and curated ideas instead."
+      setupWarning: "No approved live partner listings match yet. These are general ideas, not confirmed offers."
     };
   }
 

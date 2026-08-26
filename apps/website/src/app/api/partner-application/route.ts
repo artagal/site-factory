@@ -1,5 +1,4 @@
 import { jsonError, jsonOk } from "../../../lib/server/api-response";
-import { isDemoDataEnabled } from "../../../lib/demo-mode";
 import { findCityOption, normalizeCitySelection } from "../../../lib/cities";
 import { findCategoryOption, normalizeCategorySelection } from "../../../lib/categories";
 import { FieldValue, getFirebaseAdminDb } from "../../../lib/server/firebase-admin";
@@ -78,7 +77,6 @@ export async function POST(request: Request) {
   };
 
   if (!db) {
-    if (isDemoDataEnabled()) return jsonOk({ applicationId: `local-${Date.now()}`, demo: true, synced: false }, 201);
     return jsonError("Partner applications are temporarily unavailable.", 503);
   }
 

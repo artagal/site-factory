@@ -140,11 +140,26 @@ abstract final class FindPlanPageWidgets {
             name: "Column",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Container_02ev2lmp",
-                type: "Container",
+                key: "Column_2ef9t2hw",
+                type: "Column",
                 path: "FindPlanPage.body[0].children[0]",
-                name: "SectionHeader",
-                componentName: "SectionHeader",
+                name: "NativePlannerIntro",
+                children: <ffai.ProjectWidgetHandle>[
+                  ffai.ProjectWidgetHandle(
+                    key: "Text_bdyrh0od",
+                    type: "Text",
+                    path: "FindPlanPage.body[0].children[0].children[0]",
+                    name: "Text",
+                    text: "Find a plan that fits",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Text_y6y84kx0",
+                    type: "Text",
+                    path: "FindPlanPage.body[0].children[0].children[1]",
+                    name: "Text",
+                    text: "Choose your city, budget and company.",
+                  ),
+                ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "TextField_b2mcg561",

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { demoCategories } from "../../lib/demoData";
 import { getCanonicalCategoryOptions, normalizeCategorySelection, type CategoryOption } from "../../lib/categories";
 
-const fallbackCategories = getCanonicalCategoryOptions(demoCategories);
+const fallbackCategories = getCanonicalCategoryOptions(demoCategories, []);
 
 export function CategorySelectField({
   compact = false,
@@ -37,7 +37,7 @@ export function CategorySelectField({
       try {
         const response = await fetch("/api/categories", { cache: "no-store" });
         const payload = (await response.json().catch(() => null)) as { categories?: CategoryOption[] } | null;
-        const nextCategories = Array.isArray(payload?.categories) && payload.categories.length ? payload.categories : fallbackCategories;
+        const nextCategories = response.ok && Array.isArray(payload?.categories) ? payload.categories : fallbackCategories;
         if (cancelled) return;
         setCategories(nextCategories);
         setSelectedCategoryId((currentCategoryId) => {

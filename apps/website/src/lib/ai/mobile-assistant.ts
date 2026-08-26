@@ -1,7 +1,6 @@
-import { availabilityDateMillis } from "../availability";
+import { isOpenListing, listingPresentation } from "../listing-presentation";
 import { findCityOption } from "../cities";
 import { slugify } from "../slug";
-import { formatDuration, formatPrice } from "../format";
 import { parsePlanFinderInput } from "../planner";
 import { generatePlanWithAi } from "./plan-agent";
 import { filterListingsForSmartSearch, interpretSmartSearch } from "./smart-search-agent";
@@ -46,24 +45,20 @@ export function parseMobileAssistantInput(body: unknown): MobileAssistantInput |
 }
 
 export function mobileLiveInventory(listings: Listing[], now = Date.now()) {
-  return listings.filter((listing) => {
-    const expiry = listing.availableUntil ? availabilityDateMillis(listing.availableUntil) : null;
-    return !listing.isDemo && listing.status === "published" && listing.approvalStatus === "approved" &&
-      listing.remainingSpots !== 0 && (!listing.availableUntil || (expiry !== null && expiry > now));
-  });
+  return listings.filter((listing) => !listing.isDemo && isOpenListing(listing, now));
 }
 
 export function mobileListingCard(listing: Listing): MobileAssistantCard {
+  const facts = listingPresentation(listing);
   return {
     description: listing.shortDescription,
-    imageUrl: listing.images.find((url) => /^https:\/\//i.test(url)) ?? "",
+    imageUrl: facts.imageUrl?.startsWith("https://") ? facts.imageUrl : "",
     listingId: listing.id,
-    priceLabel: formatPrice(listing.price, listing.currency),
-    spotsLabel: typeof listing.remainingSpots === "number" ? `${listing.remainingSpots} spots left` : "Ask about availability",
-    timeLabel: listing.availableSlots[0] || `${formatDuration(listing.durationMinutes)} - time by request`,
+    priceLabel: facts.priceLabel,
+    spotsLabel: facts.spotsLabel,
+    timeLabel: facts.timeLabel,
     title: listing.title,
-    wasLabel: typeof listing.originalPrice === "number" && listing.originalPrice > listing.price
-      ? `Was ${formatPrice(listing.originalPrice, listing.currency)}` : ""
+    wasLabel: facts.wasLabel ?? ""
   };
 }
 

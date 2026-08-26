@@ -12,7 +12,7 @@ export function PartnerApplicationForm() {
   const [busy, setBusy] = useState(false);
 
   async function submit(formData: FormData) {
-    if (busy) return;
+    if (busy || statusTone === "success") return;
     const nextErrors = validateApplication(formData);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
@@ -37,9 +37,9 @@ export function PartnerApplicationForm() {
       const result = (await response.json().catch(() => null)) as { error?: string } | null;
       setStatusTone(response.ok ? "success" : "danger");
       setStatus(response.ok ? "Application received. We will review it before anything goes public." : result?.error ?? "Could not submit yet.");
-    } catch (error) {
+    } catch {
       setStatusTone("danger");
-      setStatus(error instanceof Error ? error.message : "Could not submit yet.");
+      setStatus("Could not confirm submission. Please check your connection and try again.");
     } finally {
       setBusy(false);
     }
@@ -77,8 +77,8 @@ export function PartnerApplicationForm() {
         <input className="size-5 accent-lime-300" name="offersLastMinuteDeals" type="checkbox" />
         We can offer last-minute deals or open-slot availability.
       </label>
-      <button className="mt-5 min-h-12 w-full rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-55" disabled={busy} type="submit">
-        {busy ? "Submitting..." : "Apply to List Your Business"}
+      <button className="mt-5 min-h-12 w-full rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white disabled:opacity-55" disabled={busy || statusTone === "success"} type="submit">
+        {statusTone === "success" ? "Application received" : busy ? "Submitting..." : "Apply to List Your Business"}
       </button>
     </form>
   );

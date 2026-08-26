@@ -1,9 +1,7 @@
-import { demoCities, demoListings } from "./demoData";
 import { normalizeCitySelection } from "./cities";
-import { isDemoDataEnabled } from "./demo-mode";
 import { formatBudget, formatDuration, formatGroup, formatPrice, formatVibe, formatWhen } from "./format";
-import { filterListings } from "./search";
-import type { BudgetTier, IndoorOutdoor, PlanFinderInput, PlanVibe, PlanWhen, SuggestedPlan } from "../types/deals";
+import { filterListingCollection, getPublishedListings } from "./search";
+import type { BudgetTier, Listing, PlanFinderInput, SuggestedPlan } from "../types/deals";
 
 export const defaultPlanFinderInput: PlanFinderInput = {
   budget: "under50",
@@ -43,16 +41,12 @@ export function parsePlanFinderInput(searchParams: Record<string, string | strin
   };
 }
 
-export function buildSuggestedPlan(input: PlanFinderInput): SuggestedPlan {
+export function buildSuggestedPlan(input: PlanFinderInput, inventory: Listing[] = getPublishedListings()): SuggestedPlan {
   const cityName = input.city || "your city";
-  const directMatches = filterListings(input);
-  const cityMatches = filterListings({ city: input.city, cityId: input.cityId });
-  const demoFallback = isDemoDataEnabled() ? demoListings.slice(0, 4) : [];
-  const fallbackListings = directMatches.length ? directMatches : cityMatches.length ? cityMatches : demoFallback;
-  const selected = [...new Map(fallbackListings.map((listing) => [listing.id, listing])).values()].slice(0, 4);
+  const directMatches = input.cityId ? filterListingCollection(inventory, input) : [];
+  const selected = [...new Map(directMatches.map((listing) => [listing.id, listing])).values()].slice(0, 3);
   const first = selected[0];
-  const activeCity = demoCities.find((city) => city.slug === input.cityId || city.name.toLowerCase() === input.city.toLowerCase());
-  const waitlistRecommended = !activeCity || !directMatches.length;
+  const waitlistRecommended = !selected.length;
 
   return {
     backupSuggestions: buildBackups(input),
@@ -75,12 +69,23 @@ export function buildSuggestedPlan(input: PlanFinderInput): SuggestedPlan {
         ctaHref: `/deals/${listing.slug}`,
         ctaLabel: "View Deal",
         description: listing.shortDescription,
-        estimatedPrice: formatPrice(listing.price),
+        estimatedPrice: formatPrice(listing.price, listing.currency),
         listingId: listing.id,
         time: formatDuration(listing.durationMinutes),
         title: listing.title,
         whyItFits: listing.whyItFits
       })),
+      ...(!selected.length ? [{
+        category: "Free idea",
+        ctaLabel: "Browse activities",
+        description: input.indoorOutdoor === "indoor"
+          ? "Check your local library's free exhibits or community activities. Check opening hours before going."
+          : "Choose a nearby public park or walking route. Check access and weather before going.",
+        estimatedPrice: "Free idea; verify locally",
+        time: "30-60 min",
+        title: "Keep it local",
+        whyItFits: "A general idea, not a confirmed venue or booking."
+      }] : []),
       {
         category: "Backup",
         ctaLabel: "Save backup",
@@ -134,11 +139,6 @@ function buildWarmup(input: PlanFinderInput) {
   if (input.who === "friends") return "Send the group the top two options and ask for a fast vote.";
   if (input.who === "family" || input.who === "kids") return "Start with a snack or short drive buffer before the main activity.";
   return "Start with a simple reset nearby before the main activity.";
-}
-
-function cleanText(value: string | undefined, fallback: string, maxLength: number) {
-  const next = value?.trim();
-  return next ? next.slice(0, maxLength) : fallback;
 }
 
 function estimateBudget(prices: number[]) {

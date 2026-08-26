@@ -1,126 +1,50 @@
 import Link from "next/link";
-import { ArrowRight, Clock, MapPin, ShieldCheck, Sparkles, TicketPercent, Users } from "lucide-react";
+import { ArrowRight, Clock3, MapPin, TicketPercent, Users } from "lucide-react";
 import { SaveListingButton } from "../listings/save-listing-button";
-import { getCategoryById, formatPrice } from "../../lib/deals-data";
+import { ListingImage } from "../listings/listing-image";
+import { getCategoryById } from "../../lib/deals-data";
+import { listingPresentation } from "../../lib/listing-presentation";
 import type { Listing } from "../../types/deals";
 
 export function DealCard({ listing }: { listing: Listing }) {
+  const facts = listingPresentation(listing);
   const category = getCategoryById(listing.categoryIds[0]);
-  const primarySlot = listing.availableSlots[0] ?? "Request time";
-  const isTonight = listing.availableDays.includes("tonight");
-  const timeWindowLabel = `${isTonight ? "Tonight" : listing.availableDays[0] ?? "Soon"} ${primarySlot}`;
-  const savings = listing.originalPrice ? Math.max(listing.originalPrice - listing.price, 0) : 0;
-  const savingsLabel = savings > 0 ? `Save ${formatPrice(savings)}` : "Open slot";
-  const discountLabel = listing.discountPercent
-    ? `${listing.discountPercent}% off`
-    : savings > 0
-      ? `Save ${formatPrice(savings)}`
-      : "Open slot";
-  const remainingLabel =
-    listing.remainingSpots === null
-      ? "Limited availability"
-      : listing.remainingSpots === 1
-        ? "1 spot left"
-        : `${listing.remainingSpots} spots left`;
-
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] shadow-[0_20px_70px_rgba(0,0,0,0.24)] backdrop-blur-2xl transition hover:-translate-y-1 hover:border-lime-300/35 hover:bg-white/[0.08] hover:shadow-[0_30px_95px_rgba(0,0,0,0.34)]">
-      <div className="relative min-h-44 overflow-hidden bg-[radial-gradient(circle_at_18%_18%,rgba(190,242,100,0.36),transparent_30%),radial-gradient(circle_at_78%_6%,rgba(34,211,238,0.28),transparent_35%),linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.03))] p-4">
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent,rgba(255,255,255,0.12),transparent)] opacity-60" />
-        <div className="absolute inset-x-4 top-4 flex items-center justify-between gap-2">
-          <span className="rounded-full bg-black/54 px-3 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.12em] text-white/82">
-            {listing.isDemo ? "Demo / coming soon" : "Reviewed deal"}
+    <article className="deal-card group flex h-full min-w-0 flex-col overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] transition hover:border-lime-500/60">
+      {facts.imageUrl ? <ListingImage alt={listing.title} src={facts.imageUrl} /> : null}
+      <div className="flex flex-1 flex-col gap-4 p-4 md:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+          <span className="inline-flex items-center gap-1.5 text-[var(--muted-foreground)]">
+            <TicketPercent aria-hidden="true" size={15} />{category?.name ?? "Local activity"}
           </span>
-          <span className="shrink-0 rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
-            {discountLabel}
-          </span>
-        </div>
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="flex flex-wrap gap-2">
-            <span className="inline-flex min-h-8 min-w-0 items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-xs font-black text-white/84">
-              <Clock aria-hidden="true" size={14} />
-              <span className="truncate">{timeWindowLabel}</span>
-            </span>
-            <span className="inline-flex min-h-8 items-center gap-2 rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
-              <Users aria-hidden="true" size={14} />
-              {remainingLabel}
-            </span>
-          </div>
-          <div className="mt-3 flex items-end justify-between gap-3">
-            <div className="inline-flex items-center gap-2 rounded-full bg-black/42 px-3 py-1.5 text-xs font-bold text-white/80">
-              <Sparkles aria-hidden="true" size={14} />
-              {category?.name ?? "Local activity"}
-            </div>
-            <span className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-black text-[#070816]">{listing.cityName}</span>
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-1 flex-col p-4">
-        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-          <div className="min-w-0">
-            <h3 className="text-xl font-black leading-tight text-white">{listing.title}</h3>
-            <p className="mt-1 text-sm font-bold text-white/54">{listing.businessName}</p>
-          </div>
-          <div className="rounded-2xl border border-lime-300/24 bg-lime-300/12 p-3 text-left sm:min-w-32 sm:text-right">
-            <p className="text-xs font-black uppercase tracking-[0.12em] text-lime-200">Now</p>
-            <p className="text-3xl font-black leading-none text-lime-200 md:text-4xl">{formatPrice(listing.price)}</p>
-            <p className="mt-1 text-xs font-black text-white/45 line-through">Was {listing.originalPrice ? formatPrice(listing.originalPrice) : "Flexible"}</p>
-          </div>
-        </div>
-        <div className="mt-4 grid grid-cols-2 gap-2">
-          <DealFact label="Was" value={listing.originalPrice ? formatPrice(listing.originalPrice) : "Flexible"} muted />
-          <DealFact label="Deal" value={savingsLabel} highlight />
-          <DealFact label="Time" value={timeWindowLabel} />
-          <DealFact label="Left" value={remainingLabel} />
-        </div>
-        <p className="mt-3 line-clamp-2 text-sm leading-6 text-white/58">{listing.shortDescription}</p>
-        <div className="mt-4 grid gap-2 text-sm font-bold text-white/66 sm:grid-cols-2">
-          <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-black/24 px-3">
-            <MapPin aria-hidden="true" size={16} />
-            {listing.cityName}
-          </span>
-          <span className="inline-flex min-h-10 items-center gap-2 rounded-2xl bg-black/24 px-3">
-            <ShieldCheck aria-hidden="true" size={16} />
-            Request booking
+          <span className={listing.isDemo ? "rounded-md bg-amber-400/15 px-2 py-1 text-[var(--accent-amber)]" : "text-[var(--accent-lime)]"}>
+            {listing.isDemo ? "Demo / Not bookable" : "Reviewed partner"}
           </span>
         </div>
-        <div className="mt-5 flex flex-wrap gap-2">
-          <span className="rounded-full bg-lime-300 px-3 py-1.5 text-xs font-black text-[#070816]">
-            <TicketPercent aria-hidden="true" className="mr-1 inline" size={13} />
-            Last-minute deal
-          </span>
-          {listing.vibeTags.slice(0, 2).map((tag) => (
-            <span className="rounded-full bg-white/[0.07] px-3 py-1.5 text-xs font-bold text-white/66" key={tag}>
-              {tag.replace(/-/g, " ")}
-            </span>
-          ))}
+        <div className="min-w-0">
+          <h3 className="text-xl font-bold leading-snug text-[var(--foreground)]">
+            <Link className="hover:underline" href={`/deals/${listing.slug}`}>{listing.title}</Link>
+          </h3>
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">{listing.businessName}</p>
+          <p className="mt-2 flex items-center gap-1.5 text-sm text-[var(--muted-foreground)]"><MapPin aria-hidden="true" size={15} />{listing.cityName}</p>
         </div>
-        <p className="mt-4 rounded-2xl bg-cyan-300/10 px-3 py-2 text-xs font-bold leading-5 text-cyan-100">
-          Request first. The partner confirms the slot before you commit.
-        </p>
-        <Link
-          aria-label={`View ${listing.title}`}
-          className="mt-auto inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-white text-sm font-black text-[#070816] transition hover:bg-lime-200"
-          href={`/deals/${listing.slug}`}
-        >
-          View Deal
-          <ArrowRight aria-hidden="true" size={16} />
-        </Link>
-        <div className="mt-3">
-          <SaveListingButton listing={listing} />
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span className="text-3xl font-bold text-[var(--accent-lime)]"><span className="mr-1.5 text-sm font-semibold">Now</span>{facts.priceLabel}</span>
+          {facts.wasLabel ? <span className="text-sm text-[var(--muted-foreground)] line-through">{facts.wasLabel}</span> : null}
+          {facts.discountLabel ? <span className="rounded-md bg-lime-400/15 px-2 py-1 text-xs font-bold text-[var(--accent-lime)]">{facts.discountLabel}</span> : null}
+        </div>
+        <div className="grid gap-2 border-y border-[var(--border-subtle)] py-3 text-sm font-medium">
+          <span className="flex items-start gap-2"><Clock3 aria-hidden="true" className="mt-0.5 shrink-0 text-[var(--accent-cyan)]" size={17} />{facts.timeLabel}</span>
+          <span className="flex items-start gap-2"><Users aria-hidden="true" className="mt-0.5 shrink-0 text-[var(--accent-cyan)]" size={17} />{facts.spotsLabel}</span>
+        </div>
+        <p className="line-clamp-2 text-sm leading-6 text-[var(--muted-foreground)]">{listing.shortDescription}</p>
+        <div className="mt-auto flex items-start gap-2">
+          <Link aria-label={`View ${listing.title}`} className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-lime-300 px-4 text-sm font-bold text-[#101510] hover:bg-lime-200" href={`/deals/${listing.slug}`}>
+            {listing.isDemo ? "View example" : "View Deal"}<ArrowRight aria-hidden="true" size={16} />
+          </Link>
+          {!listing.isDemo ? <SaveListingButton compact listing={listing} /> : null}
         </div>
       </div>
     </article>
-  );
-}
-
-function DealFact({ label, value, highlight = false, muted = false }: { label: string; value: string; highlight?: boolean; muted?: boolean }) {
-  return (
-    <div className={`min-h-16 rounded-2xl border p-3 ${highlight ? "border-lime-300/35 bg-lime-300/12" : "border-white/10 bg-black/24"}`}>
-      <p className="text-[0.68rem] font-black uppercase tracking-[0.14em] text-white/42">{label}</p>
-      <p className={`mt-1 font-black leading-tight ${highlight ? "text-2xl text-lime-200" : muted ? "text-lg text-white/58 line-through decoration-white/36" : "text-lg text-white"}`}>
-        {value}
-      </p>
-    </div>
   );
 }

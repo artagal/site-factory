@@ -31,6 +31,12 @@ final class DealDetailPageState {
         key: "cuk0q417",
         typeName: "Boolean",
       );
+  ffai.ProjectStateFieldHandle get bookingSent =>
+      const ffai.ProjectStateFieldHandle(
+        name: "bookingSent",
+        key: "56mjhv30",
+        typeName: "Boolean",
+      );
   ffai.ProjectStateFieldHandle get contactEmail =>
       const ffai.ProjectStateFieldHandle(
         name: "contactEmail",
@@ -353,13 +359,13 @@ abstract final class DealDetailPageWidgets {
                 name: "BookingMessageAssistantCard",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Column_ra538sc6",
+                    key: "Column_bwrjprq0",
                     type: "Column",
                     path: "DealDetailPage.body[0].children[9].children[0]",
                     name: "Column",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Text_x4k8klwf",
+                        key: "Text_e650akik",
                         type: "Text",
                         path:
                             "DealDetailPage.body[0].children[9].children[0].children[0]",
@@ -367,7 +373,7 @@ abstract final class DealDetailPageWidgets {
                         text: "Need help with the message?",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_6tdujsfa",
+                        key: "Text_267tw6y9",
                         type: "Text",
                         path:
                             "DealDetailPage.body[0].children[9].children[0].children[1]",
@@ -376,7 +382,7 @@ abstract final class DealDetailPageWidgets {
                             "AI drafts an editable note. It never sends, confirms, or pays for anything.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_p5gg9ykd",
+                        key: "Button_6wmihirq",
                         type: "Button",
                         path:
                             "DealDetailPage.body[0].children[9].children[0].children[2]",
@@ -427,6 +433,37 @@ abstract final class DealDetailPageWidgets {
                 name: "SendBookingRequestButton",
                 text: "Send Booking Request",
                 triggers: const <String>["ON_TAP"],
+              ),
+              ffai.ProjectWidgetHandle(
+                key: "Column_0dq6ewmp",
+                type: "Column",
+                path: "DealDetailPage.body[0].children[13]",
+                name: "BookingSentConfirmation",
+                children: <ffai.ProjectWidgetHandle>[
+                  ffai.ProjectWidgetHandle(
+                    key: "Text_jcdasgm1",
+                    type: "Text",
+                    path: "DealDetailPage.body[0].children[13].children[0]",
+                    name: "Text",
+                    text: "Booking request sent",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Text_ywrqb5n6",
+                    type: "Text",
+                    path: "DealDetailPage.body[0].children[13].children[1]",
+                    name: "Text",
+                    text:
+                        "Pending partner confirmation. No payment has been taken.",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Button_8vgl9rxa",
+                    type: "Button",
+                    path: "DealDetailPage.body[0].children[13].children[2]",
+                    name: "Button",
+                    text: "View request status",
+                    triggers: const <String>["ON_TAP"],
+                  ),
+                ],
               ),
             ],
           ),

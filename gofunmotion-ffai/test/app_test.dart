@@ -10,9 +10,94 @@ import '../dsl/edit.dart' as gofunmotionEdit;
 import '../dsl/partner_deal_editor.dart';
 import '../dsl/ai_experience.dart' as ai;
 import '../dsl/auth_experience.dart' as account;
+import '../dsl/marketplace_experience.dart' as marketplace;
 import '../lib/flutterflow_project.dart' as ff;
 
 void main() {
+  test('Detail reference guard uses a valid document existence condition', () {
+    final initial =
+        compileApp(buildApp(gofunmotion.buildGoFunMotionDeals)).project;
+    final app = buildApp((app) {
+      app.editPageOnLoad(ff.Pages.dealDetailPage, [
+        If(
+          Not(Equals(PageParam('listingRef'), null)),
+          then: [SetState('contactName', '')],
+          orElse: [Navigate(ff.Pages.dealsPage, replaceRoute: true)],
+        ),
+      ]);
+      app.raw(marketplace.guardDetailReference);
+    });
+    final project = compileApp(app, project: initial).project;
+    final page = findPage(project, name: 'DealDetailPage')!;
+    final condition =
+        page
+            .node
+            .triggerActions
+            .single
+            .rootAction
+            .conditionActions
+            .trueActions
+            .single
+            .condition
+            .variable
+            .functionCall;
+    expect(
+      condition.condition.relation,
+      FFCondition_Relation.EXISTS_AND_NON_EMPTY,
+    );
+    expect(condition.values.single.variable.nodeKeyRef.key, page.node.key);
+  });
+
+  test(
+    'Native browse removes audited prototypes by key, not shifting sibling paths',
+    () {
+      final app = buildApp((app) {
+        app.page(
+          'DiscoverPage',
+          route: '/discover',
+          body: Scaffold(
+            body: Column(
+              children: [
+                Container(name: 'ManualBuilderContent'),
+                ...List.generate(6, (index) => Container(name: 'Legacy$index')),
+                Container(name: 'MarketplaceBrowsePanel'),
+              ],
+            ),
+          ),
+        );
+      });
+      final project = compileApp(app).project;
+      final page = findPage(project, name: 'DiscoverPage')!;
+      final legacy = findDescendants(
+        page.node,
+        (node) => node.name.startsWith('Legacy'),
+      );
+      final keys = marketplace.legacyBrowseKeys['DiscoverPage']!;
+      for (var index = 0; index < legacy.length; index++) {
+        legacy[index].key = keys[index];
+      }
+      marketplace.removeLegacyBrowseWidgets(project);
+      marketplace.removeLegacyBrowseWidgets(project);
+      expect(
+        findDescendants(page.node, (node) => node.name.startsWith('Legacy')),
+        isEmpty,
+      );
+      expect(
+        findDescendants(
+          page.node,
+          (node) => node.name == 'ManualBuilderContent',
+        ),
+        hasLength(1),
+      );
+      expect(
+        findDescendants(
+          page.node,
+          (node) => node.name == 'MarketplaceBrowsePanel',
+        ),
+        hasLength(1),
+      );
+    },
+  );
   test(
     'Native AI pages compile with real result bindings and consent off by default',
     () {

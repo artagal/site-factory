@@ -5,6 +5,8 @@ import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { getCurrentUserIdToken } from "../../lib/auth";
 import { trackEvent } from "../../lib/analytics";
+import { toBookingTime } from "../../lib/booking-time";
+import { isOpenListing } from "../../lib/listing-presentation";
 import type { Listing } from "../../types/deals";
 
 export function BookingRequestForm({ listing }: { listing: Listing }) {
@@ -13,6 +15,7 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
   const [aiBusy, setAiBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [confirmation, setConfirmation] = useState<{ requestId: string; synced: boolean } | null>(null);
+  const [needsSignIn, setNeedsSignIn] = useState(false);
 
   async function draftMessage() {
     if (aiBusy || listing.isDemo) return;
@@ -21,6 +24,7 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
     try {
       const token = await getCurrentUserIdToken();
       if (!token) {
+        setNeedsSignIn(true);
         setStatus("Sign in before using the booking message assistant.");
         return;
       }
@@ -50,50 +54,58 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
     if (busy) return;
     setBusy(true);
     setStatus("Checking sign-in...");
-    const token = await getCurrentUserIdToken();
-
-    if (!token) {
+    try {
+      const token = await getCurrentUserIdToken();
+      if (!token) {
+        setNeedsSignIn(true);
+        setStatus("Please sign in before requesting booking.");
+        return;
+      }
+      setNeedsSignIn(false);
+      const payload = {
+        email: String(formData.get("email") ?? ""),
+        listingId: listing.id,
+        listingSlug: listing.slug,
+        message: String(formData.get("message") ?? ""),
+        name: String(formData.get("name") ?? ""),
+        partySize: Number(formData.get("partySize") ?? 1),
+        phone: String(formData.get("phone") ?? ""),
+        requestedDate: String(formData.get("requestedDate") ?? ""),
+        requestedTime: String(formData.get("requestedTime") ?? "")
+      };
+      const response = await fetch("/api/booking-request", {
+        body: JSON.stringify(payload),
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        method: "POST"
+      });
+      const result = (await response.json().catch(() => null)) as { error?: string; requestId?: string; synced?: boolean } | null;
+      if (response.ok && result?.synced && result.requestId) {
+        setConfirmation({ requestId: result.requestId, synced: true });
+        trackEvent("booking_request_submitted", { listingId: listing.id, listingSlug: listing.slug });
+      } else {
+        setStatus(result?.error ?? "Could not send request yet.");
+      }
+    } catch {
+      setStatus("We could not confirm whether your request was sent. Check your profile before trying again.");
+    } finally {
       setBusy(false);
-      setStatus("Please sign in before requesting booking.");
-      return;
     }
+  }
 
-    const payload = {
-      email: String(formData.get("email") ?? ""),
-      businessId: listing.businessId,
-      businessName: listing.businessName,
-      cityId: listing.cityId,
-      listingId: listing.id,
-      listingSlug: listing.slug,
-      listingTitle: listing.title,
-      message: String(formData.get("message") ?? ""),
-      name: String(formData.get("name") ?? ""),
-      partySize: Number(formData.get("partySize") ?? 1),
-      phone: String(formData.get("phone") ?? ""),
-      requestedDate: String(formData.get("requestedDate") ?? ""),
-      requestedTime: String(formData.get("requestedTime") ?? "")
-    };
+  if (!isOpenListing(listing)) {
+    return <div className="rounded-lg border border-[var(--border-subtle)] p-5">
+      <h2 className="text-xl font-bold">This offer is no longer available</h2>
+      <Link className="mt-3 inline-flex min-h-11 items-center font-semibold underline" href={`/deals?cityId=${encodeURIComponent(listing.cityId)}`}>Find another deal</Link>
+    </div>;
+  }
 
-    const response = await fetch("/api/booking-request", {
-      body: JSON.stringify(payload),
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      method: "POST"
-    });
-    const result = (await response.json().catch(() => null)) as { error?: string; ok?: boolean; requestId?: string; synced?: boolean } | null;
-
-    setBusy(false);
-    if (response.ok) {
-      trackEvent("booking_request_submitted", { listingId: listing.id, listingSlug: listing.slug });
-      setConfirmation({ requestId: result?.requestId ?? "pending", synced: result?.synced === true });
-    }
-    setStatus(
-      response.ok
-        ? "Request sent. Status: pending. The business will confirm availability before anything is charged."
-        : result?.error ?? "Could not send request yet."
-    );
+  if (confirmation) {
+    return <section aria-live="polite" className="rounded-lg border border-lime-500/30 bg-lime-400/10 p-5">
+      <h2 className="text-2xl font-bold">Booking request sent</h2>
+      <p className="mt-3 leading-7">Your request is pending. {listing.businessName} will confirm availability. No payment has been taken.</p>
+      <Link className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-lime-300 px-4 font-semibold text-[#101510]" href="/profile">View request status</Link>
+      <p className="mt-3 break-all text-xs text-[var(--muted-foreground)]">Reference: {confirmation.requestId}</p>
+    </section>;
   }
 
   if (listing.isDemo) {
@@ -112,24 +124,8 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
   return (
     <form action={submit} className="rounded-2xl border border-white/10 bg-white/[0.06] p-5">
       <h2 className="text-2xl font-black text-white">Request booking</h2>
-      <p className="mt-2 text-sm leading-6 text-white/58">{status}</p>
-      {confirmation ? (
-        <div className="mt-4 rounded-2xl border border-lime-300/30 bg-lime-300/10 p-4">
-          <p className="text-sm font-black uppercase tracking-[0.14em] text-lime-200">Booking request sent</p>
-          <p className="mt-2 text-lg font-black text-white">Your request is pending confirmation.</p>
-          <p className="mt-2 text-sm leading-6 text-white/62">
-            The business can mark it contacted, confirmed, or cancelled from their dashboard. You can track the status in your profile.
-          </p>
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <Link className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-lime-300 px-4 text-sm font-black text-[#070816] hover:bg-white" href="/profile">
-              View request status
-            </Link>
-            <span className="inline-flex min-h-11 items-center rounded-2xl bg-black/24 px-4 text-xs font-bold text-white/50">
-              Request ID: {confirmation.requestId}
-            </span>
-          </div>
-        </div>
-      ) : null}
+      <p className="mt-2 text-sm leading-6 text-white/58" role="status">{status}</p>
+      {needsSignIn ? <Link className="mt-3 inline-flex min-h-11 items-center font-bold underline" href={`/login?next=${encodeURIComponent(`/deals/${listing.slug}`)}`}>Sign in to request booking</Link> : null}
       <div className="mt-5 grid gap-3 md:grid-cols-2">
         <Field name="name" placeholder="Name" required />
         <Field name="email" placeholder="Email" required type="email" />
@@ -137,13 +133,10 @@ export function BookingRequestForm({ listing }: { listing: Listing }) {
         <Field name="requestedDate" placeholder="Requested date" required type="date" />
         <label className="block">
           <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">Time</span>
-          <select className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none focus:border-lime-300" name="requestedTime" required defaultValue={listing.availableSlots[0] ?? ""}>
-            {listing.availableSlots.map((slot) => (
-              <option className="bg-[#070816]" key={slot} value={slot}>{slot}</option>
-            ))}
-          </select>
+          <input className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/28 px-4 text-sm font-bold text-white" type="time" name="requestedTime" required defaultValue={toBookingTime(listing.availableSlots[0] ?? "")} />
+          <span className="mt-1 block text-xs text-[var(--muted-foreground)]">Local time in {listing.cityName}</span>
         </label>
-        <Field min={1} max={50} name="partySize" placeholder="Party size" required type="number" />
+        <Field min={1} max={Math.min(50, listing.remainingSpots ?? 50)} name="partySize" placeholder="Party size" required type="number" />
       </div>
       <div className="mt-3">
         <div className="flex flex-wrap items-center justify-between gap-2">

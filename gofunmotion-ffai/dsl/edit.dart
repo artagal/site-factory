@@ -9,8 +9,7 @@ import '../lib/flutterflow_project.dart' as ff;
 import 'partner_deal_editor.dart';
 import 'ai_experience.dart';
 import 'auth_experience.dart';
-import 'package:flutterflow_ai/src/helpers/collection_helpers.dart'
-    show findCollectionField;
+import 'marketplace_experience.dart';
 import 'package:flutterflow_ai/src/helpers/data_schema_helpers.dart'
     show
         addDataStructField,
@@ -48,6 +47,7 @@ Future<void> main(List<String> args) async {
         Platform.script.resolve('partner_deal_editor.dart').toFilePath(),
         Platform.script.resolve('ai_experience.dart').toFilePath(),
         Platform.script.resolve('auth_experience.dart').toFilePath(),
+        Platform.script.resolve('marketplace_experience.dart').toFilePath(),
       ]),
     );
   } catch (error) {
@@ -191,7 +191,8 @@ void buildGoFunMotionDealsQueryGuard(App app) {
   _wireAiAssistants(app, api, dealEditor);
   _wireCustomerBookingHistory(app, api);
   _wirePartnerDealWorkflow(app, api, dealEditor);
-  ensureNativeAiExperience(app);
+  final nativeAi = ensureNativeAiExperience(app);
+  ensureNativeMarketplace(app, nativeAi);
   ensureNativeAccountEntry(app);
   app.raw(verifyPartnerDealScreenStructure);
 }
@@ -704,14 +705,14 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     response: writeResponse,
   );
   final bookingRequest = Endpoint.post(
-    'CreateBookingRequest',
+    'CreateBookingRequestV2',
     '/api/booking-request',
     variables: {
       'email': string,
       'listingId': string,
       'message': string,
       'name': string,
-      'partySize': int_,
+      'partySize': string,
       'requestedDate': string,
       'requestedTime': string,
       'token': string,
@@ -1037,7 +1038,6 @@ void _ensureProductionCollectionFields(App app) {
 }
 
 void _wireProductionQueries(App app, _GoFunMotionApi api) {
-  final listings = ff.Collections.listings;
   final bookingRequestItem = api.partnerBookingRequest;
   final savedListingItem = ff.Structs.mobileSavedListingItem;
   final savedPlanItem = ff.Structs.mobileSavedPlanItem;
@@ -1084,90 +1084,10 @@ void _wireProductionQueries(App app, _GoFunMotionApi api) {
     );
   });
 
-  app.editPageOnLoad(ff.Pages.discoverPage, [
-    FirestoreQuery(listings, limit: 12, outputAs: 'approvedFeaturedDeals'),
-    SetState(
-      ff.Pages.discoverPage.state.featuredDeals,
-      const ActionOutput('approvedFeaturedDeals'),
-    ),
-    If(
-      const Global(GlobalProperty.isUserLoggedIn),
-      then: [
-        ApiCall(
-          api.getAccess,
-          outputAs: 'discoverRoleAccess',
-          params: {'token': const AuthUser(AuthUserField.jwtToken)},
-          onSuccess:
-              (result) => [
-                If(
-                  Equals(result['role'], 'admin'),
-                  then: [
-                    Navigate(
-                      ff.Pages.adminPage,
-                      allowBack: false,
-                      replaceRoute: true,
-                    ),
-                  ],
-                  orElse: [
-                    If(
-                      Equals(result['role'], 'business'),
-                      then: [
-                        Navigate(
-                          ff.Pages.partnerDashboardPage,
-                          allowBack: false,
-                          replaceRoute: true,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-        ),
-      ],
-    ),
-  ]);
-
-  app.editPageOnLoad(ff.Pages.dealsPage, [
-    FirestoreQuery(listings, limit: 50, outputAs: 'approvedDeals'),
-    SetState(
-      ff.Pages.dealsPage.state.deals,
-      const ActionOutput('approvedDeals'),
-    ),
-  ]);
-
   app.editPageOnLoad(ff.Pages.savedPage, [
     If(
       const Global(GlobalProperty.isUserLoggedIn),
-      then: [
-        SetState('bookingRequestsViewState', 'loading'),
-        ApiCall(
-          api.getSavedPlans,
-          outputAs: 'spApi2',
-          params: {'token': const AuthUser(AuthUserField.jwtToken)},
-          onSuccess:
-              (result) => [SetState('savedPlanItems', result['savedPlans'])],
-        ),
-        ApiCall(
-          api.getSavedListings,
-          outputAs: 'slApi2',
-          params: {'token': const AuthUser(AuthUserField.jwtToken)},
-          onSuccess:
-              (savedResult) => [
-                SetState('savedDeals', savedResult['savedListings']),
-              ],
-        ),
-        ApiCall(
-          api.getMyBookingRequests,
-          outputAs: 'myBookingRequestsApi',
-          params: {'token': const AuthUser(AuthUserField.jwtToken)},
-          onSuccess:
-              (bookingResult) => [
-                SetState('bookingRequests', bookingResult['bookingRequests']),
-                SetState('bookingRequestsViewState', 'ready'),
-              ],
-          onFailure: [SetState('bookingRequestsViewState', 'error')],
-        ),
-      ],
+      then: _loadSavedAccount(api, 'initial'),
       orElse: [
         SetState.clear('savedPlanItems'),
         SetState.clear('savedDeals'),
@@ -1176,34 +1096,36 @@ void _wireProductionQueries(App app, _GoFunMotionApi api) {
       ],
     ),
   ]);
-
-  app.raw((project) {
-    _patchFirestoreQueryAction(
-      project,
-      pageName: 'DiscoverPage',
-      collectionName: 'listings',
-      outputVariableName: 'approvedFeaturedDeals',
-      filters: const [
-        _QueryFilter(fieldName: 'approvalStatus', staticValue: 'approved'),
-        _QueryFilter(fieldName: 'isDemo', staticValue: 'false'),
-        _QueryFilter(fieldName: 'status', staticValue: 'published'),
-      ],
-      orderByFieldName: 'createdAt',
-    );
-    _patchFirestoreQueryAction(
-      project,
-      pageName: 'DealsPage',
-      collectionName: 'listings',
-      outputVariableName: 'approvedDeals',
-      filters: const [
-        _QueryFilter(fieldName: 'approvalStatus', staticValue: 'approved'),
-        _QueryFilter(fieldName: 'isDemo', staticValue: 'false'),
-        _QueryFilter(fieldName: 'status', staticValue: 'published'),
-      ],
-      orderByFieldName: 'createdAt',
-    );
-  });
 }
+
+List<DslAction> _loadSavedAccount(_GoFunMotionApi api, String prefix) => [
+  SetState('bookingRequestsViewState', 'loading'),
+  ApiCall(
+    api.getSavedPlans,
+    outputAs: '${prefix}SavedPlans',
+    params: {'token': const AuthUser(AuthUserField.jwtToken)},
+    onSuccess: (result) => [SetState('savedPlanItems', result['savedPlans'])],
+    onFailure: [SetState('bookingRequestsViewState', 'error')],
+  ),
+  ApiCall(
+    api.getSavedListings,
+    outputAs: '${prefix}SavedDeals',
+    params: {'token': const AuthUser(AuthUserField.jwtToken)},
+    onSuccess: (result) => [SetState('savedDeals', result['savedListings'])],
+    onFailure: [SetState('bookingRequestsViewState', 'error')],
+  ),
+  ApiCall(
+    api.getMyBookingRequests,
+    outputAs: '${prefix}SavedRequests',
+    params: {'token': const AuthUser(AuthUserField.jwtToken)},
+    onSuccess:
+        (result) => [
+          SetState('bookingRequests', result['bookingRequests']),
+          SetState('bookingRequestsViewState', 'ready'),
+        ],
+    onFailure: [SetState('bookingRequestsViewState', 'error')],
+  ),
+];
 
 void migratePartnerEditorResponseFields(FFProject project) {
   final fields = {
@@ -1283,164 +1205,6 @@ void _bindSavedStructText(
   );
 }
 
-final class _QueryFilter {
-  const _QueryFilter({required this.fieldName, required this.staticValue});
-
-  final String fieldName;
-  final String staticValue;
-}
-
-void _patchFirestoreQueryAction(
-  FFProject project, {
-  required String pageName,
-  required String collectionName,
-  required String outputVariableName,
-  required List<_QueryFilter> filters,
-  required String orderByFieldName,
-}) {
-  final page = findPage(project, name: pageName);
-  if (page == null) {
-    throw StateError('Page "$pageName" not found.');
-  }
-
-  FFAction? action;
-  for (final triggerAction in page.node.triggerActions) {
-    if (triggerAction.trigger.triggerType !=
-            FFActionTriggerType.ON_INIT_STATE ||
-        !triggerAction.hasRootAction()) {
-      continue;
-    }
-    action = _findActionByOutputName(
-      triggerAction.rootAction,
-      outputVariableName,
-    );
-    if (action != null) break;
-  }
-  if (action == null) {
-    throw StateError(
-      'Query action "$outputVariableName" not found on "$pageName".',
-    );
-  }
-  if (!action.hasDatabase() || !action.database.hasFirestoreQuery()) {
-    throw StateError(
-      'Action "$outputVariableName" on "$pageName" is not a Firestore query.',
-    );
-  }
-
-  final query = action.database.firestoreQuery;
-  query.where = FFFirestoreWhere(
-    isAnd: true,
-    filters: [
-      for (final filter in filters)
-        FFFirestoreWhere_NestedFilter(
-          baseFilter: _firestoreFilter(
-            project,
-            collectionName: collectionName,
-            fieldName: filter.fieldName,
-            staticValue: filter.staticValue,
-          ),
-        ),
-    ],
-  );
-  query.orderBy
-    ..clear()
-    ..add(
-      FFFirestoreOrderBy(
-        collectionFieldIdentifier: _fieldIdentifier(
-          project,
-          collectionName: collectionName,
-          fieldName: orderByFieldName,
-        ),
-        descending: true,
-      ),
-    );
-}
-
-FFAction? _findActionByOutputName(
-  FFActionNode root,
-  String outputVariableName,
-) {
-  if (root.hasAction() &&
-      root.action.outputVariableName == outputVariableName) {
-    return root.action;
-  }
-
-  if (root.hasConditionActions()) {
-    final condition = root.conditionActions;
-    for (final trueAction in condition.trueActions) {
-      if (trueAction.hasTrueAction()) {
-        final found = _findActionByOutputName(
-          trueAction.trueAction,
-          outputVariableName,
-        );
-        if (found != null) return found;
-      }
-    }
-    if (condition.hasFalseAction()) {
-      final found = _findActionByOutputName(
-        condition.falseAction,
-        outputVariableName,
-      );
-      if (found != null) return found;
-    }
-  }
-
-  if (root.hasLoopAction() && root.loopAction.hasAction()) {
-    final found = _findActionByOutputName(
-      root.loopAction.action,
-      outputVariableName,
-    );
-    if (found != null) return found;
-  }
-
-  if (root.hasParallelActions()) {
-    for (final branch in root.parallelActions.actions) {
-      final found = _findActionByOutputName(branch, outputVariableName);
-      if (found != null) return found;
-    }
-  }
-
-  if (root.hasFollowUpAction()) {
-    return _findActionByOutputName(root.followUpAction, outputVariableName);
-  }
-
-  return null;
-}
-
-FFFirestoreFilter _firestoreFilter(
-  FFProject project, {
-  required String collectionName,
-  required String fieldName,
-  required String staticValue,
-}) {
-  final filter = FFFirestoreFilter(
-    collectionFieldIdentifier: _fieldIdentifier(
-      project,
-      collectionName: collectionName,
-      fieldName: fieldName,
-    ),
-    relation: FFFirestoreFilter_Relation.EQUAL_TO,
-  );
-  filter.inputValue = FFParameterValue(serializedValue: staticValue);
-  return filter;
-}
-
-FFIdentifier _fieldIdentifier(
-  FFProject project, {
-  required String collectionName,
-  required String fieldName,
-}) {
-  final field = findCollectionField(
-    project,
-    collectionName: collectionName,
-    fieldName: fieldName,
-  );
-  if (field == null) {
-    throw StateError('Field "$collectionName.$fieldName" not found.');
-  }
-  return field.identifier.deepCopy();
-}
-
 void _removeQueryGuardNotices(App app) {
   app.editPage(ff.Pages.discoverPage, (page) {
     page.ensureRemoved(page.findByName('DiscoverApprovedQueryNotice'));
@@ -1492,6 +1256,7 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
   app.editPageState(ff.Pages.dealDetailPage, (state) {
     state.ensureField('requestedDate', string);
     state.ensureField('requestedTime', string);
+    state.ensureField('bookingSent', bool_.withDefault(false));
   });
 
   app.editPage(ff.Pages.dealDetailPage, (page) {
@@ -1532,7 +1297,10 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
               api.bookingRequest,
               outputAs: 'bookingRequest',
               params: {
-                'email': State('contactEmail'),
+                'email': WidgetState(
+                  'RequestEmailField',
+                  WidgetStateProperty.text,
+                ),
                 'listingId': State('listing')['id'],
                 'message': WidgetState(
                   ff.Pages.dealDetailPage.widgets
@@ -1540,14 +1308,27 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
                       .single,
                   WidgetStateProperty.text,
                 ),
-                'name': State('contactName'),
-                'partySize': State('partySize'),
-                'requestedDate': State('requestedDate'),
-                'requestedTime': State('requestedTime'),
+                'name': WidgetState(
+                  'RequestNameField',
+                  WidgetStateProperty.text,
+                ),
+                'partySize': WidgetState(
+                  'PartySizeField',
+                  WidgetStateProperty.text,
+                ),
+                'requestedDate': WidgetState(
+                  'RequestedDateField',
+                  WidgetStateProperty.text,
+                ),
+                'requestedTime': WidgetState(
+                  'RequestedTimeField',
+                  WidgetStateProperty.text,
+                ),
                 'token': const AuthUser(AuthUserField.jwtToken),
               },
               onSuccess:
                   (_) => [
+                    SetState('bookingSent', true),
                     Snackbar(
                       'Request sent. The business will confirm availability.',
                     ),
@@ -1561,6 +1342,33 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
           ],
         ),
       ],
+    );
+
+    page.bindVisible(
+      ff.Pages.dealDetailPage.widgets.byKey('Button_md8o2kqd').single,
+      Not(State('bookingSent')),
+    );
+    page.ensureInsertedAfter(
+      ff.Pages.dealDetailPage.widgets.byKey('Button_md8o2kqd').single,
+      Column(
+        name: 'BookingSentConfirmation',
+        visible: State('bookingSent'),
+        crossAxis: CrossAxis.start,
+        spacing: 12,
+        children: [
+          Text('Booking request sent', style: Styles.titleLarge),
+          Text(
+            'Pending partner confirmation. No payment has been taken.',
+            style: Styles.bodyMedium,
+          ),
+          Button(
+            'View request status',
+            icon: 'event_available',
+            height: 48,
+            onTap: Navigate(ff.Pages.savedPage),
+          ),
+        ],
+      ),
     );
 
     page.ensureInsertedBefore(
@@ -1669,19 +1477,63 @@ void _wireRoleRouting(App app, _GoFunMotionApi api) {
       ff.Pages.adminPage.widgets.byKey('ListView_20dqsmgf').single,
       State('isAdmin'),
     );
-    page.ensureActions(
-      page.findByText('Publish'),
-      triggerType: FFActionTriggerType.ON_TAP,
-      actions: [
-        Snackbar('Use the web admin to publish with a complete audit log.'),
-      ],
-    );
-    page.ensureActions(
-      page.findByText('Hide'),
-      triggerType: FFActionTriggerType.ON_TAP,
-      actions: [
-        Snackbar('Use the web admin to pause with a complete audit log.'),
-      ],
+    for (final entry
+        in {
+          'Button_kpnez1rm': 'Review application',
+          'Button_6hu39yl6': 'Review listing',
+        }.entries) {
+      final name =
+          entry.key == 'Button_kpnez1rm'
+              ? 'ReviewPartnerApplicationOnWeb'
+              : 'ReviewListingOnWeb';
+      final target = ff.Pages.adminPage.widgets.all.singleWhere(
+        (widget) => widget.key == entry.key || widget.name == name,
+      );
+      page.ensureReplaced(
+        target,
+        Button(
+          entry.value,
+          name: name,
+          icon: 'open_in_new',
+          height: 48,
+          borderRadius: 8,
+          onTap: LaunchUrl('https://gofunmotion.com/admin'),
+        ),
+      );
+    }
+    for (final key in ['Button_j78gs2uu', 'Button_8nao7dig']) {
+      for (final widget in ff.Pages.adminPage.widgets.all.where(
+        (widget) => widget.key == key,
+      )) {
+        page.ensureRemoved(widget);
+      }
+    }
+    page.ensureReplaced(
+      ff.Pages.adminPage.widgets.all.singleWhere(
+        (widget) =>
+            widget.key == 'Container_bh4mhw9y' ||
+            widget.name == 'AdminReviewIntro',
+      ),
+      Column(
+        name: 'AdminReviewIntro',
+        crossAxis: CrossAxis.start,
+        spacing: 8,
+        children: [
+          Text('Partner review', style: Styles.headlineSmall),
+          Text(
+            'Review applications and manage publishing in the web admin.',
+            style: Styles.bodyMedium,
+            color: Colors.secondaryText,
+          ),
+          Button(
+            'Open web admin',
+            icon: 'open_in_new',
+            height: 48,
+            visible: State('isAdmin'),
+            onTap: LaunchUrl('https://gofunmotion.com/admin'),
+          ),
+        ],
+      ),
     );
   });
 }
@@ -1996,27 +1848,14 @@ void _wireCustomerBookingHistory(App app, _GoFunMotionApi api) {
                   ),
             ),
             Button(
-              'Refresh Requests',
+              'Refresh saved items',
               name: 'RefreshCustomerBookingRequestsButton',
               width: double.infinity,
-              height: 42,
+              height: 48,
               icon: 'refresh',
               borderRadius: 8,
               variant: ButtonVariant.outlined,
-              onTap: [
-                SetState('bookingRequestsViewState', 'loading'),
-                ApiCall(
-                  api.getMyBookingRequests,
-                  outputAs: 'myBookingRequestsRefresh',
-                  params: {'token': const AuthUser(AuthUserField.jwtToken)},
-                  onSuccess:
-                      (result) => [
-                        SetState('bookingRequests', result['bookingRequests']),
-                        SetState('bookingRequestsViewState', 'ready'),
-                      ],
-                  onFailure: [SetState('bookingRequestsViewState', 'error')],
-                ),
-              ],
+              onTap: _loadSavedAccount(api, 'refresh'),
             ),
           ],
         ),

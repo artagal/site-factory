@@ -21,7 +21,7 @@ export default function PricingPage() {
     <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
       <section className="max-w-3xl">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">Partner pricing</p>
-        <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">Partner pricing for open-slot deals.</h1>
+        <h1 className="mt-3 text-3xl font-black leading-tight text-white md:text-4xl">Partner pricing for open-slot deals.</h1>
         <p className="mt-5 text-lg leading-8 text-white/64">
           Start with one reviewed deal. Approved partners can activate Growth or Pro from their business dashboard for more campaigns, visibility, and analytics.
         </p>
@@ -31,13 +31,13 @@ export default function PricingPage() {
       </section>
       <section className="mt-10 grid gap-5 md:grid-cols-3">
         {tiers.map((tier) => (
-          <article className="rounded-2xl border border-white/10 bg-white/[0.06] p-6" key={tier.name}>
+          <article className="flex flex-col rounded-lg border border-white/10 bg-white/[0.06] p-6" key={tier.name}>
             <h2 className="text-3xl font-black text-white">{tier.name}</h2>
             <p className="mt-3 text-4xl font-black text-lime-200">{tier.price}</p>
             <p className="mt-3 text-sm leading-6 text-white/58">{tier.description}</p>
-            <ul className="mt-6 space-y-3 text-sm font-bold text-white/64">
+            <ul className="mb-6 mt-6 flex-1 list-inside list-disc space-y-3 text-sm text-white/70">
               {tier.features.map((feature) => (
-                <li className="rounded-2xl bg-black/24 p-3" key={feature}>
+                <li key={feature}>
                   {feature}
                 </li>
               ))}
@@ -48,15 +48,7 @@ export default function PricingPage() {
           </article>
         ))}
       </section>
-      <section className="mt-10 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-6">
-        <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-200">Recommended revenue order</p>
-        <div className="mt-4 grid gap-3 md:grid-cols-4">
-          {["Applications first", "Reviewed listings second", "Lead fees after request quality is proven", "Booking commissions only after operations are ready"].map((item) => (
-            <div className="rounded-2xl bg-black/28 p-4 text-sm font-black leading-6 text-white/76" key={item}>{item}</div>
-          ))}
-        </div>
-      </section>
-      <section className="mt-10 rounded-2xl border border-white/10 bg-white/[0.055] p-6">
+      <section className="mt-10 border-t border-white/10 pt-6">
         <p className="text-sm font-black uppercase tracking-[0.18em] text-lime-300">What partners sell</p>
         <h2 className="mt-3 text-3xl font-black text-white">Simple discounted windows, not complicated ads.</h2>
         <div className="mt-5 flex flex-wrap gap-2">

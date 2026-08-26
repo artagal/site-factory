@@ -101,12 +101,28 @@ abstract final class Structs {
         },
         description: ffai.generatedProjectStructDescription,
       );
+  static final ffai.StructHandle mobileBrowseCategoriesResponse =
+      ffai.StructHandle(
+        "MobileBrowseCategoriesResponse",
+        <String, ffai.DslType>{
+          "categories": ffai.listOf(Structs.mobileAssistantCity),
+        },
+        description: ffai.generatedProjectStructDescription,
+      );
   static final ffai.StructHandle mobileBusinessAccess = ffai.StructHandle(
     "MobileBusinessAccess",
     <String, ffai.DslType>{
       "id": ffai.string,
       "name": ffai.string,
       "status": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobileDealFeedResponse = ffai.StructHandle(
+    "MobileDealFeedResponse",
+    <String, ffai.DslType>{
+      "cards": ffai.listOf(Structs.mobileAssistantCard),
+      "empty": ffai.bool_,
     },
     description: ffai.generatedProjectStructDescription,
   );
@@ -239,7 +255,9 @@ abstract final class Structs {
     mobileBookingRequest,
     mobileBookingRequestsResponse,
     mobileBookingRequestsV2Response,
+    mobileBrowseCategoriesResponse,
     mobileBusinessAccess,
+    mobileDealFeedResponse,
     mobilePartnerCopyResponse,
     mobilePartnerListingItem,
     mobilePartnerListingsResponse,

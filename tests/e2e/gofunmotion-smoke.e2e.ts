@@ -18,8 +18,8 @@ test.describe("GoFunMotion Deals smoke", () => {
   test("find plan route submits the rule-based plan form", async ({ page }) => {
     await page.goto("/find");
 
-    await expect(page.getByRole("heading", { name: /Tell us what sounds fun/i })).toBeVisible();
-    await expect(page.getByText("Your deal plan")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Find your next plan." })).toBeVisible();
+    await expect(page.getByText("Your deal plan")).toHaveCount(0);
 
     const form = page.locator("main form").first();
     await form.getByLabel("City").selectOption("austin");
@@ -37,6 +37,7 @@ test.describe("GoFunMotion Deals smoke", () => {
     expect(page.url()).toContain("when=tonight");
     expect(page.url()).toContain("who=friends");
     await expect(page.getByRole("heading", { name: /Austin/i })).toBeVisible();
+    await expect(page.getByText("Your deal plan")).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
 
@@ -44,37 +45,37 @@ test.describe("GoFunMotion Deals smoke", () => {
     await page.goto("/deals");
 
     await expect(page.getByRole("heading", { name: /Last-minute fun, for less/i })).toBeVisible();
-    await expect(page.getByText(/Reviewed partners/i)).toBeVisible();
 
     const browseForm = page.locator("main form").filter({
-      has: page.getByRole("button", { exact: true, name: "Show Deals" })
+      has: page.getByRole("button", { exact: true, name: "Show deals" })
     }).first();
-    await expect(browseForm.getByLabel("City")).toHaveValue("austin");
+    await expect(browseForm.getByLabel("City")).toHaveValue("");
+    await browseForm.getByLabel("City").selectOption("austin");
     await browseForm.getByLabel("When").selectOption("weekend");
     await browseForm.getByRole("button", { name: /Show/i }).click();
 
     await expect(page).toHaveURL(/\/deals\?/);
     expect(page.url()).toContain("cityId=austin");
     expect(page.url()).toContain("when=weekend");
-    await expect(page.getByRole("heading", { name: /Was \/ Now \/ Time \/ Spots/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /deals? found/i })).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
 
-  test("login route exposes Google, Apple, email, and guest entry points", async ({ page }) => {
+  test("login exposes accessible providers and browsing without creating an account", async ({ page }) => {
     await page.goto("/login");
 
-    await expect(page.getByRole("heading", { name: /Save plans and deals/i })).toBeVisible();
-    await expect(page.getByPlaceholder("Email")).toBeVisible();
-    await expect(page.getByPlaceholder("Password")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Google" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Apple" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+    await expect(page.getByLabel("Email", { exact: true })).toBeVisible();
+    await expect(page.getByLabel("Password", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continue with Google" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continue with Apple" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Signup" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Guest" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "New here? Create an account" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Browse without an account" })).toHaveAttribute("href", "/deals");
 
-    await page.getByPlaceholder("Email").fill("smoke@example.com");
-    await page.getByPlaceholder("Password").fill("password123");
-    await expect(page.getByPlaceholder("Email")).toHaveValue("smoke@example.com");
+    await page.getByLabel("Email", { exact: true }).fill("smoke@example.com");
+    await page.getByLabel("Password", { exact: true }).fill("not-submitted");
+    await expect(page.getByLabel("Email", { exact: true })).toHaveValue("smoke@example.com");
     await expectNoHorizontalOverflow(page);
   });
 
@@ -84,7 +85,7 @@ test.describe("GoFunMotion Deals smoke", () => {
     await page.route("**/api/partner-application", async (route) => {
       submittedPayload = JSON.parse(route.request().postData() ?? "{}") as Record<string, unknown>;
       await route.fulfill({
-        body: JSON.stringify({ ok: true, synced: false }),
+        body: JSON.stringify({ ok: true, synced: true, applicationId: "mock-only" }),
         contentType: "application/json",
         status: 201
       });
@@ -97,7 +98,7 @@ test.describe("GoFunMotion Deals smoke", () => {
     await page.getByPlaceholder("Owner name").fill("Smoke Owner");
     await page.getByPlaceholder("Email").fill("smoke-partner@example.com");
     await page.getByPlaceholder("Phone").fill("555-0100");
-    await expect(page.getByLabel("Business city")).toHaveValue("austin");
+    await expect(page.getByLabel("Business city")).toHaveValue("");
     await expect(page.getByLabel("Business category")).toHaveValue("date-night");
     await page.getByLabel("Business city").selectOption("miami");
     await expect(page.getByLabel("Business city")).toHaveValue("miami");
@@ -120,12 +121,11 @@ test.describe("GoFunMotion Deals smoke", () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test("pricing route keeps checkout disabled and routes partners to apply", async ({ page }) => {
+  test("pricing routes approved partners to dashboard and new partners to apply", async ({ page }) => {
     await page.goto("/pricing");
 
     await expect(page.getByRole("heading", { name: /Partner pricing for open-slot deals/i })).toBeVisible();
-    await expect(page.getByText(/Payment checkout is intentionally not active yet/i)).toBeVisible();
-    await expect(page.getByText(/No consumer checkout or paid partner checkout is enabled/i)).toBeVisible();
+    await expect(page.getByText(/Partner subscriptions never change consumer booking/i)).toBeVisible();
     await expect(page.getByRole("link", { name: "Apply for free" })).toHaveAttribute("href", "/partner/apply?plan=starter");
     await expectNoHorizontalOverflow(page);
   });
@@ -133,7 +133,7 @@ test.describe("GoFunMotion Deals smoke", () => {
   test("protected surfaces route unauthenticated users to safe sign-in states", async ({ page }) => {
     await page.goto("/profile/settings");
     await expect(page).toHaveURL(/\/profile$/);
-    await expect(page.getByRole("heading", { name: /Your deals, plans, and requests/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Your account" })).toBeVisible();
     await expect(page.locator("main").getByRole("link", { name: "Sign In" }).first()).toBeVisible();
 
     await page.goto("/partner/dashboard");

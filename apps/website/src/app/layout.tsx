@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { MotionBackground } from "../components/gofunmotion/MotionBackground";
 import { Footer } from "../components/layout/footer";
 import { Navbar } from "../components/layout/navbar";
 import { ThemeProvider } from "../components/theme/theme-provider";
@@ -70,8 +69,9 @@ export default function RootLayout({
     <html data-scroll-behavior="smooth" lang="en" suppressHydrationWarning>
       <body className={`${plusJakarta.variable} ${spaceGrotesk.variable}`}>
         <ThemeProvider>
-          <MotionBackground />
+          <a className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-lime-300 focus:p-3 focus:text-black" href="#main-content">Skip to content</a>
           <Navbar />
+          <div id="main-content" tabIndex={-1} />
           {children}
           <Footer />
         </ThemeProvider>
