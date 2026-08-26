@@ -17,10 +17,10 @@ export async function POST(request: Request): Promise<Response> {
   await profileRef.set({
     accountStatus,
     createdAt: existing.createdAt ?? FieldValue.serverTimestamp(),
-    displayName: typeof token.name === "string" && token.name.trim()
-      ? token.name.trim().slice(0, 120)
-      : typeof existing.displayName === "string"
-        ? existing.displayName
+    displayName: typeof existing.displayName === "string" && existing.displayName.trim()
+      ? existing.displayName.trim().slice(0, 120)
+      : typeof token.name === "string"
+        ? token.name.trim().slice(0, 120)
         : "GoFunMotion user",
     email: typeof token.email === "string" ? token.email : null,
     isAnonymous: token.firebase?.sign_in_provider === "anonymous",
@@ -46,5 +46,5 @@ export async function POST(request: Request): Promise<Response> {
     updatedAt: FieldValue.serverTimestamp()
   });
 
-  return jsonOk({ role, synced: true });
+  return jsonOk({ role, synced: true, needsOnboarding: existing.onboardingCompleted !== true });
 }

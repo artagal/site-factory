@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 const require = createRequire(import.meta.url);
 const routes = [
   "api/mobile/deals",
+  "api/mobile/workspace",
+  "api/admin/partner-applications/approve",
   "api/booking-request",
   "api/me/access",
   "api/partner/listings",

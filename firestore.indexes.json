@@ -1,6 +1,32 @@
 {
   "indexes": [
     {
+      "collectionGroup": "reviews",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "listingId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "bookingRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "businessId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "listings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "businessId", "order": "ASCENDING" },
+        { "fieldPath": "viewCount", "order": "ASCENDING" },
+        { "fieldPath": "saveCount", "order": "ASCENDING" },
+        { "fieldPath": "clickCount", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "listings",
       "queryScope": "COLLECTION",
       "fields": [

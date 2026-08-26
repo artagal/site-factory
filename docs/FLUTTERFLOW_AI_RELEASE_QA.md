@@ -10,14 +10,19 @@ physical-device auth/booking checks are still release gates.
 
 ## Editable App Scope
 
-17 native pages include the dedicated partner editor, AI Finder, and AI Support.
+62 native pages now include the dedicated partner editor, AI Finder, AI Support,
+customer/partner workspaces and mobile administration. The 45-page expansion,
+API dependencies and bounded team/subscription scope are documented in
+`docs/FLUTTERFLOW_NATIVE_WORKSPACE_2026-08-26.md`.
 The five native AI experiences are search, planning, partner title/description,
 editable booking messages, and support. Consent is off by default; no automatic
 booking, publication, payment, or email sending is added. Manual Builder screens
 remain authoritative, and the update flow guards against duplicate AI panels.
 
 API group `GoFunMotionAssistant` contains AskGoFunMotion, GetAssistantCities, and
-SaveAssistantPlan. `GoFunMotionAccount` contains SyncMobileAccount. Existing
+SaveAssistantPlan. `GoFunMotionAccount` now uses SyncMobileAccountV2 for canonical
+profile sync and onboarding routing. `GoFunMotionWorkspace` provides protected
+reads, writes, ownership lookup and moderation actions. Existing
 GoFunMotionWeb calls remain available. Keys and approval decisions stay server-side.
 
 ## Authentication
@@ -39,7 +44,20 @@ valid provisioning. Follow the official [Firebase connection instructions](https
 
 ## Repeatable Checks
 
-Verified in this continuation: website typecheck/build passed (86 routes), 163
+Latest workspace expansion (`jExsfCMwThaAVIG3GIyo`): 199 regular tests, 8 dedicated
+Auth/Firestore Emulator tests, and 22 Dart tests passed. Website typecheck passed.
+Fresh generated-runtime analysis has 0 errors, 1,057 warnings and 3,364 information
+diagnostics. `--no-fatal-infos --no-fatal-warnings` was used only to make the analyzer
+exit reflect errors; warnings remain logged. This is not a signed archive or a
+physical-device authentication test.
+
+The expanded export also passed `flutter build web` on installed Flutter 3.35.7.
+The default Flutter 3.44 build fails on the exported Font Awesome 10.12 dependency
+(`IconData` subclassing). Generated code and the global SDK were not patched.
+Match the actual FlutterFlow CI runtime before native release; legacy startup
+assets and Firebase configuration are still separate release gates.
+
+Historical AI-only verification: website typecheck/build passed (86 routes), 163
 tests passed with 9 emulator-dependent cases skipped, SEO audited 48 pages with
 0 issues, and 7 Dart DSL tests passed. Full generated-runtime analysis on snapshot
 `wT56n3Ap7KxKZ8BxjZBS` found 0 errors, 311 warnings, and 1,581 informational

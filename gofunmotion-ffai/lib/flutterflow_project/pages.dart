@@ -3,59 +3,194 @@
 library;
 
 import 'package:flutterflow_ai/flutterflow_ai.dart' as ffai;
+import 'pages/account_settings_page.dart' show accountSettingsPageHandle;
+import 'pages/admin_application_detail_page.dart' show adminApplicationDetailPageHandle;
+import 'pages/admin_applications_page.dart' show adminApplicationsPageHandle;
+import 'pages/admin_audit_log_page.dart' show adminAuditLogPageHandle;
+import 'pages/admin_booking_detail_page.dart' show adminBookingDetailPageHandle;
+import 'pages/admin_bookings_page.dart' show adminBookingsPageHandle;
+import 'pages/admin_business_detail_page.dart' show adminBusinessDetailPageHandle;
+import 'pages/admin_businesses_page.dart' show adminBusinessesPageHandle;
+import 'pages/admin_categories_page.dart' show adminCategoriesPageHandle;
+import 'pages/admin_category_editor_page.dart' show adminCategoryEditorPageHandle;
+import 'pages/admin_cities_page.dart' show adminCitiesPageHandle;
+import 'pages/admin_city_editor_page.dart' show adminCityEditorPageHandle;
+import 'pages/admin_listing_detail_page.dart' show adminListingDetailPageHandle;
+import 'pages/admin_listings_page.dart' show adminListingsPageHandle;
+import 'pages/admin_metrics_page.dart' show adminMetricsPageHandle;
 import 'pages/admin_page.dart' show adminPageHandle;
+import 'pages/admin_review_detail_page.dart' show adminReviewDetailPageHandle;
+import 'pages/admin_reviews_page.dart' show adminReviewsPageHandle;
+import 'pages/admin_user_detail_page.dart' show adminUserDetailPageHandle;
+import 'pages/admin_users_page.dart' show adminUsersPageHandle;
 import 'pages/ai_assistant_page.dart' show aiAssistantPageHandle;
 import 'pages/ai_support_page.dart' show aiSupportPageHandle;
+import 'pages/business_onboarding_page.dart' show businessOnboardingPageHandle;
+import 'pages/customer_onboarding_page.dart' show customerOnboardingPageHandle;
+import 'pages/customer_request_detail_page.dart' show customerRequestDetailPageHandle;
+import 'pages/customer_requests_page.dart' show customerRequestsPageHandle;
 import 'pages/deal_detail_page.dart' show dealDetailPageHandle;
+import 'pages/deals_map_page.dart' show dealsMapPageHandle;
 import 'pages/deals_page.dart' show dealsPageHandle;
+import 'pages/delete_account_page.dart' show deleteAccountPageHandle;
 import 'pages/discover_page.dart' show discoverPageHandle;
+import 'pages/edit_profile_page.dart' show editProfilePageHandle;
 import 'pages/find_plan_page.dart' show findPlanPageHandle;
+import 'pages/intro_onboarding_page.dart' show introOnboardingPageHandle;
+import 'pages/listing_reviews_page.dart' show listingReviewsPageHandle;
+import 'pages/notification_settings_page.dart' show notificationSettingsPageHandle;
+import 'pages/notifications_page.dart' show notificationsPageHandle;
+import 'pages/partner_analytics_page.dart' show partnerAnalyticsPageHandle;
 import 'pages/partner_apply_page.dart' show partnerApplyPageHandle;
+import 'pages/partner_business_profile_page.dart' show partnerBusinessProfilePageHandle;
 import 'pages/partner_dashboard_page.dart' show partnerDashboardPageHandle;
 import 'pages/partner_deal_editor_page.dart' show partnerDealEditorPageHandle;
+import 'pages/partner_inbox_page.dart' show partnerInboxPageHandle;
+import 'pages/partner_listing_overview_page.dart' show partnerListingOverviewPageHandle;
+import 'pages/partner_listings_page.dart' show partnerListingsPageHandle;
 import 'pages/partner_page.dart' show partnerPageHandle;
+import 'pages/partner_request_detail_page.dart' show partnerRequestDetailPageHandle;
+import 'pages/partner_settings_page.dart' show partnerSettingsPageHandle;
+import 'pages/partner_subscription_page.dart' show partnerSubscriptionPageHandle;
+import 'pages/partner_team_member_page.dart' show partnerTeamMemberPageHandle;
+import 'pages/partner_team_page.dart' show partnerTeamPageHandle;
+import 'pages/privacy_page.dart' show privacyPageHandle;
 import 'pages/profile_page.dart' show profilePageHandle;
 import 'pages/reset_password_page.dart' show resetPasswordPageHandle;
+import 'pages/role_selection_page.dart' show roleSelectionPageHandle;
 import 'pages/saved_page.dart' show savedPageHandle;
 import 'pages/sign_in_page.dart' show signInPageHandle;
 import 'pages/splash_page.dart' show splashPageHandle;
+import 'pages/support_page.dart' show supportPageHandle;
+import 'pages/terms_page.dart' show termsPageHandle;
 import 'pages/waitlist_page.dart' show waitlistPageHandle;
+import 'pages/write_review_page.dart' show writeReviewPageHandle;
 
 abstract final class Pages {
+  static final accountSettingsPage = accountSettingsPageHandle;
+  static final adminApplicationDetailPage = adminApplicationDetailPageHandle;
+  static final adminApplicationsPage = adminApplicationsPageHandle;
+  static final adminAuditLogPage = adminAuditLogPageHandle;
+  static final adminBookingDetailPage = adminBookingDetailPageHandle;
+  static final adminBookingsPage = adminBookingsPageHandle;
+  static final adminBusinessDetailPage = adminBusinessDetailPageHandle;
+  static final adminBusinessesPage = adminBusinessesPageHandle;
+  static final adminCategoriesPage = adminCategoriesPageHandle;
+  static final adminCategoryEditorPage = adminCategoryEditorPageHandle;
+  static final adminCitiesPage = adminCitiesPageHandle;
+  static final adminCityEditorPage = adminCityEditorPageHandle;
+  static final adminListingDetailPage = adminListingDetailPageHandle;
+  static final adminListingsPage = adminListingsPageHandle;
+  static final adminMetricsPage = adminMetricsPageHandle;
   static final adminPage = adminPageHandle;
+  static final adminReviewDetailPage = adminReviewDetailPageHandle;
+  static final adminReviewsPage = adminReviewsPageHandle;
+  static final adminUserDetailPage = adminUserDetailPageHandle;
+  static final adminUsersPage = adminUsersPageHandle;
   static final aiAssistantPage = aiAssistantPageHandle;
   static final aiSupportPage = aiSupportPageHandle;
+  static final businessOnboardingPage = businessOnboardingPageHandle;
+  static final customerOnboardingPage = customerOnboardingPageHandle;
+  static final customerRequestDetailPage = customerRequestDetailPageHandle;
+  static final customerRequestsPage = customerRequestsPageHandle;
   static final dealDetailPage = dealDetailPageHandle;
+  static final dealsMapPage = dealsMapPageHandle;
   static final dealsPage = dealsPageHandle;
+  static final deleteAccountPage = deleteAccountPageHandle;
   static final discoverPage = discoverPageHandle;
+  static final editProfilePage = editProfilePageHandle;
   static final findPlanPage = findPlanPageHandle;
+  static final introOnboardingPage = introOnboardingPageHandle;
+  static final listingReviewsPage = listingReviewsPageHandle;
+  static final notificationSettingsPage = notificationSettingsPageHandle;
+  static final notificationsPage = notificationsPageHandle;
+  static final partnerAnalyticsPage = partnerAnalyticsPageHandle;
   static final partnerApplyPage = partnerApplyPageHandle;
+  static final partnerBusinessProfilePage = partnerBusinessProfilePageHandle;
   static final partnerDashboardPage = partnerDashboardPageHandle;
   static final partnerDealEditorPage = partnerDealEditorPageHandle;
+  static final partnerInboxPage = partnerInboxPageHandle;
+  static final partnerListingOverviewPage = partnerListingOverviewPageHandle;
+  static final partnerListingsPage = partnerListingsPageHandle;
   static final partnerPage = partnerPageHandle;
+  static final partnerRequestDetailPage = partnerRequestDetailPageHandle;
+  static final partnerSettingsPage = partnerSettingsPageHandle;
+  static final partnerSubscriptionPage = partnerSubscriptionPageHandle;
+  static final partnerTeamMemberPage = partnerTeamMemberPageHandle;
+  static final partnerTeamPage = partnerTeamPageHandle;
+  static final privacyPage = privacyPageHandle;
   static final profilePage = profilePageHandle;
   static final resetPasswordPage = resetPasswordPageHandle;
+  static final roleSelectionPage = roleSelectionPageHandle;
   static final savedPage = savedPageHandle;
   static final signInPage = signInPageHandle;
   static final splashPage = splashPageHandle;
+  static final supportPage = supportPageHandle;
+  static final termsPage = termsPageHandle;
   static final waitlistPage = waitlistPageHandle;
+  static final writeReviewPage = writeReviewPageHandle;
   static final all = <ffai.ProjectPageHandle>[
+    accountSettingsPage,
+    adminApplicationDetailPage,
+    adminApplicationsPage,
+    adminAuditLogPage,
+    adminBookingDetailPage,
+    adminBookingsPage,
+    adminBusinessDetailPage,
+    adminBusinessesPage,
+    adminCategoriesPage,
+    adminCategoryEditorPage,
+    adminCitiesPage,
+    adminCityEditorPage,
+    adminListingDetailPage,
+    adminListingsPage,
+    adminMetricsPage,
     adminPage,
+    adminReviewDetailPage,
+    adminReviewsPage,
+    adminUserDetailPage,
+    adminUsersPage,
     aiAssistantPage,
     aiSupportPage,
+    businessOnboardingPage,
+    customerOnboardingPage,
+    customerRequestDetailPage,
+    customerRequestsPage,
     dealDetailPage,
+    dealsMapPage,
     dealsPage,
+    deleteAccountPage,
     discoverPage,
+    editProfilePage,
     findPlanPage,
+    introOnboardingPage,
+    listingReviewsPage,
+    notificationSettingsPage,
+    notificationsPage,
+    partnerAnalyticsPage,
     partnerApplyPage,
+    partnerBusinessProfilePage,
     partnerDashboardPage,
     partnerDealEditorPage,
+    partnerInboxPage,
+    partnerListingOverviewPage,
+    partnerListingsPage,
     partnerPage,
+    partnerRequestDetailPage,
+    partnerSettingsPage,
+    partnerSubscriptionPage,
+    partnerTeamMemberPage,
+    partnerTeamPage,
+    privacyPage,
     profilePage,
     resetPasswordPage,
+    roleSelectionPage,
     savedPage,
     signInPage,
     splashPage,
+    supportPage,
+    termsPage,
     waitlistPage,
+    writeReviewPage,
   ];
 }

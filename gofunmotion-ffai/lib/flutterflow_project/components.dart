@@ -7,16 +7,25 @@ import 'components/deal_card.dart' show DealCardComponentHandle;
 import 'components/empty_state.dart' show EmptyStateComponentHandle;
 import 'components/plan_step_card.dart' show PlanStepCardComponentHandle;
 import 'components/section_header.dart' show SectionHeaderComponentHandle;
+import 'components/workspace_empty_state.dart' show WorkspaceEmptyStateComponentHandle;
+import 'components/workspace_menu_row.dart' show WorkspaceMenuRowComponentHandle;
+import 'components/workspace_status_badge.dart' show WorkspaceStatusBadgeComponentHandle;
 
 abstract final class Components {
   static final dealCard = DealCardComponentHandle();
   static final emptyState = EmptyStateComponentHandle();
   static final planStepCard = PlanStepCardComponentHandle();
   static final sectionHeader = SectionHeaderComponentHandle();
+  static final workspaceEmptyState = WorkspaceEmptyStateComponentHandle();
+  static final workspaceMenuRow = WorkspaceMenuRowComponentHandle();
+  static final workspaceStatusBadge = WorkspaceStatusBadgeComponentHandle();
   static final all = <ffai.ProjectComponentHandle>[
     dealCard,
     emptyState,
     planStepCard,
     sectionHeader,
+    workspaceEmptyState,
+    workspaceMenuRow,
+    workspaceStatusBadge,
   ];
 }

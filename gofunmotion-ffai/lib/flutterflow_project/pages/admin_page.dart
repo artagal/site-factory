@@ -31,6 +31,12 @@ final class AdminPageState {
         key: "yqgn4ph2",
         typeName: "List<Document<partnerApplications>>",
       );
+  ffai.ProjectStateFieldHandle get businessId =>
+      const ffai.ProjectStateFieldHandle(
+        name: "businessId",
+        key: "jo9xl1fs",
+        typeName: "String",
+      );
   ffai.ProjectStateFieldHandle get isAdmin =>
       const ffai.ProjectStateFieldHandle(
         name: "isAdmin",
@@ -46,7 +52,9 @@ abstract final class AdminPageWidgets {
       type: "Scaffold",
       path: "AdminPage",
       name: "AdminPage",
-      triggers: const <String>["ON_INIT_STATE"],
+      triggers: const <String>[
+        "ON_INIT_STATE",
+      ],
       slots: <String, List<ffai.ProjectWidgetHandle>>{
         "appBar": <ffai.ProjectWidgetHandle>[
           ffai.ProjectWidgetHandle(
@@ -75,33 +83,87 @@ abstract final class AdminPageWidgets {
             name: "Column",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Column_b1a3s4h5",
+                key: "Column_ih02blxq",
                 type: "Column",
                 path: "AdminPage.body[0].children[0]",
                 name: "AdminReviewIntro",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Text_gk1x28el",
+                    key: "Text_wqhatpdf",
                     type: "Text",
                     path: "AdminPage.body[0].children[0].children[0]",
                     name: "Text",
-                    text: "Partner review",
+                    text: "Marketplace operations",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Text_53s2381m",
-                    type: "Text",
+                    key: "Container_dr2srz2m",
+                    type: "Container",
                     path: "AdminPage.body[0].children[0].children[1]",
-                    name: "Text",
-                    text:
-                        "Review applications and manage publishing in the web admin.",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_1vclyay8",
-                    type: "Button",
+                    key: "Container_64gkdfaj",
+                    type: "Container",
                     path: "AdminPage.body[0].children[0].children[2]",
-                    name: "Button",
-                    text: "Open web admin",
-                    triggers: const <String>["ON_TAP"],
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_hue70e52",
+                    type: "Container",
+                    path: "AdminPage.body[0].children[0].children[3]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_kmw0hggg",
+                    type: "Container",
+                    path: "AdminPage.body[0].children[0].children[4]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_so7hr4o4",
+                    type: "Container",
+                    path: "AdminPage.body[0].children[0].children[5]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_y0c84baa",
+                    type: "Container",
+                    path: "AdminPage.body[0].children[0].children[6]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_xuzi5p9z",
+                    type: "Container",
+                    path: "AdminPage.body[0].children[0].children[7]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_wom2e9gg",
+                    type: "Container",
+                    path: "AdminPage.body[0].children[0].children[8]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_vb31bx91",
+                    type: "Container",
+                    path: "AdminPage.body[0].children[0].children[9]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_ms3j4d4w",
+                    type: "Container",
+                    path: "AdminPage.body[0].children[0].children[10]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
                   ),
                 ],
               ),
@@ -112,52 +174,50 @@ abstract final class AdminPageWidgets {
                 name: "Container",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Column_dfta0p1m",
+                    key: "Column_uw3um89z",
                     type: "Column",
                     path: "AdminPage.body[0].children[1].children[0]",
                     name: "NativeSignInGate",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Icon_x94y8vxs",
+                        key: "Icon_k8egsl55",
                         type: "Icon",
-                        path:
-                            "AdminPage.body[0].children[1].children[0].children[0]",
+                        path: "AdminPage.body[0].children[1].children[0].children[0]",
                         name: "Icon",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_l1uasnyj",
+                        key: "Text_s3jidn5p",
                         type: "Text",
-                        path:
-                            "AdminPage.body[0].children[1].children[0].children[1]",
+                        path: "AdminPage.body[0].children[1].children[0].children[1]",
                         name: "Text",
                         text: "Sign in to your account",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_m5lk6zwy",
+                        key: "Text_3fdi3dt3",
                         type: "Text",
-                        path:
-                            "AdminPage.body[0].children[1].children[0].children[2]",
+                        path: "AdminPage.body[0].children[1].children[0].children[2]",
                         name: "Text",
-                        text:
-                            "Use the account linked to your partner or admin access.",
+                        text: "Use the account linked to your partner or admin access.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_h22vape7",
+                        key: "Button_x06cpu8z",
                         type: "Button",
-                        path:
-                            "AdminPage.body[0].children[1].children[0].children[3]",
+                        path: "AdminPage.body[0].children[1].children[0].children[3]",
                         name: "GateSignInButton",
                         text: "Sign In",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_6mxlphrq",
+                        key: "Button_fn4vfgdo",
                         type: "Button",
-                        path:
-                            "AdminPage.body[0].children[1].children[0].children[4]",
+                        path: "AdminPage.body[0].children[1].children[0].children[4]",
                         name: "Button",
                         text: "Browse deals",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                     ],
                   ),
@@ -178,46 +238,42 @@ abstract final class AdminPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Column_br0srpu4",
                         type: "Column",
-                        path:
-                            "AdminPage.body[0].children[2].children[0].children[0]",
+                        path: "AdminPage.body[0].children[2].children[0].children[0]",
                         name: "Column",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "Text_x9zwxfu9",
                             type: "Text",
-                            path:
-                                "AdminPage.body[0].children[2].children[0].children[0].children[0]",
+                            path: "AdminPage.body[0].children[2].children[0].children[0].children[0]",
                             name: "Text",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Text_5pp30jos",
                             type: "Text",
-                            path:
-                                "AdminPage.body[0].children[2].children[0].children[0].children[1]",
+                            path: "AdminPage.body[0].children[2].children[0].children[0].children[1]",
                             name: "Text",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Text_sycpvvmh",
                             type: "Text",
-                            path:
-                                "AdminPage.body[0].children[2].children[0].children[0].children[2]",
+                            path: "AdminPage.body[0].children[2].children[0].children[0].children[2]",
                             name: "Text",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Row_7l5f3wbr",
                             type: "Row",
-                            path:
-                                "AdminPage.body[0].children[2].children[0].children[0].children[3]",
+                            path: "AdminPage.body[0].children[2].children[0].children[0].children[3]",
                             name: "Row",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Button_gkkjx61j",
+                                key: "Button_one2j1dn",
                                 type: "Button",
-                                path:
-                                    "AdminPage.body[0].children[2].children[0].children[0].children[3].children[0]",
+                                path: "AdminPage.body[0].children[2].children[0].children[0].children[3].children[0]",
                                 name: "ReviewPartnerApplicationOnWeb",
                                 text: "Review application",
-                                triggers: const <String>["ON_TAP"],
+                                triggers: const <String>[
+                                  "ON_TAP",
+                                ],
                               ),
                             ],
                           ),
@@ -249,39 +305,36 @@ abstract final class AdminPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Column_hymjndj3",
                         type: "Column",
-                        path:
-                            "AdminPage.body[0].children[4].children[0].children[0]",
+                        path: "AdminPage.body[0].children[4].children[0].children[0]",
                         name: "Column",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "Text_res0bih2",
                             type: "Text",
-                            path:
-                                "AdminPage.body[0].children[4].children[0].children[0].children[0]",
+                            path: "AdminPage.body[0].children[4].children[0].children[0].children[0]",
                             name: "Text",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Text_9n2hl67g",
                             type: "Text",
-                            path:
-                                "AdminPage.body[0].children[4].children[0].children[0].children[1]",
+                            path: "AdminPage.body[0].children[4].children[0].children[0].children[1]",
                             name: "Text",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Row_fvb3s7bu",
                             type: "Row",
-                            path:
-                                "AdminPage.body[0].children[4].children[0].children[0].children[2]",
+                            path: "AdminPage.body[0].children[4].children[0].children[0].children[2]",
                             name: "Row",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Button_b9jtomu6",
+                                key: "Button_y3unlunr",
                                 type: "Button",
-                                path:
-                                    "AdminPage.body[0].children[4].children[0].children[0].children[2].children[0]",
+                                path: "AdminPage.body[0].children[4].children[0].children[0].children[2].children[0]",
                                 name: "ReviewListingOnWeb",
                                 text: "Review listing",
-                                triggers: const <String>["ON_TAP"],
+                                triggers: const <String>[
+                                  "ON_TAP",
+                                ],
                               ),
                             ],
                           ),
@@ -298,3 +351,4 @@ abstract final class AdminPageWidgets {
     ),
   );
 }
+

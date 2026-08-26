@@ -4,15 +4,14 @@ library;
 
 import 'package:flutterflow_ai/flutterflow_ai.dart' as ffai;
 
-final signInPageHandle =
-    ffai.ProjectPageHandle<SignInPageParams, SignInPageState>(
-      name: "SignInPage",
-      key: "Scaffold_f7kkzxs2",
-      route: "sign-in",
-      params: const SignInPageParams(),
-      state: const SignInPageState(),
-      widgets: SignInPageWidgets.tree,
-    );
+final signInPageHandle = ffai.ProjectPageHandle<SignInPageParams, SignInPageState>(
+  name: "SignInPage",
+  key: "Scaffold_f7kkzxs2",
+  route: "sign-in",
+  params: const SignInPageParams(),
+  state: const SignInPageState(),
+  widgets: SignInPageWidgets.tree,
+);
 
 final class SignInPageParams {
   const SignInPageParams();
@@ -26,11 +25,12 @@ final class SignInPageState {
         key: "h0e7sub4",
         typeName: "String",
       );
-  ffai.ProjectStateFieldHandle get email => const ffai.ProjectStateFieldHandle(
-    name: "email",
-    key: "tgv5vafk",
-    typeName: "String",
-  );
+  ffai.ProjectStateFieldHandle get email =>
+      const ffai.ProjectStateFieldHandle(
+        name: "email",
+        key: "tgv5vafk",
+        typeName: "String",
+      );
   ffai.ProjectStateFieldHandle get isSignup =>
       const ffai.ProjectStateFieldHandle(
         name: "isSignup",
@@ -52,7 +52,9 @@ abstract final class SignInPageWidgets {
       type: "Scaffold",
       path: "SignInPage",
       name: "SignInPage",
-      triggers: const <String>["ON_INIT_STATE"],
+      triggers: const <String>[
+        "ON_INIT_STATE",
+      ],
       slots: <String, List<ffai.ProjectWidgetHandle>>{
         "appBar": <ffai.ProjectWidgetHandle>[
           ffai.ProjectWidgetHandle(
@@ -102,38 +104,42 @@ abstract final class SignInPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "TextField_l0gd6sbs",
                         type: "TextField",
-                        path:
-                            "SignInPage.body[0].children[1].children[0].children[0]",
+                        path: "SignInPage.body[0].children[1].children[0].children[0]",
                         name: "EmailField",
                         text: "Email",
-                        triggers: const <String>["ON_TEXTFIELD_CHANGE"],
+                        triggers: const <String>[
+                          "ON_TEXTFIELD_CHANGE",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "TextField_xo12pvti",
                         type: "TextField",
-                        path:
-                            "SignInPage.body[0].children[1].children[0].children[1]",
+                        path: "SignInPage.body[0].children[1].children[0].children[1]",
                         name: "PasswordField",
                         text: "Password",
-                        triggers: const <String>["ON_TEXTFIELD_CHANGE"],
+                        triggers: const <String>[
+                          "ON_TEXTFIELD_CHANGE",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_z6039hcg",
                         type: "Button",
-                        path:
-                            "SignInPage.body[0].children[1].children[0].children[2]",
+                        path: "SignInPage.body[0].children[1].children[0].children[2]",
                         name: "SignInButton",
                         text: "Sign In",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_doxx6tkp",
                         type: "Button",
-                        path:
-                            "SignInPage.body[0].children[1].children[0].children[3]",
+                        path: "SignInPage.body[0].children[1].children[0].children[3]",
                         name: "CreateAccountButton",
                         text: "Create Account",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                     ],
                   ),
@@ -151,7 +157,9 @@ abstract final class SignInPageWidgets {
                     path: "SignInPage.body[0].children[2].children[0]",
                     name: "GoogleSignInButton",
                     text: "Google",
-                    triggers: const <String>["ON_TAP"],
+                    triggers: const <String>[
+                      "ON_TAP",
+                    ],
                   ),
                   ffai.ProjectWidgetHandle(
                     key: "Button_56js8sdy",
@@ -159,17 +167,21 @@ abstract final class SignInPageWidgets {
                     path: "SignInPage.body[0].children[2].children[1]",
                     name: "AppleSignInButton",
                     text: "Apple",
-                    triggers: const <String>["ON_TAP"],
+                    triggers: const <String>[
+                      "ON_TAP",
+                    ],
                   ),
                 ],
               ),
               ffai.ProjectWidgetHandle(
-                key: "Button_j9f8jul5",
+                key: "Button_lwilwf7e",
                 type: "Button",
                 path: "SignInPage.body[0].children[3]",
                 name: "GuestSignInButton",
                 text: "Browse without an account",
-                triggers: const <String>["ON_TAP"],
+                triggers: const <String>[
+                  "ON_TAP",
+                ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "Button_bek6zsus",
@@ -177,7 +189,9 @@ abstract final class SignInPageWidgets {
                 path: "SignInPage.body[0].children[4]",
                 name: "ForgotPasswordButton",
                 text: "Forgot Password?",
-                triggers: const <String>["ON_TAP"],
+                triggers: const <String>[
+                  "ON_TAP",
+                ],
               ),
             ],
           ),
@@ -186,3 +200,4 @@ abstract final class SignInPageWidgets {
     ),
   );
 }
+

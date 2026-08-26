@@ -8,6 +8,8 @@ import {
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { getFirebaseAdminAuth, getFirebaseAdminDb, isFirebaseAdminConfigured, verifyBearerToken } from "../../../../lib/server/firebase-admin";
 import { getClientIp, checkRateLimit } from "../../../../lib/server/rate-limit";
+import { MobileError, mobileActor } from "../../../../lib/server/mobile-workspace-access";
+import { ensureMobileDeletionAllowed } from "../../../../lib/server/mobile-workspace-write";
 
 async function deleteQueryInBatches(db: Firestore, getNextBatch: () => Promise<QuerySnapshot>) {
   let snapshot = await getNextBatch();
@@ -71,6 +73,12 @@ export async function POST(request: Request) {
 
   if (!decoded || !auth) {
     return jsonError("Valid login required.", 401);
+  }
+
+  try {
+    await ensureMobileDeletionAllowed(await mobileActor(request));
+  } catch (error) {
+    return jsonError(error instanceof MobileError ? error.message : "Could not verify account deletion.", error instanceof MobileError ? error.status : 503);
   }
 
   const deletedUserRecords = await deleteKnownTopLevelUserRecords(decoded.uid);

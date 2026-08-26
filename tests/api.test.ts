@@ -62,7 +62,7 @@ describe("GoFunMotion Deals API routes", () => {
       "savedListings",
       "savedPlans"
     ]);
-    expect([...USER_OWNED_COLLECTIONS]).toEqual(["plans", "bookingRequests"]);
+    expect([...USER_OWNED_COLLECTIONS]).toEqual(["plans", "bookingRequests", "reviews"]);
     expect([...USER_TOP_LEVEL_DOCUMENTS]).toEqual([]);
     expect([...USER_FIELD_OWNED_COLLECTIONS]).toEqual([]);
     expect([...USER_DOCUMENT_SUBCOLLECTIONS, ...USER_OWNED_COLLECTIONS]).not.toContain("completedChallenges");
