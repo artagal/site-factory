@@ -19,6 +19,18 @@ final class SavedPageParams {
 
 final class SavedPageState {
   const SavedPageState();
+  ffai.ProjectStateFieldHandle get bookingRequests =>
+      const ffai.ProjectStateFieldHandle(
+        name: "bookingRequests",
+        key: "apx11kvl",
+        typeName: "List<DataStruct<MobileBookingRequest>>",
+      );
+  ffai.ProjectStateFieldHandle get bookingRequestsViewState =>
+      const ffai.ProjectStateFieldHandle(
+        name: "bookingRequestsViewState",
+        key: "nbg8kurq",
+        typeName: "String",
+      );
   ffai.ProjectStateFieldHandle get savedDeals =>
       const ffai.ProjectStateFieldHandle(
         name: "savedDeals",
@@ -40,7 +52,9 @@ abstract final class SavedPageWidgets {
       type: "Scaffold",
       path: "SavedPage",
       name: "SavedPage",
-      triggers: const <String>["ON_INIT_STATE"],
+      triggers: const <String>[
+        "ON_INIT_STATE",
+      ],
       slots: <String, List<ffai.ProjectWidgetHandle>>{
         "appBar": <ffai.ProjectWidgetHandle>[
           ffai.ProjectWidgetHandle(
@@ -90,28 +104,26 @@ abstract final class SavedPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Text_ggs5s3gc",
                         type: "Text",
-                        path:
-                            "SavedPage.body[0].children[1].children[0].children[0]",
+                        path: "SavedPage.body[0].children[1].children[0].children[0]",
                         name: "Text",
                         text: "Sign in required",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_81ulo1eq",
                         type: "Text",
-                        path:
-                            "SavedPage.body[0].children[1].children[0].children[1]",
+                        path: "SavedPage.body[0].children[1].children[0].children[1]",
                         name: "Text",
-                        text:
-                            "Create an account to save plans, deals, and booking requests.",
+                        text: "Create an account to save plans, deals, and booking requests.",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_m768gz4k",
                         type: "Button",
-                        path:
-                            "SavedPage.body[0].children[1].children[0].children[2]",
+                        path: "SavedPage.body[0].children[1].children[0].children[2]",
                         name: "Button",
                         text: "Sign In",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                     ],
                   ),
@@ -132,29 +144,25 @@ abstract final class SavedPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Column_fj612so6",
                         type: "Column",
-                        path:
-                            "SavedPage.body[0].children[2].children[0].children[0]",
+                        path: "SavedPage.body[0].children[2].children[0].children[0]",
                         name: "Column",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "Text_iw3juq1h",
                             type: "Text",
-                            path:
-                                "SavedPage.body[0].children[2].children[0].children[0].children[0]",
+                            path: "SavedPage.body[0].children[2].children[0].children[0].children[0]",
                             name: "Text",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Text_hplaocqi",
                             type: "Text",
-                            path:
-                                "SavedPage.body[0].children[2].children[0].children[0].children[1]",
+                            path: "SavedPage.body[0].children[2].children[0].children[0].children[1]",
                             name: "Text",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Text_fqeir46q",
                             type: "Text",
-                            path:
-                                "SavedPage.body[0].children[2].children[0].children[0].children[2]",
+                            path: "SavedPage.body[0].children[2].children[0].children[0].children[2]",
                             name: "Text",
                           ),
                         ],
@@ -178,23 +186,179 @@ abstract final class SavedPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Column_3cqa0bg4",
                         type: "Column",
-                        path:
-                            "SavedPage.body[0].children[3].children[0].children[0]",
+                        path: "SavedPage.body[0].children[3].children[0].children[0]",
                         name: "Column",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "Text_u5mqatei",
                             type: "Text",
-                            path:
-                                "SavedPage.body[0].children[3].children[0].children[0].children[0]",
+                            path: "SavedPage.body[0].children[3].children[0].children[0].children[0]",
                             name: "Text",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Text_2s2iqyyu",
                             type: "Text",
-                            path:
-                                "SavedPage.body[0].children[3].children[0].children[0].children[1]",
+                            path: "SavedPage.body[0].children[3].children[0].children[0].children[1]",
                             name: "Text",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              ffai.ProjectWidgetHandle(
+                key: "Container_7dokw8mu",
+                type: "Container",
+                path: "SavedPage.body[0].children[4]",
+                name: "CustomerBookingHistorySection Margin",
+                children: <ffai.ProjectWidgetHandle>[
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_6swm235a",
+                    type: "Container",
+                    path: "SavedPage.body[0].children[4].children[0]",
+                    name: "CustomerBookingHistorySection",
+                    children: <ffai.ProjectWidgetHandle>[
+                      ffai.ProjectWidgetHandle(
+                        key: "Column_uh1fbskz",
+                        type: "Column",
+                        path: "SavedPage.body[0].children[4].children[0].children[0]",
+                        name: "Column",
+                        children: <ffai.ProjectWidgetHandle>[
+                          ffai.ProjectWidgetHandle(
+                            key: "Row_xo7evxba",
+                            type: "Row",
+                            path: "SavedPage.body[0].children[4].children[0].children[0].children[0]",
+                            name: "Row",
+                            children: <ffai.ProjectWidgetHandle>[
+                              ffai.ProjectWidgetHandle(
+                                key: "Icon_t7gmbjrs",
+                                type: "Icon",
+                                path: "SavedPage.body[0].children[4].children[0].children[0].children[0].children[0]",
+                                name: "Icon",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Text_j31d73p7",
+                                type: "Text",
+                                path: "SavedPage.body[0].children[4].children[0].children[0].children[0].children[1]",
+                                name: "Text",
+                                text: "Booking requests",
+                              ),
+                            ],
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "Text_1z5vg5je",
+                            type: "Text",
+                            path: "SavedPage.body[0].children[4].children[0].children[0].children[1]",
+                            name: "Text",
+                            text: "A request is not confirmed until the business changes its status.",
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "Text_3v26bnje",
+                            type: "Text",
+                            path: "SavedPage.body[0].children[4].children[0].children[0].children[2]",
+                            name: "CustomerBookingRequestsLoading",
+                            text: "Loading your requests...",
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "Text_plj40r7k",
+                            type: "Text",
+                            path: "SavedPage.body[0].children[4].children[0].children[0].children[3]",
+                            name: "CustomerBookingRequestsEmpty",
+                            text: "New requests and status changes appear below as businesses respond.",
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "Text_zux0s1xn",
+                            type: "Text",
+                            path: "SavedPage.body[0].children[4].children[0].children[0].children[4]",
+                            name: "CustomerBookingRequestsError",
+                            text: "Requests could not be loaded. Check your connection and try again.",
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "ListView_41f3aqug",
+                            type: "ListView",
+                            path: "SavedPage.body[0].children[4].children[0].children[0].children[5]",
+                            name: "CustomerBookingRequestsList",
+                            children: <ffai.ProjectWidgetHandle>[
+                              ffai.ProjectWidgetHandle(
+                                key: "Container_v95dafvg",
+                                type: "Container",
+                                path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0]",
+                                name: "Container",
+                                children: <ffai.ProjectWidgetHandle>[
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Column_emd2x9hy",
+                                    type: "Column",
+                                    path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0].children[0]",
+                                    name: "Column",
+                                    children: <ffai.ProjectWidgetHandle>[
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Text_873nw1x1",
+                                        type: "Text",
+                                        path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0].children[0].children[0]",
+                                        name: "Text",
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Text_h2d1n9k8",
+                                        type: "Text",
+                                        path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0].children[0].children[1]",
+                                        name: "Text",
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Row_oog7j4p6",
+                                        type: "Row",
+                                        path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0].children[0].children[2]",
+                                        name: "Row",
+                                        children: <ffai.ProjectWidgetHandle>[
+                                          ffai.ProjectWidgetHandle(
+                                            key: "Icon_62oh0vvw",
+                                            type: "Icon",
+                                            path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0].children[0].children[2].children[0]",
+                                            name: "Icon",
+                                          ),
+                                          ffai.ProjectWidgetHandle(
+                                            key: "Text_8ijmp6w8",
+                                            type: "Text",
+                                            path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0].children[0].children[2].children[1]",
+                                            name: "Text",
+                                          ),
+                                          ffai.ProjectWidgetHandle(
+                                            key: "Text_m40oscyo",
+                                            type: "Text",
+                                            path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0].children[0].children[2].children[2]",
+                                            name: "Text",
+                                          ),
+                                        ],
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Container_dqwcmnxx",
+                                        type: "Container",
+                                        path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0].children[0].children[3]",
+                                        name: "Container",
+                                        children: <ffai.ProjectWidgetHandle>[
+                                          ffai.ProjectWidgetHandle(
+                                            key: "Text_jf2oklhz",
+                                            type: "Text",
+                                            path: "SavedPage.body[0].children[4].children[0].children[0].children[5].children[0].children[0].children[3].children[0]",
+                                            name: "Text",
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "Button_fu2imjqr",
+                            type: "Button",
+                            path: "SavedPage.body[0].children[4].children[0].children[0].children[6]",
+                            name: "RefreshCustomerBookingRequestsButton",
+                            text: "Refresh Requests",
+                            triggers: const <String>[
+                              "ON_TAP",
+                            ],
                           ),
                         ],
                       ),
@@ -209,3 +373,4 @@ abstract final class SavedPageWidgets {
     ),
   );
 }
+
