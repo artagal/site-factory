@@ -7,6 +7,8 @@ import 'package:flutterflow_ai/src/pipeline/pipeline_source.dart'
     show PipelineSource;
 import '../lib/flutterflow_project.dart' as ff;
 import 'partner_deal_editor.dart';
+import 'ai_experience.dart';
+import 'auth_experience.dart';
 import 'package:flutterflow_ai/src/helpers/collection_helpers.dart'
     show findCollectionField;
 import 'package:flutterflow_ai/src/helpers/data_schema_helpers.dart'
@@ -44,6 +46,8 @@ Future<void> main(List<String> args) async {
       source: PipelineSource.paths([
         Platform.script.toFilePath(),
         Platform.script.resolve('partner_deal_editor.dart').toFilePath(),
+        Platform.script.resolve('ai_experience.dart').toFilePath(),
+        Platform.script.resolve('auth_experience.dart').toFilePath(),
       ]),
     );
   } catch (error) {
@@ -187,6 +191,8 @@ void buildGoFunMotionDealsQueryGuard(App app) {
   _wireAiAssistants(app, api, dealEditor);
   _wireCustomerBookingHistory(app, api);
   _wirePartnerDealWorkflow(app, api, dealEditor);
+  ensureNativeAiExperience(app);
+  ensureNativeAccountEntry(app);
   app.raw(verifyPartnerDealScreenStructure);
 }
 
@@ -559,7 +565,12 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     );
   });
 
-  const authSettings = EndpointSettings(requireAuthentication: true);
+  const authSettings = EndpointSettings(
+    requireAuthentication: true,
+    escapeVariablesInRequestBody: true,
+    encodeBodyUtf8: true,
+    decodeUtf8: true,
+  );
   const authHeaders = {
     'Authorization': 'Bearer [token]',
     'Content-Type': 'application/json',
@@ -928,11 +939,10 @@ void _ensureFirebaseAuth(App app) {
       FirebaseAuthProvider.email,
       FirebaseAuthProvider.google,
       FirebaseAuthProvider.apple,
-      FirebaseAuthProvider.anonymous,
     ],
     homePage: 'DiscoverPage',
     signInPage: 'SignInPage',
-    autoCreateUserDocument: true,
+    autoCreateUserDocument: false,
     userCollectionName: 'users',
   );
 }
@@ -1677,90 +1687,6 @@ void _wireRoleRouting(App app, _GoFunMotionApi api) {
 }
 
 void _wireAiAssistants(App app, _GoFunMotionApi api, Object dealEditor) {
-  app.editPage(ff.Pages.findPlanPage, (page) {
-    page.ensureActions(
-      ff.Pages.findPlanPage.widgets.byKey('Button_id060slz').single,
-      triggerType: FFActionTriggerType.ON_TAP,
-      actions: [
-        ApiCall(
-          api.plan,
-          outputAs: 'aiPlanResult',
-          params: {
-            'budget': State('budget'),
-            'city': State('city'),
-            'vibe': State('vibe'),
-            'when': State('when'),
-            'who': State('persona'),
-          },
-          onSuccess:
-              (result) => [
-                SetState('planSummary', result['plan']['summary']),
-                Snackbar('Plan matched against approved deals.'),
-              ],
-          onFailure: [Snackbar('Your safe built-in plan is still available.')],
-        ),
-      ],
-    );
-  });
-
-  app.editPageState(ff.Pages.dealsPage, (state) {
-    state.ensureField('smartQuery', string);
-    state.ensureField('smartSearchSummary', string);
-  });
-  app.editPage(ff.Pages.dealsPage, (page) {
-    page.ensureInsertedBefore(
-      ff.Pages.dealsPage.widgets.byKey('ListView_zze2o7q7').single,
-      Container(
-        name: 'MobileSmartSearchPanel',
-        width: double.infinity,
-        padding: const EdgeInsets.all(14),
-        borderRadius: 8,
-        color: Colors.secondaryBackground,
-        borderColor: Colors.alternate,
-        borderWidth: 1,
-        child: Column(
-          crossAxis: CrossAxis.start,
-          spacing: 10,
-          children: [
-            Text('Tell us what sounds fun', style: Styles.titleMedium),
-            TextField(
-              name: 'MobileSmartSearchField',
-              label: 'Date night tonight under \$50',
-              onChanged: SetState('smartQuery', const TextValue()),
-            ),
-            Button(
-              'Smart Search',
-              name: 'MobileSmartSearchButton',
-              width: double.infinity,
-              height: 46,
-              icon: 'search',
-              borderRadius: 8,
-              onTap: ApiCall(
-                api.smartSearch,
-                outputAs: 'mobileSmartSearchResult',
-                params: {'query': State('smartQuery')},
-                onSuccess:
-                    (result) => [
-                      SetState(
-                        'smartSearchSummary',
-                        result['assistantMessage'],
-                      ),
-                      Snackbar('Filters interpreted. Showing approved deals.'),
-                    ],
-                onFailure: [Snackbar('Try a more specific search.')],
-              ),
-            ),
-            Text(
-              State('smartSearchSummary'),
-              style: Styles.bodySmall,
-              color: Colors.secondaryText,
-            ),
-          ],
-        ),
-      ),
-    );
-  });
-
   app.editPageState(ff.Pages.partnerDashboardPage, (state) {
     state.ensureField('currentBusinessId', string);
     state.ensureField('copyCategory', string.withDefault('classes'));

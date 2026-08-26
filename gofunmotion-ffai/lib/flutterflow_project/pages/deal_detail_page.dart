@@ -4,27 +4,33 @@ library;
 
 import 'package:flutterflow_ai/flutterflow_ai.dart' as ffai;
 
-final dealDetailPageHandle = ffai.ProjectPageHandle<DealDetailPageParams, DealDetailPageState>(
-  name: "DealDetailPage",
-  key: "Scaffold_2aacdkym",
-  route: "deal-detail",
-  params: const DealDetailPageParams(),
-  state: const DealDetailPageState(),
-  widgets: DealDetailPageWidgets.tree,
-);
+final dealDetailPageHandle =
+    ffai.ProjectPageHandle<DealDetailPageParams, DealDetailPageState>(
+      name: "DealDetailPage",
+      key: "Scaffold_2aacdkym",
+      route: "deal-detail",
+      params: const DealDetailPageParams(),
+      state: const DealDetailPageState(),
+      widgets: DealDetailPageWidgets.tree,
+    );
 
 final class DealDetailPageParams {
   const DealDetailPageParams();
-  ffai.ProjectParamHandle get listingRef =>
-      const ffai.ProjectParamHandle(
-        name: "listingRef",
-        key: "3o0yln4u",
-        typeName: "DocumentReference",
-      );
+  ffai.ProjectParamHandle get listingRef => const ffai.ProjectParamHandle(
+    name: "listingRef",
+    key: "3o0yln4u",
+    typeName: "DocumentReference",
+  );
 }
 
 final class DealDetailPageState {
   const DealDetailPageState();
+  ffai.ProjectStateFieldHandle get aiConsent =>
+      const ffai.ProjectStateFieldHandle(
+        name: "aiConsent",
+        key: "cuk0q417",
+        typeName: "Boolean",
+      );
   ffai.ProjectStateFieldHandle get contactEmail =>
       const ffai.ProjectStateFieldHandle(
         name: "contactEmail",
@@ -76,9 +82,7 @@ abstract final class DealDetailPageWidgets {
       type: "Scaffold",
       path: "DealDetailPage",
       name: "DealDetailPage",
-      triggers: const <String>[
-        "ON_INIT_STATE",
-      ],
+      triggers: const <String>["ON_INIT_STATE"],
       slots: <String, List<ffai.ProjectWidgetHandle>>{
         "appBar": <ffai.ProjectWidgetHandle>[
           ffai.ProjectWidgetHandle(
@@ -121,19 +125,22 @@ abstract final class DealDetailPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Text_y8lhg1jw",
                         type: "Text",
-                        path: "DealDetailPage.body[0].children[0].children[0].children[0]",
+                        path:
+                            "DealDetailPage.body[0].children[0].children[0].children[0]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_45aw2s0g",
                         type: "Text",
-                        path: "DealDetailPage.body[0].children[0].children[0].children[1]",
+                        path:
+                            "DealDetailPage.body[0].children[0].children[0].children[1]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_nc8ak4k1",
                         type: "Text",
-                        path: "DealDetailPage.body[0].children[0].children[0].children[2]",
+                        path:
+                            "DealDetailPage.body[0].children[0].children[0].children[2]",
                         name: "Text",
                       ),
                     ],
@@ -181,31 +188,36 @@ abstract final class DealDetailPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Text_cdy3go2i",
                         type: "Text",
-                        path: "DealDetailPage.body[0].children[2].children[0].children[0]",
+                        path:
+                            "DealDetailPage.body[0].children[2].children[0].children[0]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_a0g2amtj",
                         type: "Text",
-                        path: "DealDetailPage.body[0].children[2].children[0].children[1]",
+                        path:
+                            "DealDetailPage.body[0].children[2].children[0].children[1]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Row_fasp5vkq",
                         type: "Row",
-                        path: "DealDetailPage.body[0].children[2].children[0].children[2]",
+                        path:
+                            "DealDetailPage.body[0].children[2].children[0].children[2]",
                         name: "Row",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "ChoiceChips_gtb16unf",
                             type: "ChoiceChips",
-                            path: "DealDetailPage.body[0].children[2].children[0].children[2].children[0]",
+                            path:
+                                "DealDetailPage.body[0].children[2].children[0].children[2].children[0]",
                             name: "Chip",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Text_usxhvgtc",
                             type: "Text",
-                            path: "DealDetailPage.body[0].children[2].children[0].children[2].children[1]",
+                            path:
+                                "DealDetailPage.body[0].children[2].children[0].children[2].children[1]",
                             name: "Text",
                           ),
                         ],
@@ -213,19 +225,22 @@ abstract final class DealDetailPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Row_xvpvnqjf",
                         type: "Row",
-                        path: "DealDetailPage.body[0].children[2].children[0].children[3]",
+                        path:
+                            "DealDetailPage.body[0].children[2].children[0].children[3]",
                         name: "Row",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "ChoiceChips_na9fxpab",
                             type: "ChoiceChips",
-                            path: "DealDetailPage.body[0].children[2].children[0].children[3].children[0]",
+                            path:
+                                "DealDetailPage.body[0].children[2].children[0].children[3].children[0]",
                             name: "Chip",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Text_10t1ijs5",
                             type: "Text",
-                            path: "DealDetailPage.body[0].children[2].children[0].children[3].children[1]",
+                            path:
+                                "DealDetailPage.body[0].children[2].children[0].children[3].children[1]",
                             name: "Text",
                           ),
                         ],
@@ -240,9 +255,7 @@ abstract final class DealDetailPageWidgets {
                 path: "DealDetailPage.body[0].children[3]",
                 name: "SaveDealButton",
                 text: "Save Deal",
-                triggers: const <String>[
-                  "ON_TAP",
-                ],
+                triggers: const <String>["ON_TAP"],
               ),
               ffai.ProjectWidgetHandle(
                 key: "Container_xdu8flhd",
@@ -257,9 +270,7 @@ abstract final class DealDetailPageWidgets {
                 path: "DealDetailPage.body[0].children[5]",
                 name: "RequestNameField",
                 text: "Name",
-                triggers: const <String>[
-                  "ON_TEXTFIELD_CHANGE",
-                ],
+                triggers: const <String>["ON_TEXTFIELD_CHANGE"],
               ),
               ffai.ProjectWidgetHandle(
                 key: "TextField_xqm3huf6",
@@ -267,9 +278,7 @@ abstract final class DealDetailPageWidgets {
                 path: "DealDetailPage.body[0].children[6]",
                 name: "RequestEmailField",
                 text: "Email",
-                triggers: const <String>[
-                  "ON_TEXTFIELD_CHANGE",
-                ],
+                triggers: const <String>["ON_TEXTFIELD_CHANGE"],
               ),
               ffai.ProjectWidgetHandle(
                 key: "TextField_pjgh44ex",
@@ -277,45 +286,103 @@ abstract final class DealDetailPageWidgets {
                 path: "DealDetailPage.body[0].children[7]",
                 name: "PartySizeField",
                 text: "Party size",
-                triggers: const <String>[
-                  "ON_TEXTFIELD_CHANGE",
+                triggers: const <String>["ON_TEXTFIELD_CHANGE"],
+              ),
+              ffai.ProjectWidgetHandle(
+                key: "Column_hfiue0gc",
+                type: "Column",
+                path: "DealDetailPage.body[0].children[8]",
+                name: "BookingAiConsent",
+                children: <ffai.ProjectWidgetHandle>[
+                  ffai.ProjectWidgetHandle(
+                    key: "Row_2xhx31uc",
+                    type: "Row",
+                    path: "DealDetailPage.body[0].children[8].children[0]",
+                    name: "BookingAiConsentToggle",
+                    children: <ffai.ProjectWidgetHandle>[
+                      ffai.ProjectWidgetHandle(
+                        key: "Switch_yzt8ry0k",
+                        type: "Switch",
+                        path:
+                            "DealDetailPage.body[0].children[8].children[0].children[0]",
+                        name: "BookingAiConsentToggle",
+                        triggers: const <String>[
+                          "ON_TOGGLE_ON",
+                          "ON_TOGGLE_OFF",
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Container_sx59crkm",
+                        type: "Container",
+                        path:
+                            "DealDetailPage.body[0].children[8].children[0].children[1]",
+                        name: "Label Spacer",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Text_vxcljssq",
+                        type: "Text",
+                        path:
+                            "DealDetailPage.body[0].children[8].children[0].children[2]",
+                        name: "Label Text",
+                        text: "Allow AI help from OpenAI",
+                      ),
+                    ],
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Text_hjg22qpk",
+                    type: "Text",
+                    path: "DealDetailPage.body[0].children[8].children[1]",
+                    name: "Text",
+                    text:
+                        "When enabled, your request and relevant deal details are sent to OpenAI. Do not include private or payment information. Turn off at any time.",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Button_d47zkt6j",
+                    type: "Button",
+                    path: "DealDetailPage.body[0].children[8].children[2]",
+                    name: "Button",
+                    text: "Privacy",
+                    triggers: const <String>["ON_TAP"],
+                  ),
                 ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "Container_wdxl8zas",
                 type: "Container",
-                path: "DealDetailPage.body[0].children[8]",
+                path: "DealDetailPage.body[0].children[9]",
                 name: "BookingMessageAssistantCard",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Column_fg88m327",
+                    key: "Column_ra538sc6",
                     type: "Column",
-                    path: "DealDetailPage.body[0].children[8].children[0]",
+                    path: "DealDetailPage.body[0].children[9].children[0]",
                     name: "Column",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Text_5mg1pszy",
+                        key: "Text_x4k8klwf",
                         type: "Text",
-                        path: "DealDetailPage.body[0].children[8].children[0].children[0]",
+                        path:
+                            "DealDetailPage.body[0].children[9].children[0].children[0]",
                         name: "Text",
                         text: "Need help with the message?",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_rn85yzfp",
+                        key: "Text_6tdujsfa",
                         type: "Text",
-                        path: "DealDetailPage.body[0].children[8].children[0].children[1]",
+                        path:
+                            "DealDetailPage.body[0].children[9].children[0].children[1]",
                         name: "Text",
-                        text: "AI drafts an editable note. It never sends, confirms, or pays for anything.",
+                        text:
+                            "AI drafts an editable note. It never sends, confirms, or pays for anything.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_bhzmjrpm",
+                        key: "Button_p5gg9ykd",
                         type: "Button",
-                        path: "DealDetailPage.body[0].children[8].children[0].children[2]",
+                        path:
+                            "DealDetailPage.body[0].children[9].children[0].children[2]",
                         name: "DraftBookingMessageButton",
                         text: "Draft Message with AI",
-                        triggers: const <String>[
-                          "ON_TAP",
-                        ],
+                        triggers: const <String>["ON_TAP"],
                       ),
                     ],
                   ),
@@ -324,50 +391,42 @@ abstract final class DealDetailPageWidgets {
               ffai.ProjectWidgetHandle(
                 key: "TextField_844shv74",
                 type: "TextField",
-                path: "DealDetailPage.body[0].children[9]",
+                path: "DealDetailPage.body[0].children[10]",
                 name: "RequestMessageField",
                 text: "Message",
-                triggers: const <String>[
-                  "ON_TEXTFIELD_CHANGE",
-                ],
+                triggers: const <String>["ON_TEXTFIELD_CHANGE"],
               ),
               ffai.ProjectWidgetHandle(
                 key: "Column_7d5iv04y",
                 type: "Column",
-                path: "DealDetailPage.body[0].children[10]",
+                path: "DealDetailPage.body[0].children[11]",
                 name: "BookingDateTimeFields",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
                     key: "TextField_hihrcvaz",
                     type: "TextField",
-                    path: "DealDetailPage.body[0].children[10].children[0]",
+                    path: "DealDetailPage.body[0].children[11].children[0]",
                     name: "RequestedDateField",
                     text: "Requested date (YYYY-MM-DD)",
-                    triggers: const <String>[
-                      "ON_TEXTFIELD_CHANGE",
-                    ],
+                    triggers: const <String>["ON_TEXTFIELD_CHANGE"],
                   ),
                   ffai.ProjectWidgetHandle(
                     key: "TextField_tvdnly8j",
                     type: "TextField",
-                    path: "DealDetailPage.body[0].children[10].children[1]",
+                    path: "DealDetailPage.body[0].children[11].children[1]",
                     name: "RequestedTimeField",
                     text: "Requested time",
-                    triggers: const <String>[
-                      "ON_TEXTFIELD_CHANGE",
-                    ],
+                    triggers: const <String>["ON_TEXTFIELD_CHANGE"],
                   ),
                 ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "Button_md8o2kqd",
                 type: "Button",
-                path: "DealDetailPage.body[0].children[11]",
+                path: "DealDetailPage.body[0].children[12]",
                 name: "SendBookingRequestButton",
                 text: "Send Booking Request",
-                triggers: const <String>[
-                  "ON_TAP",
-                ],
+                triggers: const <String>["ON_TAP"],
               ),
             ],
           ),
@@ -376,4 +435,3 @@ abstract final class DealDetailPageWidgets {
     ),
   );
 }
-

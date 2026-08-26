@@ -38,10 +38,13 @@ export async function GET(request: Request): Promise<Response> {
 export async function POST(request: Request): Promise<Response> {
   const token = await verifyBearerToken(request);
   if (!token) return jsonError("Sign in to save plans.", 401);
-  const body = (await request.json().catch(() => null)) as { plan?: Record<string, unknown> } | null;
-  const plan = body?.plan;
+  const body = (await request.json().catch(() => null)) as { plan?: Record<string, unknown>; planJson?: unknown } | null;
+  let plan = body?.plan;
+  if (!plan && typeof body?.planJson === "string" && body.planJson.length <= 80_000) {
+    try { plan = JSON.parse(body.planJson) as Record<string, unknown>; } catch { return jsonError("Add a valid generated plan.", 400); }
+  }
   const encoded = plan ? JSON.stringify(plan) : "";
-  if (!plan || encoded.length < 20 || encoded.length > 80_000 || !clean(plan.title, 180)) {
+  if (!plan || typeof plan !== "object" || Array.isArray(plan) || encoded.length < 20 || encoded.length > 80_000 || !clean(plan.title, 180)) {
     return jsonError("Add a valid generated plan.", 400);
   }
 

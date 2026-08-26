@@ -75,6 +75,12 @@ final class PartnerDealEditorPageParams {
 
 final class PartnerDealEditorPageState {
   const PartnerDealEditorPageState();
+  ffai.ProjectStateFieldHandle get aiConsent =>
+      const ffai.ProjectStateFieldHandle(
+        name: "aiConsent",
+        key: "fogientu",
+        typeName: "Boolean",
+      );
   ffai.ProjectStateFieldHandle get category =>
       const ffai.ProjectStateFieldHandle(
         name: "category",
@@ -185,10 +191,72 @@ abstract final class PartnerDealEditorPageWidgets {
                     text: "Title",
                   ),
                   ffai.ProjectWidgetHandle(
+                    key: "Column_htnyxtym",
+                    type: "Column",
+                    path:
+                        "PartnerDealEditorPage.body[0].children[0].children[3]",
+                    name: "PartnerAiConsent",
+                    children: <ffai.ProjectWidgetHandle>[
+                      ffai.ProjectWidgetHandle(
+                        key: "Row_zrhcq2td",
+                        type: "Row",
+                        path:
+                            "PartnerDealEditorPage.body[0].children[0].children[3].children[0]",
+                        name: "PartnerAiConsentToggle",
+                        children: <ffai.ProjectWidgetHandle>[
+                          ffai.ProjectWidgetHandle(
+                            key: "Switch_ka9559pz",
+                            type: "Switch",
+                            path:
+                                "PartnerDealEditorPage.body[0].children[0].children[3].children[0].children[0]",
+                            name: "PartnerAiConsentToggle",
+                            triggers: const <String>[
+                              "ON_TOGGLE_ON",
+                              "ON_TOGGLE_OFF",
+                            ],
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "Container_98c6lrn9",
+                            type: "Container",
+                            path:
+                                "PartnerDealEditorPage.body[0].children[0].children[3].children[0].children[1]",
+                            name: "Label Spacer",
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "Text_v5ntcdxg",
+                            type: "Text",
+                            path:
+                                "PartnerDealEditorPage.body[0].children[0].children[3].children[0].children[2]",
+                            name: "Label Text",
+                            text: "Allow AI help from OpenAI",
+                          ),
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Text_erlamyi1",
+                        type: "Text",
+                        path:
+                            "PartnerDealEditorPage.body[0].children[0].children[3].children[1]",
+                        name: "Text",
+                        text:
+                            "When enabled, your request and relevant deal details are sent to OpenAI. Do not include private or payment information. Turn off at any time.",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_a8ouij4x",
+                        type: "Button",
+                        path:
+                            "PartnerDealEditorPage.body[0].children[0].children[3].children[2]",
+                        name: "Button",
+                        text: "Privacy",
+                        triggers: const <String>["ON_TAP"],
+                      ),
+                    ],
+                  ),
+                  ffai.ProjectWidgetHandle(
                     key: "Button_5jketltw",
                     type: "Button",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[3]",
+                        "PartnerDealEditorPage.body[0].children[0].children[4]",
                     name: "DealEditorTitleFieldAiButton",
                     text: "Improve title",
                     triggers: const <String>["ON_TAP"],
@@ -197,7 +265,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "TextField_v6sqovxv",
                     type: "TextField",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[4]",
+                        "PartnerDealEditorPage.body[0].children[0].children[5]",
                     name: "DealEditorDescriptionField",
                     text: "Description",
                   ),
@@ -205,7 +273,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Button_uzziosye",
                     type: "Button",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[5]",
+                        "PartnerDealEditorPage.body[0].children[0].children[6]",
                     name: "DealEditorDescriptionFieldAiButton",
                     text: "Improve description",
                     triggers: const <String>["ON_TAP"],
@@ -214,7 +282,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Text_igumgmxr",
                     type: "Text",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[6]",
+                        "PartnerDealEditorPage.body[0].children[0].children[7]",
                     name: "DealEditorCategoryLabel",
                     text: "Category",
                   ),
@@ -222,7 +290,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "DropDown_ss3lhqq6",
                     type: "DropDown",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[7]",
+                        "PartnerDealEditorPage.body[0].children[0].children[8]",
                     name: "DealEditorCategoryDropdown",
                     triggers: const <String>["ON_FORM_WIDGET_SELECTED"],
                   ),
@@ -230,14 +298,14 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Row_i74qs495",
                     type: "Row",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[8]",
+                        "PartnerDealEditorPage.body[0].children[0].children[9]",
                     name: "Row",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
                         key: "TextField_i98jdj88",
                         type: "TextField",
                         path:
-                            "PartnerDealEditorPage.body[0].children[0].children[8].children[0]",
+                            "PartnerDealEditorPage.body[0].children[0].children[9].children[0]",
                         name: "DealEditorOriginalPriceField",
                         text: "Was (USD)",
                       ),
@@ -245,7 +313,7 @@ abstract final class PartnerDealEditorPageWidgets {
                         key: "TextField_c0njuaeh",
                         type: "TextField",
                         path:
-                            "PartnerDealEditorPage.body[0].children[0].children[8].children[1]",
+                            "PartnerDealEditorPage.body[0].children[0].children[9].children[1]",
                         name: "DealEditorPriceField",
                         text: "Now (USD)",
                       ),
@@ -255,7 +323,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "TextField_5tzntyo7",
                     type: "TextField",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[9]",
+                        "PartnerDealEditorPage.body[0].children[0].children[10]",
                     name: "DealEditorSpotsField",
                     text: "Spots left",
                   ),
@@ -263,7 +331,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Text_ja9i8tla",
                     type: "Text",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[10]",
+                        "PartnerDealEditorPage.body[0].children[0].children[11]",
                     name: "Text",
                     text: "Availability",
                   ),
@@ -271,7 +339,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Text_q5a3df9n",
                     type: "Text",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[11]",
+                        "PartnerDealEditorPage.body[0].children[0].children[12]",
                     name: "Text",
                     text: "Dates below use your device timezone.",
                   ),
@@ -279,14 +347,14 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Column_on04gp4b",
                     type: "Column",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[12]",
+                        "PartnerDealEditorPage.body[0].children[0].children[13]",
                     name: "Column",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
                         key: "Text_ggh395ow",
                         type: "Text",
                         path:
-                            "PartnerDealEditorPage.body[0].children[0].children[12].children[0]",
+                            "PartnerDealEditorPage.body[0].children[0].children[13].children[0]",
                         name: "Text",
                         text: "Starts",
                       ),
@@ -294,14 +362,14 @@ abstract final class PartnerDealEditorPageWidgets {
                         key: "Text_q7b1l32x",
                         type: "Text",
                         path:
-                            "PartnerDealEditorPage.body[0].children[0].children[12].children[1]",
+                            "PartnerDealEditorPage.body[0].children[0].children[13].children[1]",
                         name: "EditorStartDateLabel",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_ggermwqv",
                         type: "Button",
                         path:
-                            "PartnerDealEditorPage.body[0].children[0].children[12].children[2]",
+                            "PartnerDealEditorPage.body[0].children[0].children[13].children[2]",
                         name: "EditorStartDateButton",
                         text: "Choose date and time",
                         triggers: const <String>["ON_TAP"],
@@ -312,14 +380,14 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Column_066u0jzf",
                     type: "Column",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[13]",
+                        "PartnerDealEditorPage.body[0].children[0].children[14]",
                     name: "Column",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
                         key: "Text_1i7i0zd9",
                         type: "Text",
                         path:
-                            "PartnerDealEditorPage.body[0].children[0].children[13].children[0]",
+                            "PartnerDealEditorPage.body[0].children[0].children[14].children[0]",
                         name: "Text",
                         text: "Ends / expires",
                       ),
@@ -327,14 +395,14 @@ abstract final class PartnerDealEditorPageWidgets {
                         key: "Text_w51zdn3s",
                         type: "Text",
                         path:
-                            "PartnerDealEditorPage.body[0].children[0].children[13].children[1]",
+                            "PartnerDealEditorPage.body[0].children[0].children[14].children[1]",
                         name: "EditorEndDateLabel",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_fesgtwlc",
                         type: "Button",
                         path:
-                            "PartnerDealEditorPage.body[0].children[0].children[13].children[2]",
+                            "PartnerDealEditorPage.body[0].children[0].children[14].children[2]",
                         name: "EditorEndDateButton",
                         text: "Choose date and time",
                         triggers: const <String>["ON_TAP"],
@@ -345,7 +413,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Text_fx7hli1u",
                     type: "Text",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[14]",
+                        "PartnerDealEditorPage.body[0].children[0].children[15]",
                     name: "DealEditorDraftConfirmation",
                     text: "Draft saved. It is not visible to customers.",
                   ),
@@ -353,7 +421,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Text_hf4vjnby",
                     type: "Text",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[15]",
+                        "PartnerDealEditorPage.body[0].children[0].children[16]",
                     name: "DealEditorSubmitConfirmation",
                     text:
                         "Submitted for review. It will appear after approval.",
@@ -362,14 +430,14 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Text_4sft9ffx",
                     type: "Text",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[16]",
+                        "PartnerDealEditorPage.body[0].children[0].children[17]",
                     name: "DealEditorSaveError",
                   ),
                   ffai.ProjectWidgetHandle(
                     key: "Text_60w45043",
                     type: "Text",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[17]",
+                        "PartnerDealEditorPage.body[0].children[0].children[18]",
                     name: "Text",
                     text: "Saving...",
                   ),
@@ -377,7 +445,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Button_xz9nhilw",
                     type: "Button",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[18]",
+                        "PartnerDealEditorPage.body[0].children[0].children[19]",
                     name: "DealEditorSaveDraftButton",
                     text: "Save Draft",
                     triggers: const <String>["ON_TAP"],
@@ -386,7 +454,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Button_vbry6lhk",
                     type: "Button",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[19]",
+                        "PartnerDealEditorPage.body[0].children[0].children[20]",
                     name: "DealEditorSubmitButton",
                     text: "Submit for Review",
                     triggers: const <String>["ON_TAP"],
@@ -395,7 +463,7 @@ abstract final class PartnerDealEditorPageWidgets {
                     key: "Button_p3kwfbbm",
                     type: "Button",
                     path:
-                        "PartnerDealEditorPage.body[0].children[0].children[20]",
+                        "PartnerDealEditorPage.body[0].children[0].children[21]",
                     name: "DealEditorBackButton",
                     text: "Back to Your Deals",
                     triggers: const <String>["ON_TAP"],

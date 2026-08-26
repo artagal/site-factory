@@ -19,14 +19,28 @@ The old challenge/XP/streak/leaderboard product is deprecated and should not be 
 
 ## FlutterFlow App Status
 
-A first Builder-native FlutterFlow app has been created and pushed.
+The current app has 17 Builder-native pages, including a dedicated partner deal
+editor, AI Finder, and AI Support. The native search/plan results use the shared
+GoFunMotion API. Native auth uses email, Google, and Apple with server-side canonical
+profile sync. Browse-without-account no longer creates an anonymous identity.
+
+Latest FlutterFlow commit: `UPoR15r5E2jaCwp6Ucso` (2026-08-26).
+
+For current verification and unresolved release gates, read
+`docs/FLUTTERFLOW_AI_RELEASE_QA.md` and `docs/FLUTTERFLOW_BUILDER_FRIENDLY_AUDIT.md`.
+Mobile Firebase configuration and a fresh signed iOS/TestFlight build are not yet
+verified. The OpenAI key was validated using the existing BeautyDrop credential in
+server-process memory only; deployment still needs Vercel login/env verification.
+
+The inventory below is the **historical first pass**, not the current release state.
 
 - FlutterFlow project: `GoFunMotion Deals`
 - Project ID: `go-fun-motion-deals-vl4mj8`
 - Project URL: `https://app.flutterflow.io/project/go-fun-motion-deals-vl4mj8`
 - Local FlutterFlow AI workspace: `C:\Projects\site-factory\gofunmotion-ffai`
 - Last pushed FlutterFlow commit: `0LmSN7gNC3FeveuF3USY`
-- Main DSL file: `gofunmotion-ffai/dsl/create.dart`
+- Current edit entry point: `gofunmotion-ffai/dsl/edit.dart`
+- Original scaffold only: `gofunmotion-ffai/dsl/create.dart`
 - Context snapshot: `gofunmotion-ffai/PROJECT_CONTEXT.md`
 
 Operational note: `dsl/create.dart` is the first-create flow. Do not rerun it against `go-fun-motion-deals-vl4mj8` after the initial push, because it will try to recreate existing pages/components. Future live changes should use inspect-first edits in `dsl/edit.dart` or manual Builder edits.

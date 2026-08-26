@@ -179,10 +179,46 @@ abstract final class ProfilePageWidgets {
                         triggers: const <String>["ON_TAP"],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_1ey5pjqe",
+                        key: "Button_d4powifv",
                         type: "Button",
                         path:
                             "ProfilePage.body[0].children[1].children[0].children[7]",
+                        name: "ProfileSupportEntry",
+                        text: "Help & AI support",
+                        triggers: const <String>["ON_TAP"],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_rm9gwk9v",
+                        type: "Button",
+                        path:
+                            "ProfilePage.body[0].children[1].children[0].children[8]",
+                        name: "EnableNotificationsButton",
+                        text: "Enable Notifications",
+                        triggers: const <String>["ON_TAP"],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_t11i5jfn",
+                        type: "Button",
+                        path:
+                            "ProfilePage.body[0].children[1].children[0].children[9]",
+                        name: "SyncAccountButton",
+                        text: "Sync account",
+                        triggers: const <String>["ON_TAP"],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_8415v0zk",
+                        type: "Button",
+                        path:
+                            "ProfilePage.body[0].children[1].children[0].children[10]",
+                        name: "EnableNotificationsButton",
+                        text: "Enable Notifications",
+                        triggers: const <String>["ON_TAP"],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_1ey5pjqe",
+                        type: "Button",
+                        path:
+                            "ProfilePage.body[0].children[1].children[0].children[11]",
                         name: "Button",
                         text: "Logout",
                         triggers: const <String>["ON_TAP"],

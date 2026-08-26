@@ -71,7 +71,10 @@ export function filterListingCollection(listings: Listing[], input: ListingSearc
       const citySlugMatches = !citySlug || listing.cityId === citySlug;
       const categoryMatches = !category || listing.categoryIds.includes(category);
       const whoMatches = !input.who || listing.groupTypes.includes(input.who);
-      const budgetMatches = !input.budget || input.budget === "flexible" || listing.budgetTier === input.budget;
+      const budgetLimit = { free: 0, under25: 25, under50: 50, under100: 100 };
+      const budgetMatches = !input.budget || input.budget === "flexible" || (input.budget === "premium"
+        ? listing.budgetTier === "premium"
+        : listing.price <= budgetLimit[input.budget]);
       const vibeMatches = !input.vibe || input.vibe === "surprise-me" || listing.vibeTags.includes(input.vibe);
       const indoorMatches =
         !input.indoorOutdoor ||

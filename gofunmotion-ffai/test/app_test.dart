@@ -8,8 +8,105 @@ import 'package:test/test.dart';
 import '../dsl/create.dart' as gofunmotion;
 import '../dsl/edit.dart' as gofunmotionEdit;
 import '../dsl/partner_deal_editor.dart';
+import '../dsl/ai_experience.dart' as ai;
+import '../dsl/auth_experience.dart' as account;
+import '../lib/flutterflow_project.dart' as ff;
 
 void main() {
+  test(
+    'Native AI pages compile with real result bindings and consent off by default',
+    () {
+      final app = buildApp((app) {
+        gofunmotion.buildGoFunMotionDeals(app);
+        final api = ai.declareNativeAiApi(app, ff.Collections.listings);
+        ai.ensureNativeAssistantPage(app, api);
+        ai.ensureNativeSupportPage(app, api);
+      });
+      final project = compileApp(app).project;
+      final assistant = findPage(project, name: ai.aiAssistantPageName)!;
+      final support = findPage(project, name: ai.aiSupportPageName)!;
+      expect(
+        findDescendants(
+          assistant.node,
+          (node) => node.name == 'AssistantResultCards',
+        ),
+        hasLength(1),
+      );
+      expect(
+        findDescendants(
+          assistant.node,
+          (node) => node.name == 'AssistantOpenDeal',
+        ),
+        hasLength(1),
+      );
+      expect(
+        findDescendants(
+          support.node,
+          (node) =>
+              node.name == 'AiConsentPanelToggle' &&
+              node.type == FFWidgetType.Switch,
+        ),
+        hasLength(1),
+      );
+      expect(assistant.toProto3Json().toString(), contains('aiConsent'));
+      expect(assistant.toProto3Json().toString(), isNot(contains('sk-')));
+      expect(assistant.node.toProto3Json().toString(), contains('planJson'));
+      final endpoints =
+          project.backend.apiConfig.apiGroups
+              .singleWhere(
+                (group) => group.identifier.name == 'GoFunMotionAssistant',
+              )
+              .endpoints;
+      for (final name in ['AskGoFunMotion', 'SaveAssistantPlan']) {
+        final settings =
+            endpoints
+                .singleWhere((item) => item.identifier.name == name)
+                .endpointSettings;
+        expect(settings.escapeVariablesInRequestBody, isTrue);
+        expect(settings.encodeBodyUtf8, isTrue);
+        expect(settings.decodeUtf8, isTrue);
+      }
+    },
+  );
+
+  test(
+    'Native sign-in syncs the canonical profile and browsing creates no guest account',
+    () {
+      final app = buildApp((app) {
+        gofunmotion.buildGoFunMotionDeals(app);
+        account.ensureNativeAccountEntry(app);
+      });
+      final project = compileApp(app).project;
+      final signIn = findPage(project, name: 'SignInPage')!;
+      expect(project.authentication.firebase.hasCreateUserDocument(), isFalse);
+      final guest =
+          findDescendants(
+            signIn.node,
+            (node) => node.name == 'GuestSignInButton',
+          ).single;
+      final guestActions = guest.toProto3Json().toString();
+      expect(guestActions, contains('Browse without an account'));
+      expect(guestActions, isNot(contains('firebaseAuth')));
+      for (final name in [
+        'SignInButton',
+        'CreateAccountButton',
+        'GoogleSignInButton',
+        'AppleSignInButton',
+      ]) {
+        final button =
+            findDescendants(signIn.node, (node) => node.name == name).single;
+        expect(button.toProto3Json().toString(), contains('SyncMobileAccount'));
+        final actions = button.triggerActions.expand(
+          (trigger) => _walkActions(trigger.rootAction),
+        );
+        expect(
+          actions.where((node) => node.action.hasNavigate()),
+          hasLength(2),
+        );
+      }
+    },
+  );
+
   test('Editor schema migration preserves existing field identities', () {
     final app = buildApp((app) {
       app.struct('MobilePartnerListingItem', {'id': string, 'price': double_});

@@ -4,14 +4,15 @@ library;
 
 import 'package:flutterflow_ai/flutterflow_ai.dart' as ffai;
 
-final discoverPageHandle = ffai.ProjectPageHandle<DiscoverPageParams, DiscoverPageState>(
-  name: "DiscoverPage",
-  key: "Scaffold_zvhlzk7l",
-  route: "",
-  params: const DiscoverPageParams(),
-  state: const DiscoverPageState(),
-  widgets: DiscoverPageWidgets.tree,
-);
+final discoverPageHandle =
+    ffai.ProjectPageHandle<DiscoverPageParams, DiscoverPageState>(
+      name: "DiscoverPage",
+      key: "Scaffold_zvhlzk7l",
+      route: "",
+      params: const DiscoverPageParams(),
+      state: const DiscoverPageState(),
+      widgets: DiscoverPageWidgets.tree,
+    );
 
 final class DiscoverPageParams {
   const DiscoverPageParams();
@@ -34,9 +35,7 @@ abstract final class DiscoverPageWidgets {
       type: "Scaffold",
       path: "DiscoverPage",
       name: "DiscoverPage",
-      triggers: const <String>[
-        "ON_INIT_STATE",
-      ],
+      triggers: const <String>["ON_INIT_STATE"],
       slots: <String, List<ffai.ProjectWidgetHandle>>{
         "appBar": <ffai.ProjectWidgetHandle>[
           ffai.ProjectWidgetHandle(
@@ -65,71 +64,78 @@ abstract final class DiscoverPageWidgets {
             name: "Column",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Column_ebcub2nz",
+                key: "Column_w6mqdbsh",
                 type: "Column",
                 path: "DiscoverPage.body[0].children[0]",
                 name: "DealFirstDiscoveryHeader",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Text_zhoqofyg",
+                    key: "Text_8bbjpoe4",
                     type: "Text",
                     path: "DiscoverPage.body[0].children[0].children[0]",
                     name: "DealFirstDiscoveryTitle",
                     text: "Last-minute fun deals near you.",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Text_79d7keb6",
+                    key: "Text_0aqtk6wc",
                     type: "Text",
                     path: "DiscoverPage.body[0].children[0].children[1]",
                     name: "DealFirstDiscoverySubtitle",
-                    text: "Save on activities, date nights, and family fun with open spots today.",
+                    text:
+                        "Save on activities, date nights, and family fun with open spots today.",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_57o3qauy",
+                    key: "Button_ilq1kc4w",
                     type: "Button",
                     path: "DiscoverPage.body[0].children[0].children[2]",
                     name: "HeroDealsButton",
                     text: "Tonight's Deals",
-                    triggers: const <String>[
-                      "ON_TAP",
-                    ],
+                    triggers: const <String>["ON_TAP"],
                   ),
                 ],
               ),
               ffai.ProjectWidgetHandle(
+                key: "Button_3ilfhx9t",
+                type: "Button",
+                path: "DiscoverPage.body[0].children[1]",
+                name: "DiscoverAssistantEntry",
+                text: "AI Fun Finder",
+                triggers: const <String>["ON_TAP"],
+              ),
+              ffai.ProjectWidgetHandle(
                 key: "Row_2kjvynzx",
                 type: "Row",
-                path: "DiscoverPage.body[0].children[1]",
+                path: "DiscoverPage.body[0].children[2]",
                 name: "Row",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
                     key: "ChoiceChips_kdzbprsj",
                     type: "ChoiceChips",
-                    path: "DiscoverPage.body[0].children[1].children[0]",
+                    path: "DiscoverPage.body[0].children[2].children[0]",
                     name: "Chip",
                   ),
                   ffai.ProjectWidgetHandle(
                     key: "ChoiceChips_an6lfpce",
                     type: "ChoiceChips",
-                    path: "DiscoverPage.body[0].children[1].children[1]",
+                    path: "DiscoverPage.body[0].children[2].children[1]",
                     name: "Chip",
                   ),
                   ffai.ProjectWidgetHandle(
                     key: "ChoiceChips_orqiuhup",
                     type: "ChoiceChips",
-                    path: "DiscoverPage.body[0].children[1].children[2]",
+                    path: "DiscoverPage.body[0].children[2].children[2]",
                     name: "Chip",
                   ),
                   ffai.ProjectWidgetHandle(
                     key: "ChoiceChips_314m0vw2",
                     type: "ChoiceChips",
-                    path: "DiscoverPage.body[0].children[1].children[3]",
+                    path: "DiscoverPage.body[0].children[2].children[3]",
                     name: "Chip",
                   ),
                   ffai.ProjectWidgetHandle(
                     key: "ChoiceChips_3snhazc0",
                     type: "ChoiceChips",
-                    path: "DiscoverPage.body[0].children[1].children[4]",
+                    path: "DiscoverPage.body[0].children[2].children[4]",
                     name: "Chip",
                   ),
                 ],
@@ -137,41 +143,41 @@ abstract final class DiscoverPageWidgets {
               ffai.ProjectWidgetHandle(
                 key: "Container_xflzbl5n",
                 type: "Container",
-                path: "DiscoverPage.body[0].children[2]",
+                path: "DiscoverPage.body[0].children[3]",
                 name: "SectionHeader",
                 componentName: "SectionHeader",
               ),
               ffai.ProjectWidgetHandle(
                 key: "Container_a4mpxvi7",
                 type: "Container",
-                path: "DiscoverPage.body[0].children[3]",
+                path: "DiscoverPage.body[0].children[4]",
                 name: "DealCard",
                 componentName: "DealCard",
               ),
               ffai.ProjectWidgetHandle(
                 key: "Container_b05vnfek",
                 type: "Container",
-                path: "DiscoverPage.body[0].children[4]",
+                path: "DiscoverPage.body[0].children[5]",
                 name: "DealCard",
                 componentName: "DealCard",
               ),
               ffai.ProjectWidgetHandle(
                 key: "Container_xjh5inj8",
                 type: "Container",
-                path: "DiscoverPage.body[0].children[5]",
+                path: "DiscoverPage.body[0].children[6]",
                 name: "SectionHeader",
                 componentName: "SectionHeader",
               ),
               ffai.ProjectWidgetHandle(
                 key: "ListView_avlnvhuf",
                 type: "ListView",
-                path: "DiscoverPage.body[0].children[6]",
+                path: "DiscoverPage.body[0].children[7]",
                 name: "HomeFeaturedDealsList",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
                     key: "Container_iovuxecx",
                     type: "Container",
-                    path: "DiscoverPage.body[0].children[6].children[0]",
+                    path: "DiscoverPage.body[0].children[7].children[0]",
                     name: "DealCard",
                     componentName: "DealCard",
                   ),
@@ -184,4 +190,3 @@ abstract final class DiscoverPageWidgets {
     ),
   );
 }
-
