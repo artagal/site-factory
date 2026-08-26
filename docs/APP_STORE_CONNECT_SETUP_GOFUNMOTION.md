@@ -1,13 +1,22 @@
 # GoFunMotion App Store Connect Setup
 
-Last updated: 2026-06-04.
+Last checked: 2026-08-26. The original setup instructions below remain a checklist,
+not evidence that an App Store release has been created.
 
 ## Current Status
 
-- App Store Connect account was checked through the connector: no GoFunMotion app record exists yet.
-- Existing apps were checked for `com.gofunmotion.app` and `com.gofunmotion.deals`: neither appears in the App Store Connect app list.
-- Chrome opened `https://appstoreconnect.apple.com/apps`, but Apple redirected to `https://appstoreconnect.apple.com/login?targetUrl=%2Fapps&authResult=FAILED`. App creation still requires Apple login and any 2FA/account confirmation in Chrome.
-- The App Store Connect connector can manage existing app versions, localizations, beta groups, and TestFlight metadata, but it does not expose a create-new-app tool.
+- InApp Browser opened App Store Connect and reached the Apple Account login form.
+  The current app-record inventory could not be refreshed while signed out.
+- No App Store Connect connector is available in this session. The owner must log
+  in and complete 2FA in the open InApp Browser tab before app/signing setup.
+- Firebase CLI verified active iOS and Android apps for `com.gofunmotion.app`.
+  The ignored `.firebase-mobile-config` files match `gofunmotion-prod`.
+- The generated FlutterFlow project now uses `com.gofunmotion.app` and has the Apple
+  sign-in entitlement. Mobile Firebase files and Google's callback URL scheme are
+  still missing from the actual generated export. A valid Apple signing team and
+  provisioning profile are not verified.
+- Use `scripts/check-mobile-release.ps1` and `docs/FLUTTERFLOW_AI_RELEASE_QA.md` for
+  current export checks. No signed IPA or TestFlight upload was produced in this task.
 - Do not submit the app for review until the FlutterFlow build is uploaded, Firebase auth is verified on device/TestFlight, screenshots are added, and App Privacy is completed.
 
 ## Production Identifiers
@@ -33,7 +42,9 @@ Use these values for the Apple Developer, Firebase, FlutterFlow, and App Store C
 | Privacy Policy URL | `https://gofunmotion.com/privacy` |
 | Terms URL | `https://gofunmotion.com/terms` |
 
-The generated FlutterFlow export still shows the placeholder `com.mycompany.gofunmotiondeals`. Do not ship that identifier. Set the production Bundle ID in FlutterFlow Builder settings and in Apple Developer before exporting the release build.
+The current generated export uses `com.gofunmotion.app`, not the earlier placeholder.
+Keep the same identifier across FlutterFlow, Firebase, Apple Developer, and App Store
+Connect. Do not change it or use the alternate without a deliberate migration.
 
 ## Apple Developer Bundle ID
 

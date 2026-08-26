@@ -2,7 +2,7 @@
 
 ## Audit Status
 
-Date: 2026-08-25
+Date: 2026-08-26
 
 Repo: `C:\Projects\site-factory`
 
@@ -14,7 +14,7 @@ Project ID: `go-fun-motion-deals-vl4mj8`
 
 Project URL: `https://app.flutterflow.io/project/go-fun-motion-deals-vl4mj8`
 
-Last pushed FlutterFlow commit: `49LhsyniP7zohROjMjuN`
+Last pushed FlutterFlow commit: `UPoR15r5E2jaCwp6Ucso`
 
 Current FlutterFlow AI SDK: `0.0.40`
 
@@ -61,6 +61,55 @@ must be inspect-first, narrowly scoped edits in `dsl/edit.dart`. Manual Builder 
 remain the source of truth and must be preserved.
 
 ## Live Inventory
+
+### Native AI And Auth Continuation (2026-08-26)
+
+- Live MCP status confirms 17 pages, 4 components, 24 data structs, and only two
+  global App State fields. New AI request/results/consent state is page-local.
+- Native AI Finder and Support, real plan cards, booking-message consent, and
+  partner-copy consent are described in `OPENAI_AI_FEATURES.md`. New screens remain
+  editable in Builder. The only new custom function is the reference adapter below.
+- JSON escaping and UTF-8 are enabled for assistant requests, plan snapshots, and
+  authenticated existing writes. `dsl/migrate_api_encoding.dart` migrates endpoint
+  settings in place, preserving API identities. It is separate because SDK ensure
+  helpers reject changed settings. Subsequent full edit pushes validated successfully.
+- Existing AI pages are not redeclared during later edits. A structural guard rejects
+  duplicate/missing AI panels. No manual Builder layout was replaced with custom UI.
+- Native email/Google/Apple actions sync the shared profile API. The old profile
+  auto-create setting is explicitly cleared. Fresh code no longer calls
+  `maybeCreateUser`; post-login and already-signed-in paths use `goNamedAuth`/`goNamed`.
+- Guest browsing now navigates directly. No new anonymous identity is created.
+- The existing BeautyDrop OpenAI key passed two small authorized server-process
+  checks, including real Smart Search with canonical filters. No key was persisted
+  locally, added to FlutterFlow, or committed.
+- Website typecheck and build passed (86 routes); 163 tests passed, 9 skipped. SEO
+  audit: 48 pages, 0 issues. DSL analysis: no issues; 7 Dart tests passed.
+- The fresh full generated-runtime analysis found 0 errors, 311 warnings, and 1,581
+  informational diagnostics. The command exits 1 for warnings; this is not a clean
+  lint result or a signed archive. Generated imports/deprecations were not hidden.
+- The emulator suite could not
+  start because Windows Java could not create a loopback selector. A production data
+  test was not used as a substitute. See the release QA document for exact blockers.
+- Builder previews of AI Finder and Support were inspected. No physical-device,
+  native OAuth, signed archive, or TestFlight processing result is claimed.
+
+#### New Custom Function
+
+| Field | Value |
+| --- | --- |
+| Name / type | `goFunMotionListingReference`, custom function |
+| Purpose | Convert a result listing ID to the existing native detail-page reference parameter |
+| Used by | Native AI Finder and FindPlan result cards |
+| Why not native | The API returns IDs; the existing page requires a typed Firestore reference |
+| Input / output | String ID to nullable `DocumentReference` for `listings/{id}` |
+| Validation | Rejects empty, slash-containing, dot, and double-dot IDs |
+| Secrets / I/O | None; no read, write, network call, or UI |
+| Risk / decision | Low; keep as a narrow adapter, Firestore still enforces approval |
+| Maintenance | Inspect the actual generated Dart after each SDK/export change |
+
+The full release gate is `FLUTTERFLOW_AI_RELEASE_QA.md`. TestFlight remains blocked
+until matching Firebase config is in Builder, Vercel receives the server env,
+account deletion is completed, and a fresh signed device-tested build is processed.
 
 ### Native Editor Continuation (2026-08-25)
 
@@ -119,7 +168,7 @@ Cloud approval, real booking/email delivery, payment, and physical-device tests 
 not been performed in this continuation. These checks do not imply a production or
 store release.
 
-Pages: 15
+Pages: 17
 
 - `SplashPage`
 - `DiscoverPage`
@@ -136,6 +185,8 @@ Pages: 15
 - `PartnerDashboardPage`
 - `PartnerDealEditorPage`
 - `AdminPage`
+- `AiAssistantPage`
+- `AiSupportPage`
 
 Components: 4
 
@@ -168,11 +219,11 @@ Builder-friendly and easier to maintain.
 
 Integrations:
 
-- API groups: 1 (`GoFunMotionWeb`)
-- API endpoints: 19
+- API groups: 3 (`GoFunMotionWeb`, `GoFunMotionAssistant`, `GoFunMotionAccount`)
+- API endpoints: 23
 - Custom actions: 1 (`registerGoFunMotionPushToken`)
 - Custom widgets: 0
-- Custom functions: 0
+- Custom functions: 1 (`goFunMotionListingReference`)
 
 The single custom action is limited to device notification permission and FCM token
 registration. All visible UI and workflow controls remain native FlutterFlow widgets

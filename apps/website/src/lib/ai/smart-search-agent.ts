@@ -173,16 +173,21 @@ function buildSummary(filters: SmartSearchFilters) {
 }
 
 export async function interpretSmartSearch({
+  allowAi = true,
   defaults,
   query,
   scopeKey
 }: {
+  allowAi?: boolean;
   defaults?: Partial<SmartSearchFilters>;
   query: string;
   scopeKey?: string;
 }): Promise<SmartSearchResult> {
   const safeQuery = clean(query, 240);
   const fallback = fallbackFilters(safeQuery, defaults);
+  if (!allowAi) {
+    return { dailyLimit: null, filters: fallback, provider: "rules", remaining: null, setupWarning: null, summary: buildSummary(fallback) };
+  }
   const response = await createOpenAiResponse({
     feature: "smart_search",
     jsonSchema: { name: "gofunmotion_smart_search", schema: smartSearchSchema },

@@ -258,6 +258,12 @@ export async function createOpenAiResponse({
     store: false
   };
 
+  // These short, structured tasks do not need the model's default reasoning budget.
+  if (/^gpt-5(?:-(?:mini|nano))?(?:-\d{4}-\d{2}-\d{2})?$/.test(setup.model)) {
+    body.reasoning = { effort: "minimal" };
+    body.max_output_tokens = Math.max(1_024, Number(body.max_output_tokens));
+  }
+
   if (jsonSchema) {
     body.text = {
       format: {
@@ -309,7 +315,16 @@ export async function createOpenAiResponse({
     const text = extractResponseText(payload);
     const tokens = extractTokenUsage(payload);
 
-    if (!text) {
+    const status = payload && typeof payload === "object" ? (payload as Record<string, unknown>).status : undefined;
+    if (!text || (status !== undefined && status !== "completed")) {
+      void writeAuditEvent({
+        feature,
+        ...tokens,
+        latencyMs: Date.now() - startedAt,
+        model: setup.model,
+        scopeKey,
+        status: "invalid_response"
+      }).catch(() => undefined);
       return {
         code: "invalid_response",
         dailyLimit: setup.dailyLimit,

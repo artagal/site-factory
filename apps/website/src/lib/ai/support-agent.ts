@@ -85,10 +85,12 @@ function unsafeGeneratedAnswer(value: string) {
 }
 
 export async function answerSupport({
+  allowAi = true,
   messages,
   role,
   scopeKey
 }: {
+  allowAi?: boolean;
   messages: SupportMessage[];
   role: "user" | "business" | "admin" | null;
   scopeKey?: string;
@@ -105,6 +107,10 @@ export async function answerSupport({
       setupWarning: null,
       sourceId: "human-escalation"
     };
+  }
+
+  if (!allowAi) {
+    return { ...fallback, dailyLimit: null, needsHumanSupport: fallback.sourceId === "general-support", provider: "local_faq", remaining: null, setupWarning: null };
   }
 
   const response = await createOpenAiResponse({

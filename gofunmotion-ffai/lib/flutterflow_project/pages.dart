@@ -4,6 +4,8 @@ library;
 
 import 'package:flutterflow_ai/flutterflow_ai.dart' as ffai;
 import 'pages/admin_page.dart' show adminPageHandle;
+import 'pages/ai_assistant_page.dart' show aiAssistantPageHandle;
+import 'pages/ai_support_page.dart' show aiSupportPageHandle;
 import 'pages/deal_detail_page.dart' show dealDetailPageHandle;
 import 'pages/deals_page.dart' show dealsPageHandle;
 import 'pages/discover_page.dart' show discoverPageHandle;
@@ -21,6 +23,8 @@ import 'pages/waitlist_page.dart' show waitlistPageHandle;
 
 abstract final class Pages {
   static final adminPage = adminPageHandle;
+  static final aiAssistantPage = aiAssistantPageHandle;
+  static final aiSupportPage = aiSupportPageHandle;
   static final dealDetailPage = dealDetailPageHandle;
   static final dealsPage = dealsPageHandle;
   static final discoverPage = discoverPageHandle;
@@ -37,6 +41,8 @@ abstract final class Pages {
   static final waitlistPage = waitlistPageHandle;
   static final all = <ffai.ProjectPageHandle>[
     adminPage,
+    aiAssistantPage,
+    aiSupportPage,
     dealDetailPage,
     dealsPage,
     discoverPage,

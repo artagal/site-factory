@@ -112,7 +112,15 @@ Start with Builder-native controls:
 
 Use Page State for current values. Use a backend query or safe endpoint only when plan generation needs server data.
 
-Do not add AI API calls yet.
+The user has authorized OpenAI-backed assistance. Use server-only GoFunMotion API
+calls, never a provider key in FlutterFlow. Keep prompt fields, consent, result
+cards, loading/error states, and actions native and visually editable. Native AI
+is opt-in and must retain a non-AI fallback.
+
+The approved `goFunMotionListingReference` custom function only converts a
+server-returned listing ID to a native Firestore reference. This small adapter is
+needed because API results contain IDs while the existing detail page takes a
+document reference. It has no UI, network access, authorization, or database writes.
 
 ### Deals
 
@@ -171,6 +179,10 @@ If custom code is approved:
 
 ## Current Approved Custom Code
 
-No FlutterFlow custom widgets, custom actions, or custom functions are approved yet.
+Approved narrow custom items are `registerGoFunMotionPushToken` (existing authenticated
+push-token registration) and `goFunMotionListingReference` (pure ID/reference adapter).
+Their UI, permission choices, API calls, and failure states remain native. No custom
+widgets or custom screen layouts are approved. See the Builder-friendly audit for
+inputs, outputs, and maintenance boundaries.
 
 The existing Next.js code in `apps/website` is web prototype code, not FlutterFlow custom code. Do not port it wholesale into FlutterFlow custom widgets.

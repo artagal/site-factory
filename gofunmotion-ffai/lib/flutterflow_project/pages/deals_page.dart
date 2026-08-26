@@ -139,53 +139,12 @@ abstract final class DealsPageWidgets {
                 ],
               ),
               ffai.ProjectWidgetHandle(
-                key: "Container_y2e4gf4v",
-                type: "Container",
+                key: "Button_3l3bdun6",
+                type: "Button",
                 path: "DealsPage.body[0].children[4]",
                 name: "MobileSmartSearchPanel",
-                children: <ffai.ProjectWidgetHandle>[
-                  ffai.ProjectWidgetHandle(
-                    key: "Column_15ihfteh",
-                    type: "Column",
-                    path: "DealsPage.body[0].children[4].children[0]",
-                    name: "Column",
-                    children: <ffai.ProjectWidgetHandle>[
-                      ffai.ProjectWidgetHandle(
-                        key: "Text_mz2n269d",
-                        type: "Text",
-                        path:
-                            "DealsPage.body[0].children[4].children[0].children[0]",
-                        name: "Text",
-                        text: "Tell us what sounds fun",
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "TextField_78f00m5t",
-                        type: "TextField",
-                        path:
-                            "DealsPage.body[0].children[4].children[0].children[1]",
-                        name: "MobileSmartSearchField",
-                        text: "Date night tonight under \$50",
-                        triggers: const <String>["ON_TEXTFIELD_CHANGE"],
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "Button_5iz15f1y",
-                        type: "Button",
-                        path:
-                            "DealsPage.body[0].children[4].children[0].children[2]",
-                        name: "MobileSmartSearchButton",
-                        text: "Smart Search",
-                        triggers: const <String>["ON_TAP"],
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "Text_tls5hjvy",
-                        type: "Text",
-                        path:
-                            "DealsPage.body[0].children[4].children[0].children[3]",
-                        name: "Text",
-                      ),
-                    ],
-                  ),
-                ],
+                text: "Ask AI to find a deal",
+                triggers: const <String>["ON_TAP"],
               ),
               ffai.ProjectWidgetHandle(
                 key: "ListView_zze2o7q7",

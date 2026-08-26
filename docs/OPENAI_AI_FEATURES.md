@@ -45,6 +45,42 @@ Recommended Builder-first order:
 4. Partner Copy and Listing Review actions in the partner editor.
 5. Support Assistant on Support.
 
+### Implemented Native Experience (2026-08-26)
+
+- `AiAssistantPage` has canonical city selection, Deals/Plan mode, editable prompts,
+  loading/error/empty states, native result cards, View Deal, Save Plan, and Share.
+- `AiSupportPage` provides editable questions, FAQ fallback, and an email handoff.
+  It does not read private booking status or pretend a human has received a message.
+- `FindPlanPage` now renders actual matched cards, not just a summary next to static
+  examples. Discover and Deals link to the assistant; deals remain the main product.
+- Booking Message and Partner Copy stay next to native editable fields. A per-page
+  AI toggle defaults to false on all five user-facing AI surfaces. No AI runs on load.
+- `POST /api/mobile/assistant` accepts `mode: deals | plan | support`, `cityId`,
+  `query`, and explicit boolean `aiConsent`. Optional form preferences are `budget`,
+  `when`, `who`, and `vibe`. It returns `title`, `answer`, `cards`, `provider`,
+  `empty`, `needsHumanSupport`, and `planJson`.
+- Mobile cards exclude demo, pending, expired, and sold-out inventory. The chosen
+  city overrides any AI city suggestion. Empty cities retain zero real results;
+  curated ideas explicitly say they are not available bookings.
+- The model only orders verified IDs. The server enforces combined plan budget and
+  activity duration bounds, uses canonical currencies, and excludes travel from
+  the displayed activity duration. Partners must confirm timing and party pricing.
+- Saved plans accept the exact `planJson` snapshot through the authenticated API.
+  FlutterFlow JSON escaping and UTF-8 are enabled for user-entered text and saves.
+- All screens, lists, consent toggles, actions, and state are native Builder nodes.
+  One small custom function converts an approved-result ID to a Firestore reference;
+  it does not read/write data or contain UI. No new custom widget was introduced.
+
+Original GPT-5 family requests use minimal reasoning and at least 1,024 output
+tokens so reasoning cannot consume the old small JSON budget. Incomplete provider
+responses fail back to deterministic behavior rather than accepting partial text.
+
+An authorized, server-process-only smoke test with the existing BeautyDrop key
+returned `provider: openai` and correct Miami/date-night/tonight/under-$50 filters.
+This verifies the key and parser, not deployed mobile-to-production connectivity.
+No key was copied into source, FlutterFlow, Git, or a new local env file. Vercel
+configuration still requires the owner's dashboard login and a redeploy.
+
 ## Safety Invariants
 
 - AI cannot create or publish listings.
@@ -54,4 +90,3 @@ Recommended Builder-first order:
 - Booking Message never sends a request automatically.
 - Support never asks for passwords, card details, API keys, or identity documents.
 - Missing AI configuration falls back safely rather than breaking browsing, planning, or partner drafts.
-

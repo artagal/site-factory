@@ -52,6 +52,7 @@ abstract final class SignInPageWidgets {
       type: "Scaffold",
       path: "SignInPage",
       name: "SignInPage",
+      triggers: const <String>["ON_INIT_STATE"],
       slots: <String, List<ffai.ProjectWidgetHandle>>{
         "appBar": <ffai.ProjectWidgetHandle>[
           ffai.ProjectWidgetHandle(
@@ -163,11 +164,11 @@ abstract final class SignInPageWidgets {
                 ],
               ),
               ffai.ProjectWidgetHandle(
-                key: "Button_qcpkdqb9",
+                key: "Button_ptj9ftxp",
                 type: "Button",
                 path: "SignInPage.body[0].children[3]",
                 name: "GuestSignInButton",
-                text: "Continue as Guest",
+                text: "Browse without an account",
                 triggers: const <String>["ON_TAP"],
               ),
               ffai.ProjectWidgetHandle(
