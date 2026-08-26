@@ -7,16 +7,19 @@ abstract final class ApiGroups {
   static const goFunMotionAssistant = "GoFunMotionAssistant";
   static const goFunMotionBrowse = "GoFunMotionBrowse";
   static const goFunMotionWeb = "GoFunMotionWeb";
+  static const goFunMotionWorkspace = "GoFunMotionWorkspace";
   static const all = <String>[
     "GoFunMotionAccount",
     "GoFunMotionAssistant",
     "GoFunMotionBrowse",
     "GoFunMotionWeb",
+    "GoFunMotionWorkspace",
   ];
 }
 
 abstract final class ActionBlocks {
-  static const all = <String>[];
+  static const all = <String>[
+  ];
 }
 
 abstract final class MockBackend {
@@ -25,9 +28,12 @@ abstract final class MockBackend {
 }
 
 abstract final class MockDatasets {
-  static const all = <String>[];
+  static const all = <String>[
+  ];
 }
 
 abstract final class MockBindings {
-  static const all = <String, String>{};
+  static const all = <String, String>{
+  };
 }
+

@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:firestore-rules": "firebase emulators:exec --only firestore \"vitest run tests/firestoreRules.test.ts\"",
     "test:marketplace-flow": "firebase emulators:exec --only auth,firestore \"vitest run tests/marketplaceFlow.integration.test.ts\"",
+    "test:mobile-workspace": "firebase emulators:exec --project demo-gofunmotion-native --config firebase.native-tests.json --only auth,firestore \"vitest run tests/mobileWorkspace.integration.test.ts\"",
     "test:e2e": "playwright test",
     "seo:audit": "tsx scripts/audit-seo.ts",
     "launch:smoke": "tsx scripts/smoke-launch.ts",

@@ -7,7 +7,8 @@ export const USER_DOCUMENT_SUBCOLLECTIONS = [
 
 export const USER_OWNED_COLLECTIONS = [
   "plans",
-  "bookingRequests"
+  "bookingRequests",
+  "reviews"
 ] as const;
 
 export const USER_TOP_LEVEL_DOCUMENTS: readonly string[] = [];

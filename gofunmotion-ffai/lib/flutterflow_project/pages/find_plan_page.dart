@@ -4,15 +4,14 @@ library;
 
 import 'package:flutterflow_ai/flutterflow_ai.dart' as ffai;
 
-final findPlanPageHandle =
-    ffai.ProjectPageHandle<FindPlanPageParams, FindPlanPageState>(
-      name: "FindPlanPage",
-      key: "Scaffold_d7mhrhkb",
-      route: "find",
-      params: const FindPlanPageParams(),
-      state: const FindPlanPageState(),
-      widgets: FindPlanPageWidgets.tree,
-    );
+final findPlanPageHandle = ffai.ProjectPageHandle<FindPlanPageParams, FindPlanPageState>(
+  name: "FindPlanPage",
+  key: "Scaffold_d7mhrhkb",
+  route: "find",
+  params: const FindPlanPageParams(),
+  state: const FindPlanPageState(),
+  widgets: FindPlanPageWidgets.tree,
+);
 
 final class FindPlanPageParams {
   const FindPlanPageParams();
@@ -26,31 +25,36 @@ final class FindPlanPageState {
         key: "6l9ev6so",
         typeName: "Boolean",
       );
-  ffai.ProjectStateFieldHandle get answer => const ffai.ProjectStateFieldHandle(
-    name: "answer",
-    key: "evdaxi5j",
-    typeName: "String",
-  );
-  ffai.ProjectStateFieldHandle get budget => const ffai.ProjectStateFieldHandle(
-    name: "budget",
-    key: "wqqekztd",
-    typeName: "String",
-  );
-  ffai.ProjectStateFieldHandle get cards => const ffai.ProjectStateFieldHandle(
-    name: "cards",
-    key: "yy90l2hx",
-    typeName: "List<DataStruct<MobileAssistantCard>>",
-  );
-  ffai.ProjectStateFieldHandle get city => const ffai.ProjectStateFieldHandle(
-    name: "city",
-    key: "8q0f2604",
-    typeName: "String",
-  );
-  ffai.ProjectStateFieldHandle get empty => const ffai.ProjectStateFieldHandle(
-    name: "empty",
-    key: "087f70gw",
-    typeName: "Boolean",
-  );
+  ffai.ProjectStateFieldHandle get answer =>
+      const ffai.ProjectStateFieldHandle(
+        name: "answer",
+        key: "evdaxi5j",
+        typeName: "String",
+      );
+  ffai.ProjectStateFieldHandle get budget =>
+      const ffai.ProjectStateFieldHandle(
+        name: "budget",
+        key: "wqqekztd",
+        typeName: "String",
+      );
+  ffai.ProjectStateFieldHandle get cards =>
+      const ffai.ProjectStateFieldHandle(
+        name: "cards",
+        key: "yy90l2hx",
+        typeName: "List<DataStruct<MobileAssistantCard>>",
+      );
+  ffai.ProjectStateFieldHandle get city =>
+      const ffai.ProjectStateFieldHandle(
+        name: "city",
+        key: "8q0f2604",
+        typeName: "String",
+      );
+  ffai.ProjectStateFieldHandle get empty =>
+      const ffai.ProjectStateFieldHandle(
+        name: "empty",
+        key: "087f70gw",
+        typeName: "Boolean",
+      );
   ffai.ProjectStateFieldHandle get needsHumanSupport =>
       const ffai.ProjectStateFieldHandle(
         name: "needsHumanSupport",
@@ -87,22 +91,24 @@ final class FindPlanPageState {
         key: "4epxajyv",
         typeName: "String",
       );
-  ffai.ProjectStateFieldHandle get vibe => const ffai.ProjectStateFieldHandle(
-    name: "vibe",
-    key: "0ogj5njk",
-    typeName: "String",
-  );
+  ffai.ProjectStateFieldHandle get vibe =>
+      const ffai.ProjectStateFieldHandle(
+        name: "vibe",
+        key: "0ogj5njk",
+        typeName: "String",
+      );
   ffai.ProjectStateFieldHandle get viewState =>
       const ffai.ProjectStateFieldHandle(
         name: "viewState",
         key: "4shgthxb",
         typeName: "String",
       );
-  ffai.ProjectStateFieldHandle get when_2 => const ffai.ProjectStateFieldHandle(
-    name: "when",
-    key: "zzri1jcf",
-    typeName: "String",
-  );
+  ffai.ProjectStateFieldHandle get when_2 =>
+      const ffai.ProjectStateFieldHandle(
+        name: "when",
+        key: "zzri1jcf",
+        typeName: "String",
+      );
 }
 
 abstract final class FindPlanPageWidgets {
@@ -140,20 +146,20 @@ abstract final class FindPlanPageWidgets {
             name: "Column",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Column_2ef9t2hw",
+                key: "Column_o6jgnclf",
                 type: "Column",
                 path: "FindPlanPage.body[0].children[0]",
                 name: "NativePlannerIntro",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Text_bdyrh0od",
+                    key: "Text_hl2h3tnp",
                     type: "Text",
                     path: "FindPlanPage.body[0].children[0].children[0]",
                     name: "Text",
                     text: "Find a plan that fits",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Text_y6y84kx0",
+                    key: "Text_nt6pkam0",
                     type: "Text",
                     path: "FindPlanPage.body[0].children[0].children[1]",
                     name: "Text",
@@ -167,35 +173,45 @@ abstract final class FindPlanPageWidgets {
                 path: "FindPlanPage.body[0].children[1]",
                 name: "PlanCityField",
                 text: "City",
-                triggers: const <String>["ON_TEXTFIELD_CHANGE"],
+                triggers: const <String>[
+                  "ON_TEXTFIELD_CHANGE",
+                ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "DropDown_j2uh66sr",
                 type: "DropDown",
                 path: "FindPlanPage.body[0].children[2]",
                 name: "PersonaDropdown",
-                triggers: const <String>["ON_FORM_WIDGET_SELECTED"],
+                triggers: const <String>[
+                  "ON_FORM_WIDGET_SELECTED",
+                ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "DropDown_relxkjsa",
                 type: "DropDown",
                 path: "FindPlanPage.body[0].children[3]",
                 name: "WhenDropdown",
-                triggers: const <String>["ON_FORM_WIDGET_SELECTED"],
+                triggers: const <String>[
+                  "ON_FORM_WIDGET_SELECTED",
+                ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "DropDown_s5o1r0uj",
                 type: "DropDown",
                 path: "FindPlanPage.body[0].children[4]",
                 name: "BudgetDropdown",
-                triggers: const <String>["ON_FORM_WIDGET_SELECTED"],
+                triggers: const <String>[
+                  "ON_FORM_WIDGET_SELECTED",
+                ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "DropDown_kajttwdb",
                 type: "DropDown",
                 path: "FindPlanPage.body[0].children[5]",
                 name: "VibeDropdown",
-                triggers: const <String>["ON_FORM_WIDGET_SELECTED"],
+                triggers: const <String>[
+                  "ON_FORM_WIDGET_SELECTED",
+                ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "Column_xfxijwey",
@@ -212,8 +228,7 @@ abstract final class FindPlanPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Switch_nzr8ji35",
                         type: "Switch",
-                        path:
-                            "FindPlanPage.body[0].children[6].children[0].children[0]",
+                        path: "FindPlanPage.body[0].children[6].children[0].children[0]",
                         name: "PlannerAiConsentToggle",
                         triggers: const <String>[
                           "ON_TOGGLE_ON",
@@ -223,15 +238,13 @@ abstract final class FindPlanPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Container_4mgx4dd3",
                         type: "Container",
-                        path:
-                            "FindPlanPage.body[0].children[6].children[0].children[1]",
+                        path: "FindPlanPage.body[0].children[6].children[0].children[1]",
                         name: "Label Spacer",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_axihuq5z",
                         type: "Text",
-                        path:
-                            "FindPlanPage.body[0].children[6].children[0].children[2]",
+                        path: "FindPlanPage.body[0].children[6].children[0].children[2]",
                         name: "Label Text",
                         text: "Allow AI help from OpenAI",
                       ),
@@ -242,8 +255,7 @@ abstract final class FindPlanPageWidgets {
                     type: "Text",
                     path: "FindPlanPage.body[0].children[6].children[1]",
                     name: "Text",
-                    text:
-                        "When enabled, your request and relevant deal details are sent to OpenAI. Do not include private or payment information. Turn off at any time.",
+                    text: "When enabled, your request and relevant deal details are sent to OpenAI. Do not include private or payment information. Turn off at any time.",
                   ),
                   ffai.ProjectWidgetHandle(
                     key: "Button_9pas5olr",
@@ -251,7 +263,9 @@ abstract final class FindPlanPageWidgets {
                     path: "FindPlanPage.body[0].children[6].children[2]",
                     name: "Button",
                     text: "Privacy",
-                    triggers: const <String>["ON_TAP"],
+                    triggers: const <String>[
+                      "ON_TAP",
+                    ],
                   ),
                 ],
               ),
@@ -261,7 +275,9 @@ abstract final class FindPlanPageWidgets {
                 path: "FindPlanPage.body[0].children[7]",
                 name: "FindMyPlanButton",
                 text: "Find My Plan",
-                triggers: const <String>["ON_TAP"],
+                triggers: const <String>[
+                  "ON_TAP",
+                ],
               ),
               ffai.ProjectWidgetHandle(
                 key: "Column_n79tqthv",
@@ -280,8 +296,7 @@ abstract final class FindPlanPageWidgets {
                     type: "Text",
                     path: "FindPlanPage.body[0].children[8].children[1]",
                     name: "Text",
-                    text:
-                        "Choose a city, add a short request, and try again. Browsing deals is still available.",
+                    text: "Choose a city, add a short request, and try again. Browsing deals is still available.",
                   ),
                   ffai.ProjectWidgetHandle(
                     key: "Column_pb6d0fi8",
@@ -292,125 +307,110 @@ abstract final class FindPlanPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Text_d57wsn4q",
                         type: "Text",
-                        path:
-                            "FindPlanPage.body[0].children[8].children[2].children[0]",
+                        path: "FindPlanPage.body[0].children[8].children[2].children[0]",
                         name: "Text",
                         text: "AI-assisted",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_6hj44a8s",
                         type: "Text",
-                        path:
-                            "FindPlanPage.body[0].children[8].children[2].children[1]",
+                        path: "FindPlanPage.body[0].children[8].children[2].children[1]",
                         name: "Text",
                         text: "Standard matching / verified help",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_22youl79",
                         type: "Text",
-                        path:
-                            "FindPlanPage.body[0].children[8].children[2].children[2]",
+                        path: "FindPlanPage.body[0].children[8].children[2].children[2]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_n38htxns",
                         type: "Text",
-                        path:
-                            "FindPlanPage.body[0].children[8].children[2].children[3]",
+                        path: "FindPlanPage.body[0].children[8].children[2].children[3]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "ListView_ldgz3qam",
                         type: "ListView",
-                        path:
-                            "FindPlanPage.body[0].children[8].children[2].children[4]",
+                        path: "FindPlanPage.body[0].children[8].children[2].children[4]",
                         name: "AssistantResultCards",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "Container_uniw1nn0",
                             type: "Container",
-                            path:
-                                "FindPlanPage.body[0].children[8].children[2].children[4].children[0]",
+                            path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0]",
                             name: "AssistantDealCard",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
                                 key: "Column_ldxca3go",
                                 type: "Column",
-                                path:
-                                    "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0]",
+                                path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0]",
                                 name: "Column",
                                 children: <ffai.ProjectWidgetHandle>[
                                   ffai.ProjectWidgetHandle(
                                     key: "Image_afdb6xid",
                                     type: "Image",
-                                    path:
-                                        "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[0]",
+                                    path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[0]",
                                     name: "Image",
                                   ),
                                   ffai.ProjectWidgetHandle(
                                     key: "Container_etu1u6uk",
                                     type: "Container",
-                                    path:
-                                        "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1]",
+                                    path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1]",
                                     name: "Container",
                                     children: <ffai.ProjectWidgetHandle>[
                                       ffai.ProjectWidgetHandle(
                                         key: "Column_59ic3r9x",
                                         type: "Column",
-                                        path:
-                                            "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0]",
+                                        path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0]",
                                         name: "Column",
                                         children: <ffai.ProjectWidgetHandle>[
                                           ffai.ProjectWidgetHandle(
                                             key: "Text_bc13v772",
                                             type: "Text",
-                                            path:
-                                                "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[0]",
+                                            path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[0]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
                                             key: "Text_v4jbwn06",
                                             type: "Text",
-                                            path:
-                                                "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[1]",
+                                            path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[1]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
                                             key: "Text_43d9rne6",
                                             type: "Text",
-                                            path:
-                                                "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[2]",
+                                            path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[2]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
                                             key: "Text_t0hehqek",
                                             type: "Text",
-                                            path:
-                                                "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[3]",
+                                            path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[3]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
                                             key: "Text_md7qsabh",
                                             type: "Text",
-                                            path:
-                                                "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[4]",
+                                            path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[4]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
                                             key: "Text_rs2vo4hb",
                                             type: "Text",
-                                            path:
-                                                "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[5]",
+                                            path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[5]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
                                             key: "Button_asid4abq",
                                             type: "Button",
-                                            path:
-                                                "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[6]",
+                                            path: "FindPlanPage.body[0].children[8].children[2].children[4].children[0].children[0].children[1].children[0].children[6]",
                                             name: "AssistantOpenDeal",
                                             text: "View Deal",
-                                            triggers: const <String>["ON_TAP"],
+                                            triggers: const <String>[
+                                              "ON_TAP",
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -425,38 +425,42 @@ abstract final class FindPlanPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Button_trpwd0au",
                         type: "Button",
-                        path:
-                            "FindPlanPage.body[0].children[8].children[2].children[5]",
+                        path: "FindPlanPage.body[0].children[8].children[2].children[5]",
                         name: "AssistantSavePlan",
                         text: "Save Plan",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_vy8gj6ce",
                         type: "Button",
-                        path:
-                            "FindPlanPage.body[0].children[8].children[2].children[6]",
+                        path: "FindPlanPage.body[0].children[8].children[2].children[6]",
                         name: "Button",
                         text: "Share",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_un3avblb",
                         type: "Button",
-                        path:
-                            "FindPlanPage.body[0].children[8].children[2].children[7]",
+                        path: "FindPlanPage.body[0].children[8].children[2].children[7]",
                         name: "Button",
                         text: "Join city waitlist",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_e3cfoju2",
                         type: "Button",
-                        path:
-                            "FindPlanPage.body[0].children[8].children[2].children[8]",
+                        path: "FindPlanPage.body[0].children[8].children[2].children[8]",
                         name: "Button",
                         text: "Contact support",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                     ],
                   ),
@@ -477,50 +481,46 @@ abstract final class FindPlanPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Text_xleshgbb",
                         type: "Text",
-                        path:
-                            "FindPlanPage.body[0].children[9].children[0].children[0]",
+                        path: "FindPlanPage.body[0].children[9].children[0].children[0]",
                         name: "Text",
                         text: "Suggested plan",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_kmqs7rtm",
                         type: "Text",
-                        path:
-                            "FindPlanPage.body[0].children[9].children[0].children[1]",
+                        path: "FindPlanPage.body[0].children[9].children[0].children[1]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Container_ot5rrolu",
                         type: "Container",
-                        path:
-                            "FindPlanPage.body[0].children[9].children[0].children[2]",
+                        path: "FindPlanPage.body[0].children[9].children[0].children[2]",
                         name: "PlanStepCard",
                         componentName: "PlanStepCard",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Container_enzf9psr",
                         type: "Container",
-                        path:
-                            "FindPlanPage.body[0].children[9].children[0].children[3]",
+                        path: "FindPlanPage.body[0].children[9].children[0].children[3]",
                         name: "PlanStepCard",
                         componentName: "PlanStepCard",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Container_n7sbm94i",
                         type: "Container",
-                        path:
-                            "FindPlanPage.body[0].children[9].children[0].children[4]",
+                        path: "FindPlanPage.body[0].children[9].children[0].children[4]",
                         name: "PlanStepCard",
                         componentName: "PlanStepCard",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_lo6ifm7w",
                         type: "Button",
-                        path:
-                            "FindPlanPage.body[0].children[9].children[0].children[5]",
+                        path: "FindPlanPage.body[0].children[9].children[0].children[5]",
                         name: "SavePlanButton",
                         text: "Save Plan",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                     ],
                   ),
@@ -533,3 +533,4 @@ abstract final class FindPlanPageWidgets {
     ),
   );
 }
+

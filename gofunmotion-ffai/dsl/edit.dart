@@ -10,6 +10,7 @@ import 'partner_deal_editor.dart';
 import 'ai_experience.dart';
 import 'auth_experience.dart';
 import 'marketplace_experience.dart';
+import 'expanded_workspace.dart';
 import 'package:flutterflow_ai/src/helpers/data_schema_helpers.dart'
     show
         addDataStructField,
@@ -48,6 +49,7 @@ Future<void> main(List<String> args) async {
         Platform.script.resolve('ai_experience.dart').toFilePath(),
         Platform.script.resolve('auth_experience.dart').toFilePath(),
         Platform.script.resolve('marketplace_experience.dart').toFilePath(),
+        Platform.script.resolve('expanded_workspace.dart').toFilePath(),
       ]),
     );
   } catch (error) {
@@ -193,7 +195,12 @@ void buildGoFunMotionDealsQueryGuard(App app) {
   _wirePartnerDealWorkflow(app, api, dealEditor);
   final nativeAi = ensureNativeAiExperience(app);
   ensureNativeMarketplace(app, nativeAi);
-  ensureNativeAccountEntry(app);
+  ensureNativeAccountEntry(
+    app,
+    onboardingPage: workspacePage('CustomerOnboardingPage'),
+  );
+  ensureExpandedWorkspace(app, nativeAi);
+  app.raw(disableNativeAuthAutoNavigation);
   app.raw(verifyPartnerDealScreenStructure);
 }
 
@@ -1447,14 +1454,17 @@ void _wireRoleRouting(App app, _GoFunMotionApi api) {
                       limit: 25,
                       outputAs: 'adminApps',
                     ),
-                    SetState('applications', const ActionOutput('adminApps')),
+                    SetState(
+                      ff.Pages.adminPage.state.applications,
+                      const ActionOutput('adminApps'),
+                    ),
                     FirestoreQuery(
                       listings,
                       limit: 25,
                       outputAs: 'adminListingsQuery',
                     ),
                     SetState(
-                      'adminListings',
+                      ff.Pages.adminPage.state.adminListings,
                       const ActionOutput('adminListingsQuery'),
                     ),
                   ],

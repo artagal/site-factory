@@ -41,7 +41,9 @@ export async function sendPushToUsers(input: PushInput): Promise<PushDeliveryRes
   }, { merge: true }));
   await Promise.all(inAppWrites);
 
-  const tokenSnapshots = await Promise.all(userIds.map((userId) => (
+  const profiles = await db.getAll(...userIds.map((userId) => db.collection("users").doc(userId)));
+  const pushUserIds = profiles.filter((profile) => profile.data()?.bookingPushEnabled !== false).map((profile) => profile.id);
+  const tokenSnapshots = await Promise.all(pushUserIds.map((userId) => (
     db.collection("users").doc(userId).collection("deviceTokens").get()
   )));
   const targets = tokenSnapshots.flatMap((snapshot) => snapshot.docs

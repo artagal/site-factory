@@ -159,10 +159,21 @@ void main() {
     () {
       final app = buildApp((app) {
         gofunmotion.buildGoFunMotionDeals(app);
-        account.ensureNativeAccountEntry(app);
+        app.ensurePage(
+          'CustomerOnboardingPage',
+          route: '/customer-onboarding',
+          body: Scaffold(body: Text('Preferences')),
+        );
+        account.ensureNativeAccountEntry(
+          app,
+          onboardingPage: ff.Pages.customerOnboardingPage,
+        );
       });
       final project = compileApp(app).project;
+      account.disableNativeAuthAutoNavigation(project);
       final signIn = findPage(project, name: 'SignInPage')!;
+      final onboarding = findPage(project, name: 'CustomerOnboardingPage')!;
+      final profile = findPage(project, name: 'ProfilePage')!;
       expect(project.authentication.firebase.hasCreateUserDocument(), isFalse);
       final guest =
           findDescendants(
@@ -184,9 +195,25 @@ void main() {
         final actions = button.triggerActions.expand(
           (trigger) => _walkActions(trigger.rootAction),
         );
+        final destinations =
+            actions
+                .where((node) => node.action.hasNavigate())
+                .map((node) => node.action.navigate.pageNodeKeyRef.key)
+                .toList();
         expect(
-          actions.where((node) => node.action.hasNavigate()),
+          destinations.where((key) => key == onboarding.node.key),
+          hasLength(1),
+        );
+        expect(
+          destinations.where((key) => key == profile.node.key),
           hasLength(2),
+        );
+        expect(button.toProto3Json().toString(), contains('needsOnboarding'));
+        expect(
+          actions
+              .where((node) => node.action.hasAuth())
+              .every((node) => node.action.auth.disableAutoNavigate),
+          isTrue,
         );
       }
     },

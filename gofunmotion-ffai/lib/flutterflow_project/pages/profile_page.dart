@@ -4,15 +4,14 @@ library;
 
 import 'package:flutterflow_ai/flutterflow_ai.dart' as ffai;
 
-final profilePageHandle =
-    ffai.ProjectPageHandle<ProfilePageParams, ProfilePageState>(
-      name: "ProfilePage",
-      key: "Scaffold_b2q817um",
-      route: "profile",
-      params: const ProfilePageParams(),
-      state: const ProfilePageState(),
-      widgets: ProfilePageWidgets.tree,
-    );
+final profilePageHandle = ffai.ProjectPageHandle<ProfilePageParams, ProfilePageState>(
+  name: "ProfilePage",
+  key: "Scaffold_b2q817um",
+  route: "profile",
+  params: const ProfilePageParams(),
+  state: const ProfilePageState(),
+  widgets: ProfilePageWidgets.tree,
+);
 
 final class ProfilePageParams {
   const ProfilePageParams();
@@ -20,6 +19,12 @@ final class ProfilePageParams {
 
 final class ProfilePageState {
   const ProfilePageState();
+  ffai.ProjectStateFieldHandle get businessId =>
+      const ffai.ProjectStateFieldHandle(
+        name: "businessId",
+        key: "vhitdnzy",
+        typeName: "String",
+      );
 }
 
 abstract final class ProfilePageWidgets {
@@ -63,52 +68,50 @@ abstract final class ProfilePageWidgets {
                 name: "Container",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Column_wggwsgqt",
+                    key: "Column_l2j1mjak",
                     type: "Column",
                     path: "ProfilePage.body[0].children[0].children[0]",
                     name: "NativeSignInGate",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Icon_dd19nahx",
+                        key: "Icon_io9856gm",
                         type: "Icon",
-                        path:
-                            "ProfilePage.body[0].children[0].children[0].children[0]",
+                        path: "ProfilePage.body[0].children[0].children[0].children[0]",
                         name: "Icon",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_hszu5v49",
+                        key: "Text_tu48sisv",
                         type: "Text",
-                        path:
-                            "ProfilePage.body[0].children[0].children[0].children[1]",
+                        path: "ProfilePage.body[0].children[0].children[0].children[1]",
                         name: "Text",
                         text: "Sign in to your account",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_ixmqijkh",
+                        key: "Text_8mgjq9jw",
                         type: "Text",
-                        path:
-                            "ProfilePage.body[0].children[0].children[0].children[2]",
+                        path: "ProfilePage.body[0].children[0].children[0].children[2]",
                         name: "Text",
-                        text:
-                            "Your saved deals and booking requests, in one place.",
+                        text: "Your saved deals and booking requests, in one place.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_ci81iqoc",
+                        key: "Button_yl5wgx43",
                         type: "Button",
-                        path:
-                            "ProfilePage.body[0].children[0].children[0].children[3]",
+                        path: "ProfilePage.body[0].children[0].children[0].children[3]",
                         name: "GateSignInButton",
                         text: "Sign In",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_ejtabr95",
+                        key: "Button_f2ae2e90",
                         type: "Button",
-                        path:
-                            "ProfilePage.body[0].children[0].children[0].children[4]",
+                        path: "ProfilePage.body[0].children[0].children[0].children[4]",
                         name: "Button",
                         text: "Browse deals",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                     ],
                   ),
@@ -129,22 +132,19 @@ abstract final class ProfilePageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Row_n36nrd4d",
                         type: "Row",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[0]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[0]",
                         name: "Row",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "Container_rhyhk83k",
                             type: "Container",
-                            path:
-                                "ProfilePage.body[0].children[1].children[0].children[0].children[0]",
+                            path: "ProfilePage.body[0].children[1].children[0].children[0].children[0]",
                             name: "Avatar",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Icon_ddelcifr",
+                                key: "Icon_jdlqwzsy",
                                 type: "Icon",
-                                path:
-                                    "ProfilePage.body[0].children[1].children[0].children[0].children[0].children[0]",
+                                path: "ProfilePage.body[0].children[1].children[0].children[0].children[0].children[0]",
                                 name: "AccountAvatarSymbol",
                               ),
                             ],
@@ -152,22 +152,19 @@ abstract final class ProfilePageWidgets {
                           ffai.ProjectWidgetHandle(
                             key: "Column_zk6shc90",
                             type: "Column",
-                            path:
-                                "ProfilePage.body[0].children[1].children[0].children[0].children[1]",
+                            path: "ProfilePage.body[0].children[1].children[0].children[0].children[1]",
                             name: "Column",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
                                 key: "Text_48qodqq5",
                                 type: "Text",
-                                path:
-                                    "ProfilePage.body[0].children[1].children[0].children[0].children[1].children[0]",
+                                path: "ProfilePage.body[0].children[1].children[0].children[0].children[1].children[0]",
                                 name: "Text",
                               ),
                               ffai.ProjectWidgetHandle(
                                 key: "Text_nohxy76d",
                                 type: "Text",
-                                path:
-                                    "ProfilePage.body[0].children[1].children[0].children[0].children[1].children[1]",
+                                path: "ProfilePage.body[0].children[1].children[0].children[0].children[1].children[1]",
                                 name: "Text",
                               ),
                             ],
@@ -177,96 +174,135 @@ abstract final class ProfilePageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Divider_cqa6890m",
                         type: "Divider",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[1]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[1]",
                         name: "Divider",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_qkooonyu",
                         type: "Text",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[2]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[2]",
                         name: "Text",
                         text: "Preferences",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_s4oqo1ve",
                         type: "Text",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[3]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[3]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_pp1y8dqd",
                         type: "Text",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[4]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[4]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_du3tpktf",
                         type: "Button",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[5]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[5]",
                         name: "Button",
                         text: "Partner Dashboard",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_zsspm8zd",
                         type: "Button",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[6]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[6]",
                         name: "EnableNotificationsButton",
                         text: "Enable Notifications",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_d4powifv",
                         type: "Button",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[7]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[7]",
                         name: "ProfileSupportEntry",
                         text: "Help & AI support",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_rm9gwk9v",
                         type: "Button",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[8]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[8]",
                         name: "EnableNotificationsButton",
                         text: "Enable Notifications",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_t11i5jfn",
                         type: "Button",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[9]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[9]",
                         name: "SyncAccountButton",
                         text: "Sync account",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_8415v0zk",
                         type: "Button",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[10]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[10]",
                         name: "EnableNotificationsButton",
                         text: "Enable Notifications",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Button_1ey5pjqe",
                         type: "Button",
-                        path:
-                            "ProfilePage.body[0].children[1].children[0].children[11]",
+                        path: "ProfilePage.body[0].children[1].children[0].children[11]",
                         name: "Button",
                         text: "Logout",
-                        triggers: const <String>["ON_TAP"],
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                     ],
+                  ),
+                ],
+              ),
+              ffai.ProjectWidgetHandle(
+                key: "Column_p064br4x",
+                type: "Column",
+                path: "ProfilePage.body[0].children[2]",
+                name: "NativeWorkspaceNavigation",
+                children: <ffai.ProjectWidgetHandle>[
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_rrk6d8ar",
+                    type: "Container",
+                    path: "ProfilePage.body[0].children[2].children[0]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_6st8lz4j",
+                    type: "Container",
+                    path: "ProfilePage.body[0].children[2].children[1]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_h3r0s8nr",
+                    type: "Container",
+                    path: "ProfilePage.body[0].children[2].children[2]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Container_iim8uk6l",
+                    type: "Container",
+                    path: "ProfilePage.body[0].children[2].children[3]",
+                    name: "WorkspaceMenuRow",
+                    componentName: "WorkspaceMenuRow",
                   ),
                 ],
               ),
@@ -277,3 +313,4 @@ abstract final class ProfilePageWidgets {
     ),
   );
 }
+

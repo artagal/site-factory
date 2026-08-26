@@ -19,12 +19,33 @@ The old challenge/XP/streak/leaderboard product is deprecated and should not be 
 
 ## FlutterFlow App Status
 
-The current app has 17 Builder-native pages, including a dedicated partner deal
-editor, AI Finder, and AI Support. The native search/plan results use the shared
-GoFunMotion API. Native auth uses email, Google, and Apple with server-side canonical
-profile sync. Browse-without-account no longer creates an anonymous identity.
+The current app has **62 Builder-native pages and 7 components**. This includes
+customer/business onboarding, request details and inboxes, profile settings,
+notifications, account deletion, offer maps, moderated reviews, partner plan/team/
+analytics screens, and 18 new native admin screens. The original deal editor,
+AI Finder, AI Support, discovery and account pages are retained.
 
-Latest FlutterFlow commit: `EPZ8qOhrVAPdblFk4neD` (2026-08-26).
+Latest FlutterFlow commit: `jExsfCMwThaAVIG3GIyo` (2026-08-26).
+Full page inventory and limitations: `docs/FLUTTERFLOW_NATIVE_WORKSPACE_2026-08-26.md`.
+The new screens are grouped into native Builder folders and use the protected
+`/api/mobile/workspace` endpoint. Deploy this endpoint and the new indexes before
+real mobile QA. Team management currently means a contact roster, not staff auth
+invitations. Subscription screens display entitlements; no native purchase flow
+is added. Mobile Firebase configuration and TestFlight remain release gates.
+
+Verification: 199 regular tests passed, 8 dedicated Firebase Emulator integration
+tests passed, and all 22 Dart tests passed. Fresh generated-runtime analysis found
+0 errors, 1,057 warnings and 3,364 informational diagnostics. These generated-code
+warnings are recorded, not fixed by hand or hidden from the release assessment.
+Website typecheck/build and SEO audit passed. The fresh Flutter web export compiled
+on installed Flutter 3.35.7; default Flutter 3.44 fails on the export's Font Awesome
+dependency. See the expansion document for the exact command and remaining native
+Firebase, startup-asset, CI-runtime and device QA gates.
+
+Native auth uses email, Google and Apple with server-side canonical profile sync
+and routes new profiles to customer onboarding. Browse-without-account no longer
+creates an anonymous identity. Partner approval retries preserve ownership, edited
+business profiles and paid entitlements instead of resetting them.
 
 Latest UX/functional pass: see `docs/UX_FUNCTIONAL_AUDIT_2026-08-26.md`.
 The web homepage is now compact and deal-first. Native discovery uses the new
