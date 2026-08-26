@@ -11,32 +11,54 @@ abstract final class Enums {
 }
 
 abstract final class Structs {
-  static final ffai.StructHandle mobileAccessResponse =
-      ffai.StructHandle("MobileAccessResponse", <String, ffai.DslType>{
-        "businesses": ffai.listOf(Structs.mobileBusinessAccess),
-        "defaultRoute": ffai.string,
-        "isAdmin": ffai.bool_,
-        "primaryBusinessId": ffai.string,
-        "role": ffai.string,
-        "uid": ffai.string,
-      }, description: ffai.generatedProjectStructDescription);
-  static final ffai.StructHandle mobileBookingRequest =
-      ffai.StructHandle("MobileBookingRequest", <String, ffai.DslType>{
-        "businessName": ffai.string,
-        "id": ffai.string,
-        "listingTitle": ffai.string,
-        "requestedDate": ffai.string,
-        "requestedTime": ffai.string,
-        "status": ffai.string,
-      }, description: ffai.generatedProjectStructDescription);
-  static final ffai.StructHandle mobileBookingRequestsResponse =
-      ffai.StructHandle(
-        "MobileBookingRequestsResponse",
-        <String, ffai.DslType>{
-          "bookingRequests": ffai.listOf(Structs.mobileBookingRequest),
-        },
-        description: ffai.generatedProjectStructDescription,
-      );
+  static final ffai.StructHandle mobileAccessResponse = ffai.StructHandle(
+    "MobileAccessResponse",
+    <String, ffai.DslType>{
+      "businesses": ffai.listOf(Structs.mobileBusinessAccess),
+      "defaultRoute": ffai.string,
+      "isAdmin": ffai.bool_,
+      "primaryBusinessId": ffai.string,
+      "role": ffai.string,
+      "uid": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobileBookingMessageResponse = ffai.StructHandle(
+    "MobileBookingMessageResponse",
+    <String, ffai.DslType>{
+      "message": ffai.string,
+      "provider": ffai.string,
+      "setupWarning": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobileBookingRequest = ffai.StructHandle(
+    "MobileBookingRequest",
+    <String, ffai.DslType>{
+      "businessName": ffai.string,
+      "id": ffai.string,
+      "listingTitle": ffai.string,
+      "requestedDate": ffai.string,
+      "requestedTime": ffai.string,
+      "status": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobileBookingRequestsResponse = ffai.StructHandle(
+    "MobileBookingRequestsResponse",
+    <String, ffai.DslType>{
+      "bookingRequests": ffai.listOf(Structs.mobileBookingRequest),
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobileBookingRequestsV2Response = ffai.StructHandle(
+    "MobileBookingRequestsV2Response",
+    <String, ffai.DslType>{
+      "bookingRequests": ffai.listOf(Structs.mobileBookingRequest),
+      "count": ffai.int_,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
   static final ffai.StructHandle mobileBusinessAccess = ffai.StructHandle(
     "MobileBusinessAccess",
     <String, ffai.DslType>{
@@ -77,49 +99,67 @@ abstract final class Structs {
     },
     description: ffai.generatedProjectStructDescription,
   );
-  static final ffai.StructHandle mobilePartnerListingsResponse =
-      ffai.StructHandle(
-        "MobilePartnerListingsResponse",
-        <String, ffai.DslType>{
-          "listings": ffai.listOf(Structs.mobilePartnerListingItem),
-        },
-        description: ffai.generatedProjectStructDescription,
-      );
-  static final ffai.StructHandle mobilePlanResponse =
-      ffai.StructHandle("MobilePlanResponse", <String, ffai.DslType>{
-        "plan": Structs.mobilePlanResult,
-        "provider": ffai.string,
-        "setupWarning": ffai.string,
-      }, description: ffai.generatedProjectStructDescription);
-  static final ffai.StructHandle mobilePlanResult = ffai.StructHandle(
-    "MobilePlanResult",
-    <String, ffai.DslType>{"summary": ffai.string, "title": ffai.string},
+  static final ffai.StructHandle mobilePartnerListingsResponse = ffai.StructHandle(
+    "MobilePartnerListingsResponse",
+    <String, ffai.DslType>{
+      "listings": ffai.listOf(Structs.mobilePartnerListingItem),
+    },
     description: ffai.generatedProjectStructDescription,
   );
-  static final ffai.StructHandle mobileSavedListingItem =
-      ffai.StructHandle("MobileSavedListingItem", <String, ffai.DslType>{
-        "city": ffai.string,
-        "id": ffai.string,
-        "listingId": ffai.string,
-        "listingTitle": ffai.string,
-      }, description: ffai.generatedProjectStructDescription);
-  static final ffai.StructHandle mobileSavedListingsResponse =
-      ffai.StructHandle(
-        "MobileSavedListingsResponse",
-        <String, ffai.DslType>{
-          "savedListings": ffai.listOf(Structs.mobileSavedListingItem),
-        },
-        description: ffai.generatedProjectStructDescription,
-      );
-  static final ffai.StructHandle mobileSavedPlanItem =
-      ffai.StructHandle("MobileSavedPlanItem", <String, ffai.DslType>{
-        "city": ffai.string,
-        "id": ffai.string,
-        "persona": ffai.string,
-        "planId": ffai.string,
-        "summary": ffai.string,
-        "title": ffai.string,
-      }, description: ffai.generatedProjectStructDescription);
+  static final ffai.StructHandle mobilePartnerListingsV2Response = ffai.StructHandle(
+    "MobilePartnerListingsV2Response",
+    <String, ffai.DslType>{
+      "count": ffai.int_,
+      "listings": ffai.listOf(Structs.mobilePartnerListingItem),
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobilePlanResponse = ffai.StructHandle(
+    "MobilePlanResponse",
+    <String, ffai.DslType>{
+      "plan": Structs.mobilePlanResult,
+      "provider": ffai.string,
+      "setupWarning": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobilePlanResult = ffai.StructHandle(
+    "MobilePlanResult",
+    <String, ffai.DslType>{
+      "summary": ffai.string,
+      "title": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobileSavedListingItem = ffai.StructHandle(
+    "MobileSavedListingItem",
+    <String, ffai.DslType>{
+      "city": ffai.string,
+      "id": ffai.string,
+      "listingId": ffai.string,
+      "listingTitle": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobileSavedListingsResponse = ffai.StructHandle(
+    "MobileSavedListingsResponse",
+    <String, ffai.DslType>{
+      "savedListings": ffai.listOf(Structs.mobileSavedListingItem),
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle mobileSavedPlanItem = ffai.StructHandle(
+    "MobileSavedPlanItem",
+    <String, ffai.DslType>{
+      "city": ffai.string,
+      "id": ffai.string,
+      "persona": ffai.string,
+      "planId": ffai.string,
+      "summary": ffai.string,
+      "title": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
   static final ffai.StructHandle mobileSavedPlansResponse = ffai.StructHandle(
     "MobileSavedPlansResponse",
     <String, ffai.DslType>{
@@ -137,23 +177,29 @@ abstract final class Structs {
     },
     description: ffai.generatedProjectStructDescription,
   );
-  static final ffai.StructHandle mobileWriteResponse =
-      ffai.StructHandle("MobileWriteResponse", <String, ffai.DslType>{
-        "applicationId": ffai.string,
-        "listingId": ffai.string,
-        "planId": ffai.string,
-        "requestId": ffai.string,
-        "saved": ffai.bool_,
-        "synced": ffai.bool_,
-      }, description: ffai.generatedProjectStructDescription);
+  static final ffai.StructHandle mobileWriteResponse = ffai.StructHandle(
+    "MobileWriteResponse",
+    <String, ffai.DslType>{
+      "applicationId": ffai.string,
+      "listingId": ffai.string,
+      "planId": ffai.string,
+      "requestId": ffai.string,
+      "saved": ffai.bool_,
+      "synced": ffai.bool_,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
   static final all = <ffai.StructHandle>[
     mobileAccessResponse,
+    mobileBookingMessageResponse,
     mobileBookingRequest,
     mobileBookingRequestsResponse,
+    mobileBookingRequestsV2Response,
     mobileBusinessAccess,
     mobilePartnerCopyResponse,
     mobilePartnerListingItem,
     mobilePartnerListingsResponse,
+    mobilePartnerListingsV2Response,
     mobilePlanResponse,
     mobilePlanResult,
     mobileSavedListingItem,
@@ -166,12 +212,11 @@ abstract final class Structs {
 }
 
 abstract final class Collections {
-  static final bookingRequests =
-      ffai.ProjectCollectionHandle<BookingRequestsFields>(
-        name: "bookingRequests",
-        description: "Booking request leads sent to approved partners.",
-        fields: BookingRequestsFields(),
-      );
+  static final bookingRequests = ffai.ProjectCollectionHandle<BookingRequestsFields>(
+    name: "bookingRequests",
+    description: "Booking request leads sent to approved partners.",
+    fields: BookingRequestsFields(),
+  );
   static final businesses = ffai.ProjectCollectionHandle<BusinessesFields>(
     name: "businesses",
     description: "Partner business profiles pending or approved by admins.",
@@ -192,18 +237,16 @@ abstract final class Collections {
     description: "Approved activity deal listings shown in the marketplace.",
     fields: ListingsFields(),
   );
-  static final partnerApplications =
-      ffai.ProjectCollectionHandle<PartnerApplicationsFields>(
-        name: "partnerApplications",
-        description: "Inbound business applications for admin review.",
-        fields: PartnerApplicationsFields(),
-      );
-  static final savedListings =
-      ffai.ProjectCollectionHandle<SavedListingsFields>(
-        name: "savedListings",
-        description: "User-saved deal references.",
-        fields: SavedListingsFields(),
-      );
+  static final partnerApplications = ffai.ProjectCollectionHandle<PartnerApplicationsFields>(
+    name: "partnerApplications",
+    description: "Inbound business applications for admin review.",
+    fields: PartnerApplicationsFields(),
+  );
+  static final savedListings = ffai.ProjectCollectionHandle<SavedListingsFields>(
+    name: "savedListings",
+    description: "User-saved deal references.",
+    fields: SavedListingsFields(),
+  );
   static final savedPlans = ffai.ProjectCollectionHandle<SavedPlansFields>(
     name: "savedPlans",
     description: "User-saved plan finder outputs and filters.",
@@ -366,8 +409,7 @@ final class BookingRequestsFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -489,8 +531,7 @@ final class BusinessesFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -558,8 +599,7 @@ final class CategoriesFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -627,8 +667,7 @@ final class CitiesFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -939,8 +978,7 @@ final class ListingsFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -1035,8 +1073,7 @@ final class PartnerApplicationsFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -1122,8 +1159,7 @@ final class SavedListingsFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -1227,8 +1263,7 @@ final class SavedPlansFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -1341,8 +1376,7 @@ final class UsersFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -1401,8 +1435,7 @@ final class WaitlistFields extends MapBase<String, ffai.DslType> {
       throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
-  void clear() =>
-      throw UnsupportedError('Generated project SDK fields are read-only.');
+  void clear() => throw UnsupportedError('Generated project SDK fields are read-only.');
 
   @override
   ffai.DslType? remove(Object? key) =>
@@ -1414,7 +1447,12 @@ abstract final class Tables {
 }
 
 abstract final class CustomCode {
-  static const functions = <String>[];
-  static const actions = <String>["registerGoFunMotionPushToken"];
-  static const widgets = <String>[];
+  static const functions = <String>[
+  ];
+  static const actions = <String>[
+    "registerGoFunMotionPushToken",
+  ];
+  static const widgets = <String>[
+  ];
 }
+

@@ -13,6 +13,8 @@ import 'package:flutterflow_ai/src/helpers/ensure_helpers.dart'
     show ensureCollectionField;
 import 'package:flutterflow_ai/src/helpers/project_helpers.dart'
     show setInitialPage;
+import 'package:flutterflow_ai/src/helpers/theme_helpers.dart'
+    show ffThemeColor, getTypographyStyle, setTypographyStyle;
 import 'package:flutterflow_ai/src/helpers/variable_helpers.dart'
     show generatorVarField;
 
@@ -145,6 +147,7 @@ bool _keepValidationError(error) =>
     !error.message.contains('config files are not uploaded');
 
 void buildGoFunMotionDealsQueryGuard(App app) {
+  _ensureGoFunMotionTheme(app);
   final api = _ensureGoFunMotionApi(app);
   _ensureAnimatedSplash(app);
   _ensureMobileAppIdentity(app);
@@ -157,6 +160,64 @@ void buildGoFunMotionDealsQueryGuard(App app) {
   _wireSaferSaveAndBookingActions(app, api);
   _wireRoleRouting(app, api);
   _wireAiAssistants(app, api);
+  _wireCustomerBookingHistory(app, api);
+  _wirePartnerDealWorkflow(app, api);
+}
+
+void _ensureGoFunMotionTheme(App app) {
+  app.darkMode(enabled: true);
+  app.primaryFont('Inter');
+  app.secondaryFont('Inter');
+
+  // Saturated CTA colors retain white-label contrast in both appearance modes.
+  app.themeColor('primary', 0xFF087EA4, dark: 0xFF087EA4);
+  app.themeColor('secondary', 0xFFD52B80, dark: 0xFFD52B80);
+  app.themeColor('tertiary', 0xFF527F09, dark: 0xFFBDF45A);
+  app.themeColor('alternate', 0xFFDEE3EA, dark: 0xFF30323B);
+  app.themeColor('primaryBackground', 0xFFF7F8FA, dark: 0xFF0A0A0F);
+  app.themeColor('secondaryBackground', 0xFFFFFFFF, dark: 0xFF16171D);
+  app.themeColor('primaryText', 0xFF11141B, dark: 0xFFF5F7FB);
+  app.themeColor('secondaryText', 0xFF5F6673, dark: 0xFFB5BAC6);
+  app.themeColor('accent1', 0xFFDEF7FB, dark: 0xFF123039);
+  app.themeColor('accent2', 0xFFFCE3F0, dark: 0xFF3C1930);
+  app.themeColor('accent3', 0xFFECF8D2, dark: 0xFF233519);
+  app.themeColor('accent4', 0xFFE3EEFB, dark: 0xFF162C43);
+  app.themeColor('success', 0xFF4E770D, dark: 0xFFBDF45A);
+  app.themeColor('warning', 0xFF955909, dark: 0xFFFFC864);
+  app.themeColor('error', 0xFFBC294C, dark: 0xFFFF7093);
+  app.themeColor('info', 0xFF087EA4, dark: 0xFF5DD8EF);
+
+  app.raw((project) {
+    for (final slot in const [
+      'displayLarge',
+      'displayMedium',
+      'displaySmall',
+      'headlineLarge',
+      'headlineMedium',
+      'headlineSmall',
+      'titleLarge',
+      'titleMedium',
+      'titleSmall',
+      'labelLarge',
+      'labelMedium',
+      'labelSmall',
+      'bodyLarge',
+      'bodyMedium',
+      'bodySmall',
+    ]) {
+      final style = getTypographyStyle(project, slot).deepCopy();
+      final muted = slot == 'bodySmall' || slot == 'labelSmall';
+      style.colorValue = FFColorValue(
+        inputValue: ffThemeColor(
+          muted
+              ? FFColor_ThemeColor.SECONDARY_TEXT
+              : FFColor_ThemeColor.PRIMARY_TEXT,
+        ),
+      );
+      style.letterSpacingValue = FFDoubleValue(inputValue: 0);
+      setTypographyStyle(project, slot, style);
+    }
+  });
 }
 
 void _ensureCompatibleMobileDependencies(App app) {
@@ -256,8 +317,10 @@ void _ensureMobileAppIdentity(App app) {
 
 final class _GoFunMotionApi {
   const _GoFunMotionApi({
+    required this.bookingMessage,
     required this.bookingRequest,
     required this.getAccess,
+    required this.getMyBookingRequests,
     required this.getPartnerBookingRequests,
     required this.getPartnerListings,
     required this.getSavedListings,
@@ -268,12 +331,16 @@ final class _GoFunMotionApi {
     required this.plan,
     required this.saveListing,
     required this.savePlan,
+    required this.savePartnerListing,
     required this.partnerBookingRequest,
     required this.smartSearch,
+    required this.updateBookingRequestStatus,
   });
 
+  final Endpoint bookingMessage;
   final Endpoint bookingRequest;
   final Endpoint getAccess;
+  final Endpoint getMyBookingRequests;
   final Endpoint getPartnerBookingRequests;
   final Endpoint getPartnerListings;
   final Endpoint getSavedListings;
@@ -284,8 +351,10 @@ final class _GoFunMotionApi {
   final Endpoint plan;
   final Endpoint saveListing;
   final Endpoint savePlan;
+  final Endpoint savePartnerListing;
   final StructHandle partnerBookingRequest;
   final Endpoint smartSearch;
+  final Endpoint updateBookingRequestStatus;
 }
 
 _GoFunMotionApi _ensureGoFunMotionApi(App app) {
@@ -359,10 +428,19 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     'requestedTime': string,
     'status': string,
   });
-  final bookingRequestsResponse = app.struct('MobileBookingRequestsResponse', {
-    'bookingRequests': listOf(bookingRequestItem),
+  final bookingRequestsResponse = app.struct(
+    'MobileBookingRequestsV2Response',
+    {'bookingRequests': listOf(bookingRequestItem), 'count': int_},
+  );
+  final bookingMessageResponse = app.struct('MobileBookingMessageResponse', {
+    'message': string,
+    'provider': string,
+    'setupWarning': string,
   });
-  final partnerListingsResponse = ff.Structs.mobilePartnerListingsResponse;
+  final partnerListingsResponse = app.struct(
+    'MobilePartnerListingsV2Response',
+    {'count': int_, 'listings': listOf(partnerListingItem)},
+  );
   final copyResponse = app.struct('MobilePartnerCopyResponse', {
     'provider': string,
     'setupWarning': string,
@@ -557,8 +635,25 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     },
     response: writeResponse,
   );
+  final bookingMessage = Endpoint.post(
+    'DraftBookingMessage',
+    '/api/ai/booking-message',
+    variables: {'intent': string, 'listingId': string, 'token': string},
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {'intent': '<intent>', 'listingId': '<listingId>'},
+    response: bookingMessageResponse,
+  );
+  final getMyBookingRequests = Endpoint.get(
+    'GetMyBookingRequests',
+    '/api/me/booking-requests',
+    variables: {'token': string},
+    headers: authHeaders,
+    settings: authSettings,
+    response: bookingRequestsResponse,
+  );
   final getPartnerListings = Endpoint.get(
-    'GetPartnerListings',
+    'GetPartnerListingsV2',
     '/api/partner/listings',
     variables: {'token': string},
     headers: authHeaders,
@@ -566,12 +661,54 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     response: partnerListingsResponse,
   );
   final getPartnerBookingRequests = Endpoint.get(
-    'GetPartnerBookingRequests',
+    'GetPartnerBookingRequestsV2',
     '/api/partner/booking-requests',
     variables: {'token': string},
     headers: authHeaders,
     settings: authSettings,
     response: bookingRequestsResponse,
+  );
+  final updateBookingRequestStatus = Endpoint.post(
+    'UpdatePartnerBookingRequestStatus',
+    '/api/partner/booking-requests/status',
+    variables: {'requestId': string, 'status': string, 'token': string},
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {'requestId': '<requestId>', 'status': '<status>'},
+    response: writeResponse,
+  );
+  final savePartnerListing = Endpoint.post(
+    'SavePartnerListing',
+    '/api/partner/listings',
+    variables: {
+      'availableSlot': string,
+      'businessId': string,
+      'category': string,
+      'description': string,
+      'originalPrice': string,
+      'price': string,
+      'remainingSpots': string,
+      'saveMode': string,
+      'title': string,
+      'token': string,
+    },
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {
+      'availableSlot': '<availableSlot>',
+      'bookingMode': 'request',
+      'businessId': '<businessId>',
+      'categoryIds': ['<category>'],
+      'description': '<description>',
+      'listingType': 'deal',
+      'originalPrice': '<originalPrice>',
+      'price': '<price>',
+      'remainingSpots': '<remainingSpots>',
+      'saveMode': '<saveMode>',
+      'shortDescription': '<description>',
+      'title': '<title>',
+    },
+    response: writeResponse,
   );
   final registerPushToken = Endpoint.post(
     'RegisterPushToken',
@@ -632,16 +769,22 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
       getSavedPlans,
       savePlan,
       bookingRequest,
+      bookingMessage,
+      getMyBookingRequests,
       getPartnerListings,
       getPartnerBookingRequests,
+      updateBookingRequestStatus,
+      savePartnerListing,
       registerPushToken,
       partnerApplication,
     ],
   );
 
   return _GoFunMotionApi(
+    bookingMessage: bookingMessage,
     bookingRequest: bookingRequest,
     getAccess: getAccess,
+    getMyBookingRequests: getMyBookingRequests,
     getPartnerBookingRequests: getPartnerBookingRequests,
     getPartnerListings: getPartnerListings,
     getSavedListings: getSavedListings,
@@ -652,8 +795,10 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     plan: plan,
     saveListing: saveListing,
     savePlan: savePlan,
+    savePartnerListing: savePartnerListing,
     partnerBookingRequest: bookingRequestItem,
     smartSearch: smartSearch,
+    updateBookingRequestStatus: updateBookingRequestStatus,
   );
 }
 
@@ -763,10 +908,16 @@ void _ensureProductionCollectionFields(App app) {
 
 void _wireProductionQueries(App app, _GoFunMotionApi api) {
   final listings = ff.Collections.listings;
+  final bookingRequestItem = api.partnerBookingRequest;
   final savedListingItem = ff.Structs.mobileSavedListingItem;
   final savedPlanItem = ff.Structs.mobileSavedPlanItem;
 
   app.editPageState(ff.Pages.savedPage, (state) {
+    state.ensureField('bookingRequests', listOf(bookingRequestItem));
+    state.ensureField(
+      'bookingRequestsViewState',
+      string.withDefault('loading'),
+    );
     state.ensureField('savedDeals', listOf(savedListingItem));
     state.ensureField('savedPlanItems', listOf(savedPlanItem));
   });
@@ -858,26 +1009,41 @@ void _wireProductionQueries(App app, _GoFunMotionApi api) {
     If(
       const Global(GlobalProperty.isUserLoggedIn),
       then: [
+        SetState('bookingRequestsViewState', 'loading'),
         ApiCall(
           api.getSavedPlans,
           outputAs: 'spApi2',
           params: {'token': const AuthUser(AuthUserField.jwtToken)},
           onSuccess:
-              (result) => [
-                SetState('savedPlanItems', result['savedPlans']),
-                ApiCall(
-                  api.getSavedListings,
-                  outputAs: 'slApi2',
-                  params: {'token': const AuthUser(AuthUserField.jwtToken)},
-                  onSuccess:
-                      (savedResult) => [
-                        SetState('savedDeals', savedResult['savedListings']),
-                      ],
-                ),
+              (result) => [SetState('savedPlanItems', result['savedPlans'])],
+        ),
+        ApiCall(
+          api.getSavedListings,
+          outputAs: 'slApi2',
+          params: {'token': const AuthUser(AuthUserField.jwtToken)},
+          onSuccess:
+              (savedResult) => [
+                SetState('savedDeals', savedResult['savedListings']),
               ],
         ),
+        ApiCall(
+          api.getMyBookingRequests,
+          outputAs: 'myBookingRequestsApi',
+          params: {'token': const AuthUser(AuthUserField.jwtToken)},
+          onSuccess:
+              (bookingResult) => [
+                SetState('bookingRequests', bookingResult['bookingRequests']),
+                SetState('bookingRequestsViewState', 'ready'),
+              ],
+          onFailure: [SetState('bookingRequestsViewState', 'error')],
+        ),
       ],
-      orElse: [SetState.clear('savedPlanItems'), SetState.clear('savedDeals')],
+      orElse: [
+        SetState.clear('savedPlanItems'),
+        SetState.clear('savedDeals'),
+        SetState.clear('bookingRequests'),
+        SetState('bookingRequestsViewState', 'signedOut'),
+      ],
     ),
   ]);
 
@@ -1197,7 +1363,12 @@ void _wireSaferSaveAndBookingActions(App app, _GoFunMotionApi api) {
               params: {
                 'email': State('contactEmail'),
                 'listingId': State('listing')['id'],
-                'message': State('message'),
+                'message': WidgetState(
+                  ff.Pages.dealDetailPage.widgets
+                      .byKey('TextField_844shv74')
+                      .single,
+                  WidgetStateProperty.text,
+                ),
                 'name': State('contactName'),
                 'partySize': State('partySize'),
                 'requestedDate': State('requestedDate'),
@@ -1432,14 +1603,32 @@ void _wireAiAssistants(App app, _GoFunMotionApi api) {
   app.editPageState(ff.Pages.partnerDashboardPage, (state) {
     state.ensureField('currentBusinessId', string);
     state.ensureField('copyCategory', string.withDefault('classes'));
+    state.ensureField('dealAvailableSlot', string);
+    state.ensureField('dealOriginalPrice', string);
+    state.ensureField('dealPrice', string);
+    state.ensureField('dealRemainingSpots', string);
     state.ensureField('draftDescription', string);
     state.ensureField('draftTitle', string);
+    state.ensureField(
+      'partnerListings',
+      listOf(ff.Structs.mobilePartnerListingItem),
+    );
+    state.ensureField(
+      'partnerListingsViewState',
+      string.withDefault('loading'),
+    );
     state.ensureField('partnerRequests', listOf(api.partnerBookingRequest));
+    state.ensureField(
+      'partnerRequestsViewState',
+      string.withDefault('loading'),
+    );
   });
   app.editPageOnLoad(ff.Pages.partnerDashboardPage, [
     If(
       const Global(GlobalProperty.isUserLoggedIn),
       then: [
+        SetState('partnerListingsViewState', 'loading'),
+        SetState('partnerRequestsViewState', 'loading'),
         ApiCall(
           api.getAccess,
           outputAs: 'partnerAccess',
@@ -1447,25 +1636,43 @@ void _wireAiAssistants(App app, _GoFunMotionApi api) {
           onSuccess:
               (result) => [
                 SetState('currentBusinessId', result['primaryBusinessId']),
-                ApiCall(
-                  api.getPartnerBookingRequests,
-                  outputAs: 'pbrApi2',
-                  params: {'token': const AuthUser(AuthUserField.jwtToken)},
-                  onSuccess:
-                      (requestResult) => [
-                        SetState(
-                          'partnerRequests',
-                          requestResult['bookingRequests'],
-                        ),
-                      ],
-                ),
               ],
+          onFailure: [
+            SetState('partnerListingsViewState', 'error'),
+            SetState('partnerRequestsViewState', 'error'),
+          ],
         ),
+        ApiCall(
+          api.getPartnerListings,
+          outputAs: 'partnerListingsInitialV2',
+          params: {'token': const AuthUser(AuthUserField.jwtToken)},
+          onSuccess:
+              (listingResult) => [
+                SetState('partnerListings', listingResult['listings']),
+                SetState('partnerListingsViewState', 'ready'),
+              ],
+          onFailure: [SetState('partnerListingsViewState', 'error')],
+        ),
+        ApiCall(
+          api.getPartnerBookingRequests,
+          params: {'token': const AuthUser(AuthUserField.jwtToken)},
+          onSuccess:
+              (requestResult) => [
+                SetState('partnerRequests', requestResult['bookingRequests']),
+                SetState('partnerRequestsViewState', 'ready'),
+              ],
+          onFailure: [SetState('partnerRequestsViewState', 'error')],
+        ),
+      ],
+      orElse: [
+        SetState('partnerListingsViewState', 'signedOut'),
+        SetState('partnerRequestsViewState', 'signedOut'),
       ],
     ),
   ]);
   app.editPage(ff.Pages.partnerDashboardPage, (page) {
-    page.ensureInsertedBefore(
+    _upsertPartnerPanelBefore(
+      page,
       page.findByText('Request Listing Setup'),
       Container(
         name: 'PartnerCopyAssistantPanel',
@@ -1516,6 +1723,14 @@ void _wireAiAssistants(App app, _GoFunMotionApi api) {
                 ],
               ),
             ),
+            Text(
+              State('draftTitle'),
+              name: 'PartnerDraftTitlePreview',
+              style: Styles.bodySmall,
+              color: Colors.primary,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
             TextField(
               name: 'PartnerDraftDescriptionField',
               label: 'Deal description',
@@ -1550,12 +1765,756 @@ void _wireAiAssistants(App app, _GoFunMotionApi api) {
                 ],
               ),
             ),
+            Text(
+              State('draftDescription'),
+              name: 'PartnerDraftDescriptionPreview',
+              style: Styles.bodySmall,
+              color: Colors.secondaryText,
+              maxLines: 5,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
       ),
     );
   });
 }
+
+void _wireCustomerBookingHistory(App app, _GoFunMotionApi api) {
+  app.editPage(ff.Pages.dealDetailPage, (page) {
+    page.ensureInsertedBefore(
+      ff.Pages.dealDetailPage.widgets.byKey('TextField_844shv74').single,
+      Container(
+        name: 'BookingMessageAssistantCard',
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 10,
+          children: [
+            Text('Need help with the message?', style: Styles.titleSmall),
+            Text(
+              'AI drafts an editable note. It never sends, confirms, or pays for anything.',
+              style: Styles.bodySmall,
+              color: Colors.secondaryText,
+            ),
+            Button(
+              'Draft Message with AI',
+              name: 'DraftBookingMessageButton',
+              width: double.infinity,
+              height: 44,
+              icon: 'auto_awesome',
+              borderRadius: 8,
+              variant: ButtonVariant.outlined,
+              onTap: If(
+                const Global(GlobalProperty.isUserLoggedIn),
+                then: [
+                  ApiCall(
+                    api.bookingMessage,
+                    outputAs: 'bookingMessageDraft',
+                    params: {
+                      'intent': WidgetState(
+                        ff.Pages.dealDetailPage.widgets
+                            .byKey('TextField_844shv74')
+                            .single,
+                        WidgetStateProperty.text,
+                      ),
+                      'listingId': State('listing')['id'],
+                      'token': const AuthUser(AuthUserField.jwtToken),
+                    },
+                    onSuccess:
+                        (result) => [
+                          SetFormField(
+                            ff.Pages.dealDetailPage.widgets
+                                .byKey('TextField_844shv74')
+                                .single,
+                            result['message'],
+                          ),
+                          Snackbar('Draft ready. Review it before sending.'),
+                        ],
+                    onFailure: [
+                      Snackbar(
+                        'AI drafting is unavailable. You can still write your own message.',
+                      ),
+                    ],
+                  ),
+                ],
+                orElse: [
+                  Snackbar('Sign in before using the message assistant.'),
+                  Navigate(ff.Pages.signInPage),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  });
+
+  app.editPage(ff.Pages.savedPage, (page) {
+    page.ensureInsertedAfter(
+      ff.Pages.savedPage.widgets.byKey('ListView_te29ughq').single,
+      Container(
+        name: 'CustomerBookingHistorySection',
+        width: double.infinity,
+        margin: const EdgeInsets.only(top: 18),
+        padding: const EdgeInsets.all(16),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        visible: const Global(GlobalProperty.isUserLoggedIn),
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 12,
+          children: [
+            Row(
+              spacing: 10,
+              children: [
+                const Icon('event_available', size: 22, color: Colors.primary),
+                Text('Booking requests', style: Styles.titleMedium),
+              ],
+            ),
+            Text(
+              'A request is not confirmed until the business changes its status.',
+              style: Styles.bodySmall,
+              color: Colors.secondaryText,
+            ),
+            Text(
+              'Loading your requests...',
+              name: 'CustomerBookingRequestsLoading',
+              style: Styles.bodyMedium,
+              visible: Equals(State('bookingRequestsViewState'), 'loading'),
+            ),
+            Text(
+              'New requests and status changes appear below as businesses respond.',
+              name: 'CustomerBookingRequestsEmpty',
+              style: Styles.bodyMedium,
+              color: Colors.secondaryText,
+              visible: Equals(State('bookingRequestsViewState'), 'ready'),
+            ),
+            Text(
+              'Requests could not be loaded. Check your connection and try again.',
+              name: 'CustomerBookingRequestsError',
+              style: Styles.bodyMedium,
+              color: Colors.error,
+              visible: Equals(State('bookingRequestsViewState'), 'error'),
+            ),
+            ListView(
+              name: 'CustomerBookingRequestsList',
+              source: State('bookingRequests'),
+              shrinkWrap: true,
+              spacing: 10,
+              visible: Equals(State('bookingRequestsViewState'), 'ready'),
+              itemBuilder:
+                  (request) => Container(
+                    padding: const EdgeInsets.all(14),
+                    borderRadius: 8,
+                    color: Colors.primaryBackground,
+                    borderColor: Colors.alternate,
+                    borderWidth: 1,
+                    child: Column(
+                      crossAxis: CrossAxis.start,
+                      spacing: 6,
+                      children: [
+                        Text(
+                          request['listingTitle'],
+                          style: Styles.titleSmall,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          request['businessName'],
+                          style: Styles.bodySmall,
+                          color: Colors.secondaryText,
+                        ),
+                        Row(
+                          spacing: 8,
+                          children: [
+                            const Icon(
+                              'schedule',
+                              size: 16,
+                              color: Colors.tertiary,
+                            ),
+                            Text(
+                              request['requestedDate'],
+                              style: Styles.labelSmall,
+                            ),
+                            Text(
+                              request['requestedTime'],
+                              style: Styles.labelSmall,
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          borderRadius: 8,
+                          color: Colors.accent1,
+                          child: Text(
+                            request['status'],
+                            style: Styles.labelSmall,
+                            color: Colors.primaryText,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+            ),
+            Button(
+              'Refresh Requests',
+              name: 'RefreshCustomerBookingRequestsButton',
+              width: double.infinity,
+              height: 42,
+              icon: 'refresh',
+              borderRadius: 8,
+              variant: ButtonVariant.outlined,
+              onTap: [
+                SetState('bookingRequestsViewState', 'loading'),
+                ApiCall(
+                  api.getMyBookingRequests,
+                  outputAs: 'myBookingRequestsRefresh',
+                  params: {'token': const AuthUser(AuthUserField.jwtToken)},
+                  onSuccess:
+                      (result) => [
+                        SetState('bookingRequests', result['bookingRequests']),
+                        SetState('bookingRequestsViewState', 'ready'),
+                      ],
+                  onFailure: [SetState('bookingRequestsViewState', 'error')],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  });
+}
+
+void _upsertPartnerPanelBefore(
+  EditWidgetEditor page,
+  Object anchor,
+  DslWidget panel,
+) {
+  final existing =
+      ff.Pages.partnerDashboardPage.widgets.all
+          .where((widget) => widget.name == panel.name)
+          .toList();
+  if (existing.isEmpty) {
+    page.ensureInsertedBefore(anchor, panel);
+    return;
+  }
+  // Several panels share one anchor; adjacent-sibling insertion is not enough.
+  page.ensureReplaced(existing.single, panel);
+}
+
+void _wirePartnerDealWorkflow(App app, _GoFunMotionApi api) {
+  app.editPage(ff.Pages.partnerDashboardPage, (page) {
+    final setupButton = page.findByText('Request Listing Setup');
+
+    _upsertPartnerPanelBefore(
+      page,
+      setupButton,
+      Container(
+        name: 'PartnerDealFactsPanel',
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.primary,
+        borderWidth: 1,
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 12,
+          children: [
+            Row(
+              spacing: 10,
+              children: [
+                const Icon('bolt', size: 22, color: Colors.primary),
+                Text('Finish deal details', style: Styles.titleMedium),
+              ],
+            ),
+            Text(
+              'Use the title and description above, then add the real price, time, and capacity. AI never changes these facts.',
+              style: Styles.bodySmall,
+              color: Colors.secondaryText,
+            ),
+            Dropdown(
+              name: 'PartnerDealCategoryDropdown',
+              label: 'Category',
+              value: State('copyCategory'),
+              options: const [
+                'classes',
+                'date-night',
+                'events',
+                'family',
+                'fitness',
+                'food-drink',
+                'friends',
+                'nightlife',
+                'outdoor',
+                'wellness',
+              ],
+              onChanged: SetState('copyCategory', const WidgetValue()),
+            ),
+            TextField(
+              name: 'PartnerDealOriginalPriceField',
+              label: 'Was price',
+              keyboard: Keyboard.number,
+              onChanged: SetState('dealOriginalPrice', const TextValue()),
+            ),
+            TextField(
+              name: 'PartnerDealPriceField',
+              label: 'Now price',
+              keyboard: Keyboard.number,
+              onChanged: SetState('dealPrice', const TextValue()),
+            ),
+            TextField(
+              name: 'PartnerDealAvailableSlotField',
+              label: 'Available date and time',
+              hint: 'Tonight 8:30 PM',
+              onChanged: SetState('dealAvailableSlot', const TextValue()),
+            ),
+            TextField(
+              name: 'PartnerDealRemainingSpotsField',
+              label: 'Spots left',
+              keyboard: Keyboard.number,
+              onChanged: SetState('dealRemainingSpots', const TextValue()),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              borderRadius: 8,
+              color: Colors.accent1,
+              child: Row(
+                spacing: 8,
+                children: [
+                  const Icon('verified_user', size: 18, color: Colors.primary),
+                  Expanded(
+                    Text(
+                      'Submitted deals stay hidden until admin approval. Starter includes one active deal.',
+                      style: Styles.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Button(
+              'Save Draft',
+              name: 'SavePartnerDealDraftButton',
+              width: double.infinity,
+              height: 46,
+              icon: 'save',
+              borderRadius: 8,
+              variant: ButtonVariant.outlined,
+              onTap: _savePartnerDealActions(
+                api,
+                saveMode: 'draft',
+                outputPrefix: 'partnerDraft',
+              ),
+            ),
+            Button(
+              'Submit for Review',
+              name: 'SubmitPartnerDealButton',
+              width: double.infinity,
+              height: 48,
+              icon: 'send',
+              borderRadius: 8,
+              onTap: _savePartnerDealActions(
+                api,
+                saveMode: 'submit',
+                outputPrefix: 'partnerSubmit',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    _upsertPartnerPanelBefore(
+      page,
+      setupButton,
+      Container(
+        name: 'PartnerListingsPanel',
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 12,
+          children: [
+            Text('Your deals', style: Styles.titleMedium),
+            Text(
+              'Draft, pending, and published deals from your approved business.',
+              style: Styles.bodySmall,
+              color: Colors.secondaryText,
+            ),
+            Text(
+              'Loading deals...',
+              style: Styles.bodyMedium,
+              visible: Equals(State('partnerListingsViewState'), 'loading'),
+            ),
+            Text(
+              'Draft, pending, and published deals appear below.',
+              style: Styles.bodyMedium,
+              color: Colors.secondaryText,
+              visible: Equals(State('partnerListingsViewState'), 'ready'),
+            ),
+            Text(
+              'Deals could not be loaded. Confirm business approval and try again.',
+              style: Styles.bodyMedium,
+              color: Colors.error,
+              visible: Equals(State('partnerListingsViewState'), 'error'),
+            ),
+            ListView(
+              name: 'PartnerListingsList',
+              source: State('partnerListings'),
+              shrinkWrap: true,
+              spacing: 10,
+              visible: Equals(State('partnerListingsViewState'), 'ready'),
+              itemBuilder:
+                  (listing) => Container(
+                    padding: const EdgeInsets.all(14),
+                    borderRadius: 8,
+                    color: Colors.primaryBackground,
+                    borderColor: Colors.alternate,
+                    borderWidth: 1,
+                    child: Column(
+                      crossAxis: CrossAxis.start,
+                      spacing: 7,
+                      children: [
+                        Text(
+                          listing['title'],
+                          style: Styles.titleSmall,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          listing['status'],
+                          style: Styles.labelSmall,
+                          color: Colors.primary,
+                        ),
+                        Row(
+                          spacing: 8,
+                          children: [
+                            Text('Was', style: Styles.labelSmall),
+                            Text(
+                              listing['originalPrice'],
+                              style: Styles.bodyMedium,
+                            ),
+                            Text('Now', style: Styles.labelSmall),
+                            Text(
+                              listing['price'],
+                              style: Styles.titleSmall,
+                              color: Colors.primary,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 8,
+                          children: [
+                            const Icon(
+                              'group',
+                              size: 16,
+                              color: Colors.tertiary,
+                            ),
+                            Text(
+                              listing['remainingSpots'],
+                              style: Styles.bodySmall,
+                            ),
+                            Text('spots left', style: Styles.bodySmall),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+            ),
+            Button(
+              'Refresh Deals',
+              name: 'RefreshPartnerListingsButton',
+              width: double.infinity,
+              height: 42,
+              icon: 'refresh',
+              borderRadius: 8,
+              variant: ButtonVariant.outlined,
+              onTap: _refreshPartnerListingsActions(
+                api,
+                outputAs: 'partnerListingsManualRefresh',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    _upsertPartnerPanelBefore(
+      page,
+      setupButton,
+      Container(
+        name: 'PartnerBookingInboxPanel',
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 12,
+          children: [
+            Text('Booking request inbox', style: Styles.titleMedium),
+            Text(
+              'Update customers promptly. Email and push notifications are sent by the secure web backend.',
+              style: Styles.bodySmall,
+              color: Colors.secondaryText,
+            ),
+            Text(
+              'Loading requests...',
+              style: Styles.bodyMedium,
+              visible: Equals(State('partnerRequestsViewState'), 'loading'),
+            ),
+            Text(
+              'New customer requests appear below as soon as they arrive.',
+              style: Styles.bodyMedium,
+              color: Colors.secondaryText,
+              visible: Equals(State('partnerRequestsViewState'), 'ready'),
+            ),
+            Text(
+              'Requests could not be loaded. Check owner access and try again.',
+              style: Styles.bodyMedium,
+              color: Colors.error,
+              visible: Equals(State('partnerRequestsViewState'), 'error'),
+            ),
+            ListView(
+              name: 'PartnerBookingRequestsList',
+              source: State('partnerRequests'),
+              shrinkWrap: true,
+              spacing: 10,
+              visible: Equals(State('partnerRequestsViewState'), 'ready'),
+              itemBuilder:
+                  (request) => Container(
+                    padding: const EdgeInsets.all(14),
+                    borderRadius: 8,
+                    color: Colors.primaryBackground,
+                    borderColor: Colors.alternate,
+                    borderWidth: 1,
+                    child: Column(
+                      crossAxis: CrossAxis.start,
+                      spacing: 8,
+                      children: [
+                        Text(
+                          request['listingTitle'],
+                          style: Styles.titleSmall,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Row(
+                          spacing: 8,
+                          children: [
+                            Text(
+                              request['requestedDate'],
+                              style: Styles.bodySmall,
+                            ),
+                            Text(
+                              request['requestedTime'],
+                              style: Styles.bodySmall,
+                            ),
+                          ],
+                        ),
+                        Text(
+                          request['status'],
+                          style: Styles.labelSmall,
+                          color: Colors.primary,
+                        ),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            Button(
+                              'Contacted',
+                              name: 'MarkPartnerRequestContactedButton',
+                              height: 40,
+                              icon: 'mail',
+                              borderRadius: 8,
+                              variant: ButtonVariant.outlined,
+                              onTap: _updatePartnerRequestStatusActions(
+                                api,
+                                request,
+                                status: 'contacted',
+                                outputPrefix: 'contacted',
+                              ),
+                            ),
+                            Button(
+                              'Confirm',
+                              name: 'MarkPartnerRequestConfirmedButton',
+                              height: 40,
+                              icon: 'check_circle',
+                              borderRadius: 8,
+                              onTap: _updatePartnerRequestStatusActions(
+                                api,
+                                request,
+                                status: 'confirmed',
+                                outputPrefix: 'confirmed',
+                              ),
+                            ),
+                            Button(
+                              'Cancel',
+                              name: 'MarkPartnerRequestCancelledButton',
+                              height: 40,
+                              icon: 'cancel',
+                              borderRadius: 8,
+                              variant: ButtonVariant.text,
+                              onTap: _updatePartnerRequestStatusActions(
+                                api,
+                                request,
+                                status: 'cancelled',
+                                outputPrefix: 'cancelled',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+            ),
+            Button(
+              'Refresh Inbox',
+              name: 'RefreshPartnerBookingRequestsButton',
+              width: double.infinity,
+              height: 42,
+              icon: 'refresh',
+              borderRadius: 8,
+              variant: ButtonVariant.outlined,
+              onTap: _refreshPartnerRequestsActions(
+                api,
+                outputAs: 'partnerRequestsManualRefresh',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  });
+}
+
+List<DslAction> _savePartnerDealActions(
+  _GoFunMotionApi api, {
+  required String saveMode,
+  required String outputPrefix,
+}) => [
+  If(
+    Equals(State('currentBusinessId'), ''),
+    then: [Snackbar('An approved business is required before creating deals.')],
+    orElse: [
+      ApiCall(
+        api.savePartnerListing,
+        outputAs: '${outputPrefix}Save',
+        params: {
+          'availableSlot': State('dealAvailableSlot'),
+          'businessId': State('currentBusinessId'),
+          'category': State('copyCategory'),
+          'description': State('draftDescription'),
+          'originalPrice': State('dealOriginalPrice'),
+          'price': State('dealPrice'),
+          'remainingSpots': State('dealRemainingSpots'),
+          'saveMode': saveMode,
+          'title': State('draftTitle'),
+          'token': const AuthUser(AuthUserField.jwtToken),
+        },
+        onSuccess:
+            (_) => [
+              Snackbar(
+                saveMode == 'draft'
+                    ? 'Draft saved.'
+                    : 'Deal submitted for admin review.',
+              ),
+              ..._refreshPartnerListingsActions(
+                api,
+                outputAs: '${outputPrefix}ListingsRefresh',
+              ),
+            ],
+        onFailure: [
+          Snackbar(
+            'Could not save. Check required fields, prices, plan limits, and review notes.',
+          ),
+        ],
+      ),
+    ],
+  ),
+];
+
+List<DslAction> _refreshPartnerListingsActions(
+  _GoFunMotionApi api, {
+  required String outputAs,
+}) => [
+  SetState('partnerListingsViewState', 'loading'),
+  ApiCall(
+    api.getPartnerListings,
+    outputAs: outputAs,
+    params: {'token': const AuthUser(AuthUserField.jwtToken)},
+    onSuccess:
+        (result) => [
+          SetState('partnerListings', result['listings']),
+          SetState('partnerListingsViewState', 'ready'),
+        ],
+    onFailure: [SetState('partnerListingsViewState', 'error')],
+  ),
+];
+
+List<DslAction> _refreshPartnerRequestsActions(
+  _GoFunMotionApi api, {
+  required String outputAs,
+}) => [
+  SetState('partnerRequestsViewState', 'loading'),
+  ApiCall(
+    api.getPartnerBookingRequests,
+    outputAs: outputAs,
+    params: {'token': const AuthUser(AuthUserField.jwtToken)},
+    onSuccess:
+        (result) => [
+          SetState('partnerRequests', result['bookingRequests']),
+          SetState('partnerRequestsViewState', 'ready'),
+        ],
+    onFailure: [SetState('partnerRequestsViewState', 'error')],
+  ),
+];
+
+List<DslAction> _updatePartnerRequestStatusActions(
+  _GoFunMotionApi api,
+  ItemRef request, {
+  required String status,
+  required String outputPrefix,
+}) => [
+  ApiCall(
+    api.updateBookingRequestStatus,
+    outputAs: '${outputPrefix}RequestUpdate',
+    params: {
+      'requestId': request['id'],
+      'status': status,
+      'token': const AuthUser(AuthUserField.jwtToken),
+    },
+    onSuccess:
+        (_) => [
+          Snackbar('Request marked $status. The customer will be notified.'),
+          ..._refreshPartnerRequestsActions(
+            api,
+            outputAs: '${outputPrefix}RequestsRefresh',
+          ),
+        ],
+    onFailure: [
+      Snackbar('Status could not be updated. Confirm business owner access.'),
+    ],
+  ),
+];
 
 void _ensureAnimatedSplash(App app) {
   app.ensurePage(

@@ -2,7 +2,7 @@
 
 ## Audit Status
 
-Date: 2026-06-01
+Date: 2026-08-25
 
 Repo: `C:\Projects\site-factory`
 
@@ -14,52 +14,67 @@ Project ID: `go-fun-motion-deals-vl4mj8`
 
 Project URL: `https://app.flutterflow.io/project/go-fun-motion-deals-vl4mj8`
 
-Last pushed FlutterFlow commit: `0LmSN7gNC3FeveuF3USY`
+Last pushed FlutterFlow commit: `qubBLrHzUI6Dz1opc20a`
 
-Verification commands run:
+Current FlutterFlow AI SDK: `0.0.40`
+
+Verification completed:
 
 ```powershell
-dart analyze dsl\create.dart
-dart analyze dsl\create.dart dsl\edit.dart
-dart test
+dart format dsl\edit.dart
+dart analyze dsl\edit.dart
 flutterflow ai test
-flutterflow ai validate dsl\create.dart --project-name "GoFunMotion Deals" --find-or-create --commit-message "Validate GoFunMotion Deals FlutterFlow app"
-flutterflow ai run dsl\create.dart --project-name "GoFunMotion Deals" --find-or-create --commit-message "Create GoFunMotion Deals app"
-flutterflow ai validate dsl\create.dart --project-name "GoFunMotion Deals Validation" --allow-new-project --commit-message "Validate hardened GoFunMotion Deals scaffold"
-flutterflow ai validate dsl\edit.dart --project-id go-fun-motion-deals-vl4mj8 --commit-message "Guard unsafe unfiltered listing queries"
-flutterflow ai run dsl\edit.dart --project-id go-fun-motion-deals-vl4mj8 --commit-message "Guard unsafe unfiltered listing queries"
-flutterflow ai validate dsl\edit.dart --project-id go-fun-motion-deals-vl4mj8 --commit-message "Add GoFunMotion animated splash assets"
-flutterflow ai run dsl\edit.dart --project-id go-fun-motion-deals-vl4mj8 --commit-message "Add GoFunMotion animated splash assets"
-flutterflow ai validate dsl\create.dart --project-name "GoFunMotion Deals Validation" --allow-new-project --commit-message "Validate GoFunMotion brand assets scaffold"
-flutterflow ai refresh-context go-fun-motion-deals-vl4mj8
-flutterflow ai status go-fun-motion-deals-vl4mj8
-flutterflow ai inspect go-fun-motion-deals-vl4mj8
-dart run dsl\create.dart --project-name "GoFunMotion Deals Validation" --allow-new-project --dry-run
-.\node_modules\.bin\firebase.cmd deploy --only firestore:rules,firestore:indexes --dry-run
+dart test test\app_test.dart
+flutterflow ai run dsl\edit.dart --project-id go-fun-motion-deals-vl4mj8 --commit-message "Port BeautyDrop core booking and partner workflows"
+flutterflow ai context-check
 ```
 
-Note: the CLI prints `Can't load Kernel binary: Invalid kernel binary format version (expected 130, found 125)` after successful commands in this environment. The commands above completed successfully where noted by `[OK]`, `All tests passed`, or a successful status/inspect output.
+The workflow run compiled the edit DSL, refreshed the generated snapshot, and pushed
+commit `wwz20MyZFy9OJjjh19wG`. The final Dart test suite has two passing tests: create
+scaffold compilation and current bound-project edit-flow declaration. Full edit
+compilation is additionally validated during the push, not by a device test.
 
-Do not rerun `dsl/create.dart` against the already-created bound project. After the first push, `gofunmotion-ffai` is bound to `go-fun-motion-deals-vl4mj8`, and create flows will conflict with existing pages/components such as `SectionHeader`. Future live changes should use inspect-first edit flows in `dsl/edit.dart` or narrowly scoped Builder edits.
+The theme and idempotent panel update was pushed in commit `eb8yZjm8Hu6km2fAJPaz`.
+The installed SDK was invoked with `dart run dsl/edit.dart` after the global CLI
+refused an older release-channel artifact. No SDK rollback was performed.
+
+Commit `qubBLrHzUI6Dz1opc20a` fixes the old literal typography colors so headings and
+body text follow the light/dark theme. The corrected dark preview was verified in
+FlutterFlow Builder after the push.
+
+Additional checks on 2026-08-25:
+
+- `npm.cmd run typecheck`: passed.
+- `npm.cmd run build`: passed, 85 generated routes.
+- `npm.cmd test`: 73 passed, 9 skipped.
+- `npm.cmd run seo:audit`: 48 pages, 0 issues.
+- Generated Dart analysis: 0 errors, 231 warnings, 1,388 informational diagnostics.
+  The warnings are not suppressed or represented as a clean lint pass.
+- Reapplying the partner edit flow passed validation without duplicate panels or
+  duplicate action outputs.
+
+Do not run `dsl/create.dart` against this bound project. All future automated changes
+must be inspect-first, narrowly scoped edits in `dsl/edit.dart`. Manual Builder edits
+remain the source of truth and must be preserved.
 
 ## Live Inventory
 
 Pages: 14
 
-- `SplashPage` initial route `/splash`
-- `DiscoverPage` route `/`
-- `FindPlanPage` route `/find`
-- `DealsPage` route `/deals`
-- `DealDetailPage` route `/deal-detail`
-- `SavedPage` route `/saved`
-- `ProfilePage` route `/profile`
-- `SignInPage` route `/sign-in`
-- `ResetPasswordPage` route `/reset-password`
-- `WaitlistPage` route `/waitlist`
-- `PartnerPage` route `/partner`
-- `PartnerApplyPage` route `/partner/apply`
-- `PartnerDashboardPage` route `/partner/dashboard`
-- `AdminPage` route `/admin`
+- `SplashPage`
+- `DiscoverPage`
+- `FindPlanPage`
+- `DealsPage`
+- `DealDetailPage`
+- `SavedPage`
+- `ProfilePage`
+- `SignInPage`
+- `ResetPasswordPage`
+- `WaitlistPage`
+- `PartnerPage`
+- `PartnerApplyPage`
+- `PartnerDashboardPage`
+- `AdminPage`
 
 Components: 4
 
@@ -81,67 +96,114 @@ Collections: 10
 - `partnerApplications`
 - `waitlist`
 
-App State: 2
+Global App State: 2
 
 - `activeCity`
 - `planPersona`
 
-No custom code is present:
+The BeautyDrop pattern was adapted without copying its large global-state surface.
+New list, request, editor, loading, and error state is page-local so screens remain
+Builder-friendly and easier to maintain.
 
+Integrations:
+
+- API groups: 1 (`GoFunMotionWeb`)
+- API endpoints: 18
+- Custom actions: 1 (`registerGoFunMotionPushToken`)
 - Custom widgets: 0
-- Custom actions: 0
 - Custom functions: 0
-- API groups/endpoints: 0
-- Pub dependencies: 0
 
-## Builder-Native Audit
+The single custom action is limited to device notification permission and FCM token
+registration. All visible UI and workflow controls remain native FlutterFlow widgets
+and actions.
+
+## Implemented Product Flow
 
 | Surface | Status | Notes |
 | --- | --- | --- |
-| Light/dark mode theme | Built | Theme tokens declared in `gofunmotion-ffai/dsl/create.dart`. |
-| Brand assets | Built | App icon, static splash, animated GIF splash, OG image, PWA icons, and navbar mark generated. |
-| Animated splash | Built | `SplashPage` uses `assets/brand/gofunmotion-splash-motion.gif`, waits briefly, then routes to `DiscoverPage`. |
-| Public browsing | Built | Discovery, plan finder, deals, and detail pages exist before login. |
-| Email auth | Built in FlutterFlow DSL | Firebase Console provider still must be enabled/verified. |
-| Apple auth | Built in FlutterFlow DSL | Apple setup still must be completed/verified in Firebase Console and Apple Developer. |
-| Google auth | Built in FlutterFlow DSL | Google provider still must be enabled/verified in Firebase Console. |
-| Guest auth | Built in FlutterFlow DSL | Anonymous provider must be enabled if guest sign-in is kept. |
-| Saved plans/deals | Built first pass | Collections exist; live lists are guarded until user-owned Builder filters are connected. |
-| Booking requests | Built first pass | Creates `bookingRequests`; no payment checkout. |
-| Partner application | Built first pass | Creates `partnerApplications` pending review. |
-| Partner dashboard | Built first pass | UI scaffold; role-based Firebase rules still required. |
-| Admin dashboard | Built first pass | UI scaffold; admin-only Firebase rules/custom claims still required. |
+| GoFunMotion theme | Built | Cyan, pink, and lime accents with light/dark surfaces and semantic typography colors. |
+| Public deal discovery | Built | Discovery, deals, deal detail, and plan finder are available before login. |
+| Role-aware auth routing | Built | User, business, and admin access is resolved by the secure web API after Firebase auth. |
+| Smart Search and AI Plan | Built | Calls the web AI endpoints; plan facts are constrained by supplied listings. |
+| Partner Copy Assistant | Built | Produces editable title and description suggestions without changing deal facts. |
+| Booking Message Assistant | Built | Drafts editable customer text and never submits a request automatically. |
+| Saved plans and deals | Built | Loads and writes user-owned data through authenticated server endpoints. |
+| Customer request history | Built | `SavedPage` independently loads requests and displays current status. |
+| Booking request | Built | `DealDetailPage` sends a request, not a consumer payment. |
+| Partner application | Built | Public application enters the approval workflow. |
+| Partner deal editor | Built | Title, description, category, was/now price, date/time, and spots are editable. |
+| Listing approval boundary | Built | Partner submissions go to server-enforced review; mobile UI cannot approve itself. |
+| Partner listing list | Built | Partner dashboard loads the authenticated business listings. |
+| Partner request inbox | Built | Business can mark requests contacted, confirmed, or cancelled. |
+| Notifications registration | Built | Authenticated device tokens can be registered with the backend. |
+| Admin entry screen | Built first pass | Secure role gate exists; dense operational subpages still need Builder polish. |
 
-## Data Model Audit
+## API Contracts Used By FlutterFlow
 
-The generated FlutterFlow project includes these fields:
+The app calls `https://gofunmotion.com` through the `GoFunMotionWeb` API group:
 
-- `users`: `display_name`, `photo_url`, `uid`, `created_time`, `phone_number`, `email`, `role`, `city`, `createdAt`, `updatedAt`
-- `cities`: `name`, `state`, `slug`, `isActive`, `sortOrder`
-- `categories`: `name`, `slug`, `icon`, `isActive`, `sortOrder`
-- `businesses`: `name`, `ownerUserId`, `contactEmail`, `city`, `status`, `description`, `createdAt`, `updatedAt`
-- `listings`: `title`, `description`, `businessName`, `businessRef`, `category`, `city`, `neighborhood`, `priceLabel`, `dealLabel`, `bookingMode`, `imageUrl`, `status`, `isApproved`, `isDemo`, `startsAt`, `endsAt`, `createdAt`, `updatedAt`
-- `savedListings`: `userId`, `listingRef`, `listingTitle`, `city`, `createdAt`
-- `savedPlans`: `userId`, `city`, `persona`, `when`, `budget`, `vibe`, `summary`, `createdAt`
-- `bookingRequests`: `userId`, `listingRef`, `listingTitle`, `contactName`, `contactEmail`, `partySize`, `message`, `status`, `createdAt`
-- `partnerApplications`: `businessName`, `contactName`, `contactEmail`, `city`, `category`, `description`, `status`, `createdAt`
-- `waitlist`: `email`, `city`, `interest`, `createdAt`
+- access and role routing
+- smart search and constrained AI plan
+- partner title and description assistants
+- saved listings and saved plans
+- booking request and booking message assistant
+- customer booking history
+- partner applications
+- partner listings create/update/list
+- partner booking inbox and status changes
+- push-token registration
 
-## Current Risks
+Firebase ID tokens are sent to protected endpoints. OpenAI, Firebase Admin, Resend,
+and Stripe secrets stay server-side and are not embedded in FlutterFlow.
 
-1. Firebase Console configuration is not confirmed from this repo. Enable and verify Email/password, Apple, Google, and Anonymous providers before auth QA.
-2. Firestore rules and indexes have been updated and dry-run compiled, but they have not been deployed. Deploy only after confirming the live Firebase release window.
-3. Admin access in the first pass is a UI scaffold. It must be protected by `admins/{uid}`, custom claims, or a trusted backend path before production.
-4. Public/user listing queries are intentionally disabled on `DiscoverPage`, `DealsPage`, and `SavedPage` after commit `Fo0wIyFfekjgrjknaTlF`; production FlutterFlow queries must add approved-only filters (`isApproved == true`, and an approved/published status) or user-owned filters before live records are shown.
-5. Demo preview cards on `DiscoverPage` are clearly labeled, but real partner content must come from approved Firestore records.
+## BeautyDrop Adaptation
 
-## Next Builder-First Steps
+The following proven BeautyDrop workflow patterns are now adapted for activities:
 
-1. Open `https://app.flutterflow.io/project/go-fun-motion-deals-vl4mj8` and visually QA the created pages in FlutterFlow Builder.
-2. Connect/verify Firebase settings in FlutterFlow and Firebase Console.
-3. Preview `SplashPage` and verify the animated GIF loops smoothly before the wait-and-route action sends users to `DiscoverPage`.
-4. Add approved-only filters to FlutterFlow `listings` queries and user-owned filters to saved-data queries before using live production data, then remove the query-guard notices.
-5. Deploy updated Firestore rules/indexes for GoFunMotion Deals after confirming the release window.
-6. Seed only clearly marked demo listings locally, or add approved real partner listings.
-7. Polish mobile spacing, empty/loading states, and auth return flows in Builder before adding any custom code.
-8. Use `dsl/edit.dart` for future live changes; do not rerun `dsl/create.dart` against the bound project.
+- explicit loading, empty, ready, and error states
+- editable AI output instead of autonomous AI actions
+- customer request history with visible status
+- business request inbox with constrained status transitions
+- secure role-aware server calls
+- compact partner editor focused on an expiring inventory slot
+
+Beauty-specific wording, Supabase assumptions, beauty provider identifiers, and its
+large App State model were intentionally not copied. GoFunMotion uses its own Firebase
+project, Firestore schema, web APIs, roles, listing semantics, and visual identity.
+
+This is core-workflow parity, not a literal copy of BeautyDrop's 42-page inventory.
+GoFunMotion currently keeps related functions together in 14 editable pages. Dedicated
+settings, notifications, request-detail, subscription, and operational admin screens
+remain the next scoped Builder work.
+
+## Remaining Release Risks
+
+1. FlutterFlow Builder currently reports two blocking setup issues: Firebase config
+   files are not uploaded, and Firestore indexes are not confirmed as deployed.
+   Mobile app records, bundle IDs, signing files, and auth providers must also be
+   verified in Firebase Console, Apple Developer, and Google Play Console.
+2. The pushed project needs visual QA in FlutterFlow Builder and on physical iOS and
+   Android devices. A successful DSL compile is not a store-release archive.
+3. Production is behind the current preview. On 2026-08-25, unauthenticated probes to
+   `/api/me/booking-requests` and `/api/ai/booking-message` returned 404 on
+   `https://gofunmotion.com`. The current backend must be promoted before these mobile
+   flows can work live. The local Vercel CLI is logged out.
+4. Push delivery requires valid APNs/FCM configuration. Token registration alone does
+   not prove device delivery.
+5. Admin is functional as an entry surface, but dedicated applications, listings,
+   cities, categories, metrics, and audit-log screens still need mobile-specific polish.
+6. Consumer payments are intentionally absent. Booking remains a request until the
+   partner confirms; Stripe is for partner subscriptions.
+
+## Next Builder-First Slice
+
+1. Visually QA the new booking assistant, request history, deal editor, listing list,
+   and partner inbox in FlutterFlow Builder.
+2. Add dedicated notification, settings, request-detail, and subscription screens using
+   the existing API contracts and page-local state.
+3. Split the dense partner dashboard into mobile-first editor, listings, inbox, and
+   analytics pages after confirming the current workflow in Builder.
+4. Complete Firebase mobile configuration and test email, Google, Apple, and guest auth
+   on physical devices.
+5. Build Android Internal Testing and iOS TestFlight artifacts only after fresh signed
+   builds pass.

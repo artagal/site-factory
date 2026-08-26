@@ -11,5 +11,6 @@ export async function GET(request: Request): Promise<Response> {
     .orderBy("createdAt", "desc")
     .limit(100)
     .get();
-  return jsonOk({ bookingRequests: snapshot.docs.map((requestDoc) => ({ id: requestDoc.id, ...requestDoc.data() })) });
+  const bookingRequests = snapshot.docs.map((requestDoc) => ({ id: requestDoc.id, ...requestDoc.data() }));
+  return jsonOk({ bookingRequests, count: bookingRequests.length });
 }

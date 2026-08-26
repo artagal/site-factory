@@ -22,5 +22,5 @@ export async function GET(request: Request): Promise<Response> {
     })
     .slice(0, 100);
 
-  return jsonOk({ bookingRequests });
+  return jsonOk({ bookingRequests, count: bookingRequests.length });
 }

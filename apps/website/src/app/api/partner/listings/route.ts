@@ -170,7 +170,7 @@ export async function GET(request: Request): Promise<Response> {
     })
     .slice(0, 100);
 
-  return jsonOk({ listings });
+  return jsonOk({ count: listings.length, listings });
 }
 
 export async function POST(request: Request): Promise<Response> {
