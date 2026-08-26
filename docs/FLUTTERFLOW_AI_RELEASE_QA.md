@@ -5,8 +5,9 @@ Date: 2026-08-26. Project: `go-fun-motion-deals-vl4mj8`.
 ## Release Decision
 
 **Do not submit to TestFlight yet.** Native screens, subscription API and store UI are
-implemented, but Builder Firebase access, RevenueCat products/webhook configuration,
-Apple deployment credentials, a signed iOS archive, and device QA are still gates.
+implemented. Apple identity, App Store records and FlutterFlow deployment metadata
+are configured, but Builder Firebase access, RevenueCat server/webhook secrets, a
+signed iOS archive, review screenshots and device QA are still gates.
 
 ## Editable App Scope
 
@@ -112,12 +113,17 @@ before test collection and does not replace the last successful emulator result.
 - Packages `growth_monthly` and `pro_monthly` use the matching monthly App Store
   product identifiers from the server allowlist.
 - Entitlements `growth` and `pro` each have one associated product.
-- RevenueCat still reports `Could not check` for both App Store products and the
-  in-app purchase credential needs attention. These catalog records do not make a
-  purchase available until App Store Connect has matching approved/configured
-  products and RevenueCat can validate them.
-- The private RevenueCat server key, authenticated webhook value and public SDK key
-  still need to be placed directly in Vercel. No key value belongs in this repo.
+- App Store Connect now contains matching Growth and Pro products. RevenueCat sees
+  both and reports `Missing Metadata`, which is expected until review screenshots
+  and the first app version submission are supplied.
+- RevenueCat validates both Apple credentials: in-app purchase key `94HSM8S2X7`
+  and App Store Connect API key `66A5VHG67D`.
+- Vercel Production now has the RevenueCat App Store public SDK key and allowed app
+  ID. A new deployment is still required after the private server key and
+  authenticated webhook value are added. No key value belongs in this repo.
+- FlutterFlow Mobile Deployment uses active App Store Connect Admin key
+  `6N8D44G6HA`, issuer `5f7b8ac7-1212-4695-b76f-fc187e342111` and app ID
+  `6805635040`. App Store Connect TestFlight still reports `No Builds`.
 
 1. Log in to Vercel in the open InApp Browser tab. Add the approved BeautyDrop
    OpenAI key directly to server env, verify Firebase Admin, set AI budget limits,
@@ -125,13 +131,12 @@ before test collection and does not replace the last successful emulator result.
 2. Upload/regenerate the existing matching Firebase mobile config in Builder.
    Verify email/Google/Apple providers and Android SHA certificates. Do not enable
    native auto-create of the old user-document shape.
-3. Configure RevenueCat `growth`/`pro` entitlements, products, the
-   `partner_plans` offering, the authenticated webhook, and Vercel private env.
+3. Create the RevenueCat private server key and authenticated webhook, put both in
+   Vercel Production, redeploy, and verify the protected subscription endpoint.
    Verify purchase, cancellation, expiry, account switching, and restore with the
    exact Firebase UID App User ID before enabling production packages.
-4. Log in to App Store Connect, confirm the exact app record/bundle and signing
-   access, then configure FlutterFlow Mobile Deployment. No Apple credentials or
-   signed IPA have been supplied or created by this task.
+4. Keep the verified App Store Connect app/bundle and FlutterFlow deployment
+   metadata unchanged. No signed IPA has been supplied or created by this task.
 5. Complete in-app account deletion before release. The server deletion endpoint
    exists, but a native confirmation/re-authentication flow and owner/retention
    behavior still need review and testing.

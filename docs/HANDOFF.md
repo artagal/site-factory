@@ -25,16 +25,19 @@ notifications, account deletion, offer maps, moderated reviews, partner plan/tea
 analytics screens, and 18 new native admin screens. The original deal editor,
 AI Finder, AI Support, discovery and account pages are retained.
 
-Latest FlutterFlow commit: `jExsfCMwThaAVIG3GIyo` (2026-08-26).
+Latest FlutterFlow commit: `c8irzdiI2I3LNsLi1jil` (2026-08-26); one-time native
+store-state migration: `kynC72KjEKpYRVRGxHW7`.
 Full page inventory and limitations: `docs/FLUTTERFLOW_NATIVE_WORKSPACE_2026-08-26.md`.
 The new screens are grouped into native Builder folders and use the protected
-`/api/mobile/workspace` endpoint. Deploy this endpoint and the new indexes before
-real mobile QA. Team management currently means a contact roster, not staff auth
-invitations. Subscription screens display entitlements; no native purchase flow
-is added. Mobile Firebase configuration and TestFlight remain release gates.
+`/api/mobile/workspace` endpoint. The endpoint, production Firestore rules and all
+23 indexes are deployed. Team management currently means a contact roster, not
+staff auth invitations. The partner subscription screen now has fail-closed native
+RevenueCat purchase, restore and manage actions backed by server verification.
+Mobile Firebase configuration and TestFlight remain release gates.
 
-Verification: 199 regular tests passed, 8 dedicated Firebase Emulator integration
-tests passed, and all 22 Dart tests passed. Fresh generated-runtime analysis found
+Verification: 208 website tests passed with 23 emulator-dependent skips, the last
+successful Firebase Emulator suite passed 22/22, and all 25 Dart tests passed.
+Fresh generated-runtime analysis found
 0 errors, 1,057 warnings and 3,364 informational diagnostics. These generated-code
 warnings are recorded, not fixed by hand or hidden from the release assessment.
 Website typecheck/build and SEO audit passed. The fresh Flutter web export compiled
@@ -56,9 +59,13 @@ updated mobile app; a Builder push alone does not deploy the website.
 
 For current verification and unresolved release gates, read
 `docs/FLUTTERFLOW_AI_RELEASE_QA.md` and `docs/FLUTTERFLOW_BUILDER_FRIENDLY_AUDIT.md`.
-Mobile Firebase configuration and a fresh signed iOS/TestFlight build are not yet
-verified. The OpenAI key was validated using the existing BeautyDrop credential in
-server-process memory only; deployment still needs Vercel login/env verification.
+Apple Developer and App Store Connect now contain the exact GoFunMotion identifier,
+app record and Growth/Pro subscriptions. FlutterFlow Mobile Deployment has the
+numeric app ID and an active App Store Connect key. Mobile Firebase is still not
+connected in Builder, RevenueCat still needs its private server key/webhook in
+Vercel, and TestFlight reports no builds. The OpenAI key was validated using the
+existing BeautyDrop credential in server-process memory only; deployment still
+needs Vercel env verification.
 
 The inventory below is the **historical first pass**, not the current release state.
 
