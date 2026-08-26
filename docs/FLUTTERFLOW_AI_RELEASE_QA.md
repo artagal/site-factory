@@ -105,6 +105,20 @@ before test collection and does not replace the last successful emulator result.
 
 ## Required Live QA
 
+### RevenueCat configuration recorded on 2026-08-26
+
+- Project `9a13f722`, App Store app `appbf5abba616`.
+- Default offering `partner_plans` (`ofrng834c6d4be5`).
+- Packages `growth_monthly` and `pro_monthly` use the matching monthly App Store
+  product identifiers from the server allowlist.
+- Entitlements `growth` and `pro` each have one associated product.
+- RevenueCat still reports `Could not check` for both App Store products and the
+  in-app purchase credential needs attention. These catalog records do not make a
+  purchase available until App Store Connect has matching approved/configured
+  products and RevenueCat can validate them.
+- The private RevenueCat server key, authenticated webhook value and public SDK key
+  still need to be placed directly in Vercel. No key value belongs in this repo.
+
 1. Log in to Vercel in the open InApp Browser tab. Add the approved BeautyDrop
    OpenAI key directly to server env, verify Firebase Admin, set AI budget limits,
    redeploy, and verify the new mobile endpoint against that deployment.
@@ -131,6 +145,12 @@ before test collection and does not replace the last successful emulator result.
 9. Build a fresh signed IPA, inspect compile errors and signing, upload it, and
    wait for App Store Connect processing before assigning an internal tester.
    Complete privacy/AI disclosures and export-compliance questions accurately.
+
+The latest branch Preview for commit `276fb22` completed successfully at
+`https://site-factory-lu0f3f0p0-artagal.vercel.app`. Vercel Authentication protects
+that Preview, so unauthenticated probes reached the protection layer rather than the
+two new API handlers. Runtime probes must be repeated after Vercel sign-in or on the
+production deployment.
 
 Apple sign-in must be tested on a device or simulator, not FlutterFlow Run Mode.
 See [Apple login](https://docs.flutterflow.io/integrations/authentication/firebase/apple/)
