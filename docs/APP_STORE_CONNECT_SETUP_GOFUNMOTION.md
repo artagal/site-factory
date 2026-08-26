@@ -1,20 +1,29 @@
 # GoFunMotion App Store Connect Setup
 
-Last checked: 2026-08-26. The original setup instructions below remain a checklist,
-not evidence that an App Store release has been created.
+Last checked: 2026-08-26. The setup instructions below remain a checklist. The
+Apple app record and subscription catalog now exist, but no signed build has been
+uploaded to TestFlight.
 
 ## Current Status
 
-- InApp Browser opened App Store Connect and reached the Apple Account login form.
-  The current app-record inventory could not be refreshed while signed out.
-- No App Store Connect connector is available in this session. The owner must log
-  in and complete 2FA in the open InApp Browser tab before app/signing setup.
+- Apple Developer has the explicit App ID `com.gofunmotion.app` under team
+  `76KGNXRDF6`. Sign in with Apple, Push Notifications and In-App Purchase are
+  enabled for that identifier.
+- App Store Connect app `GoFunMotion Deals` exists with Apple app ID `6805635040`
+  and SKU `gofunmotion-deals-ios`.
+- Subscription group `GoFunMotion Partner Plans` (`22337558`) contains Growth
+  (`6805635806`, `$29.99/month`) and Pro (`6805636191`, `$99.99/month`). Both are
+  `Prepare for Submission` and still need review screenshots plus the first app
+  version submission.
+- FlutterFlow Mobile Deployment has the correct issuer, an active Admin team key
+  (`6N8D44G6HA`) with a private key already set, and app ID `6805635040`.
 - Firebase CLI verified active iOS and Android apps for `com.gofunmotion.app`.
   The ignored `.firebase-mobile-config` files match `gofunmotion-prod`.
-- The generated FlutterFlow project now uses `com.gofunmotion.app` and has the Apple
-  sign-in entitlement. Mobile Firebase files and Google's callback URL scheme are
-  still missing from the actual generated export. A valid Apple signing team and
-  provisioning profile are not verified.
+- FlutterFlow still shows Firebase as not connected. Mobile Firebase files and
+  Google's callback URL scheme are still missing from the generated export.
+- The branded splash and launcher sources are selected and synced in Builder, but
+  the latest AI export still contains Flutter's default binary launcher icons.
+- App Store Connect TestFlight currently reports `No Builds`.
 - Use `scripts/check-mobile-release.ps1` and `docs/FLUTTERFLOW_AI_RELEASE_QA.md` for
   current export checks. No signed IPA or TestFlight upload was produced in this task.
 - Do not submit the app for review until the FlutterFlow build is uploaded, Firebase auth is verified on device/TestFlight, screenshots are added, and App Privacy is completed.
@@ -25,11 +34,15 @@ Use these values for the Apple Developer, Firebase, FlutterFlow, and App Store C
 
 | Field | Value |
 | --- | --- |
-| App display name | `GoFunMotion` |
+| App display name | `GoFunMotion Deals` |
 | Product family | `GoFunMotion Deals` |
 | Recommended iOS Bundle ID | `com.gofunmotion.app` |
 | Alternate Bundle ID if Apple rejects the first | `com.gofunmotion.deals` |
-| App Store Connect SKU | `gofunmotion-ios` |
+| App Store Connect Apple app ID | `6805635040` |
+| App Store Connect SKU | `gofunmotion-deals-ios` |
+| Subscription group ID | `22337558` |
+| Growth subscription | `6805635806` / `com.gofunmotion.app.growth.monthly` |
+| Pro subscription | `6805636191` / `com.gofunmotion.app.pro.monthly` |
 | Primary language | `English (U.S.)` / `en-US` |
 | Initial App Store version | `1.0` |
 | FlutterFlow app version | `1.0.0` |
@@ -54,16 +67,15 @@ Create the Bundle ID before creating the App Store Connect app record:
 2. Click `+`.
 3. Select `App IDs`.
 4. Select `App`.
-5. Description: `GoFunMotion`.
+5. Description: `GoFunMotion Deals`.
 6. Bundle ID type: `Explicit`.
 7. Bundle ID: `com.gofunmotion.app`.
 8. Enable capabilities:
    - `Sign in with Apple`
    - `Push Notifications`
-   - `Associated Domains`
+   - `In-App Purchase`
 9. Leave these disabled for MVP unless intentionally added later:
    - `Apple Pay`
-   - `In-App Purchase`
    - `Game Center`
 10. Save the identifier.
 
@@ -98,7 +110,7 @@ Set these in FlutterFlow Builder:
 
 | FlutterFlow field | Value |
 | --- | --- |
-| App Display Name | `GoFunMotion` |
+| App Display Name | `GoFunMotion Deals` |
 | iOS Bundle ID | `com.gofunmotion.app` |
 | Android Package Name | `com.gofunmotion.app` |
 | App Version / Version Name | `1.0.0` |
@@ -114,7 +126,7 @@ FlutterFlow App Store deployment fields:
 | Issuer ID | App Store Connect > Users and Access > Integrations > App Store Connect API |
 | Key ID | The generated App Store Connect API key ID |
 | Private Key | Upload the downloaded `.p8` key file |
-| App ID | The numeric App Store Connect app ID after the app record is created |
+| App ID | `6805635040` |
 
 The numeric App ID is visible in the App Store Connect URL after creation, for example:
 
