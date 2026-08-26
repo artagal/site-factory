@@ -14,23 +14,22 @@ Project ID: `go-fun-motion-deals-vl4mj8`
 
 Project URL: `https://app.flutterflow.io/project/go-fun-motion-deals-vl4mj8`
 
-Last pushed FlutterFlow commit: `lVx6wdUETSPp7umcZP0m`
+Last pushed FlutterFlow commit: `49LhsyniP7zohROjMjuN`
 
 Current FlutterFlow AI SDK: `0.0.40`
 
-Verification completed:
+Current verification commands:
 
 ```powershell
-dart format dsl\edit.dart
-dart analyze dsl\edit.dart
-flutterflow ai test
+dart format dsl\edit.dart dsl\partner_deal_editor.dart test\app_test.dart
+flutter analyze --no-pub dsl
 dart test test\app_test.dart
-flutterflow ai run dsl\edit.dart --project-id go-fun-motion-deals-vl4mj8 --commit-message "Port BeautyDrop core booking and partner workflows"
-flutterflow ai context-check
+dart run dsl\edit.dart --project-id go-fun-motion-deals-vl4mj8 --dry-run
+dart run dsl\edit.dart --project-id go-fun-motion-deals-vl4mj8
 ```
 
 The workflow run compiled the edit DSL, refreshed the generated snapshot, and pushed
-commit `wwz20MyZFy9OJjjh19wG`. The final Dart test suite has two passing tests: create
+commit `wwz20MyZFy9OJjjh19wG`. That initial Dart test suite had two passing tests: create
 scaffold compilation and current bound-project edit-flow declaration. Full edit
 compilation is additionally validated during the push, not by a device test.
 
@@ -46,7 +45,7 @@ Commit `lVx6wdUETSPp7umcZP0m` replaces the oversized home hero with a compact
 native deal-first header and one Tonight's Deals CTA. The edit validation and both
 Dart tests passed; generated code was refreshed successfully.
 
-Additional checks on 2026-08-25:
+Earlier baseline checks on 2026-08-25, before the dedicated editor:
 
 - `npm.cmd run typecheck`: passed.
 - `npm.cmd run build`: passed, 85 generated routes.
@@ -63,7 +62,64 @@ remain the source of truth and must be preserved.
 
 ## Live Inventory
 
-Pages: 14
+### Native Editor Continuation (2026-08-25)
+
+The dedicated editor was pushed in `QgQztfRdUH9NpuTjLDWs`. The follow-up
+`49LhsyniP7zohROjMjuN` improves control contrast, adds a visible category label,
+and fixes native date-picker theme and cancellation behavior. A fresh remote
+inventory confirms 15 pages. The generated runtime snapshot was refreshed by
+both pushes.
+
+- A dedicated native `PartnerDealEditorPage` replaces the long create-only form in
+  the partner dashboard. Create and Edit share the same screen and page parameters.
+- The form contains title, description, category, was/now prices, remaining spots,
+  and native start/end date-time pickers. AI suggestions update editable text only.
+- Draft saves retain the returned listing ID, so a later submission updates that
+  same document. Submission always returns the deal to admin review.
+- The partner write API merges partial edits with the existing listing before
+  applying its server-side field allowlist. Omitted photos, terms, duration, group
+  types, and booking settings are preserved.
+- Native date timestamps are validated and stored in UTC. Availability labels use
+  the city's timezone; the editor explicitly displays device-local dates.
+- Public date filters derive today/tonight/tomorrow/weekend from the current clock
+  and the city's timezone, not permanently stored relative tags. Tonight starts at
+  18:00 local. Expired windows no longer match those date filters.
+- Unchanged schedules retain all slots and days. Explicit text rescheduling drops
+  conflicting old day tags. Tests cover local-midnight boundaries, daylight saving,
+  month/year rollover, and native draft-to-submit behavior.
+- The web editor now exposes the same start/end window. A dated offer cannot be
+  rescheduled by changing only its text label; UTC dates and city-local public labels
+  stay in sync across web and mobile edits.
+- New editor fields are migrated into existing API structs without replacing field
+  IDs or deleting unrelated Builder fields.
+- A structural guard prevents duplicate partner-listing panels and missing inbox
+  controls when an edit is reapplied. Existing editor screens are not recreated.
+
+Checks for this continuation:
+
+- Website typecheck and build: passed, 85 generated routes.
+- Website tests: 144 passed, 9 skipped. The additional cross-platform cases cover
+  local/UTC form values and rejection of label-only edits to dated offers.
+- SEO audit: 48 pages, 0 issues.
+- FlutterFlow DSL tests: 5 passed.
+- `flutter analyze --no-pub dsl`: no issues found. Direct `dart analyze` hit the
+  Windows perf-witness shutdown error described in
+  [Dart SDK issue 63343](https://github.com/dart-lang/sdk/issues/63343).
+- Live edit dry-run: 0 errors, 39 warnings. Existing primary-scroll and dynamic-list
+  warnings are still present; this is not a warning-free project.
+- Generated runtime inspection confirms populated edit fields, integer date values,
+  selected-value preservation on date-picker cancellation, and reuse of the saved ID.
+- Fresh exported runtime analysis: 0 errors, 255 warnings, 1,353 informational
+  diagnostics. `flutter analyze --no-pub` exits 1 for these warnings; they were not
+  suppressed, and this is not a clean lint pass.
+- Builder visual check at 393 x 852: editor fields, paired prices, category label,
+  and improved text/icon contrast were inspected. This is not physical-device QA.
+
+Cloud approval, real booking/email delivery, payment, and physical-device tests have
+not been performed in this continuation. These checks do not imply a production or
+store release.
+
+Pages: 15
 
 - `SplashPage`
 - `DiscoverPage`
@@ -78,6 +134,7 @@ Pages: 14
 - `PartnerPage`
 - `PartnerApplyPage`
 - `PartnerDashboardPage`
+- `PartnerDealEditorPage`
 - `AdminPage`
 
 Components: 4
@@ -112,7 +169,7 @@ Builder-friendly and easier to maintain.
 Integrations:
 
 - API groups: 1 (`GoFunMotionWeb`)
-- API endpoints: 18
+- API endpoints: 19
 - Custom actions: 1 (`registerGoFunMotionPushToken`)
 - Custom widgets: 0
 - Custom functions: 0
@@ -136,7 +193,7 @@ and actions.
 | Customer request history | Built | `SavedPage` independently loads requests and displays current status. |
 | Booking request | Built | `DealDetailPage` sends a request, not a consumer payment. |
 | Partner application | Built | Public application enters the approval workflow. |
-| Partner deal editor | Create flow built | Title, description, category, was/now price, slot text, and spots can be submitted for review. Existing-listing editing and structured date/expiry controls remain next. |
+| Partner deal editor | Create/edit built | Dedicated native screen with populated edit fields, was/now prices, category, spots, date/expiry pickers, draft and review submission. |
 | Listing approval boundary | Built | Partner submissions go to server-enforced review; mobile UI cannot approve itself. |
 | Partner listing list | Built | Partner dashboard loads the authenticated business listings. |
 | Partner request inbox | Built | Business can mark requests contacted, confirmed, or cancelled. |
@@ -177,7 +234,7 @@ large App State model were intentionally not copied. GoFunMotion uses its own Fi
 project, Firestore schema, web APIs, roles, listing semantics, and visual identity.
 
 This is core-workflow parity, not a literal copy of BeautyDrop's 42-page inventory.
-GoFunMotion currently keeps related functions together in 14 editable pages. Dedicated
+GoFunMotion currently keeps related functions together in 15 editable pages. Dedicated
 settings, notifications, request-detail, subscription, and operational admin screens
 remain the next scoped Builder work.
 
@@ -187,8 +244,9 @@ remain the next scoped Builder work.
    files are not uploaded, and Firestore indexes are not confirmed as deployed.
    Mobile app records, bundle IDs, signing files, and auth providers must also be
    verified in Firebase Console, Apple Developer, and Google Play Console.
-2. The pushed project needs visual QA in FlutterFlow Builder and on physical iOS and
-   Android devices. A successful DSL compile is not a store-release archive.
+2. The pushed project needs full interactive QA and physical iOS and Android tests.
+   Builder visual checks do not prove auth, saving, booking, or native date-picker
+   interaction. A successful DSL compile is not a store-release archive.
 3. Production is behind the current preview. On 2026-08-25, unauthenticated probes to
    `/api/me/booking-requests` and `/api/ai/booking-message` returned 404 on
    `https://gofunmotion.com`. The current backend must be promoted before these mobile
@@ -206,9 +264,9 @@ remain the next scoped Builder work.
    and partner inbox in FlutterFlow Builder.
 2. Add dedicated notification, settings, request-detail, and subscription screens using
    the existing API contracts and page-local state.
-3. Split the dense partner dashboard into mobile-first editor, listings, inbox, and
-   analytics pages after confirming the current workflow in Builder. Add existing-deal
-   editing with page parameters and native date/expiry pickers.
+3. The dedicated create/edit screen is now built. Split the remaining dense partner
+   dashboard into mobile-first listings, inbox, and analytics pages after validating
+   the current workflow with an approved test business.
 4. Complete Firebase mobile configuration and test email, Google, Apple, and guest auth
    on physical devices.
 5. Build Android Internal Testing and iOS TestFlight artifacts only after fresh signed

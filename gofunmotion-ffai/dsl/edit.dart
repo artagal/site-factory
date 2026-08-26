@@ -3,11 +3,18 @@ library;
 import 'dart:io';
 
 import 'package:flutterflow_ai/flutterflow_ai.dart';
+import 'package:flutterflow_ai/src/pipeline/pipeline_source.dart'
+    show PipelineSource;
 import '../lib/flutterflow_project.dart' as ff;
+import 'partner_deal_editor.dart';
 import 'package:flutterflow_ai/src/helpers/collection_helpers.dart'
     show findCollectionField;
 import 'package:flutterflow_ai/src/helpers/data_schema_helpers.dart'
-    show findDataStruct, updateDataStructField;
+    show
+        addDataStructField,
+        findDataStruct,
+        findDataStructField,
+        updateDataStructField;
 import 'package:flutterflow_ai/src/helpers/data_type_helpers.dart' as ff_types;
 import 'package:flutterflow_ai/src/helpers/ensure_helpers.dart'
     show ensureCollectionField;
@@ -15,6 +22,8 @@ import 'package:flutterflow_ai/src/helpers/project_helpers.dart'
     show setInitialPage;
 import 'package:flutterflow_ai/src/helpers/theme_helpers.dart'
     show ffThemeColor, getTypographyStyle, setTypographyStyle;
+import 'package:flutterflow_ai/src/helpers/tree_helpers.dart'
+    show findDescendants;
 import 'package:flutterflow_ai/src/helpers/variable_helpers.dart'
     show generatorVarField;
 
@@ -32,6 +41,10 @@ Future<void> main(List<String> args) async {
       dryRun: options.dryRun,
       commitMessage: options.commitMessage,
       validationFilter: _keepValidationError,
+      source: PipelineSource.paths([
+        Platform.script.toFilePath(),
+        Platform.script.resolve('partner_deal_editor.dart').toFilePath(),
+      ]),
     );
   } catch (error) {
     stderr.writeln('Error: ${formatFlutterFlowAIError(error)}');
@@ -160,15 +173,57 @@ void buildGoFunMotionDealsQueryGuard(App app) {
   _removeQueryGuardNotices(app);
   _wireSaferSaveAndBookingActions(app, api);
   _wireRoleRouting(app, api);
-  _wireAiAssistants(app, api);
+  final existingEditors =
+      ff.Pages.all.where((page) => page.name == partnerDealEditorName).toList();
+  final dealEditor = ensurePartnerDealEditor(
+    app,
+    existingPage: existingEditors.isEmpty ? null : existingEditors.single,
+    saveListing: api.savePartnerListingV2,
+    improveTitle: api.partnerCopyTitle,
+    improveDescription: api.partnerCopyDescription,
+    dashboard: ff.Pages.partnerDashboardPage,
+    signIn: ff.Pages.signInPage,
+  );
+  _wireAiAssistants(app, api, dealEditor);
   _wireCustomerBookingHistory(app, api);
-  _wirePartnerDealWorkflow(app, api);
+  _wirePartnerDealWorkflow(app, api, dealEditor);
+  app.raw(verifyPartnerDealScreenStructure);
+}
+
+void verifyPartnerDealScreenStructure(FFProject project) {
+  final dashboard = findPage(project, name: 'PartnerDashboardPage')!;
+  for (final name in [
+    'PartnerListingsPanel',
+    'PartnerBookingInboxPanel',
+    'CreateLastMinuteDealButton',
+    'RefreshPartnerListingsButton',
+  ]) {
+    final matches = findDescendants(
+      dashboard.node,
+      (node) => node.name == name,
+    );
+    if (matches.length != 1) {
+      throw StateError('Expected one $name, found ${matches.length}.');
+    }
+  }
+  if (findDescendants(
+    dashboard.node,
+    (node) => node.name == 'PartnerDealFactsPanel',
+  ).isNotEmpty) {
+    throw StateError('The create-only form must not remain in the dashboard.');
+  }
 }
 
 void _alignDealFirstDiscovery(App app) {
   app.editPage(ff.Pages.discoverPage, (page) {
+    final existingHeader =
+        ff.Pages.discoverPage.widgets.all
+            .where((widget) => widget.name == 'DealFirstDiscoveryHeader')
+            .toList();
     page.ensureReplaced(
-      ff.Pages.discoverPage.widgets.byKey('Container_5si7c46x').single,
+      existingHeader.isEmpty
+          ? ff.Pages.discoverPage.widgets.byKey('Container_5si7c46x').single
+          : existingHeader.single,
       Column(
         name: 'DealFirstDiscoveryHeader',
         crossAxis: CrossAxis.start,
@@ -369,6 +424,7 @@ final class _GoFunMotionApi {
     required this.saveListing,
     required this.savePlan,
     required this.savePartnerListing,
+    required this.savePartnerListingV2,
     required this.partnerBookingRequest,
     required this.smartSearch,
     required this.updateBookingRequestStatus,
@@ -389,6 +445,7 @@ final class _GoFunMotionApi {
   final Endpoint saveListing;
   final Endpoint savePlan;
   final Endpoint savePartnerListing;
+  final Endpoint savePartnerListingV2;
   final StructHandle partnerBookingRequest;
   final Endpoint smartSearch;
   final Endpoint updateBookingRequestStatus;
@@ -437,24 +494,16 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     'summary': string,
     'title': string,
   });
-  final partnerListingItem = app.struct('MobilePartnerListingItem', {
-    'approvalStatus': string,
-    'availableSlots': listOf(string),
-    'businessId': string,
-    'businessName': string,
-    'categoryIds': listOf(string),
-    'cityId': string,
-    'cityName': string,
-    'discountPercent': int_,
-    'id': string,
-    'originalPrice': double_,
-    'price': double_,
-    'remainingSpots': int_,
-    'shortDescription': string,
-    'slug': string,
-    'status': string,
-    'title': string,
-  });
+  final partnerListingItem = StructHandle('MobilePartnerListingItem', {
+    ...ff.Structs.mobilePartnerListingItem.fields,
+    'availableFromMillis': int_,
+    'availableUntilMillis': int_,
+    'categoryId': string,
+    'description': string,
+    'originalPriceText': string,
+    'priceText': string,
+    'remainingSpotsText': string,
+  }, description: generatedProjectStructDescription);
   final savedListingsResponse = ff.Structs.mobileSavedListingsResponse;
   final savedPlansResponse = ff.Structs.mobileSavedPlansResponse;
   final bookingRequestItem = app.struct('MobileBookingRequest', {
@@ -483,15 +532,12 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     'setupWarning': string,
     'text': string,
   });
-  final writeResponse = app.struct('MobileWriteResponse', {
-    'applicationId': string,
-    'listingId': string,
-    'planId': string,
-    'requestId': string,
-    'saved': bool_,
-    'synced': bool_,
-  });
+  final writeResponse = StructHandle('MobileWriteResponse', {
+    ...ff.Structs.mobileWriteResponse.fields,
+    'error': string,
+  }, description: generatedProjectStructDescription);
 
+  app.raw(migratePartnerEditorResponseFields);
   app.raw((project) {
     _migrateApiResponseListField(
       project,
@@ -747,6 +793,41 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     },
     response: writeResponse,
   );
+  final savePartnerListingV2 = Endpoint.post(
+    'SavePartnerListingV2',
+    '/api/partner/listings',
+    variables: {
+      'availableFromMillis': int_,
+      'availableUntilMillis': int_,
+      'businessId': string,
+      'category': string,
+      'description': string,
+      'listingId': string,
+      'originalPrice': string,
+      'price': string,
+      'remainingSpots': string,
+      'saveMode': string,
+      'title': string,
+      'token': string,
+    },
+    headers: authHeaders,
+    settings: authSettings,
+    body: const {
+      'availableFromMillis': '<availableFromMillis>',
+      'availableUntilMillis': '<availableUntilMillis>',
+      'businessId': '<businessId>',
+      'description': '<description>',
+      'listingId': '<listingId>',
+      'originalPrice': '<originalPrice>',
+      'price': '<price>',
+      'primaryCategoryId': '<category>',
+      'remainingSpots': '<remainingSpots>',
+      'requireAvailabilityWindow': true,
+      'saveMode': '<saveMode>',
+      'title': '<title>',
+    },
+    response: writeResponse,
+  );
   final registerPushToken = Endpoint.post(
     'RegisterPushToken',
     '/api/push/register',
@@ -812,6 +893,7 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
       getPartnerBookingRequests,
       updateBookingRequestStatus,
       savePartnerListing,
+      savePartnerListingV2,
       registerPushToken,
       partnerApplication,
     ],
@@ -833,6 +915,7 @@ _GoFunMotionApi _ensureGoFunMotionApi(App app) {
     saveListing: saveListing,
     savePlan: savePlan,
     savePartnerListing: savePartnerListing,
+    savePartnerListingV2: savePartnerListingV2,
     partnerBookingRequest: bookingRequestItem,
     smartSearch: smartSearch,
     updateBookingRequestStatus: updateBookingRequestStatus,
@@ -1110,6 +1193,47 @@ void _wireProductionQueries(App app, _GoFunMotionApi api) {
       orderByFieldName: 'createdAt',
     );
   });
+}
+
+void migratePartnerEditorResponseFields(FFProject project) {
+  final fields = {
+    'MobilePartnerListingItem': {
+      'availableFromMillis': ff_types.intType,
+      'availableUntilMillis': ff_types.intType,
+      'categoryId': ff_types.stringType,
+      'description': ff_types.stringType,
+      'originalPriceText': ff_types.stringType,
+      'priceText': ff_types.stringType,
+      'remainingSpotsText': ff_types.stringType,
+    },
+    'MobileWriteResponse': {'error': ff_types.stringType},
+  };
+  for (final struct in fields.entries) {
+    for (final field in struct.value.entries) {
+      if (findDataStructField(
+            project,
+            structName: struct.key,
+            fieldName: field.key,
+          ) ==
+          null) {
+        addDataStructField(
+          project,
+          structName: struct.key,
+          fieldName: field.key,
+          type: field.value,
+          description: '${struct.key}.${field.key}',
+        );
+      } else {
+        updateDataStructField(
+          project,
+          structName: struct.key,
+          fieldName: field.key,
+          type: field.value,
+          isList: false,
+        );
+      }
+    }
+  }
 }
 
 void _migrateApiResponseListField(
@@ -1552,7 +1676,7 @@ void _wireRoleRouting(App app, _GoFunMotionApi api) {
   });
 }
 
-void _wireAiAssistants(App app, _GoFunMotionApi api) {
+void _wireAiAssistants(App app, _GoFunMotionApi api, Object dealEditor) {
   app.editPage(ff.Pages.findPlanPage, (page) {
     page.ensureActions(
       ff.Pages.findPlanPage.widgets.byKey('Button_id060slz').single,
@@ -1723,92 +1847,33 @@ void _wireAiAssistants(App app, _GoFunMotionApi api) {
           crossAxis: CrossAxis.start,
           spacing: 12,
           children: [
-            Text('Partner Copy Assistant', style: Styles.titleMedium),
+            Text('Your next last-minute offer', style: Styles.titleMedium),
             Text(
-              'Improve wording only. Price, time, discount, and availability are never invented.',
+              'Open spots today? Add a deal and submit it for review.',
               style: Styles.bodySmall,
               color: Colors.secondaryText,
             ),
-            TextField(
-              name: 'PartnerDraftTitleField',
-              label: 'Deal title',
-              onChanged: SetState('draftTitle', const TextValue()),
-            ),
             Button(
-              'Improve Title',
-              name: 'ImprovePartnerTitleButton',
+              'Create Last-Minute Deal',
+              name: 'CreateLastMinuteDealButton',
               width: double.infinity,
-              height: 44,
-              icon: 'auto_awesome',
+              height: 48,
+              icon: 'add',
               borderRadius: 8,
-              onTap: ApiCall(
-                api.partnerCopyTitle,
-                outputAs: 'partnerTitleCopy',
-                params: {
-                  'businessId': State('currentBusinessId'),
-                  'category': State('copyCategory'),
-                  'text': State('draftTitle'),
-                  'token': const AuthUser(AuthUserField.jwtToken),
-                },
-                onSuccess:
-                    (result) => [
-                      SetState('draftTitle', result['text']),
-                      Snackbar('Title improved. Review it before saving.'),
-                    ],
-                onFailure: [
-                  Snackbar('Add a title and approved business first.'),
+              onTap: If(
+                Equals(State('currentBusinessId'), ''),
+                then: [
+                  Snackbar(
+                    'An approved business is required before creating deals.',
+                  ),
+                ],
+                orElse: [
+                  Navigate(
+                    dealEditor,
+                    params: {'businessId': State('currentBusinessId')},
+                  ),
                 ],
               ),
-            ),
-            Text(
-              State('draftTitle'),
-              name: 'PartnerDraftTitlePreview',
-              style: Styles.bodySmall,
-              color: Colors.primary,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            TextField(
-              name: 'PartnerDraftDescriptionField',
-              label: 'Deal description',
-              maxLines: 4,
-              onChanged: SetState('draftDescription', const TextValue()),
-            ),
-            Button(
-              'Improve Description',
-              name: 'ImprovePartnerDescriptionButton',
-              width: double.infinity,
-              height: 44,
-              icon: 'edit_note',
-              borderRadius: 8,
-              onTap: ApiCall(
-                api.partnerCopyDescription,
-                outputAs: 'partnerDescriptionCopy',
-                params: {
-                  'businessId': State('currentBusinessId'),
-                  'category': State('copyCategory'),
-                  'text': State('draftDescription'),
-                  'token': const AuthUser(AuthUserField.jwtToken),
-                },
-                onSuccess:
-                    (result) => [
-                      SetState('draftDescription', result['text']),
-                      Snackbar(
-                        'Description improved. Review it before saving.',
-                      ),
-                    ],
-                onFailure: [
-                  Snackbar('Add a description and approved business first.'),
-                ],
-              ),
-            ),
-            Text(
-              State('draftDescription'),
-              name: 'PartnerDraftDescriptionPreview',
-              style: Styles.bodySmall,
-              color: Colors.secondaryText,
-              maxLines: 5,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -2051,128 +2116,9 @@ void _upsertPartnerPanelBefore(
   page.ensureReplaced(existing.single, panel);
 }
 
-void _wirePartnerDealWorkflow(App app, _GoFunMotionApi api) {
+void _wirePartnerDealWorkflow(App app, _GoFunMotionApi api, Object dealEditor) {
   app.editPage(ff.Pages.partnerDashboardPage, (page) {
     final setupButton = page.findByText('Request Listing Setup');
-
-    _upsertPartnerPanelBefore(
-      page,
-      setupButton,
-      Container(
-        name: 'PartnerDealFactsPanel',
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        borderRadius: 8,
-        color: Colors.secondaryBackground,
-        borderColor: Colors.primary,
-        borderWidth: 1,
-        child: Column(
-          crossAxis: CrossAxis.start,
-          spacing: 12,
-          children: [
-            Row(
-              spacing: 10,
-              children: [
-                const Icon('bolt', size: 22, color: Colors.primary),
-                Text('Finish deal details', style: Styles.titleMedium),
-              ],
-            ),
-            Text(
-              'Use the title and description above, then add the real price, time, and capacity. AI never changes these facts.',
-              style: Styles.bodySmall,
-              color: Colors.secondaryText,
-            ),
-            Dropdown(
-              name: 'PartnerDealCategoryDropdown',
-              label: 'Category',
-              value: State('copyCategory'),
-              options: const [
-                'classes',
-                'date-night',
-                'events',
-                'family',
-                'fitness',
-                'food-drink',
-                'friends',
-                'nightlife',
-                'outdoor',
-                'wellness',
-              ],
-              onChanged: SetState('copyCategory', const WidgetValue()),
-            ),
-            TextField(
-              name: 'PartnerDealOriginalPriceField',
-              label: 'Was price',
-              keyboard: Keyboard.number,
-              onChanged: SetState('dealOriginalPrice', const TextValue()),
-            ),
-            TextField(
-              name: 'PartnerDealPriceField',
-              label: 'Now price',
-              keyboard: Keyboard.number,
-              onChanged: SetState('dealPrice', const TextValue()),
-            ),
-            TextField(
-              name: 'PartnerDealAvailableSlotField',
-              label: 'Available date and time',
-              hint: 'Tonight 8:30 PM',
-              onChanged: SetState('dealAvailableSlot', const TextValue()),
-            ),
-            TextField(
-              name: 'PartnerDealRemainingSpotsField',
-              label: 'Spots left',
-              keyboard: Keyboard.number,
-              onChanged: SetState('dealRemainingSpots', const TextValue()),
-            ),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              borderRadius: 8,
-              color: Colors.accent1,
-              child: Row(
-                spacing: 8,
-                children: [
-                  const Icon('verified_user', size: 18, color: Colors.primary),
-                  Expanded(
-                    Text(
-                      'Submitted deals stay hidden until admin approval. Starter includes one active deal.',
-                      style: Styles.bodySmall,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Button(
-              'Save Draft',
-              name: 'SavePartnerDealDraftButton',
-              width: double.infinity,
-              height: 46,
-              icon: 'save',
-              borderRadius: 8,
-              variant: ButtonVariant.outlined,
-              onTap: _savePartnerDealActions(
-                api,
-                saveMode: 'draft',
-                outputPrefix: 'partnerDraft',
-              ),
-            ),
-            Button(
-              'Submit for Review',
-              name: 'SubmitPartnerDealButton',
-              width: double.infinity,
-              height: 48,
-              icon: 'send',
-              borderRadius: 8,
-              onTap: _savePartnerDealActions(
-                api,
-                saveMode: 'submit',
-                outputPrefix: 'partnerSubmit',
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
 
     _upsertPartnerPanelBefore(
       page,
@@ -2270,6 +2216,33 @@ void _wirePartnerDealWorkflow(App app, _GoFunMotionApi api) {
                             ),
                             Text('spots left', style: Styles.bodySmall),
                           ],
+                        ),
+                        Button(
+                          'Edit Deal',
+                          name: 'EditPartnerDealButton',
+                          width: double.infinity,
+                          height: 44,
+                          borderRadius: 8,
+                          icon: 'edit',
+                          variant: ButtonVariant.outlined,
+                          onTap: Navigate(
+                            dealEditor,
+                            params: {
+                              'businessId': listing['businessId'],
+                              'listingId': listing['id'],
+                              'initialTitle': listing['title'],
+                              'initialDescription': listing['description'],
+                              'initialCategory': listing['categoryId'],
+                              'initialOriginalPrice':
+                                  listing['originalPriceText'],
+                              'initialPrice': listing['priceText'],
+                              'initialSpots': listing['remainingSpotsText'],
+                              'initialStartMillis':
+                                  listing['availableFromMillis'],
+                              'initialEndMillis':
+                                  listing['availableUntilMillis'],
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -2440,54 +2413,16 @@ void _wirePartnerDealWorkflow(App app, _GoFunMotionApi api) {
         ),
       ),
     );
+
+    // Typed handles resolve by path in SDK 0.0.40. Remove siblings last so
+    // earlier replacements cannot shift onto a different existing panel.
+    for (final oldPanel in ff.Pages.partnerDashboardPage.widgets.all.where(
+      (widget) => widget.name == 'PartnerDealFactsPanel',
+    )) {
+      page.ensureRemoved(oldPanel);
+    }
   });
 }
-
-List<DslAction> _savePartnerDealActions(
-  _GoFunMotionApi api, {
-  required String saveMode,
-  required String outputPrefix,
-}) => [
-  If(
-    Equals(State('currentBusinessId'), ''),
-    then: [Snackbar('An approved business is required before creating deals.')],
-    orElse: [
-      ApiCall(
-        api.savePartnerListing,
-        outputAs: '${outputPrefix}Save',
-        params: {
-          'availableSlot': State('dealAvailableSlot'),
-          'businessId': State('currentBusinessId'),
-          'category': State('copyCategory'),
-          'description': State('draftDescription'),
-          'originalPrice': State('dealOriginalPrice'),
-          'price': State('dealPrice'),
-          'remainingSpots': State('dealRemainingSpots'),
-          'saveMode': saveMode,
-          'title': State('draftTitle'),
-          'token': const AuthUser(AuthUserField.jwtToken),
-        },
-        onSuccess:
-            (_) => [
-              Snackbar(
-                saveMode == 'draft'
-                    ? 'Draft saved.'
-                    : 'Deal submitted for admin review.',
-              ),
-              ..._refreshPartnerListingsActions(
-                api,
-                outputAs: '${outputPrefix}ListingsRefresh',
-              ),
-            ],
-        onFailure: [
-          Snackbar(
-            'Could not save. Check required fields, prices, plan limits, and review notes.',
-          ),
-        ],
-      ),
-    ],
-  ),
-];
 
 List<DslAction> _refreshPartnerListingsActions(
   _GoFunMotionApi api, {
