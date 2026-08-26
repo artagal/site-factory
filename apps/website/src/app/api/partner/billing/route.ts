@@ -1,6 +1,7 @@
 import { isPartnerBillingConfigured } from "../../../../lib/stripe-billing";
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { verifyApprovedPartnerBusiness } from "../../../../lib/server/partner-business-access";
+import { billingDate, billingRecord, resolvePartnerEntitlement } from "../../../../lib/partner-entitlements";
 
 export const runtime = "nodejs";
 
@@ -17,19 +18,18 @@ export async function GET(request: Request): Promise<Response> {
 
   const billingSnapshot = await verified.db.collection("businessBilling").doc(businessId).get();
   const billing = billingSnapshot.data() ?? {};
+  const entitlement = resolvePartnerEntitlement(billing);
+  const native = billingRecord(billing.nativeSubscription);
 
   return jsonOk({
-    checkoutAvailable: isPartnerBillingConfigured(),
-    paidAccessEnabled: verified.business.paidAccessEnabled === true,
+    checkoutAvailable: isPartnerBillingConfigured() && entitlement.subscriptionProvider !== "app_store" && entitlement.subscriptionProvider !== "play_store",
+    ...entitlement,
     portalAvailable: typeof billing.stripeCustomerId === "string" && Boolean(billing.stripeCustomerId),
-    pricingTier: verified.business.pricingTier === "growth" || verified.business.pricingTier === "pro"
-      ? verified.business.pricingTier
-      : "starter",
-    subscriptionCancelAtPeriodEnd: billing.subscriptionCancelAtPeriodEnd === true,
-    subscriptionCurrentPeriodEnd: billing.subscriptionCurrentPeriodEnd?.toDate?.()?.toISOString?.()
-      ?? (typeof billing.subscriptionCurrentPeriodEnd === "string" ? billing.subscriptionCurrentPeriodEnd : null),
-    subscriptionStatus: typeof billing.subscriptionStatus === "string"
+    subscriptionCancelAtPeriodEnd: entitlement.subscriptionProvider === "app_store" || entitlement.subscriptionProvider === "play_store"
+      ? native.cancelAtPeriodEnd === true : billing.subscriptionCancelAtPeriodEnd === true,
+    stripeSubscriptionStatus: typeof billing.subscriptionStatus === "string"
       ? billing.subscriptionStatus
-      : null
+      : null,
+    stripeSubscriptionCurrentPeriodEnd: billingDate(billing.subscriptionCurrentPeriodEnd)
   });
 }

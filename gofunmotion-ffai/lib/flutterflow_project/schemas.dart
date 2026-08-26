@@ -350,6 +350,25 @@ abstract final class Structs {
     },
     description: ffai.generatedProjectStructDescription,
   );
+  static final ffai.StructHandle nativeStoreState = ffai.StructHandle(
+    "NativeStoreState",
+    <String, ffai.DslType>{
+      "businessId": ffai.string,
+      "businessName": ffai.string,
+      "canGrowth": ffai.bool_,
+      "canManage": ffai.bool_,
+      "canPro": ffai.bool_,
+      "canPurchase": ffai.bool_,
+      "canRestore": ffai.bool_,
+      "growthPrice": ffai.string,
+      "manageUrl": ffai.string,
+      "message": ffai.string,
+      "periodEnd": ffai.string,
+      "proPrice": ffai.string,
+      "tier": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
   static final all = <ffai.StructHandle>[
     mobileAccessResponse,
     mobileAccountSyncResponse,
@@ -383,6 +402,7 @@ abstract final class Structs {
     mobileWorkspaceRow,
     mobileWorkspaceWriteResponse,
     mobileWriteResponse,
+    nativeStoreState,
   ];
 }
 
@@ -1626,6 +1646,7 @@ abstract final class CustomCode {
     "goFunMotionListingReference",
   ];
   static const actions = <String>[
+    "goFunMotionStoreSubscription",
     "registerGoFunMotionPushToken",
   ];
   static const widgets = <String>[

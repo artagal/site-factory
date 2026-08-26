@@ -14,6 +14,8 @@ type BillingStatus = {
   subscriptionCancelAtPeriodEnd: boolean;
   subscriptionCurrentPeriodEnd: string | null;
   subscriptionStatus: string | null;
+  stripeSubscriptionStatus: string | null;
+  subscriptionProvider: "stripe" | "app_store" | "play_store" | null;
 };
 
 type BillingPayload = Partial<BillingStatus> & {
@@ -92,6 +94,16 @@ export function PartnerBillingControls({ business }: { business: Business }) {
       : <div className="mt-4 h-11 animate-pulse rounded-2xl bg-white/[0.06]" aria-label="Loading billing status" />;
   }
 
+  if (billing.subscriptionProvider === "app_store" || billing.subscriptionProvider === "play_store") {
+    const apple = billing.subscriptionProvider === "app_store";
+    return <div className="mt-4 text-sm">
+      <p className="text-white/70">Your {billing.pricingTier === "pro" ? "Pro" : "Growth"} subscription is managed by {apple ? "Apple" : "Google Play"}.</p>
+      <a className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/15 px-4 font-bold"
+        href={apple ? "https://apps.apple.com/account/subscriptions" : "https://play.google.com/store/account/subscriptions"}
+        target="_blank" rel="noopener noreferrer"><CreditCard size={17} aria-hidden="true" />Manage subscription</a>
+    </div>;
+  }
+
   if (!billing.checkoutAvailable) {
     return (
       <p className="mt-4 rounded-2xl border border-white/10 bg-white/[0.05] p-3 text-xs font-bold leading-5 text-white/56">
@@ -101,7 +113,7 @@ export function PartnerBillingControls({ business }: { business: Business }) {
   }
 
   const canStartCheckout = canStartPartnerCheckout(
-    normalizePartnerSubscriptionStatus(billing.subscriptionStatus)
+    normalizePartnerSubscriptionStatus(billing.stripeSubscriptionStatus)
   );
 
   return (

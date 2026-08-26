@@ -115,10 +115,8 @@ async function getBusinessListingLimitState(db: Firestore, businessId: string, b
     status: String(item.data().status ?? "")
   }));
   const activeCount = countLimitedListings(listings, excludeListingId);
-  const capabilities = getPartnerTierCapabilities({
-    paidAccessEnabled: business.paidAccessEnabled === true,
-    pricingTier: business.pricingTier
-  });
+  const billing = (await db.collection("businessBilling").doc(businessId).get()).data() ?? {};
+  const capabilities = getPartnerTierCapabilities(resolvePartnerEntitlement(billing));
 
   return { activeCount, capabilities };
 }
@@ -425,3 +423,4 @@ export async function DELETE(request: Request): Promise<Response> {
   await verified.listingRef.delete();
   return jsonOk({ deleted: true, listingId });
 }
+import { resolvePartnerEntitlement } from "../../../../lib/partner-entitlements";

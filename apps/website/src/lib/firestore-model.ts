@@ -1,4 +1,6 @@
 import type { Business, Category, City, Listing } from "../types/deals";
+import { billingDate } from "./partner-entitlements";
+import { normalizePartnerSubscriptionStatus } from "./stripe-billing";
 
 type FirestoreDocument = Record<string, unknown>;
 
@@ -82,6 +84,10 @@ export function normalizeBusinessDocument(id: string, data: FirestoreDocument): 
     photos: stringArray(data.photos),
     postalCode: String(data.postalCode ?? ""),
     pricingTier,
+    subscriptionStatus: normalizePartnerSubscriptionStatus(data.subscriptionStatus),
+    subscriptionCurrentPeriodEnd: billingDate(data.subscriptionCurrentPeriodEnd),
+    subscriptionProvider: data.subscriptionProvider === "stripe" || data.subscriptionProvider === "app_store" || data.subscriptionProvider === "play_store"
+      ? data.subscriptionProvider : null,
     slug: String(data.slug ?? id),
     state: String(data.state ?? ""),
     status,

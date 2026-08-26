@@ -223,6 +223,24 @@ final class PartnerSubscriptionPageState {
         key: "tthgdguu",
         typeName: "String",
       );
+  ffai.ProjectStateFieldHandle get storeBusy =>
+      const ffai.ProjectStateFieldHandle(
+        name: "storeBusy",
+        key: "bdvqmb1q",
+        typeName: "Boolean",
+      );
+  ffai.ProjectStateFieldHandle get storeReady =>
+      const ffai.ProjectStateFieldHandle(
+        name: "storeReady",
+        key: "0wtepsrv",
+        typeName: "Boolean",
+      );
+  ffai.ProjectStateFieldHandle get storeState =>
+      const ffai.ProjectStateFieldHandle(
+        name: "storeState",
+        key: "paztttid",
+        typeName: "DataStruct<NativeStoreState>",
+      );
   ffai.ProjectStateFieldHandle get summary =>
       const ffai.ProjectStateFieldHandle(
         name: "summary",
@@ -281,183 +299,102 @@ abstract final class PartnerSubscriptionPageWidgets {
             name: "Container",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Column_tyuxbwi3",
+                key: "Column_usoboe0i",
                 type: "Column",
                 path: "PartnerSubscriptionPage.body[0].children[0]",
                 name: "WorkspaceScreenBody",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "ProgressBar_ssnohzj2",
-                    type: "ProgressBar",
-                    path: "PartnerSubscriptionPage.body[0].children[0].children[0]",
-                    name: "ProgressBar",
-                  ),
-                  ffai.ProjectWidgetHandle(
-                    key: "ProgressBar_54cfpp6g",
-                    type: "ProgressBar",
-                    path: "PartnerSubscriptionPage.body[0].children[0].children[1]",
-                    name: "ProgressBar",
-                  ),
-                  ffai.ProjectWidgetHandle(
-                    key: "Text_u32nopz0",
+                    key: "Text_v0t3ucu1",
                     type: "Text",
-                    path: "PartnerSubscriptionPage.body[0].children[0].children[2]",
-                    name: "Text",
+                    path: "PartnerSubscriptionPage.body[0].children[0].children[0]",
+                    name: "NativeSubscriptionInitialLoading",
+                    text: "Checking your subscription...",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Column_6a15wbhf",
+                    key: "Column_8vprm46u",
                     type: "Column",
-                    path: "PartnerSubscriptionPage.body[0].children[0].children[3]",
-                    name: "Column",
+                    path: "PartnerSubscriptionPage.body[0].children[0].children[1]",
+                    name: "NativeSubscriptionContent",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Column_64ewz9m6",
-                        type: "Column",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[3].children[0]",
-                        name: "Column",
-                        children: <ffai.ProjectWidgetHandle>[
-                          ffai.ProjectWidgetHandle(
-                            key: "Button_oiqxz9gi",
-                            type: "Button",
-                            path: "PartnerSubscriptionPage.body[0].children[0].children[3].children[0].children[0]",
-                            name: "Button",
-                            text: "Retry",
-                            triggers: const <String>[
-                              "ON_TAP",
-                            ],
-                          ),
-                        ],
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "Button_bghggkhb",
-                        type: "Button",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[3].children[1]",
-                        name: "Button",
-                        text: "Sign in again",
-                        triggers: const <String>[
-                          "ON_TAP",
-                        ],
-                      ),
-                    ],
-                  ),
-                  ffai.ProjectWidgetHandle(
-                    key: "Column_imtu93v4",
-                    type: "Column",
-                    path: "PartnerSubscriptionPage.body[0].children[0].children[4]",
-                    name: "Column",
-                    children: <ffai.ProjectWidgetHandle>[
-                      ffai.ProjectWidgetHandle(
-                        key: "Icon_q22bcjv3",
-                        type: "Icon",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[4].children[0]",
-                        name: "Icon",
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "Text_190ex1u6",
+                        key: "Text_r2dy7k8t",
                         type: "Text",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[4].children[1]",
-                        name: "Text",
-                        text: "Administrator access required",
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "Button_q3k0cmya",
-                        type: "Button",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[4].children[2]",
-                        name: "Button",
-                        text: "Back to account",
-                        triggers: const <String>[
-                          "ON_TAP",
-                        ],
-                      ),
-                    ],
-                  ),
-                  ffai.ProjectWidgetHandle(
-                    key: "Column_jolwhpd0",
-                    type: "Column",
-                    path: "PartnerSubscriptionPage.body[0].children[0].children[5]",
-                    name: "WorkspaceReadyContent",
-                    children: <ffai.ProjectWidgetHandle>[
-                      ffai.ProjectWidgetHandle(
-                        key: "Text_r9bzqjly",
-                        type: "Text",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[0]",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[0]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_8iylaffq",
+                        key: "Text_56c0c9ga",
                         type: "Text",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[1]",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[1]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Container_k5dfz6vq",
+                        key: "Text_jdwm4q5i",
+                        type: "Text",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[2]",
+                        name: "Text",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Text_otkna2n2",
+                        type: "Text",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[3]",
+                        name: "StoreLoadingStatus",
+                        text: "Checking your subscription...",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Text_ku1opfgs",
+                        type: "Text",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[4]",
+                        name: "StoreResultMessage",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Container_7gs5u091",
                         type: "Container",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[2]",
-                        name: "WorkspaceStatusBadge",
-                        componentName: "WorkspaceStatusBadge",
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "Text_6hf0edyk",
-                        type: "Text",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[3]",
-                        name: "Text",
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "ListView_rtracrmb",
-                        type: "ListView",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[4]",
-                        name: "WorkspaceRecordList",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[5]",
+                        name: "GrowthStorePlan",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Container_hcimgltp",
-                            type: "Container",
-                            path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[4].children[0]",
-                            name: "Container",
+                            key: "Column_aurxmnt7",
+                            type: "Column",
+                            path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[5].children[0]",
+                            name: "Column",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Column_2bzfu143",
-                                type: "Column",
-                                path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[4].children[0].children[0]",
-                                name: "Column",
-                                children: <ffai.ProjectWidgetHandle>[
-                                  ffai.ProjectWidgetHandle(
-                                    key: "Row_nqi0e97d",
-                                    type: "Row",
-                                    path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[4].children[0].children[0].children[0]",
-                                    name: "Row",
-                                    children: <ffai.ProjectWidgetHandle>[
-                                      ffai.ProjectWidgetHandle(
-                                        key: "Text_c9d5g3ja",
-                                        type: "Text",
-                                        path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[4].children[0].children[0].children[0].children[0]",
-                                        name: "Text",
-                                      ),
-                                    ],
-                                  ),
-                                  ffai.ProjectWidgetHandle(
-                                    key: "Text_em99m4jw",
-                                    type: "Text",
-                                    path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[4].children[0].children[0].children[1]",
-                                    name: "Text",
-                                  ),
-                                  ffai.ProjectWidgetHandle(
-                                    key: "Text_6qqxyt4g",
-                                    type: "Text",
-                                    path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[4].children[0].children[0].children[2]",
-                                    name: "Text",
-                                  ),
-                                  ffai.ProjectWidgetHandle(
-                                    key: "Text_xek54ufu",
-                                    type: "Text",
-                                    path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[4].children[0].children[0].children[3]",
-                                    name: "Text",
-                                  ),
-                                  ffai.ProjectWidgetHandle(
-                                    key: "Text_8dtmmk7w",
-                                    type: "Text",
-                                    path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[4].children[0].children[0].children[4]",
-                                    name: "Text",
-                                  ),
+                                key: "Text_9h68dydo",
+                                type: "Text",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[5].children[0].children[0]",
+                                name: "Text",
+                                text: "Growth",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Text_j17w66l4",
+                                type: "Text",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[5].children[0].children[1]",
+                                name: "Text",
+                                text: "10 active deals, analytics and featured eligibility.",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Text_v729kl1d",
+                                type: "Text",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[5].children[0].children[2]",
+                                name: "Text",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Text_7ift2sic",
+                                type: "Text",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[5].children[0].children[3]",
+                                name: "Text",
+                                text: "per month",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Button_p6oqxvhb",
+                                type: "Button",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[5].children[0].children[4]",
+                                name: "GrowthStorePurchaseButton",
+                                text: "Continue with Growth",
+                                triggers: const <String>[
+                                  "ON_TAP",
                                 ],
                               ),
                             ],
@@ -465,11 +402,131 @@ abstract final class PartnerSubscriptionPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Container_dp1zkg82",
+                        key: "Container_14jimje4",
                         type: "Container",
-                        path: "PartnerSubscriptionPage.body[0].children[0].children[5].children[5]",
-                        name: "WorkspaceMenuRow",
-                        componentName: "WorkspaceMenuRow",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[6]",
+                        name: "ProStorePlan",
+                        children: <ffai.ProjectWidgetHandle>[
+                          ffai.ProjectWidgetHandle(
+                            key: "Column_0muh1e2e",
+                            type: "Column",
+                            path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[6].children[0]",
+                            name: "Column",
+                            children: <ffai.ProjectWidgetHandle>[
+                              ffai.ProjectWidgetHandle(
+                                key: "Text_k1cqd9n1",
+                                type: "Text",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[6].children[0].children[0]",
+                                name: "Text",
+                                text: "Pro",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Text_x7gh5j8z",
+                                type: "Text",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[6].children[0].children[1]",
+                                name: "Text",
+                                text: "Unlimited active deals, advanced analytics and team roster.",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Text_zvosjbsu",
+                                type: "Text",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[6].children[0].children[2]",
+                                name: "Text",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Text_mpnfezuc",
+                                type: "Text",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[6].children[0].children[3]",
+                                name: "Text",
+                                text: "per month",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Button_7kg3v8y1",
+                                type: "Button",
+                                path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[6].children[0].children[4]",
+                                name: "ProStorePurchaseButton",
+                                text: "Continue with Pro",
+                                triggers: const <String>[
+                                  "ON_TAP",
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_6wsbwof6",
+                        type: "Button",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[7]",
+                        name: "ManageNativeSubscriptionButton",
+                        text: "Manage subscription",
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_mai3ffmr",
+                        type: "Button",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[8]",
+                        name: "RestoreNativePurchasesButton",
+                        text: "Restore purchases",
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_2pkzfjhl",
+                        type: "Button",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[9]",
+                        name: "RefreshNativeSubscriptionButton",
+                        text: "Refresh status",
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Text_o18035ab",
+                        type: "Text",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[10]",
+                        name: "Text",
+                        text: "Monthly subscription. Payment is charged to your store account after confirmation. It renews automatically unless cancelled in your store account settings. Cancellation keeps access until the paid period ends.",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Text_a2znpk50",
+                        type: "Text",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[11]",
+                        name: "Text",
+                        text: "One subscription covers one approved business. Bookings remain requests, not purchases.",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_7e7p3f6u",
+                        type: "Button",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[12]",
+                        name: "Button",
+                        text: "Terms of Use",
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_eqmwbki7",
+                        type: "Button",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[13]",
+                        name: "Button",
+                        text: "Privacy Policy",
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_967txlqh",
+                        type: "Button",
+                        path: "PartnerSubscriptionPage.body[0].children[0].children[1].children[14]",
+                        name: "Button",
+                        text: "Billing support",
+                        triggers: const <String>[
+                          "ON_TAP",
+                        ],
                       ),
                     ],
                   ),

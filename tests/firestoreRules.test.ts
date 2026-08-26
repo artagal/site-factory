@@ -8,7 +8,7 @@ import {
   type RulesTestEnvironment
 } from "@firebase/rules-unit-testing";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { doc, getDoc, serverTimestamp, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { deleteField, doc, getDoc, serverTimestamp, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 
 const repoRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const hasFirestoreEmulator = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
@@ -329,7 +329,7 @@ describeWithEmulator("GoFunMotion Deals Firestore rules", () => {
     }));
   });
 
-  it("keeps Stripe identifiers and webhook idempotency records server-only", async () => {
+  it("keeps billing identities, native account bindings and webhook records server-only", async () => {
     await testEnv.withSecurityRulesDisabled(async (context) => {
       const db = context.firestore();
       await setDoc(doc(db, "admins", "admin-a"), { role: "admin" });
@@ -341,6 +341,9 @@ describeWithEmulator("GoFunMotion Deals Firestore rules", () => {
         businessId: "business-a",
         eventType: "customer.subscription.updated"
       });
+      for (const collection of ["nativeBillingAccounts", "nativeSubscriberClaims", "revenuecatWebhookEvents"]) {
+        await setDoc(doc(db, collection, "private-record"), { businessId: "business-a", uid: "owner-a" });
+      }
     });
 
     for (const db of [
@@ -351,7 +354,35 @@ describeWithEmulator("GoFunMotion Deals Firestore rules", () => {
       await assertFails(getDoc(doc(db, "businessBilling", "business-a")));
       await assertFails(getDoc(doc(db, "stripeWebhookEvents", "evt_test")));
       await assertFails(setDoc(doc(db, "businessBilling", "spoofed"), { stripeCustomerId: "cus_spoofed" }));
+      for (const collection of ["nativeBillingAccounts", "nativeSubscriberClaims", "revenuecatWebhookEvents"]) {
+        await assertFails(getDoc(doc(db, collection, "private-record")));
+        await assertFails(setDoc(doc(db, collection, "spoofed"), { businessId: "business-a", uid: "owner-a" }));
+      }
     }
+  });
+
+  it("blocks adding or removing billing and notification fields through client updates", async () => {
+    await testEnv.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await setDoc(doc(db, "cities", "austin"), city());
+      await setDoc(doc(db, "businesses", "business-a"), business({
+        subscriptionStatus: "canceled"
+      }));
+      await setDoc(doc(db, "users", "owner-a", "notifications", "notice-a"), {
+        title: "Booking request received",
+        isRead: false
+      });
+    });
+
+    const ownerDb = testEnv.authenticatedContext("owner-a").firestore();
+    const businessRef = doc(ownerDb, "businesses", "business-a");
+    await assertSucceeds(updateDoc(businessRef, { name: "Updated venue name" }));
+    await assertFails(updateDoc(businessRef, { subscriptionCurrentPeriodEnd: "2099-01-01T00:00:00.000Z" }));
+    await assertFails(updateDoc(businessRef, { subscriptionStatus: deleteField() }));
+    const notificationRef = doc(ownerDb, "users", "owner-a", "notifications", "notice-a");
+    await assertSucceeds(updateDoc(notificationRef, { isRead: true, readAt: serverTimestamp() }));
+    await assertFails(updateDoc(notificationRef, { actionUrl: "https://example.com/untrusted" }));
+    await assertFails(updateDoc(notificationRef, { title: deleteField() }));
   });
 
   it("denies the retired challenge-era/BeautyDrop collection model", async () => {

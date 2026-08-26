@@ -1,13 +1,13 @@
 import type Stripe from "stripe";
 import type { Firestore } from "firebase-admin/firestore";
 import {
-  hasPaidPartnerAccess,
   normalizePartnerSubscriptionStatus,
   partnerTierForStripePriceId
 } from "../../../../lib/stripe-billing";
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
 import { FieldValue, getFirebaseAdminDb } from "../../../../lib/server/firebase-admin";
 import { getStripeClient, getStripeWebhookSecret } from "../../../../lib/server/stripe";
+import { resolvePartnerEntitlement } from "../../../../lib/partner-entitlements";
 
 export const runtime = "nodejs";
 
@@ -78,7 +78,6 @@ async function syncSubscription(
 
   const customerId = stripeObjectId(subscription.customer);
   const subscriptionStatus = normalizePartnerSubscriptionStatus(subscription.status);
-  const paidAccessEnabled = hasPaidPartnerAccess(subscriptionStatus);
   const eventRef = db.collection("stripeWebhookEvents").doc(event.id);
   const businessRef = db.collection("businesses").doc(businessId);
   const billingRef = db.collection("businessBilling").doc(businessId);
@@ -89,6 +88,8 @@ async function syncSubscription(
     if (existingEvent.exists) return "duplicate" as const;
 
     const billingSnapshot = await transaction.get(billingRef);
+    const businessSnapshot = await transaction.get(businessRef);
+    if (!businessSnapshot.exists) throw new Error("Business no longer exists.");
     const lastEventMillis = timestampMillis(billingSnapshot.data()?.lastStripeEventCreatedAt);
     if (lastEventMillis !== null && lastEventMillis > eventCreatedAt.getTime()) {
       transaction.create(eventRef, {
@@ -102,28 +103,29 @@ async function syncSubscription(
       return "stale" as const;
     }
 
+    const stripeFacts = {
+      lastStripeEventId: event.id,
+      lastStripeEventCreatedAt: eventCreatedAt,
+      pricingTier: tier,
+      stripeCustomerId: customerId,
+      stripeSubscriptionId: subscription.id,
+      subscriptionCancelAtPeriodEnd: subscription.cancel_at_period_end,
+      subscriptionCurrentPeriodEnd: subscriptionPeriodEnd(subscription),
+      subscriptionStatus: subscriptionStatus ?? String(subscription.status),
+      updatedAt: FieldValue.serverTimestamp()
+    };
+    const entitlement = resolvePartnerEntitlement({ ...billingSnapshot.data(), ...stripeFacts });
     transaction.set(
       businessRef,
       {
-        paidAccessEnabled,
-        pricingTier: tier,
+        ...entitlement,
         subscriptionUpdatedAt: FieldValue.serverTimestamp()
       },
       { merge: true }
     );
     transaction.set(
       billingRef,
-      {
-        lastStripeEventId: event.id,
-        lastStripeEventCreatedAt: eventCreatedAt,
-        pricingTier: tier,
-        stripeCustomerId: customerId,
-        stripeSubscriptionId: subscription.id,
-        subscriptionCancelAtPeriodEnd: subscription.cancel_at_period_end,
-        subscriptionCurrentPeriodEnd: subscriptionPeriodEnd(subscription),
-        subscriptionStatus: subscriptionStatus ?? String(subscription.status),
-        updatedAt: FieldValue.serverTimestamp()
-      },
+      stripeFacts,
       { merge: true }
     );
     transaction.create(eventRef, {
@@ -139,7 +141,6 @@ async function syncSubscription(
   return {
     businessId,
     duplicate: processingResult === "duplicate",
-    paidAccessEnabled,
     stale: processingResult === "stale",
     tier
   };

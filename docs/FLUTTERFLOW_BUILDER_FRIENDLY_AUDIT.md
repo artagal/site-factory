@@ -14,7 +14,7 @@ Project ID: `go-fun-motion-deals-vl4mj8`
 
 Project URL: `https://app.flutterflow.io/project/go-fun-motion-deals-vl4mj8`
 
-Last pushed FlutterFlow commit: `UPoR15r5E2jaCwp6Ucso`
+Last pushed FlutterFlow commit: `c8irzdiI2I3LNsLi1jil`
 
 Current FlutterFlow AI SDK: `0.0.40`
 
@@ -284,17 +284,34 @@ Beauty-specific wording, Supabase assumptions, beauty provider identifiers, and 
 large App State model were intentionally not copied. GoFunMotion uses its own Firebase
 project, Firestore schema, web APIs, roles, listing semantics, and visual identity.
 
-This is core-workflow parity, not a literal copy of BeautyDrop's 42-page inventory.
-GoFunMotion currently keeps related functions together in 15 editable pages. Dedicated
-settings, notifications, request-detail, subscription, and operational admin screens
-remain the next scoped Builder work.
+This is adapted workflow parity, not a literal BeautyDrop clone. GoFunMotion now has
+62 editable native pages, including separate onboarding, settings, notifications,
+request detail, subscription, partner operations, and 18 mobile admin pages.
+
+### Native subscription SDK boundary
+
+- **Name/type:** `goFunMotionStoreSubscription`, narrow custom action.
+- **Why native actions are insufficient:** purchase eligibility depends on the current
+  Firebase UID, one approved business binding, provider-specific subscription state,
+  localized store products, and a server-verified receipt result.
+- **Where used:** only `PartnerSubscriptionPage`.
+- **Builder-editable UI:** all plan cards, prices, messages, purchase/restore/manage
+  buttons, legal copy, spacing and colors remain ordinary Builder widgets.
+- **Fail-closed loading:** purchase controls remain hidden until the store action
+  explicitly reports readiness and plan eligibility for the approved business.
+- **Secrets:** none. The action receives an authenticated public SDK key from the
+  server; RevenueCat private API and webhook keys remain in Vercel only.
+- **Test/remove:** unit and emulator tests cover entitlement checks; remove the one
+  action and swap the button actions if FlutterFlow exposes the same verified flow.
 
 ## Remaining Release Risks
 
-1. FlutterFlow Builder currently reports two blocking setup issues: Firebase config
-   files are not uploaded, and Firestore indexes are not confirmed as deployed.
+1. FlutterFlow Builder still needs Firebase access/config files. All 23 production
+   Firestore indexes are deployed and READY.
    Mobile app records, bundle IDs, signing files, and auth providers must also be
    verified in Firebase Console, Apple Developer, and Google Play Console.
+   The branded square launcher source is selected in Builder, but the latest AI
+   export still contains Flutter's default launcher binaries on both platforms.
 2. The pushed project needs full interactive QA and physical iOS and Android tests.
    Builder visual checks do not prove auth, saving, booking, or native date-picker
    interaction. A successful DSL compile is not a store-release archive.
@@ -304,21 +321,18 @@ remain the next scoped Builder work.
    flows can work live. The local Vercel CLI is logged out.
 4. Push delivery requires valid APNs/FCM configuration. Token registration alone does
    not prove device delivery.
-5. Admin is functional as an entry surface, but dedicated applications, listings,
-   cities, categories, metrics, and audit-log screens still need mobile-specific polish.
+5. The 18 dedicated mobile admin screens are built, but still require physical-device
+   QA with a real administrator account and production data.
 6. Consumer payments are intentionally absent. Booking remains a request until the
    partner confirms; Stripe is for partner subscriptions.
 
 ## Next Builder-First Slice
 
-1. Visually QA the new booking assistant, request history, deal editor, listing list,
-   and partner inbox in FlutterFlow Builder.
-2. Add dedicated notification, settings, request-detail, and subscription screens using
-   the existing API contracts and page-local state.
-3. The dedicated create/edit screen is now built. Split the remaining dense partner
-   dashboard into mobile-first listings, inbox, and analytics pages after validating
-   the current workflow with an approved test business.
-4. Complete Firebase mobile configuration and test email, Google, Apple, and guest auth
+1. Connect `gofunmotion-prod` in Builder and regenerate the matching platform files.
+2. Configure RevenueCat products and the authenticated Vercel webhook variables.
+3. Visually QA subscription cancellation, pending payment, restore, account switching,
+   partner deal editing and booking status updates with an approved test business.
+4. Test email, Google, Apple, and browse-without-login routing
    on physical devices.
 5. Build Android Internal Testing and iOS TestFlight artifacts only after fresh signed
    builds pass.

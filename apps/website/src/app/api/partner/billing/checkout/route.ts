@@ -8,6 +8,7 @@ import {
 import { jsonError, jsonOk } from "../../../../../lib/server/api-response";
 import { verifyApprovedPartnerBusiness } from "../../../../../lib/server/partner-business-access";
 import { getStripeClient, getStripeReturnOrigin } from "../../../../../lib/server/stripe";
+import { activePartnerTier, billingRecord } from "../../../../../lib/partner-entitlements";
 
 export const runtime = "nodejs";
 
@@ -35,6 +36,9 @@ export async function POST(request: Request): Promise<Response> {
   const billingRef = verified.db.collection("businessBilling").doc(businessId);
   const billingSnapshot = await billingRef.get();
   const billing = billingSnapshot.data() ?? {};
+  if (activePartnerTier({ ...billingRecord(billing.nativeSubscription), paidAccessEnabled: true }) !== "starter") {
+    return jsonError("Manage your existing subscription in the App Store or Google Play to avoid paying twice.", 409);
+  }
   const subscriptionStatus = normalizePartnerSubscriptionStatus(billing.subscriptionStatus);
 
   if (!canStartPartnerCheckout(subscriptionStatus)) {

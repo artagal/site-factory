@@ -139,7 +139,8 @@ export async function readMobileWorkspace(actor: MobileActor, section: MobileSec
   }
   const business = await mobileBusiness(actor, businessId);
   const billing = (await db.collection("businessBilling").doc(business.id).get()).data() ?? {};
-  const tier = mobilePaidTier({ ...business.data, ...billing });
+  const entitlement = resolvePartnerEntitlement(billing);
+  const tier = mobilePaidTier(entitlement);
   if (section === "business") return mobileWorkspace({ id: business.id, businessId: business.id, title: mobileText(business.data.name), canEdit: true,
     status: mobileText(business.data.status), summary: mobileText(business.data.cityName), detail: mobileText(business.data.description),
     field1: mobileText(business.data.name), field2: mobileText(business.data.phone), field3: mobileText(business.data.website),
@@ -158,9 +159,9 @@ export async function readMobileWorkspace(actor: MobileActor, section: MobileSec
   }
   if (section === "subscription") {
     const usage = await db.collection("listings").where("businessId", "==", business.id).where("status", "in", ["draft", "pending_approval", "published"]).count().get();
-    return mobileWorkspace({ businessId: business.id, title: `${tier[0].toUpperCase()}${tier.slice(1)}`, status: mobileText(billing.subscriptionStatus) || "free",
+    return mobileWorkspace({ businessId: business.id, title: `${tier[0].toUpperCase()}${tier.slice(1)}`, status: entitlement.subscriptionStatus || "free",
       summary: `${usage.data().count} used / ${tier === "pro" ? "unlimited" : tier === "growth" ? "10" : "1"} active deals`,
-      detail: mobileDate(billing.subscriptionCurrentPeriodEnd) ? `Current period ends: ${mobileDate(billing.subscriptionCurrentPeriodEnd)}` : "No active paid subscription.",
+      detail: entitlement.subscriptionCurrentPeriodEnd ? `Current period ends: ${entitlement.subscriptionCurrentPeriodEnd}` : "No active paid subscription.",
       rows: [mobileRow("starter", { title: "Starter", subtitle: "1 active deal", detail: "Booking requests and a business profile" }),
         mobileRow("growth", { title: "Growth", subtitle: "Up to 10 active deals", detail: "Analytics and featured eligibility" }),
         mobileRow("pro", { title: "Pro", subtitle: "Unlimited active deals", detail: "Team roster, advanced analytics and campaign eligibility" })] });
@@ -183,3 +184,4 @@ export async function readMobileWorkspace(actor: MobileActor, section: MobileSec
   }
   throw new MobileError("Unknown workspace section.");
 }
+import { resolvePartnerEntitlement } from "../partner-entitlements";

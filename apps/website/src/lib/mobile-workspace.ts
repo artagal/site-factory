@@ -92,11 +92,7 @@ export function canReviewRequest(data: Record<string, unknown>, uid: string, now
 }
 
 export function mobilePaidTier(business: Record<string, unknown>, now = Date.now()): "starter" | "growth" | "pro" {
-  const tier = business.pricingTier;
-  const periodEnd = Date.parse(mobileDate(business.subscriptionCurrentPeriodEnd));
-  return (tier === "growth" || tier === "pro") && business.paidAccessEnabled === true
-    && ["active", "trialing"].includes(String(business.subscriptionStatus))
-    && Number.isFinite(periodEnd) && periodEnd > now ? tier : "starter";
+  return activePartnerTier(business, now);
 }
 
 export function mapLink(latitude: unknown, longitude: unknown): string {
@@ -115,3 +111,4 @@ export function embeddedMapLink(latitude: unknown, longitude: unknown): string {
   url.searchParams.set("marker", `${lat},${lon}`);
   return url.toString();
 }
+import { activePartnerTier } from "./partner-entitlements";
