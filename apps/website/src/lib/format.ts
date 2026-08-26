@@ -1,5 +1,17 @@
 import type { BudgetTier, GroupType, IndoorOutdoor, PlanVibe, PlanWhen } from "../types/deals";
 
+export function formatLocalDateTimeInput(value: string) {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return "";
+  const pad = (part: number) => String(part).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export function localDateTimeInputToIso(value: string) {
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toISOString() : "";
+}
+
 export function formatBudget(budget: BudgetTier | "flexible") {
   const labels: Record<BudgetTier | "flexible", string> = {
     flexible: "Flexible",

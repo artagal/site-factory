@@ -10,6 +10,7 @@ import 'pages/discover_page.dart' show discoverPageHandle;
 import 'pages/find_plan_page.dart' show findPlanPageHandle;
 import 'pages/partner_apply_page.dart' show partnerApplyPageHandle;
 import 'pages/partner_dashboard_page.dart' show partnerDashboardPageHandle;
+import 'pages/partner_deal_editor_page.dart' show partnerDealEditorPageHandle;
 import 'pages/partner_page.dart' show partnerPageHandle;
 import 'pages/profile_page.dart' show profilePageHandle;
 import 'pages/reset_password_page.dart' show resetPasswordPageHandle;
@@ -26,6 +27,7 @@ abstract final class Pages {
   static final findPlanPage = findPlanPageHandle;
   static final partnerApplyPage = partnerApplyPageHandle;
   static final partnerDashboardPage = partnerDashboardPageHandle;
+  static final partnerDealEditorPage = partnerDealEditorPageHandle;
   static final partnerPage = partnerPageHandle;
   static final profilePage = profilePageHandle;
   static final resetPasswordPage = resetPasswordPageHandle;
@@ -41,6 +43,7 @@ abstract final class Pages {
     findPlanPage,
     partnerApplyPage,
     partnerDashboardPage,
+    partnerDealEditorPage,
     partnerPage,
     profilePage,
     resetPasswordPage,

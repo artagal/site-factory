@@ -1,5 +1,5 @@
 import { slugify } from "../../../../lib/slug";
-import { normalizeAvailableDays } from "../../../../lib/availability";
+import { normalizePartnerListingInput, partnerListingEditorFields } from "../../../../lib/partner-listing-input";
 import { listingReviewInputFromRecord, reviewListingWithAi } from "../../../../lib/ai/listing-review-agent";
 import { countLimitedListings, getPartnerTierCapabilities, isLimitedListingStatus } from "../../../../lib/partner-limits";
 import { jsonError, jsonOk } from "../../../../lib/server/api-response";
@@ -162,7 +162,11 @@ export async function GET(request: Request): Promise<Response> {
 
   const snapshot = await db.collection("listings").where("ownerIds", "array-contains", token.uid).get();
   const listings = snapshot.docs
-    .map((listingDoc): DocumentData & { id: string } => ({ id: listingDoc.id, ...listingDoc.data() }))
+    .map((listingDoc): DocumentData & { id: string } => ({
+      ...listingDoc.data(),
+      ...partnerListingEditorFields(listingDoc.data()),
+      id: listingDoc.id
+    }))
     .sort((left, right) => {
       const leftMillis = typeof left.updatedAt?.toMillis === "function" ? left.updatedAt.toMillis() : 0;
       const rightMillis = typeof right.updatedAt?.toMillis === "function" ? right.updatedAt.toMillis() : 0;
@@ -187,24 +191,6 @@ export async function POST(request: Request): Promise<Response> {
   const { business, db, token } = verified;
   if (!db || !business) return jsonError("Could not verify this business.", 503);
 
-  const title = clean(body?.title, 120);
-  const shortDescription = clean(body?.shortDescription, 180);
-  const description = clean(body?.description, 1600);
-  const categoryIds = cleanStringArray(body?.categoryIds, 4, 80);
-  const price = cleanNumber(body?.price, 0, 10000, 0);
-  const originalPrice = cleanNullableNumber(body?.originalPrice, 0, 10000);
-  const availableSlot = clean(body?.availableSlot, 80);
-  const availableSlots = availableSlot ? [availableSlot] : cleanStringArray(body?.availableSlots, 8, 80);
-  const availableDays = normalizeAvailableDays(cleanStringArray(body?.availableDays, 7, 24), availableSlots);
-
-  if (!title || !shortDescription || !description || !categoryIds.length || !availableSlots.length) {
-    return jsonError("Add title, category, descriptions, price, and at least one available time.", 400);
-  }
-
-  if (originalPrice !== null && originalPrice <= price) {
-    return jsonError("Original price must be greater than the deal price, or left blank.", 400);
-  }
-
   const listingRef = listingId ? db.collection("listings").doc(listingId) : db.collection("listings").doc();
   const existingSnapshot = listingId ? await listingRef.get() : null;
   const existing = existingSnapshot?.data();
@@ -216,15 +202,38 @@ export async function POST(request: Request): Promise<Response> {
     }
   }
 
+  const businessCityId = clean(business.cityId, 100) || "coming-soon";
+  const citySnapshot = await db.collection("cities").doc(businessCityId).get();
+  const cityData = citySnapshot.exists ? citySnapshot.data() : null;
+  const normalized = normalizePartnerListingInput(body ?? {}, existing, {
+    timeZone: clean(cityData?.timezone, 100)
+  });
+  if (!normalized.input) return jsonError(normalized.error, 400);
+  const input = normalized.input;
+  const title = clean(input.title, 120);
+  const shortDescription = clean(input.shortDescription, 180);
+  const description = clean(input.description, 1600);
+  const categoryIds = cleanStringArray(input.categoryIds, 4, 80);
+  const price = cleanNumber(input.price, 0, 10000, 0);
+  const originalPrice = cleanNullableNumber(input.originalPrice, 0, 10000);
+  const availableSlot = clean(input.availableSlot, 80);
+  const availableSlots = availableSlot ? [availableSlot] : cleanStringArray(input.availableSlots, 8, 80);
+  const availableDays = cleanStringArray(input.availableDays, 7, 24);
+
+  if (!title || !shortDescription || !description || !categoryIds.length || !availableSlots.length) {
+    return jsonError("Add title, category, descriptions, price, and at least one available time.", 400);
+  }
+
+  if (originalPrice !== null && originalPrice <= price) {
+    return jsonError("Original price must be greater than the deal price, or left blank.", 400);
+  }
+
   if (isLimitedListingStatus(saveMode === "draft" ? "draft" : "pending_approval") && !isLimitedListingStatus(String(existing?.status ?? ""))) {
     const limitError = await assertCanUseLimitedListingSlot(db, businessId, business, listingId || undefined);
     if (limitError) return limitError;
   }
 
   const status = saveMode === "draft" ? "draft" : "pending_approval";
-  const businessCityId = clean(business.cityId, 100) || "coming-soon";
-  const citySnapshot = businessCityId ? await db.collection("cities").doc(businessCityId).get() : null;
-  const cityData = citySnapshot?.exists ? citySnapshot.data() : null;
   const cityId = businessCityId;
   const cityName = cityData ? clean(cityData.name, 120) : clean(business.cityName, 120) || titleizeSlug(cityId);
   const slug = `${slugify(title) || "last-minute-deal"}-${listingRef.id.slice(0, 6)}`;
@@ -238,7 +247,7 @@ export async function POST(request: Request): Promise<Response> {
           description,
           originalPrice,
           price,
-          remainingSpots: body?.remainingSpots,
+          remainingSpots: input.remainingSpots,
           shortDescription,
           title
         }),
@@ -268,16 +277,16 @@ export async function POST(request: Request): Promise<Response> {
         : {}),
       approvalStatus: "pending",
       availableDays,
-      availableFrom: cleanNullable(body?.availableFrom, 40),
+      availableFrom: cleanNullable(input.availableFrom, 40),
       availableSlots,
-      availableUntil: cleanNullable(body?.availableUntil, 40),
-      bookingMode: clean(body?.bookingMode, 40) === "external_link" ? "external_link" : "request",
-      bookingUrl: cleanNullable(body?.bookingUrl, 500),
+      availableUntil: cleanNullable(input.availableUntil, 40),
+      bookingMode: clean(input.bookingMode, 40) === "external_link" ? "external_link" : "request",
+      bookingUrl: cleanNullable(input.bookingUrl, 500),
       budgetTier: budgetTierForPrice(price),
       businessId,
       businessName: String(business.name ?? "Local partner"),
-      cancellationNote: clean(body?.cancellationNote, 500) || "Availability is confirmed after the business reviews your request.",
-      capacity: cleanNullableNumber(body?.capacity, 1, 500),
+      cancellationNote: clean(input.cancellationNote, 500) || "Availability is confirmed after the business reviews your request.",
+      capacity: cleanNullableNumber(input.capacity, 1, 500),
       categoryIds,
       cityId,
       cityName,
@@ -285,33 +294,33 @@ export async function POST(request: Request): Promise<Response> {
       currency: "USD",
       description,
       discountPercent: discountPercent(originalPrice, price),
-      durationMinutes: Math.round(cleanNumber(body?.durationMinutes, 15, 720, 90)),
-      email: cleanNullable(body?.email, 254) ?? String(business.email ?? ""),
+      durationMinutes: Math.round(cleanNumber(input.durationMinutes, 15, 720, 90)),
+      email: cleanNullable(input.email, 254) ?? String(business.email ?? ""),
       featured: false,
-      groupSize: clean(body?.groupSize, 80) || "Up to 4 people",
-      groupTypes: cleanEnumArray(body?.groupTypes, GROUP_TYPES, ["date", "friends"]),
+      groupSize: clean(input.groupSize, 80) || "Up to 4 people",
+      groupTypes: cleanEnumArray(input.groupTypes, GROUP_TYPES, ["date", "friends"]),
       id: listingRef.id,
-      images: cleanStringArray(body?.images, 8, 500),
-      indoorOutdoor: INDOOR_OUTDOOR.has(clean(body?.indoorOutdoor, 40) as IndoorOutdoor) ? clean(body?.indoorOutdoor, 40) : "indoor",
+      images: cleanStringArray(input.images, 8, 500),
+      indoorOutdoor: INDOOR_OUTDOOR.has(clean(input.indoorOutdoor, 40) as IndoorOutdoor) ? clean(input.indoorOutdoor, 40) : "indoor",
       isDemo: false,
-      listingType: LISTING_TYPES.has(clean(body?.listingType, 40) as ListingType) ? clean(body?.listingType, 40) : "deal",
+      listingType: LISTING_TYPES.has(clean(input.listingType, 40) as ListingType) ? clean(input.listingType, 40) : "deal",
       originalPrice,
       ownerIds: Array.isArray(business.ownerIds) ? business.ownerIds.map(String) : [token.uid],
-      phone: cleanNullable(body?.phone, 80) ?? (typeof business.phone === "string" ? business.phone : null),
+      phone: cleanNullable(input.phone, 80) ?? (typeof business.phone === "string" ? business.phone : null),
       price,
       promoted: false,
-      remainingSpots: cleanNullableNumber(body?.remainingSpots, 0, 500),
+      remainingSpots: cleanNullableNumber(input.remainingSpots, 0, 500),
       requestCount: existing?.requestCount ?? 0,
       saveCount: existing?.saveCount ?? 0,
       shortDescription,
       slug: listingId && typeof existing?.slug === "string" ? existing.slug : slug,
       status,
-      terms: clean(body?.terms, 700) || "Deal is subject to partner confirmation, capacity, and posted terms.",
+      terms: clean(input.terms, 700) || "Deal is subject to partner confirmation, capacity, and posted terms.",
       title,
       updatedAt: now,
-      vibeTags: cleanEnumArray(body?.vibeTags, VIBES, ["social"]),
+      vibeTags: cleanEnumArray(input.vibeTags, VIBES, ["social"]),
       viewCount: existing?.viewCount ?? 0,
-      whyItFits: clean(body?.whyItFits, 500) || "A simple last-minute activity deal with open availability."
+      whyItFits: clean(input.whyItFits, 500) || "A simple last-minute activity deal with open availability."
     },
     { merge: true }
   );

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { Clock, Edit3, PauseCircle, Plus, Send, ShieldCheck, Sparkles, Tag, Trash2, type LucideIcon } from "lucide-react";
 import { getCurrentUserIdToken } from "../../lib/auth";
+import { formatLocalDateTimeInput, localDateTimeInputToIso } from "../../lib/format";
 import { StatusBanner } from "../gofunmotion/product-states";
 import { demoCategories } from "../../lib/demoData";
 import {
@@ -28,7 +29,9 @@ type AiReview = {
 };
 
 type DealFormState = {
+  availableFrom: string;
   availableSlot: string;
+  availableUntil: string;
   bookingMode: "request" | "external_link";
   bookingUrl: string;
   cancellationNote: string;
@@ -79,7 +82,9 @@ function titleizeSlug(value: string) {
 
 function blankForm(primaryCategory = "date-night", cityName = "Your city"): DealFormState {
   return {
+    availableFrom: "",
     availableSlot: "Tonight 7:00 PM",
+    availableUntil: "",
     bookingMode: "request",
     bookingUrl: "",
     cancellationNote: "Request booking first. The business confirms availability before the customer pays or arrives.",
@@ -109,7 +114,9 @@ function formFromListing(listing: Listing): DealFormState {
   const vibeTags: PlanVibe[] = Array.isArray(listing.vibeTags) && listing.vibeTags.length ? listing.vibeTags : ["social"];
 
   return {
+    availableFrom: listing.availableFrom ?? "",
     availableSlot: Array.isArray(listing.availableSlots) ? listing.availableSlots[0] ?? "" : "",
+    availableUntil: listing.availableUntil ?? "",
     bookingMode: listing.bookingMode === "external_link" ? "external_link" : "request",
     bookingUrl: listing.bookingUrl ?? "",
     cancellationNote: listing.cancellationNote,
@@ -155,6 +162,7 @@ export function LastMinuteDealEditor({
 
   const isEditing = Boolean(form.listingId);
   const selectedListing = useMemo(() => listings.find((listing) => listing.id === form.listingId) ?? null, [form.listingId, listings]);
+  const hasDateWindow = Boolean(form.availableFrom || form.availableUntil);
   const activeCount = useMemo(() => countLimitedListings(listings), [listings]);
   const capabilities = useMemo(() => getPartnerTierCapabilities(business), [business]);
   const limitLabel = formatActiveListingLimit(capabilities.activeListings);
@@ -283,10 +291,12 @@ export function LastMinuteDealEditor({
       const response = await fetch("/api/partner/listings", {
         body: JSON.stringify({
           ...form,
+          availableSlot: hasDateWindow ? undefined : form.availableSlot,
           businessId: business.id,
           cityId: business.cityId,
           description: form.description || form.shortDescription || form.title,
           listingType: "deal",
+          requireAvailabilityWindow: hasDateWindow || Boolean(selectedListing?.availableFrom || selectedListing?.availableUntil),
           saveMode
         }),
         headers: {
@@ -540,9 +550,17 @@ export function LastMinuteDealEditor({
                 {businessCityName}
               </div>
             </Field>
-            <Field label="Available time">
-              <input className={inputClass} onChange={(event) => update("availableSlot", event.target.value)} placeholder="Tonight 8:30 PM" required value={form.availableSlot} />
+            <Field label="Starts (device time)">
+              <input className={`${inputClass} min-w-0`} type="datetime-local" onChange={(event) => update("availableFrom", localDateTimeInputToIso(event.target.value))} value={formatLocalDateTimeInput(form.availableFrom)} />
             </Field>
+            <Field label="Ends / expires (device time)">
+              <input className={`${inputClass} min-w-0`} type="datetime-local" onChange={(event) => update("availableUntil", localDateTimeInputToIso(event.target.value))} value={formatLocalDateTimeInput(form.availableUntil)} />
+            </Field>
+            {!hasDateWindow ? (
+              <Field label="Available time">
+                <input className={inputClass} onChange={(event) => update("availableSlot", event.target.value)} placeholder="Tonight 8:30 PM" required value={form.availableSlot} />
+              </Field>
+            ) : null}
             <Field label="Was price">
               <input className={inputClass} inputMode="decimal" onChange={(event) => update("originalPrice", event.target.value)} placeholder="90" value={form.originalPrice} />
             </Field>
@@ -791,7 +809,11 @@ function validateDealForm(form: DealFormState) {
   const remainingSpots = form.remainingSpots ? Number(form.remainingSpots) : null;
 
   if (form.title.trim().length < 4) errors.push("Add a clear deal title.");
-  if (form.availableSlot.trim().length < 4) errors.push("Add an available time or booking window.");
+  if (form.availableFrom || form.availableUntil) {
+    const start = Date.parse(form.availableFrom);
+    const end = Date.parse(form.availableUntil);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) errors.push("Choose an end date after the start date.");
+  } else if (form.availableSlot.trim().length < 4) errors.push("Add an available time or booking window.");
   if (!Number.isFinite(price) || price < 0) errors.push("Now price must be a valid number.");
   if (originalPrice !== null && (!Number.isFinite(originalPrice) || originalPrice < price)) {
     errors.push("Was price must be blank or greater than the now price.");

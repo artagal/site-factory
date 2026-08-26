@@ -1,3 +1,4 @@
+import { resolveAvailableDays } from "../availability";
 import { demoListings } from "../demoData";
 import { isDemoDataEnabled } from "../demo-mode";
 import { normalizeBusinessDocument, normalizeListingDocument } from "../firestore-model";
@@ -13,7 +14,22 @@ export async function getPublicListingsForServer(): Promise<Listing[]> {
   const listings = snapshot.docs
     .map((listingDoc) => normalizeListingDocument(listingDoc.id, listingDoc.data()))
     .filter((listing) => !listing.isDemo);
-  return listings.length ? listings : isDemoDataEnabled() ? demoListings : [];
+  if (!listings.length) return isDemoDataEnabled() ? demoListings : [];
+
+  const cityIds = [...new Set(listings
+    .filter((listing) => listing.availableFrom || listing.availableUntil)
+    .map((listing) => listing.cityId)
+    .filter(Boolean))];
+  const cities = cityIds.length ? await db.getAll(...cityIds.map((id) => db.collection("cities").doc(id))) : [];
+  const timeZones = new Map(cities.map((city) => {
+    const timezone: unknown = city.data()?.timezone;
+    return [city.id, typeof timezone === "string" ? timezone : "UTC"];
+  }));
+  const now = Date.now();
+  return listings.map((listing) => ({
+    ...listing,
+    availableDays: resolveAvailableDays(listing, { now, timeZone: timeZones.get(listing.cityId) })
+  }));
 }
 
 export async function getPublicListingBySlugForServer(slug: string): Promise<Listing | undefined> {

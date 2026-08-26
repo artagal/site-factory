@@ -65,27 +65,27 @@ abstract final class DiscoverPageWidgets {
             name: "Column",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Column_ttatdwao",
+                key: "Column_ebcub2nz",
                 type: "Column",
                 path: "DiscoverPage.body[0].children[0]",
                 name: "DealFirstDiscoveryHeader",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Text_y81d7sc6",
+                    key: "Text_zhoqofyg",
                     type: "Text",
                     path: "DiscoverPage.body[0].children[0].children[0]",
                     name: "DealFirstDiscoveryTitle",
                     text: "Last-minute fun deals near you.",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Text_42ltq1fl",
+                    key: "Text_79d7keb6",
                     type: "Text",
                     path: "DiscoverPage.body[0].children[0].children[1]",
                     name: "DealFirstDiscoverySubtitle",
                     text: "Save on activities, date nights, and family fun with open spots today.",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_bj9ydsbj",
+                    key: "Button_57o3qauy",
                     type: "Button",
                     path: "DiscoverPage.body[0].children[0].children[2]",
                     name: "HeroDealsButton",
