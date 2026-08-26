@@ -4,15 +4,14 @@ library;
 
 import 'package:flutterflow_ai/flutterflow_ai.dart' as ffai;
 
-final discoverPageHandle =
-    ffai.ProjectPageHandle<DiscoverPageParams, DiscoverPageState>(
-      name: "DiscoverPage",
-      key: "Scaffold_zvhlzk7l",
-      route: "",
-      params: const DiscoverPageParams(),
-      state: const DiscoverPageState(),
-      widgets: DiscoverPageWidgets.tree,
-    );
+final discoverPageHandle = ffai.ProjectPageHandle<DiscoverPageParams, DiscoverPageState>(
+  name: "DiscoverPage",
+  key: "Scaffold_zvhlzk7l",
+  route: "",
+  params: const DiscoverPageParams(),
+  state: const DiscoverPageState(),
+  widgets: DiscoverPageWidgets.tree,
+);
 
 final class DiscoverPageParams {
   const DiscoverPageParams();
@@ -35,7 +34,9 @@ abstract final class DiscoverPageWidgets {
       type: "Scaffold",
       path: "DiscoverPage",
       name: "DiscoverPage",
-      triggers: const <String>["ON_INIT_STATE"],
+      triggers: const <String>[
+        "ON_INIT_STATE",
+      ],
       slots: <String, List<ffai.ProjectWidgetHandle>>{
         "appBar": <ffai.ProjectWidgetHandle>[
           ffai.ProjectWidgetHandle(
@@ -64,77 +65,33 @@ abstract final class DiscoverPageWidgets {
             name: "Column",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Container_5si7c46x",
-                type: "Container",
+                key: "Column_ttatdwao",
+                type: "Column",
                 path: "DiscoverPage.body[0].children[0]",
-                name: "Container",
+                name: "DealFirstDiscoveryHeader",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Column_lssh3upk",
-                    type: "Column",
+                    key: "Text_y81d7sc6",
+                    type: "Text",
                     path: "DiscoverPage.body[0].children[0].children[0]",
-                    name: "Column",
-                    children: <ffai.ProjectWidgetHandle>[
-                      ffai.ProjectWidgetHandle(
-                        key: "Container_zgkfhxen",
-                        type: "Container",
-                        path:
-                            "DiscoverPage.body[0].children[0].children[0].children[0]",
-                        name: "Container",
-                        children: <ffai.ProjectWidgetHandle>[
-                          ffai.ProjectWidgetHandle(
-                            key: "Text_mktrc1mc",
-                            type: "Text",
-                            path:
-                                "DiscoverPage.body[0].children[0].children[0].children[0].children[0]",
-                            name: "Text",
-                            text: "GoFunMotion Deals",
-                          ),
-                        ],
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "Text_v6je16zi",
-                        type: "Text",
-                        path:
-                            "DiscoverPage.body[0].children[0].children[0].children[1]",
-                        name: "Text",
-                        text: "Find something fun to do today.",
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "Text_uun00lf5",
-                        type: "Text",
-                        path:
-                            "DiscoverPage.body[0].children[0].children[0].children[2]",
-                        name: "Text",
-                        text:
-                            "Local activity deals, date night ideas, family plans, group-friendly picks, and partner booking requests in one simple app.",
-                      ),
-                      ffai.ProjectWidgetHandle(
-                        key: "Row_qv3g1w5w",
-                        type: "Row",
-                        path:
-                            "DiscoverPage.body[0].children[0].children[0].children[3]",
-                        name: "Row",
-                        children: <ffai.ProjectWidgetHandle>[
-                          ffai.ProjectWidgetHandle(
-                            key: "Button_ctb40jnk",
-                            type: "Button",
-                            path:
-                                "DiscoverPage.body[0].children[0].children[0].children[3].children[0]",
-                            name: "HeroFindPlanButton",
-                            text: "Find My Plan",
-                            triggers: const <String>["ON_TAP"],
-                          ),
-                          ffai.ProjectWidgetHandle(
-                            key: "IconButton_djl0hiwy",
-                            type: "IconButton",
-                            path:
-                                "DiscoverPage.body[0].children[0].children[0].children[3].children[1]",
-                            name: "HeroSavedButton",
-                            triggers: const <String>["ON_TAP"],
-                          ),
-                        ],
-                      ),
+                    name: "DealFirstDiscoveryTitle",
+                    text: "Last-minute fun deals near you.",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Text_42ltq1fl",
+                    type: "Text",
+                    path: "DiscoverPage.body[0].children[0].children[1]",
+                    name: "DealFirstDiscoverySubtitle",
+                    text: "Save on activities, date nights, and family fun with open spots today.",
+                  ),
+                  ffai.ProjectWidgetHandle(
+                    key: "Button_bj9ydsbj",
+                    type: "Button",
+                    path: "DiscoverPage.body[0].children[0].children[2]",
+                    name: "HeroDealsButton",
+                    text: "Tonight's Deals",
+                    triggers: const <String>[
+                      "ON_TAP",
                     ],
                   ),
                 ],
@@ -227,3 +184,4 @@ abstract final class DiscoverPageWidgets {
     ),
   );
 }
+
