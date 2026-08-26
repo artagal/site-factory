@@ -4,9 +4,9 @@ Date: 2026-08-26. Project: `go-fun-motion-deals-vl4mj8`.
 
 ## Release Decision
 
-**Do not submit to TestFlight yet.** Native screens and API code are implemented,
-but a signed iOS archive, mobile Firebase configuration, backend deployment, and
-physical-device auth/booking checks are still release gates.
+**Do not submit to TestFlight yet.** Native screens, subscription API and store UI are
+implemented, but Builder Firebase access, RevenueCat products/webhook configuration,
+Apple deployment credentials, a signed iOS archive, and device QA are still gates.
 
 ## Editable App Scope
 
@@ -44,18 +44,26 @@ valid provisioning. Follow the official [Firebase connection instructions](https
 
 ## Repeatable Checks
 
-Latest workspace expansion (`jExsfCMwThaAVIG3GIyo`): 199 regular tests, 8 dedicated
-Auth/Firestore Emulator tests, and 22 Dart tests passed. Website typecheck passed.
+The native subscription update adds server-verified RevenueCat purchase/restore,
+provider-safe entitlement projection and fail-closed store readiness. The final
+Builder/AI push is `c8irzdiI2I3LNsLi1jil`; the one-time state migration was pushed as
+`kynC72KjEKpYRVRGxHW7`. Current checks include 23 production Firestore indexes READY,
+a previously successful 22/22 Auth/Firestore Emulator suite, website typecheck,
+208 passing tests with 23 emulator-dependent skips, and a production build with
+86 routes. The native Dart suite has 25 passing tests.
 Fresh generated-runtime analysis has 0 errors, 1,057 warnings and 3,364 information
 diagnostics. `--no-fatal-infos --no-fatal-warnings` was used only to make the analyzer
 exit reflect errors; warnings remain logged. This is not a signed archive or a
 physical-device authentication test.
 
-The expanded export also passed `flutter build web` on installed Flutter 3.35.7.
+The expanded export also passed `flutter build web --no-pub --no-wasm-dry-run` on
+installed Flutter 3.35.7 after resolving dependencies with that same SDK.
 The default Flutter 3.44 build fails on the exported Font Awesome 10.12 dependency
 (`IconData` subclassing). Generated code and the global SDK were not patched.
-Match the actual FlutterFlow CI runtime before native release; legacy startup
-assets and Firebase configuration are still separate release gates.
+Match the actual FlutterFlow CI runtime before native release. The branded splash
+is present and the square launcher source is selected and synced in Builder, but a
+fresh AI export still contains Flutter's default iOS and Android launcher binaries.
+Launcher processing and Firebase configuration remain separate release gates.
 
 Historical AI-only verification: website typecheck/build passed (86 routes), 163
 tests passed with 9 emulator-dependent cases skipped, SEO audited 48 pages with
@@ -89,11 +97,11 @@ identity mismatch, missing Google callback scheme, legacy user auto-creation,
 missing JSON escaping, or embedded provider secrets. It does not bypass errors
 by editing generated files and is not a substitute for a signed build.
 
-The auth/Firestore emulator suite was attempted with an isolated demo project.
-It could not start on this Windows host: Java failed to create its loopback
-selector (`Unable to establish loopback connection`, `Invalid argument: connect`).
-Changing the selector provider and forcing IPv4 did not fix it. Do not report the
-skipped emulator tests as passed or run destructive tests against production.
+The subscription/rules/mobile workspace suite previously passed 22/22 against
+demo-only Auth and Firestore emulators; production data was not used for tests. The
+latest retry could not start Firestore because the Codex Windows process environment
+blocked Java NIO loopback selector creation. That infrastructure failure occurred
+before test collection and does not replace the last successful emulator result.
 
 ## Required Live QA
 
@@ -103,20 +111,24 @@ skipped emulator tests as passed or run destructive tests against production.
 2. Upload/regenerate the existing matching Firebase mobile config in Builder.
    Verify email/Google/Apple providers and Android SHA certificates. Do not enable
    native auto-create of the old user-document shape.
-3. Log in to App Store Connect, confirm the exact app record/bundle and signing
+3. Configure RevenueCat `growth`/`pro` entitlements, products, the
+   `partner_plans` offering, the authenticated webhook, and Vercel private env.
+   Verify purchase, cancellation, expiry, account switching, and restore with the
+   exact Firebase UID App User ID before enabling production packages.
+4. Log in to App Store Connect, confirm the exact app record/bundle and signing
    access, then configure FlutterFlow Mobile Deployment. No Apple credentials or
    signed IPA have been supplied or created by this task.
-4. Complete in-app account deletion before release. The server deletion endpoint
+5. Complete in-app account deletion before release. The server deletion endpoint
    exists, but a native confirmation/re-authentication flow and owner/retention
    behavior still need review and testing.
-5. On a physical iPhone, verify each sign-in method, cancellation, sign-out,
+6. On a physical iPhone, verify each sign-in method, cancellation, sign-out,
    password reset, new user profile creation, return routing, and saved items.
-6. Test AI off/on, provider outage, empty city, quote/newline/Unicode requests,
+7. Test AI off/on, provider outage, empty city, quote/newline/Unicode requests,
    plan saves, detail navigation, and explicit booking submission with a real
    approved offer. Confirm the owner gets the request and notification.
-7. Verify 320/390/430-point layouts, keyboard/safe areas, long text, VoiceOver,
+8. Verify 320/390/430-point layouts, keyboard/safe areas, long text, VoiceOver,
    large text, and real result images. Builder screenshots are not device QA.
-8. Build a fresh signed IPA, inspect compile errors and signing, upload it, and
+9. Build a fresh signed IPA, inspect compile errors and signing, upload it, and
    wait for App Store Connect processing before assigning an internal tester.
    Complete privacy/AI disclosures and export-compliance questions accurately.
 

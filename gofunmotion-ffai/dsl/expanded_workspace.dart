@@ -156,7 +156,7 @@ WorkspaceApi declareWorkspaceApi(App app) {
   );
   final read = Endpoint.get(
     'ReadNativeWorkspace',
-    '/api/mobile/workspace?section=[section]&id=[id]&businessId=[businessId]&cursor=[cursor]&cityId=[cityId]',
+    '/api/mobile/workspace',
     variables: {
       for (final key in [
         'section',

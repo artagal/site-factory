@@ -76,6 +76,9 @@ export type Business = {
   photos: string[];
   postalCode: string;
   pricingTier?: "starter" | "growth" | "pro";
+  subscriptionStatus?: PartnerSubscriptionStatus | null;
+  subscriptionCurrentPeriodEnd?: string | null;
+  subscriptionProvider?: "stripe" | "app_store" | "play_store" | null;
   slug: string;
   state: string;
   status: "pending" | "approved" | "rejected" | "suspended";

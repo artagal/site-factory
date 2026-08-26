@@ -11,6 +11,7 @@ import 'ai_experience.dart';
 import 'auth_experience.dart';
 import 'marketplace_experience.dart';
 import 'expanded_workspace.dart';
+import 'native_subscription.dart';
 import 'package:flutterflow_ai/src/helpers/data_schema_helpers.dart'
     show
         addDataStructField,
@@ -50,6 +51,7 @@ Future<void> main(List<String> args) async {
         Platform.script.resolve('auth_experience.dart').toFilePath(),
         Platform.script.resolve('marketplace_experience.dart').toFilePath(),
         Platform.script.resolve('expanded_workspace.dart').toFilePath(),
+        Platform.script.resolve('native_subscription.dart').toFilePath(),
       ]),
     );
   } catch (error) {
@@ -200,6 +202,7 @@ void buildGoFunMotionDealsQueryGuard(App app) {
     onboardingPage: workspacePage('CustomerOnboardingPage'),
   );
   ensureExpandedWorkspace(app, nativeAi);
+  ensureNativeSubscription(app);
   app.raw(disableNativeAuthAutoNavigation);
   app.raw(verifyPartnerDealScreenStructure);
 }
@@ -2270,7 +2273,7 @@ void _ensureAnimatedSplash(App app) {
     description: 'Animated GoFunMotion intro splash using the brand GIF asset.',
     isInitial: true,
     onLoad: [
-      const Wait(2300),
+      const Wait(500),
       Navigate(ff.Pages.discoverPage, allowBack: false, replaceRoute: true),
     ],
     body: Scaffold(
@@ -2279,9 +2282,9 @@ void _ensureAnimatedSplash(App app) {
         height: double.infinity,
         color: Colors.primaryBackground,
         child: Image(
-          'assets/brand/gofunmotion-splash-motion.gif',
+          'https://gofunmotion.com/brand/gofunmotion-splash-motion.gif',
           name: 'GoFunMotionAnimatedSplashGif',
-          isNetwork: false,
+          isNetwork: true,
           fit: ImageFit.cover,
           width: double.infinity,
           height: double.infinity,
@@ -2290,15 +2293,35 @@ void _ensureAnimatedSplash(App app) {
     ),
   );
 
+  final existingSplash = ff.Pages.all.where(
+    (page) => page.name == 'SplashPage',
+  );
+  if (existingSplash.isNotEmpty) {
+    final splash = existingSplash.single;
+    app.editPageOnLoad(splash, [
+      const Wait(500),
+      Navigate(ff.Pages.discoverPage, allowBack: false, replaceRoute: true),
+    ]);
+    app.editPage(splash, (page) {
+      page.ensureReplaced(
+        splash.widgets.all.singleWhere(
+          (widget) => widget.name == 'GoFunMotionAnimatedSplashGif',
+        ),
+        Image(
+          'https://gofunmotion.com/brand/gofunmotion-splash-motion.gif',
+          name: 'GoFunMotionAnimatedSplashGif',
+          isNetwork: true,
+          fit: ImageFit.contain,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+      );
+    });
+  }
+
   app.raw((project) {
     setInitialPage(project, pageName: 'SplashPage');
     final settings = project.ensureAppSettings();
-    settings.appIconPath = 'assets/brand/gofunmotion-app-icon-1024.png';
-    settings.splashImage = FFSplashImage(
-      path: 'assets/brand/gofunmotion-splash.png',
-      minSplashScreenDuration: 1500,
-      disableForWeb: false,
-    );
     settings.downloadUnusedAssets = true;
   });
 }

@@ -20,7 +20,10 @@ describe("Firestore marketplace model normalization", () => {
     const business = normalizeBusinessDocument("business-2", {
       name: "Growth Studio",
       paidAccessEnabled: true,
-      pricingTier: "growth"
+      pricingTier: "growth",
+      subscriptionStatus: "active",
+      subscriptionCurrentPeriodEnd: new Date("2099-01-01T00:00:00Z"),
+      subscriptionProvider: "app_store"
     });
 
     expect(business).toMatchObject({
@@ -29,7 +32,8 @@ describe("Firestore marketplace model normalization", () => {
     });
     expect(business).not.toHaveProperty("stripeCustomerId");
     expect(business).not.toHaveProperty("stripeSubscriptionId");
-    expect(business).not.toHaveProperty("subscriptionStatus");
+    expect(business).toMatchObject({ subscriptionStatus: "active", subscriptionCurrentPeriodEnd: "2099-01-01T00:00:00.000Z", subscriptionProvider: "app_store" });
+    expect(business).not.toHaveProperty("nativeOwnerUid");
   });
 
   it("normalizes historical listings into the canonical marketplace shape", () => {

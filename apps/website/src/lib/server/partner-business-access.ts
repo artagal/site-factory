@@ -25,7 +25,7 @@ export async function verifyApprovedPartnerBusiness(
     return { error: jsonError("You do not have access to this business.", 403) };
   }
 
-  if (business?.status !== "approved") {
+  if (business?.status !== "approved" || business?.isDemo === true) {
     return { error: jsonError("Business approval is required before starting a paid plan.", 403) };
   }
 

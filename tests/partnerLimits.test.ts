@@ -9,10 +9,14 @@ import {
   isLimitedListingStatus
 } from "../apps/website/src/lib/partner-limits";
 
+const active = { subscriptionStatus: "active", subscriptionCurrentPeriodEnd: "2099-01-01T00:00:00Z" };
+
 describe("partner paid-tier limits", () => {
   it("falls back to Starter unless paid access is enabled", () => {
     expect(getEffectivePartnerTier({ paidAccessEnabled: false, pricingTier: "pro" })).toBe("starter");
-    expect(getEffectivePartnerTier({ paidAccessEnabled: true, pricingTier: "growth" })).toBe("growth");
+    expect(getEffectivePartnerTier({ ...active, paidAccessEnabled: true, pricingTier: "growth" })).toBe("growth");
+    expect(getEffectivePartnerTier({ paidAccessEnabled: true, pricingTier: "growth" })).toBe("starter");
+    expect(getEffectivePartnerTier({ ...active, paidAccessEnabled: true, pricingTier: "growth", subscriptionCurrentPeriodEnd: "2020-01-01T00:00:00Z" })).toBe("starter");
   });
 
   it("counts only active-slot listing statuses", () => {
@@ -33,14 +37,14 @@ describe("partner paid-tier limits", () => {
 
   it("returns tier capabilities for UI and server checks", () => {
     expect(getPartnerTierCapabilities({ paidAccessEnabled: false, pricingTier: "starter" }).activeListings).toBe(1);
-    expect(getPartnerTierCapabilities({ paidAccessEnabled: true, pricingTier: "growth" }).activeListings).toBe(10);
-    expect(formatActiveListingLimit(getPartnerTierCapabilities({ paidAccessEnabled: true, pricingTier: "pro" }).activeListings)).toBe("Unlimited");
+    expect(getPartnerTierCapabilities({ ...active, paidAccessEnabled: true, pricingTier: "growth" }).activeListings).toBe(10);
+    expect(formatActiveListingLimit(getPartnerTierCapabilities({ ...active, paidAccessEnabled: true, pricingTier: "pro" }).activeListings)).toBe("Unlimited");
   });
 
   it("gates paid placement by active paid tier", () => {
     expect(canFeatureListings({ paidAccessEnabled: false, pricingTier: "growth" })).toBe(false);
-    expect(canFeatureListings({ paidAccessEnabled: true, pricingTier: "growth" })).toBe(true);
-    expect(canPromoteListings({ paidAccessEnabled: true, pricingTier: "growth" })).toBe(false);
-    expect(canPromoteListings({ paidAccessEnabled: true, pricingTier: "pro" })).toBe(true);
+    expect(canFeatureListings({ ...active, paidAccessEnabled: true, pricingTier: "growth" })).toBe(true);
+    expect(canPromoteListings({ ...active, paidAccessEnabled: true, pricingTier: "growth" })).toBe(false);
+    expect(canPromoteListings({ ...active, paidAccessEnabled: true, pricingTier: "pro" })).toBe(true);
   });
 });

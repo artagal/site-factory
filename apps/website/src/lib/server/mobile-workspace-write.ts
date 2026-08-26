@@ -128,7 +128,7 @@ export async function writeMobileWorkspace(actor: MobileActor, command: MobileCo
     case "team-remove": {
       const business = await mobileBusiness(actor, command.businessId);
       const billing = (await db.collection("businessBilling").doc(business.id).get()).data() ?? {};
-      if (mobilePaidTier({ ...business.data, ...billing }) !== "pro") throw new MobileError("An active Pro subscription is required.", 403);
+      if (mobilePaidTier(resolvePartnerEntitlement(billing)) !== "pro") throw new MobileError("An active Pro subscription is required.", 403);
       const collection = db.collection("businesses").doc(business.id).collection("teamMembers");
       const ref = command.id ? collection.doc(command.id) : collection.doc();
       if (command.action === "team-remove") {
@@ -217,3 +217,4 @@ export async function ensureMobileDeletionAllowed(actor: MobileActor): Promise<v
   if (!businesses.empty) throw new MobileError("Contact support to close or transfer your business before deleting your account.", 409);
   if (!getFirebaseAdminAuth()) throw new MobileError("Account deletion is unavailable.", 503);
 }
+import { resolvePartnerEntitlement } from "../partner-entitlements";

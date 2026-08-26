@@ -125,18 +125,14 @@ export async function POST(request: Request): Promise<Response> {
     const businessId = typeof listing.businessId === "string" ? listing.businessId : "";
     const businessSnapshot = businessId ? await db.collection("businesses").doc(businessId).get() : null;
     const business = businessSnapshot?.data() ?? {};
+    const billing = businessId ? (await db.collection("businessBilling").doc(businessId).get()).data() ?? {} : {};
+    const entitlement = resolvePartnerEntitlement(billing);
 
-    if (action === "feature" && !canFeatureListings({
-      paidAccessEnabled: business.paidAccessEnabled === true,
-      pricingTier: business.pricingTier
-    })) {
+    if (action === "feature" && (business.status !== "approved" || !canFeatureListings(entitlement))) {
       return jsonError("Featured placement requires Growth or Pro access.", 402);
     }
 
-    if (action === "promote" && !canPromoteListings({
-      paidAccessEnabled: business.paidAccessEnabled === true,
-      pricingTier: business.pricingTier
-    })) {
+    if (action === "promote" && (business.status !== "approved" || !canPromoteListings(entitlement))) {
       return jsonError("Promoted campaigns require Pro access.", 402);
     }
   }
@@ -163,3 +159,4 @@ export async function POST(request: Request): Promise<Response> {
   await audit(action, { promoted: false });
   return jsonOk({ action, listingId, promoted: false });
 }
+import { resolvePartnerEntitlement } from "../../../../../lib/partner-entitlements";

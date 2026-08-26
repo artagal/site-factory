@@ -4,20 +4,18 @@ library;
 
 import 'package:flutterflow_ai/flutterflow_ai.dart' as ffai;
 
-final splashPageHandle =
-    ffai.ProjectPageHandle<SplashPageParams, SplashPageState>(
-      name: "SplashPage",
-      key: "Scaffold_7vhocoab",
-      route: "splash",
-      params: const SplashPageParams(),
-      state: const SplashPageState(),
-      widgets: SplashPageWidgets.tree,
-    );
+final splashPageHandle = ffai.ProjectPageHandle<SplashPageParams, SplashPageState>(
+  name: "SplashPage",
+  key: "Scaffold_7vhocoab",
+  route: "splash",
+  params: const SplashPageParams(),
+  state: const SplashPageState(),
+  widgets: SplashPageWidgets.tree,
+);
 
 final class SplashPageParams {
   const SplashPageParams();
 }
-
 final class SplashPageState {
   const SplashPageState();
 }
@@ -29,7 +27,9 @@ abstract final class SplashPageWidgets {
       type: "Scaffold",
       path: "SplashPage",
       name: "SplashPage",
-      triggers: const <String>["ON_INIT_STATE"],
+      triggers: const <String>[
+        "ON_INIT_STATE",
+      ],
       slots: <String, List<ffai.ProjectWidgetHandle>>{
         "body": <ffai.ProjectWidgetHandle>[
           ffai.ProjectWidgetHandle(
@@ -39,7 +39,7 @@ abstract final class SplashPageWidgets {
             name: "Container",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Image_6ugi6zej",
+                key: "Image_wgkvf2kv",
                 type: "Image",
                 path: "SplashPage.body[0].children[0]",
                 name: "GoFunMotionAnimatedSplashGif",
