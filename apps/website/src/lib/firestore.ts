@@ -181,6 +181,12 @@ export async function readSavedListings(userId: string) {
   return snapshot.docs.map((savedDoc) => savedDoc.data() as SavedListingRecord);
 }
 
+export async function isListingSaved(userId: string, listingId: string) {
+  const db = getGoFunMotionDb();
+  if (!db) throw new Error("Account sync is unavailable.");
+  return (await getDoc(doc(db, "users", userId, "savedListings", listingId))).exists();
+}
+
 export async function readSavedPlans(userId: string) {
   const db = getGoFunMotionDb();
   if (!db) return [];

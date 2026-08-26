@@ -5,10 +5,12 @@ library;
 abstract final class ApiGroups {
   static const goFunMotionAccount = "GoFunMotionAccount";
   static const goFunMotionAssistant = "GoFunMotionAssistant";
+  static const goFunMotionBrowse = "GoFunMotionBrowse";
   static const goFunMotionWeb = "GoFunMotionWeb";
   static const all = <String>[
     "GoFunMotionAccount",
     "GoFunMotionAssistant",
+    "GoFunMotionBrowse",
     "GoFunMotionWeb",
   ];
 }

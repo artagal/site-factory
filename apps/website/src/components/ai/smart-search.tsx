@@ -44,6 +44,7 @@ export function SmartSearch({ cityId }: { cityId?: string }) {
       if (filters.when) params.set("when", filters.when);
       if (filters.who) params.set("who", filters.who);
       if (filters.budget) params.set("budget", filters.budget);
+      if (filters.maxPrice !== null) params.set("maxPrice", String(filters.maxPrice));
       if (filters.categoryId) params.set("categoryId", filters.categoryId);
       if (filters.indoorOutdoor) params.set("indoorOutdoor", filters.indoorOutdoor);
       if (filters.vibe) params.set("vibe", filters.vibe);
@@ -85,4 +86,3 @@ export function SmartSearch({ cityId }: { cityId?: string }) {
     </section>
   );
 }
-

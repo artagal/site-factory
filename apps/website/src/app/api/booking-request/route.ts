@@ -1,5 +1,5 @@
 import { jsonError, jsonOk } from "../../../lib/server/api-response";
-import { isDemoDataEnabled } from "../../../lib/demo-mode";
+import { isOpenListing } from "../../../lib/listing-presentation";
 import { FieldValue, getFirebaseAdminDb, verifyBearerToken } from "../../../lib/server/firebase-admin";
 import { getClientIp, checkRateLimit } from "../../../lib/server/rate-limit";
 import { getPublicListingByIdOrSlugForServer } from "../../../lib/server/public-listings";
@@ -54,6 +54,8 @@ export async function POST(request: Request) {
   const listing = await getPublicListingByIdOrSlugForServer({ listingId, listingSlug });
   if (!listing) return jsonError("This deal is not available for booking requests.", 404);
   if (listing.isDemo) return jsonError("Demo deals are examples only and cannot receive booking requests.", 409);
+  if (!isOpenListing(listing)) return jsonError("This offer has ended or has no spots left. Choose another deal.", 409);
+  if (listing.remainingSpots !== null && partySize > listing.remainingSpots) return jsonError("Your party is larger than the remaining spots. Please choose another offer.", 400);
 
   const emailPayload = {
     businessName: listing.businessName,
@@ -81,7 +83,6 @@ export async function POST(request: Request) {
 
   const db = getFirebaseAdminDb();
   if (!db) {
-    if (isDemoDataEnabled()) return jsonOk({ demo: true, requestId: `local-${Date.now()}`, synced: false });
     return jsonError("Booking requests are temporarily unavailable.", 503);
   }
 
@@ -93,7 +94,7 @@ export async function POST(request: Request) {
         requestCount: FieldValue.increment(1)
       },
       { merge: true }
-    );
+    ).catch(() => undefined);
   }
   const [notification, businessPush, customerPush] = await Promise.all([
     sendBookingRequestNotifications({
@@ -129,7 +130,7 @@ export async function POST(request: Request) {
       pushResults: { business: businessPush, customer: customerPush }
     },
     { merge: true }
-  );
+  ).catch(() => undefined);
 
   void incrementServerGlobalStats(["bookingRequests"]).catch(() => false);
   return jsonOk({

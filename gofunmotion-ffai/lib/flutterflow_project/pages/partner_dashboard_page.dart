@@ -138,12 +138,55 @@ abstract final class PartnerDashboardPageWidgets {
                 name: "Container",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Container_z4y2luaw",
-                    type: "Container",
+                    key: "Column_xngx9dn7",
+                    type: "Column",
                     path:
                         "PartnerDashboardPage.body[0].children[0].children[0]",
-                    name: "EmptyState",
-                    componentName: "EmptyState",
+                    name: "NativeSignInGate",
+                    children: <ffai.ProjectWidgetHandle>[
+                      ffai.ProjectWidgetHandle(
+                        key: "Icon_y5tnlsp5",
+                        type: "Icon",
+                        path:
+                            "PartnerDashboardPage.body[0].children[0].children[0].children[0]",
+                        name: "Icon",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Text_r4yx3tmn",
+                        type: "Text",
+                        path:
+                            "PartnerDashboardPage.body[0].children[0].children[0].children[1]",
+                        name: "Text",
+                        text: "Sign in to your account",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Text_xq26u79z",
+                        type: "Text",
+                        path:
+                            "PartnerDashboardPage.body[0].children[0].children[0].children[2]",
+                        name: "Text",
+                        text:
+                            "Use the account linked to your partner or admin access.",
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_8bzoz3ow",
+                        type: "Button",
+                        path:
+                            "PartnerDashboardPage.body[0].children[0].children[0].children[3]",
+                        name: "GateSignInButton",
+                        text: "Sign In",
+                        triggers: const <String>["ON_TAP"],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Button_qk1h1fm0",
+                        type: "Button",
+                        path:
+                            "PartnerDashboardPage.body[0].children[0].children[0].children[4]",
+                        name: "Button",
+                        text: "Browse deals",
+                        triggers: const <String>["ON_TAP"],
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -323,21 +366,21 @@ abstract final class PartnerDashboardPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Container_1cekzde3",
+                        key: "Container_vzde5eqz",
                         type: "Container",
                         path:
                             "PartnerDashboardPage.body[0].children[1].children[0].children[3]",
                         name: "PartnerCopyAssistantPanel",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Column_nbm9tsq4",
+                            key: "Column_5wqyrmaf",
                             type: "Column",
                             path:
                                 "PartnerDashboardPage.body[0].children[1].children[0].children[3].children[0]",
                             name: "Column",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Text_fgcv6fou",
+                                key: "Text_0plpxi25",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[3].children[0].children[0]",
@@ -345,7 +388,7 @@ abstract final class PartnerDashboardPageWidgets {
                                 text: "Your next last-minute offer",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_5dsh3rql",
+                                key: "Text_460slyvt",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[3].children[0].children[1]",
@@ -354,7 +397,7 @@ abstract final class PartnerDashboardPageWidgets {
                                     "Open spots today? Add a deal and submit it for review.",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Button_rjqurg55",
+                                key: "Button_nj8cbooi",
                                 type: "Button",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[3].children[0].children[2]",
@@ -367,21 +410,21 @@ abstract final class PartnerDashboardPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Container_dr3yg73z",
+                        key: "Container_tjlutda6",
                         type: "Container",
                         path:
                             "PartnerDashboardPage.body[0].children[1].children[0].children[4]",
                         name: "PartnerListingsPanel",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Column_1pbzno16",
+                            key: "Column_qdws0d4r",
                             type: "Column",
                             path:
                                 "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0]",
                             name: "Column",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Text_n37yf5s5",
+                                key: "Text_eju885e7",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[0]",
@@ -389,7 +432,7 @@ abstract final class PartnerDashboardPageWidgets {
                                 text: "Your deals",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_bwxq8mx4",
+                                key: "Text_8fzhparx",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[1]",
@@ -398,7 +441,7 @@ abstract final class PartnerDashboardPageWidgets {
                                     "Draft, pending, and published deals from your approved business.",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_ae5brk5v",
+                                key: "Text_re0auyk9",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[2]",
@@ -406,7 +449,7 @@ abstract final class PartnerDashboardPageWidgets {
                                 text: "Loading deals...",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_8hity2tp",
+                                key: "Text_3a5e7nem",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[3]",
@@ -415,7 +458,7 @@ abstract final class PartnerDashboardPageWidgets {
                                     "Draft, pending, and published deals appear below.",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_kwqarm6c",
+                                key: "Text_qui9sz9n",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[4]",
@@ -424,42 +467,42 @@ abstract final class PartnerDashboardPageWidgets {
                                     "Deals could not be loaded. Confirm business approval and try again.",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "ListView_l82oczy0",
+                                key: "ListView_8qiy2x6d",
                                 type: "ListView",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5]",
                                 name: "PartnerListingsList",
                                 children: <ffai.ProjectWidgetHandle>[
                                   ffai.ProjectWidgetHandle(
-                                    key: "Container_vsennxmm",
+                                    key: "Container_86ia7wub",
                                     type: "Container",
                                     path:
                                         "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0]",
                                     name: "Container",
                                     children: <ffai.ProjectWidgetHandle>[
                                       ffai.ProjectWidgetHandle(
-                                        key: "Column_cngz1i32",
+                                        key: "Column_7sw25q2j",
                                         type: "Column",
                                         path:
                                             "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0]",
                                         name: "Column",
                                         children: <ffai.ProjectWidgetHandle>[
                                           ffai.ProjectWidgetHandle(
-                                            key: "Text_7f8330tv",
+                                            key: "Text_ag2kldxm",
                                             type: "Text",
                                             path:
                                                 "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[0]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
-                                            key: "Text_qhblroci",
+                                            key: "Text_asoswnn4",
                                             type: "Text",
                                             path:
                                                 "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[1]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
-                                            key: "Row_7efnsi88",
+                                            key: "Row_uekbih2w",
                                             type: "Row",
                                             path:
                                                 "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[2]",
@@ -468,7 +511,7 @@ abstract final class PartnerDashboardPageWidgets {
                                               ffai.ProjectWidgetHandle
                                             >[
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_bglnrij1",
+                                                key: "Text_k47c8b0x",
                                                 type: "Text",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[2].children[0]",
@@ -476,14 +519,14 @@ abstract final class PartnerDashboardPageWidgets {
                                                 text: "Was",
                                               ),
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_dk5mtzlu",
+                                                key: "Text_3dnb19ap",
                                                 type: "Text",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[2].children[1]",
                                                 name: "Text",
                                               ),
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_tgcldk6t",
+                                                key: "Text_0vo2uljv",
                                                 type: "Text",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[2].children[2]",
@@ -491,7 +534,7 @@ abstract final class PartnerDashboardPageWidgets {
                                                 text: "Now",
                                               ),
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_6qfnzzq3",
+                                                key: "Text_7k7yzyw0",
                                                 type: "Text",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[2].children[3]",
@@ -500,7 +543,7 @@ abstract final class PartnerDashboardPageWidgets {
                                             ],
                                           ),
                                           ffai.ProjectWidgetHandle(
-                                            key: "Row_v3a88ke4",
+                                            key: "Row_o1o3nljc",
                                             type: "Row",
                                             path:
                                                 "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[3]",
@@ -509,21 +552,21 @@ abstract final class PartnerDashboardPageWidgets {
                                               ffai.ProjectWidgetHandle
                                             >[
                                               ffai.ProjectWidgetHandle(
-                                                key: "Icon_u1tcpzl0",
+                                                key: "Icon_xal7l0gp",
                                                 type: "Icon",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[3].children[0]",
                                                 name: "Icon",
                                               ),
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_x0sn3cnq",
+                                                key: "Text_ci73wdr5",
                                                 type: "Text",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[3].children[1]",
                                                 name: "Text",
                                               ),
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_8jcl047n",
+                                                key: "Text_wvzfk6bd",
                                                 type: "Text",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[3].children[2]",
@@ -533,7 +576,7 @@ abstract final class PartnerDashboardPageWidgets {
                                             ],
                                           ),
                                           ffai.ProjectWidgetHandle(
-                                            key: "Button_dwgj56y8",
+                                            key: "Button_6s0aopg2",
                                             type: "Button",
                                             path:
                                                 "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[5].children[0].children[0].children[4]",
@@ -548,7 +591,7 @@ abstract final class PartnerDashboardPageWidgets {
                                 ],
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Button_z14a6gwt",
+                                key: "Button_w004ipg7",
                                 type: "Button",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[4].children[0].children[6]",
@@ -561,21 +604,21 @@ abstract final class PartnerDashboardPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Container_w9gzl8nc",
+                        key: "Container_i40lq0pi",
                         type: "Container",
                         path:
                             "PartnerDashboardPage.body[0].children[1].children[0].children[5]",
                         name: "PartnerBookingInboxPanel",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Column_qj9hdoe5",
+                            key: "Column_i1lbpcp1",
                             type: "Column",
                             path:
                                 "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0]",
                             name: "Column",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Text_h5bbx0xh",
+                                key: "Text_s8vymn7c",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[0]",
@@ -583,7 +626,7 @@ abstract final class PartnerDashboardPageWidgets {
                                 text: "Booking request inbox",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_bzqgp0ze",
+                                key: "Text_f5tvkles",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[1]",
@@ -592,7 +635,7 @@ abstract final class PartnerDashboardPageWidgets {
                                     "Update customers promptly. Email and push notifications are sent by the secure web backend.",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_2t6f9qb5",
+                                key: "Text_f7lf0i0y",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[2]",
@@ -600,7 +643,7 @@ abstract final class PartnerDashboardPageWidgets {
                                 text: "Loading requests...",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_7eqrrrql",
+                                key: "Text_0vzac2gg",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[3]",
@@ -609,7 +652,7 @@ abstract final class PartnerDashboardPageWidgets {
                                     "New customer requests appear below as soon as they arrive.",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_mkmozbg6",
+                                key: "Text_yjtvgeew",
                                 type: "Text",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[4]",
@@ -618,35 +661,35 @@ abstract final class PartnerDashboardPageWidgets {
                                     "Requests could not be loaded. Check owner access and try again.",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "ListView_ztlvox3m",
+                                key: "ListView_og8yqebn",
                                 type: "ListView",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5]",
                                 name: "PartnerBookingRequestsList",
                                 children: <ffai.ProjectWidgetHandle>[
                                   ffai.ProjectWidgetHandle(
-                                    key: "Container_kuupuol4",
+                                    key: "Container_f4zu7w91",
                                     type: "Container",
                                     path:
                                         "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0]",
                                     name: "Container",
                                     children: <ffai.ProjectWidgetHandle>[
                                       ffai.ProjectWidgetHandle(
-                                        key: "Column_66qmjtwj",
+                                        key: "Column_go5d1osv",
                                         type: "Column",
                                         path:
                                             "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0]",
                                         name: "Column",
                                         children: <ffai.ProjectWidgetHandle>[
                                           ffai.ProjectWidgetHandle(
-                                            key: "Text_r687uxpr",
+                                            key: "Text_klvtjppp",
                                             type: "Text",
                                             path:
                                                 "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0].children[0]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
-                                            key: "Row_4u69qkpz",
+                                            key: "Row_mebbbk1f",
                                             type: "Row",
                                             path:
                                                 "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0].children[1]",
@@ -655,14 +698,14 @@ abstract final class PartnerDashboardPageWidgets {
                                               ffai.ProjectWidgetHandle
                                             >[
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_ozjmq7rv",
+                                                key: "Text_e45yu70v",
                                                 type: "Text",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0].children[1].children[0]",
                                                 name: "Text",
                                               ),
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_4wcz5xcf",
+                                                key: "Text_21khg7uo",
                                                 type: "Text",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0].children[1].children[1]",
@@ -671,14 +714,14 @@ abstract final class PartnerDashboardPageWidgets {
                                             ],
                                           ),
                                           ffai.ProjectWidgetHandle(
-                                            key: "Text_xlwksvot",
+                                            key: "Text_tw43m32l",
                                             type: "Text",
                                             path:
                                                 "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0].children[2]",
                                             name: "Text",
                                           ),
                                           ffai.ProjectWidgetHandle(
-                                            key: "Wrap_ucn921oa",
+                                            key: "Wrap_lwf2qiqx",
                                             type: "Wrap",
                                             path:
                                                 "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0].children[3]",
@@ -687,7 +730,7 @@ abstract final class PartnerDashboardPageWidgets {
                                               ffai.ProjectWidgetHandle
                                             >[
                                               ffai.ProjectWidgetHandle(
-                                                key: "Button_jtl5dp9f",
+                                                key: "Button_q70yd2pb",
                                                 type: "Button",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0].children[3].children[0]",
@@ -699,7 +742,7 @@ abstract final class PartnerDashboardPageWidgets {
                                                 ],
                                               ),
                                               ffai.ProjectWidgetHandle(
-                                                key: "Button_2vptcw3t",
+                                                key: "Button_e6fgs2s2",
                                                 type: "Button",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0].children[3].children[1]",
@@ -711,7 +754,7 @@ abstract final class PartnerDashboardPageWidgets {
                                                 ],
                                               ),
                                               ffai.ProjectWidgetHandle(
-                                                key: "Button_3zwmtvqo",
+                                                key: "Button_i0m3brr6",
                                                 type: "Button",
                                                 path:
                                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[5].children[0].children[0].children[3].children[2]",
@@ -731,7 +774,7 @@ abstract final class PartnerDashboardPageWidgets {
                                 ],
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Button_3eugwzh5",
+                                key: "Button_9y40lpgm",
                                 type: "Button",
                                 path:
                                     "PartnerDashboardPage.body[0].children[1].children[0].children[5].children[0].children[6]",

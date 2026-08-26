@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { demoCities } from "../../lib/demoData";
 import { getCanonicalCityOptions, normalizeCitySelection, type CityOption } from "../../lib/cities";
 
-const fallbackCities = getCanonicalCityOptions(demoCities);
+const fallbackCities = getCanonicalCityOptions(demoCities, []);
 
 export function CitySelectField({
   compact = false,
@@ -37,12 +37,12 @@ export function CitySelectField({
       try {
         const response = await fetch("/api/cities", { cache: "no-store" });
         const payload = (await response.json().catch(() => null)) as { cities?: CityOption[] } | null;
-        const nextCities = Array.isArray(payload?.cities) && payload.cities.length ? payload.cities : fallbackCities;
+        const nextCities = response.ok && Array.isArray(payload?.cities) ? payload.cities : fallbackCities;
         if (cancelled) return;
         setCities(nextCities);
         setSelectedCityId((currentCityId) => {
           const nextSelection = normalizeCitySelection({
-            city: defaultCity,
+            city: hasUserSelectedCity ? undefined : defaultCity,
             cityId: hasUserSelectedCity ? currentCityId : defaultCityId ?? initial.cityId,
             options: nextCities
           });
@@ -59,7 +59,7 @@ export function CitySelectField({
     };
   }, [defaultCity, defaultCityId, hasUserSelectedCity, initial.cityId]);
 
-  const selected = normalizeCitySelection({ city: defaultCity, cityId: selectedCityId, options: cities });
+  const selected = normalizeCitySelection({ cityId: selectedCityId, options: cities });
 
   return (
     <label className="block">
@@ -75,11 +75,11 @@ export function CitySelectField({
         value={selected.cityId}
       >
         <option className="bg-[#070816] text-white" disabled={required} value="">
-          {required ? "Choose city" : "All active cities"}
+          {required ? "Choose city" : "All cities"}
         </option>
         {cities.map((city) => (
           <option className="bg-[#070816] text-white" key={city.id} value={city.id}>
-            {city.label}{city.dealCount > 0 ? ` - ${city.dealCount} deal${city.dealCount === 1 ? "" : "s"}` : city.comingSoon ? " - coming soon" : ""}
+            {dense ? city.name : `${city.label}${city.dealCount > 0 ? ` - ${city.dealCount} deal${city.dealCount === 1 ? "" : "s"}` : city.comingSoon ? " - coming soon" : ""}`}
           </option>
         ))}
       </select>

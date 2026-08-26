@@ -8,6 +8,7 @@ import {
   onAuthStateChanged,
   OAuthProvider,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInAnonymously,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -47,6 +48,12 @@ export async function signInEmail(email: string, password: string) {
   const auth = getGoFunMotionAuth();
   if (!auth) return null;
   return signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function resetAccountPassword(email: string) {
+  const auth = getGoFunMotionAuth();
+  if (!auth) throw new Error("Sign-in is temporarily unavailable.");
+  await sendPasswordResetEmail(auth, email.trim());
 }
 
 export async function signInGoogle() {

@@ -24,7 +24,14 @@ editor, AI Finder, and AI Support. The native search/plan results use the shared
 GoFunMotion API. Native auth uses email, Google, and Apple with server-side canonical
 profile sync. Browse-without-account no longer creates an anonymous identity.
 
-Latest FlutterFlow commit: `UPoR15r5E2jaCwp6Ucso` (2026-08-26).
+Latest FlutterFlow commit: `EPZ8qOhrVAPdblFk4neD` (2026-08-26).
+
+Latest UX/functional pass: see `docs/UX_FUNCTIONAL_AUDIT_2026-08-26.md`.
+The web homepage is now compact and deal-first. Native discovery uses the new
+approved-only `/api/mobile/deals` feed, with real city/category IDs and native
+loading, error, and empty states. Account gates, booking confirmation, and saved
+refresh actions were repaired. Deploy the web endpoint before distributing the
+updated mobile app; a Builder push alone does not deploy the website.
 
 For current verification and unresolved release gates, read
 `docs/FLUTTERFLOW_AI_RELEASE_QA.md` and `docs/FLUTTERFLOW_BUILDER_FRIENDLY_AUDIT.md`.

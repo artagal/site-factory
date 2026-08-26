@@ -10,7 +10,7 @@ const footerLinks = [
   { href: "/partner", label: "Partner" },
   { href: "/pricing", label: "Pricing" },
   { href: "/saved", label: "Saved" },
-  { href: "/login", label: "Sign In" },
+  { href: "/profile", label: "Account" },
   { href: "/about", label: "About" },
   { href: "/support", label: "Support" },
   { href: "/privacy", label: "Privacy" },
@@ -24,9 +24,9 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-xl text-sm leading-6 text-white/60">
-            GoFunMotion Deals helps people find discounted last-minute activity openings, date night deals, family passes, and local experiences with clear was/now pricing.
+            Last-minute fun deals near you.
           </p>
-          <p className="mt-4 text-sm text-white/45">Contact: hello@gofunmotion.com</p>
+          <a className="mt-4 inline-flex min-h-11 items-center text-sm text-[var(--muted-foreground)] hover:underline" href="mailto:hello@gofunmotion.com">hello@gofunmotion.com</a>
         </div>
         <div className="grid grid-cols-2 gap-3 text-sm font-bold text-white/64 sm:grid-cols-3">
           {footerLinks.map((link) => (
@@ -34,9 +34,6 @@ export function Footer() {
               {link.label}
             </Link>
           ))}
-          <span className="inline-flex min-h-11 items-center text-white/35">TikTok</span>
-          <span className="inline-flex min-h-11 items-center text-white/35">Instagram</span>
-          <span className="inline-flex min-h-11 items-center text-white/35">YouTube</span>
         </div>
       </div>
     </footer>

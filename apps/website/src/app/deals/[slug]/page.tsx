@@ -1,165 +1,73 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarClock, MapPin, Ticket, Users } from "lucide-react";
+import { ArrowLeft, CalendarClock, MapPin, Users } from "lucide-react";
 import { BookingRequestForm } from "../../../components/listings/booking-request-form";
-import { ListingActionLink, ListingViewTracker } from "../../../components/listings/listing-analytics";
+import { ListingViewTracker } from "../../../components/listings/listing-analytics";
+import { ListingImage } from "../../../components/listings/listing-image";
 import { SaveListingButton } from "../../../components/listings/save-listing-button";
 import { ShareButton } from "../../../components/shared/share-button";
-import { demoNotice, formatPrice, getCategoryById, getListingBySlug, listings } from "../../../lib/deals-data";
+import { getCategoryById, listings } from "../../../lib/deals-data";
 import { isDemoDataEnabled } from "../../../lib/demo-mode";
+import { listingPresentation } from "../../../lib/listing-presentation";
 import { buildListingSeoDescription } from "../../../lib/listing-seo";
 import { buildSeoMetadata } from "../../../lib/seo";
 import { getPublicBusinessForServer, getPublicListingBySlugForServer } from "../../../lib/server/public-listings";
 
-type DealDetailProps = {
-  params: Promise<{ slug: string }>;
-};
-
+type DealDetailProps = { params: Promise<{ slug: string }> };
 export function generateStaticParams() {
   return isDemoDataEnabled() ? listings.map((listing) => ({ slug: listing.slug })) : [];
 }
-
 export async function generateMetadata({ params }: DealDetailProps): Promise<Metadata> {
   const { slug } = await params;
   const listing = await getPublicListingBySlugForServer(slug);
-
-  if (!listing) {
-    return buildSeoMetadata({
-      description: "Local activity deal not found.",
-      noIndex: true,
-      path: `/deals/${slug}`,
-      title: "Deal Not Found | GoFunMotion"
-    });
-  }
-
   return buildSeoMetadata({
-    description: buildListingSeoDescription(listing),
-    keywords: ["local activity deal", listing.title, listing.cityName, listing.businessName],
-    path: `/deals/${listing.slug}`,
-    title: `${listing.title} | GoFunMotion Deals`
+    description: listing ? buildListingSeoDescription(listing) : "Local activity deal not found.",
+    noIndex: !listing || listing.isDemo,
+    path: `/deals/${slug}`,
+    title: listing ? `${listing.title} | GoFunMotion Deals` : "Deal Not Found | GoFunMotion"
   });
 }
-
 export default async function DealDetailPage({ params }: DealDetailProps) {
   const { slug } = await params;
   const listing = await getPublicListingBySlugForServer(slug);
-
-  if (!listing) {
-    notFound();
-  }
-
+  if (!listing) notFound();
+  const facts = listingPresentation(listing);
   const business = await getPublicBusinessForServer(listing.businessId);
   const category = getCategoryById(listing.categoryIds[0]);
-  const remainingLabel =
-    listing.remainingSpots === null
-      ? "Limited availability"
-      : listing.remainingSpots === 1
-        ? "1 spot left"
-        : `${listing.remainingSpots} spots left`;
+  const address = !listing.isDemo && business?.addressLine1
+    ? [business.addressLine1, business.addressLine2, listing.cityName, business.state, business.postalCode].filter(Boolean).join(", ") : null;
 
-  return (
-    <main className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-16">
-      <ListingViewTracker listingId={listing.id} listingSlug={listing.slug} />
-      <Link className="text-sm font-black text-lime-200 hover:text-white" href="/deals">
-        Back to deals
-      </Link>
-      <section className="mt-6 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-        <div>
-          <div className="min-h-[360px] rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_20%_20%,rgba(190,242,100,0.32),transparent_34%),radial-gradient(circle_at_80%_12%,rgba(34,211,238,0.26),transparent_32%),linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0.02))] p-5">
-            {listing.isDemo ? (
-              <span className="rounded-full bg-black/52 px-3 py-1.5 text-xs font-black uppercase tracking-[0.12em] text-white/80">
-                Demo listing
-              </span>
-            ) : null}
-          </div>
-        </div>
-        <div>
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">{category?.name ?? "Local activity"}</p>
-          <h1 className="mt-3 text-5xl font-black leading-tight text-white md:text-6xl">{listing.title}</h1>
-          <p className="mt-4 text-lg leading-8 text-white/66">{listing.description}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.07] px-4 py-2 text-sm font-bold text-white/70">
-              <MapPin aria-hidden="true" size={17} />
-              {listing.cityName}
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.07] px-4 py-2 text-sm font-bold text-white/70">
-              <CalendarClock aria-hidden="true" size={17} />
-              {listing.availableSlots.join(", ")}
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.07] px-4 py-2 text-sm font-bold text-white/70">
-              <Users aria-hidden="true" size={17} />
-              {remainingLabel}
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full bg-lime-300 px-4 py-2 text-sm font-black text-[#070816]">
-              <Ticket aria-hidden="true" size={17} />
-              Now {formatPrice(listing.price)}
-            </span>
-          </div>
-          <div className="mt-4 rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
-            <p className="text-sm font-black text-lime-100">
-              {listing.originalPrice ? (
-                <>
-                  Was <span className="line-through">{formatPrice(listing.originalPrice)}</span>, now {formatPrice(listing.price)}.
-                </>
-              ) : (
-                <>Special last-minute price: {formatPrice(listing.price)}.</>
-              )}{" "}
-              Request booking to confirm the open window.
-            </p>
-          </div>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <ListingActionLink
-              className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-lime-300 px-5 text-sm font-black text-[#070816] hover:bg-white"
-              href="#request-booking"
-              listingId={listing.id}
-              listingSlug={listing.slug}
-            >
-              Request Booking
-            </ListingActionLink>
-            <SaveListingButton listing={listing} />
-            <ShareButton text={listing.shortDescription} title={listing.title} />
-          </div>
-        </div>
+  return <main className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-8">
+    <ListingViewTracker listingId={listing.id} listingSlug={listing.slug} />
+    <Link className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[var(--accent-cyan)]" href={`/deals?cityId=${encodeURIComponent(listing.cityId)}`}><ArrowLeft aria-hidden="true" size={17} />Back to deals</Link>
+    <header className="my-5">
+      <p className="text-sm font-semibold text-[var(--accent-cyan)]">{category?.name ?? "Local activity"}{listing.isDemo ? " / Demo, not bookable" : ""}</p>
+      <h1 className="mt-3 text-3xl font-bold leading-tight md:text-4xl">{listing.title}</h1>
+      <p className="mt-2 text-sm text-[var(--muted-foreground)]">{listing.businessName} / {listing.cityName}</p>
+    </header>
+    <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr]">
+      <section className="min-w-0">
+        {facts.imageUrl ? <div className="mb-5 overflow-hidden rounded-lg"><ListingImage src={facts.imageUrl} alt={listing.title} /></div> : null}
+        <div className="flex flex-wrap items-baseline gap-3"><span className="text-4xl font-bold text-[var(--accent-lime)]">{facts.priceLabel}</span>{facts.wasLabel ? <span className="text-[var(--muted-foreground)] line-through">{facts.wasLabel}</span> : null}{facts.discountLabel ? <span className="rounded-md bg-lime-500/15 px-2 py-1 text-sm font-bold text-[var(--accent-lime)]">{facts.discountLabel}</span> : null}</div>
+        <dl className="my-5 grid gap-3 border-y border-[var(--border-subtle)] py-4 text-sm">
+          <div className="flex gap-2"><dt><CalendarClock aria-label="Time" size={18} /></dt><dd>{facts.timeLabel}</dd></div>
+          <div className="flex gap-2"><dt><Users aria-label="Availability" size={18} /></dt><dd>{facts.spotsLabel}</dd></div>
+          <div className="flex gap-2"><dt><MapPin aria-label="Location" size={18} /></dt><dd>{address ?? listing.cityName}</dd></div>
+        </dl>
+        <p className="whitespace-pre-line text-base leading-7 text-[var(--muted-foreground)]">{listing.description}</p>
+        <div className="my-5 flex flex-wrap gap-3">{!listing.isDemo ? <SaveListingButton listing={listing} /> : null}<ShareButton text={listing.shortDescription} title={listing.title} /></div>
+        <Info title="Activity details" text={`${listing.durationMinutes} minutes. ${listing.indoorOutdoor === "either" ? "Indoor or outdoor" : listing.indoorOutdoor}. Group size: ${listing.groupSize}.`} />
+        {listing.whyItFits ? <Info title="Why you'll like it" text={listing.whyItFits} /> : null}
+        <Info title="Partner terms" text={listing.terms || "Ask the partner about offer terms before confirming."} />
+        <Info title="Changes and cancellations" text={listing.cancellationNote || "Confirm cancellation terms directly with the partner."} />
+        <Info title={business?.name ?? listing.businessName} text={business?.description ?? "The partner will confirm the meeting location and activity details."} />
+        {address ? <a className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[var(--accent-cyan)] underline" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} rel="noopener noreferrer" target="_blank"><MapPin aria-hidden="true" size={17} />Open directions</a> : null}
       </section>
-
-      <section className="mt-10 grid gap-5 lg:grid-cols-3">
-        <InfoBlock title="Why it fits" text={listing.whyItFits} />
-        <InfoBlock title="Open slot details" text={`Duration: ${listing.durationMinutes} minutes. Group size: ${listing.groupSize}. Remaining availability: ${remainingLabel}. Booking mode: request availability.`} />
-        <InfoBlock title="Terms" text={listing.terms} />
-      </section>
-
-      <section className="mt-8 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-          <h2 className="text-2xl font-black text-white">Business info</h2>
-          <p className="mt-3 text-lg font-black text-white/82">{business?.name ?? listing.businessName}</p>
-          <p className="mt-2 text-sm leading-6 text-white/58">{business?.description ?? "Partner profile pending."}</p>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-black/24 p-6">
-          <h2 className="text-2xl font-black text-white">Map placeholder</h2>
-          <p className="mt-3 text-sm leading-6 text-white/58">
-            Exact location, distance, and mapping are intentionally placeholder-only until live partner data is approved. No paid location APIs are connected.
-          </p>
-          <p className="mt-4 text-sm leading-6 text-white/52">
-            {listing.isDemo
-              ? demoNotice
-              : "Availability is confirmed by request. GoFunMotion does not collect payment for this booking request."}
-          </p>
-        </div>
-      </section>
-
-      <section className="mt-8" id="request-booking">
-        <BookingRequestForm listing={listing} />
-      </section>
-    </main>
-  );
+      <section className="min-w-0" id="request-booking"><BookingRequestForm listing={listing} /><p className="mt-4 text-xs leading-6 text-[var(--muted-foreground)]">A request is not a confirmed booking. Do not share sensitive payment information in messages. Deals are subject to partner terms.</p></section>
+    </div>
+  </main>;
 }
-
-function InfoBlock({ text, title }: { text: string; title: string }) {
-  return (
-    <article className="rounded-2xl border border-white/10 bg-white/[0.06] p-6">
-      <h2 className="text-2xl font-black text-white">{title}</h2>
-      <p className="mt-3 text-sm leading-6 text-white/60">{text}</p>
-    </article>
-  );
+function Info({ title, text }: { title: string; text: string }) {
+  return <section className="border-t border-[var(--border-subtle)] py-5"><h2 className="text-lg font-bold">{title}</h2><p className="mt-2 whitespace-pre-line text-sm leading-6 text-[var(--muted-foreground)]">{text}</p></section>;
 }

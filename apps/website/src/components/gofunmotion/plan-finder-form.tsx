@@ -6,8 +6,7 @@ const whenOptions = [
   ["today", "Today"],
   ["tonight", "Tonight"],
   ["tomorrow", "Tomorrow"],
-  ["weekend", "This weekend"],
-  ["custom", "Custom date"]
+  ["weekend", "This weekend"]
 ];
 
 const whoOptions = [
@@ -63,8 +62,8 @@ export function PlanFinderForm({
   defaultValues?: Partial<PlanFinderInput>;
 }) {
   return (
-    <form action={action} className="rounded-2xl border border-white/10 bg-white/[0.07] p-4 shadow-[0_20px_80px_rgba(0,0,0,0.26)] backdrop-blur-2xl md:p-5">
-      <div className={compact ? "grid gap-3 md:grid-cols-2 xl:grid-cols-4" : "grid gap-3 md:grid-cols-2 lg:grid-cols-4"}>
+    <form action={action} className="rounded-lg border border-white/10 bg-white/[0.04] p-4 md:p-5">
+      <div className={compact ? "grid gap-4 sm:grid-cols-2" : "grid gap-4 md:grid-cols-2 lg:grid-cols-4"}>
         <CitySelectField defaultCity={defaultValues?.city} defaultCityId={defaultValues?.cityId} />
         <Select label="When" name="when" options={whenOptions} value={defaultValues?.when ?? "today"} />
         <Select label="Who's going" name="who" options={whoOptions} value={defaultValues?.who ?? "date"} />
@@ -72,7 +71,7 @@ export function PlanFinderForm({
         <Select label="Vibe" name="vibe" options={vibeOptions} value={defaultValues?.vibe ?? "surprise-me"} />
         <Select label="Time available" name="timeAvailable" options={timeOptions} value={defaultValues?.timeAvailable ?? "2hours"} />
         <Select label="Indoor/outdoor" name="indoorOutdoor" options={indoorOptions} value={defaultValues?.indoorOutdoor ?? "either"} />
-        <button className="mt-auto inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-lime-300 px-5 py-3 text-sm font-black text-[#070816] transition hover:bg-white active:scale-[0.98]" type="submit">
+        <button className="mt-auto inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-lime-300 px-5 py-3 text-sm font-black text-[#070816] transition hover:bg-white active:scale-[0.98]" type="submit">
           <Search aria-hidden="true" size={18} />
           Find My Plan
         </button>
@@ -96,7 +95,7 @@ function Select({
     <label className="block">
       <span className="text-xs font-black uppercase tracking-[0.14em] text-white/45">{label}</span>
       <select
-        className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none transition focus:border-lime-300"
+        className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/28 px-4 text-sm font-bold text-white outline-none transition focus:border-lime-300"
         defaultValue={value}
         name={name}
       >

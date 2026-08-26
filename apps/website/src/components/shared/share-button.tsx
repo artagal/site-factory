@@ -31,7 +31,8 @@ export function ShareButton({
 
       await browserNavigator.clipboard.writeText(`${title}\n${text}\n${shareUrl}`);
       setStatus("Copied link.");
-    } catch {
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
       setStatus("Could not share right now.");
     }
   }
@@ -46,7 +47,7 @@ export function ShareButton({
         <Share2 aria-hidden="true" size={17} />
         {label}
       </button>
-      {status ? <p className="mt-2 text-xs font-bold text-lime-100">{status}</p> : null}
+      <p className="mt-2 text-xs font-bold text-[var(--accent-lime)]" role="status">{status}</p>
     </div>
   );
 }

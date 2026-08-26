@@ -91,7 +91,8 @@ describe("GoFunMotion AI safety layer", () => {
     expect(fetchMock).not.toHaveBeenCalled();
     expect(result.provider).toBe("rules");
     expect(result.plan.waitlistRecommended).toBe(true);
-    expect(result.plan.source).toBe("demo");
+    expect(result.plan.source).toBe("local_rules");
+    expect(result.plan.listingIds).toEqual([]);
   });
 
   it("keeps partner copy factual when AI is unavailable", async () => {

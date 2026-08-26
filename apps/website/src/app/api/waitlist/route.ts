@@ -1,5 +1,4 @@
 import { jsonError, jsonOk } from "../../../lib/server/api-response";
-import { isDemoDataEnabled } from "../../../lib/demo-mode";
 import { FieldValue, getFirebaseAdminDb } from "../../../lib/server/firebase-admin";
 import { getClientIp, checkRateLimit } from "../../../lib/server/rate-limit";
 import { incrementServerGlobalStats } from "../../../lib/server/stats";
@@ -37,7 +36,6 @@ export async function POST(request: Request) {
 
   const db = getFirebaseAdminDb();
   if (!db) {
-    if (isDemoDataEnabled()) return jsonOk({ demo: true, synced: false }, 201);
     return jsonError("The city waitlist is temporarily unavailable.", 503);
   }
 

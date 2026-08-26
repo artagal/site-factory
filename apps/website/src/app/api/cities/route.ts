@@ -1,16 +1,17 @@
 import { getCanonicalCityOptions } from "../../../lib/cities";
 import { demoCities } from "../../../lib/demoData";
-import { isDemoDataEnabled } from "../../../lib/demo-mode";
 import { jsonOk } from "../../../lib/server/api-response";
 import { getFirebaseAdminDb } from "../../../lib/server/firebase-admin";
 import type { City } from "../../../types/deals";
+import { normalizeListingDocument } from "../../../lib/firestore-model";
+import { isOpenListing } from "../../../lib/listing-presentation";
 
 export async function GET(): Promise<Response> {
   const db = getFirebaseAdminDb();
   if (!db) {
     return jsonOk({
-      cities: getCanonicalCityOptions(demoCities, isDemoDataEnabled() ? undefined : []),
-      source: isDemoDataEnabled() ? "demo" : "curated"
+      cities: getCanonicalCityOptions(demoCities, []),
+      source: "curated"
     });
   }
 
@@ -19,7 +20,7 @@ export async function GET(): Promise<Response> {
     .map((cityDoc) => ({ id: cityDoc.id, ...cityDoc.data() }) as City)
     .filter((city) => city.active || city.comingSoon);
   const listingSnapshot = await db.collection("listings").where("status", "==", "published").where("approvalStatus", "==", "approved").get();
-  const listings = listingSnapshot.docs.map((listingDoc) => ({ cityId: String(listingDoc.data().cityId ?? "") })).filter((listing) => listing.cityId);
+  const listings = listingSnapshot.docs.map((listingDoc) => normalizeListingDocument(listingDoc.id, listingDoc.data())).filter((listing) => !listing.isDemo && isOpenListing(listing));
 
   return jsonOk({
     cities: getCanonicalCityOptions(cities.length ? cities : demoCities, listings),

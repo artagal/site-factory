@@ -69,8 +69,8 @@ describe("mobile AI experience", () => {
       input: { ...defaultPlanFinderInput, city: "Miami", cityId: "miami", budget: "under50", who: "date", timeAvailable: "2hours" },
       listings: [live({ id: "one", price: 20, durationMinutes: 45 }), live({ id: "two", price: 25, durationMinutes: 60 }), live({ id: "three", price: 20, durationMinutes: 45 })]
     });
-    expect(result.plan.listingIds).toEqual(["one", "two"]);
-    expect(result.plan.estimatedTotalBudget).toBe("$45 at listed rates");
+    expect(result.plan.listingIds).toEqual(["one", "three"]);
+    expect(result.plan.estimatedTotalBudget).toBe("$40 at listed rates");
     expect(result.plan.estimatedTotalTime).toContain("travel");
   });
 

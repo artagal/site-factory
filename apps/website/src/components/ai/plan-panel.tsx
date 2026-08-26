@@ -38,9 +38,11 @@ export function PlanPanel({ initialPlan, input }: { initialPlan: SuggestedPlan; 
       }
       setPlan(result.plan);
       setProvider(result.provider ?? "rules");
-      setStatus(result.setupWarning ?? (result.provider === "openai"
-        ? "AI ordered approved live deals for this plan. Listing facts stay unchanged."
-        : "Safe built-in matching was used for this plan."));
+      setStatus(result.provider === "openai"
+        ? "Your plan is updated. Confirm availability with each partner."
+        : result.plan.waitlistRecommended
+          ? "No matching offers yet. These are general ideas, not confirmed bookings."
+          : "Your matched plan is ready. AI personalization is unavailable right now.");
     } catch {
       setStatus("Could not update this plan yet. Your current plan is still available.");
     } finally {
@@ -49,16 +51,16 @@ export function PlanPanel({ initialPlan, input }: { initialPlan: SuggestedPlan; 
   }
 
   return (
-    <section className="mt-10 rounded-2xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur-2xl md:p-7">
+    <section className="mt-10 border-t border-white/10 pt-8">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-sm font-black uppercase tracking-[0.18em] text-cyan-300">Your deal plan</p>
             <span className="rounded-full bg-white/[0.08] px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-white/54">
-              {provider === "openai" ? "AI matched" : plan.source === "demo" ? "Demo ideas" : "Rules matched"}
+              {provider === "openai" ? "AI matched" : plan.source === "demo" ? "Demo ideas" : plan.waitlistRecommended ? "Ideas only" : "Matched to you"}
             </span>
           </div>
-          <h2 className="mt-3 text-4xl font-black leading-tight text-white">{plan.title}</h2>
+          <h2 className="mt-3 text-2xl font-black leading-tight text-white md:text-3xl">{plan.title}</h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-white/60">{plan.summary}</p>
         </div>
         <div className="grid grid-cols-3 gap-2 text-center text-xs font-black text-white/58">
@@ -70,9 +72,9 @@ export function PlanPanel({ initialPlan, input }: { initialPlan: SuggestedPlan; 
 
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         {plan.items.map((item, index) => (
-          <article className="rounded-2xl border border-white/10 bg-black/24 p-5" key={`${item.listingId ?? item.title}-${index}`}>
+          <article className="rounded-lg border border-white/10 bg-white/[0.04] p-5" key={`${item.listingId ?? item.title}-${index}`}>
             <span className="text-xs font-black uppercase tracking-[0.16em] text-lime-200">Option {index + 1}</span>
-            <h3 className="mt-3 text-2xl font-black text-white">{item.title}</h3>
+            <h3 className="mt-3 text-xl font-bold text-white">{item.title}</h3>
             <p className="mt-3 text-sm leading-6 text-white/60">{item.description}</p>
             <div className="mt-4 flex flex-wrap gap-2 text-xs font-black text-white/58">
               <span className="rounded-full bg-white/[0.07] px-3 py-1.5">{item.time}</span>
@@ -108,4 +110,3 @@ export function PlanPanel({ initialPlan, input }: { initialPlan: SuggestedPlan; 
     </section>
   );
 }
-

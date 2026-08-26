@@ -86,7 +86,7 @@ export function normalizeCitySelection({
   cityId?: string | null;
   options?: CityOption[];
 }) {
-  const selected = findCityOption(cityId, options) ?? findCityOption(city, options) ?? getDefaultCityOption(options);
+  const selected = findCityOption(cityId, options) ?? findCityOption(city, options);
 
   return {
     city: selected?.name ?? "",

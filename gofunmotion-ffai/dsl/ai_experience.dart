@@ -598,7 +598,7 @@ Object ensureNativeSupportPage(
   );
 }
 
-void ensureNativeAiExperience(App app) {
+NativeAiApi ensureNativeAiExperience(App app) {
   final api = declareNativeAiApi(app, ff.Collections.listings);
   final assistant = ensureNativeAssistantPage(
     app,
@@ -612,18 +612,26 @@ void ensureNativeAiExperience(App app) {
   );
 
   app.editPage(ff.Pages.dealsPage, (page) {
-    page.ensureReplaced(
-      page.findByName('MobileSmartSearchPanel'),
-      Button(
-        'Ask AI to find a deal',
-        name: 'MobileSmartSearchPanel',
-        icon: 'auto_awesome',
-        width: double.infinity,
-        height: 48,
-        borderRadius: 8,
-        onTap: Navigate(assistant, params: {'query': ''}),
-      ),
+    final button = Button(
+      'Ask AI to find a deal',
+      name: 'MobileSmartSearchPanel',
+      icon: 'auto_awesome',
+      width: double.infinity,
+      height: 48,
+      borderRadius: 8,
+      onTap: Navigate(assistant, params: {'query': ''}),
     );
+    final existing = ff.Pages.dealsPage.widgets.all.where(
+      (widget) => widget.name == 'MobileSmartSearchPanel',
+    );
+    if (existing.isNotEmpty) {
+      page.ensureReplaced(existing.single, button);
+    } else {
+      page.ensureInsertedInto(
+        ff.Pages.dealsPage.widgets.byKey('Column_037lyzt5').single,
+        button,
+      );
+    }
   });
   app.editPage(ff.Pages.discoverPage, (page) {
     page.ensureInsertedAfter(
@@ -689,6 +697,26 @@ void ensureNativeAiExperience(App app) {
     }
   });
   app.editPage(ff.Pages.findPlanPage, (page) {
+    page.ensureReplaced(
+      ff.Pages.findPlanPage.widgets.all.singleWhere(
+        (widget) =>
+            widget.key == 'Container_02ev2lmp' ||
+            widget.name == 'NativePlannerIntro',
+      ),
+      Column(
+        name: 'NativePlannerIntro',
+        crossAxis: CrossAxis.start,
+        spacing: 8,
+        children: [
+          Text('Find a plan that fits', style: Styles.headlineSmall),
+          Text(
+            'Choose your city, budget and company.',
+            style: Styles.bodyMedium,
+            color: Colors.secondaryText,
+          ),
+        ],
+      ),
+    );
     page.bindVisible(
       ff.Pages.findPlanPage.widgets.byKey('Container_ycu7xmqy').single,
       false,
@@ -763,6 +791,7 @@ void ensureNativeAiExperience(App app) {
       }
     }
   });
+  return api;
 }
 
 void verifyNativeAiStructure(FFProject project) {

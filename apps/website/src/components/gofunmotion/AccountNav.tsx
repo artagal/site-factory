@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { User } from "firebase/auth";
-import { LogIn, LogOut, Settings, ShieldCheck, UserCircle2 } from "lucide-react";
+import { LogIn, LogOut, ShieldCheck, UserCircle2 } from "lucide-react";
 import { observeUser, signOutUser } from "../../lib/auth";
 import { trackEvent } from "../../lib/analytics";
 import { isFirebaseConfigured } from "../../lib/firebase";
@@ -21,6 +21,7 @@ function getInitials(user: User | null) {
 }
 
 export function AccountNav() {
+  const [signOutError, setSignOutError] = useState("");
   const [adminAccess, setAdminAccess] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
@@ -79,14 +80,6 @@ export function AccountNav() {
         </span>
         <span className="hidden sm:inline">Account</span>
       </Link>
-      <Link
-        aria-label="Open account settings"
-        className="hidden min-h-11 items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-bold text-white/70 transition hover:bg-white/10 hover:text-white md:inline-flex"
-        href="/profile/settings"
-      >
-        <Settings aria-hidden="true" size={17} />
-        Settings
-      </Link>
       {adminAccess ? (
         <Link
           aria-label="Open admin"
@@ -99,12 +92,14 @@ export function AccountNav() {
       ) : null}
       <button
         aria-label="Sign out"
+        title="Sign out"
         className="hidden size-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-white/70 transition hover:bg-white/10 hover:text-white md:inline-flex"
-        onClick={() => void signOutUser()}
+        onClick={() => void signOutUser().catch(() => setSignOutError("Sign out failed. Please retry."))}
         type="button"
       >
         <LogOut aria-hidden="true" size={17} />
       </button>
+      {signOutError ? <span className="absolute right-4 top-full rounded-lg bg-[var(--panel-strong)] p-3 text-sm" role="alert">{signOutError}</span> : null}
     </div>
   );
 }

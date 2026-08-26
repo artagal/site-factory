@@ -220,7 +220,7 @@ describe("GoFunMotion Deals API routes", () => {
     expect(missingStripeSignature.status).toBe(400);
   });
 
-  it("accepts partner application and waitlist payloads without paid services", async () => {
+  it("offers public taxonomies but never fakes persisted applications or waitlists without storage", async () => {
     const citiesResponse = await citiesGet();
     const citiesJson = await readJson<{ cities: Array<{ id: string; label: string }> }>(citiesResponse);
 
@@ -243,8 +243,8 @@ describe("GoFunMotion Deals API routes", () => {
     }));
     const partnerJson = await readJson<{ synced: boolean }>(partnerResponse);
 
-    expect(partnerResponse.status).toBe(201);
-    expect(partnerJson.synced).toBe(false);
+    expect(partnerResponse.status).toBe(503);
+    expect(partnerJson.synced).toBeUndefined();
 
     const waitlistResponse = await waitlistPost(jsonRequest("https://site-factory.test/api/waitlist", {
       city: "Miami",
@@ -253,8 +253,8 @@ describe("GoFunMotion Deals API routes", () => {
     }));
     const waitlistJson = await readJson<{ synced: boolean }>(waitlistResponse);
 
-    expect(waitlistResponse.status).toBe(201);
-    expect(waitlistJson.synced).toBe(false);
+    expect(waitlistResponse.status).toBe(503);
+    expect(waitlistJson.synced).toBeUndefined();
   });
 
   it("rejects partner applications without a managed city selection", async () => {
