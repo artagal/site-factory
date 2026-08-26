@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Bundle the Auth dependency chain for runtimes without Node's require(esm).
+  transpilePackages: ["firebase-admin", "jwks-rsa", "jose"],
   async redirects() {
     return [
       {
