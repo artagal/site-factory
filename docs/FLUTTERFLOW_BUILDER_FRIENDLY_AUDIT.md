@@ -330,6 +330,9 @@ request detail, subscription, partner operations, and 18 mobile admin pages.
 
 1. Connect `gofunmotion-prod` in Builder and regenerate the matching platform files.
 2. Configure RevenueCat products and the authenticated Vercel webhook variables.
+   The `partner_plans` default offering, `growth_monthly`/`pro_monthly` packages,
+   matching products, and `growth`/`pro` entitlements now exist. App Store product
+   status, the IAP credential, private server key and webhook remain release gates.
 3. Visually QA subscription cancellation, pending payment, restore, account switching,
    partner deal editing and booking status updates with an approved test business.
 4. Test email, Google, Apple, and browse-without-login routing
