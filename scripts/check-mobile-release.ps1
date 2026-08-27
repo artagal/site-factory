@@ -22,6 +22,17 @@ function Plist-String($Xml, [string]$Key) {
   return $node.InnerText
 }
 
+function Get-PngColorType([string]$Path) {
+  if (!(Test-Path -LiteralPath $Path)) { return $null }
+  $bytes = [System.IO.File]::ReadAllBytes($Path)
+  if ($bytes.Length -lt 26) { return $null }
+  $pngSignature = @(137, 80, 78, 71, 13, 10, 26, 10)
+  for ($index = 0; $index -lt $pngSignature.Count; $index++) {
+    if ($bytes[$index] -ne $pngSignature[$index]) { return $null }
+  }
+  return [int]$bytes[25]
+}
+
 $iosConfig = Read-Plist (Join-Path $root 'ios/Runner/GoogleService-Info.plist')
 $info = Read-Plist (Join-Path $root 'ios/Runner/Info.plist')
 $entitlements = Read-Plist (Join-Path $root 'ios/Runner/Runner.entitlements')
@@ -34,13 +45,21 @@ $schemes = if ($null -ne $info) { @($info.SelectNodes("/plist/dict/key[text()='C
 Add-Check 'Google iOS callback scheme' ($reversedClientId.Length -gt 0 -and $schemes -contains $reversedClientId) 'Regenerate Firebase config in Builder; verify the reversed Google client ID in the fresh Info.plist.'
 Add-Check 'Sign in with Apple entitlement' ((Plist-String $entitlements 'com.apple.developer.applesignin') -eq 'Default') 'Enable Sign in with Apple in Builder and the Apple Developer App ID.'
 
+$launcherSourcePath = Join-Path $root 'assets/images/app_launcher_icon.png'
 $iosIconPath = Join-Path $root 'ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png'
-$androidIconPath = Join-Path $root 'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png'
+$androidIconPath = @(
+  (Join-Path $root 'android/app/src/main/res/mipmap-xxxhdpi/launcher_icon.png'),
+  (Join-Path $root 'android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png')
+) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
 $flutterDefaultIosIcon = '7770183009E914112DE7D8EF1D235A6A30C5834424858E0D2F8253F6B8D31926'
 $flutterDefaultAndroidIcon = '3C34E1F298D0C9EA3455D46DB6B7759C8211A49E9EC6E44B635FC5C87DFB4180'
 $iosIconHash = if (Test-Path -LiteralPath $iosIconPath) { (Get-FileHash -Algorithm SHA256 -LiteralPath $iosIconPath).Hash } else { '' }
-$androidIconHash = if (Test-Path -LiteralPath $androidIconPath) { (Get-FileHash -Algorithm SHA256 -LiteralPath $androidIconPath).Hash } else { '' }
+$androidIconHash = if ($androidIconPath -and (Test-Path -LiteralPath $androidIconPath)) { (Get-FileHash -Algorithm SHA256 -LiteralPath $androidIconPath).Hash } else { '' }
+$launcherSourceColorType = Get-PngColorType $launcherSourcePath
+$iosIconColorType = Get-PngColorType $iosIconPath
 Add-Check 'Branded iOS launcher icon' ($iosIconHash.Length -gt 0 -and $iosIconHash -ne $flutterDefaultIosIcon) 'Regenerate the export after FlutterFlow finishes processing the selected GoFunMotion launcher icon.'
+Add-Check 'iOS launcher source has no alpha' ($launcherSourceColorType -eq 2) 'Replace the launcher source with an RGB PNG; App Store icons cannot contain transparency.'
+Add-Check 'Generated iOS launcher icon has no alpha' ($iosIconColorType -eq 2) 'Regenerate iOS launcher icons from the RGB source before uploading to App Store Connect.'
 Add-Check 'Branded Android launcher icon' ($androidIconHash.Length -gt 0 -and $androidIconHash -ne $flutterDefaultAndroidIcon) 'Regenerate the export after FlutterFlow finishes processing the selected GoFunMotion launcher icon.'
 
 $androidPath = Join-Path $root 'android/app/google-services.json'

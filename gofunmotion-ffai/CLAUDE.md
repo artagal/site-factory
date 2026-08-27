@@ -41,8 +41,8 @@ If the user pasted a `FlutterFlow AI Selector v1` block, use it before any broad
 **Widget references (`[#N]`).** Context attached from the IDE ("Add Widget to Context") arrives as inline references like `[#1]`, `[#2]` in the prose, with the full selector blocks collected in a trailing `Context:` footer — each headed by `[#N] Name (Type)`. Resolve every `[#N]` to its block in that footer and treat it as the widget the user means. A message that carries these references (or a raw selector block) **together with any instruction is an actionable request about those widgets** — act on it; do not reply "No response requested".
 
 1. Parse the pasted block for `project_id`, `scope_kind`, `scope_name`, `selector_path`, `node_key`, `node_name`, and `node_type`.
-2. Run `flutterflow ai inspect <project_id> --page|--component <scope_name> --selector-path <selector_path> --dsl-json` to resolve the target widget.
-3. Verify the returned `node_type` and `node_name` match expectations from the pasted block.
+2. **If the request is a fast-lane property edit** (see "Fast-lane patch" below): call `flutterflow_ai__patch` NOW with the block's `node_key` and `node_type` — no inspect first. The block is authoritative; the patch tool itself verifies the node and returns a structured error if the key or type is stale, and only THEN is an inspect warranted. An inspect "to be safe" before a fast-lane patch adds 10-60 seconds (and on some machines times out) for information the block already gave you.
+3. Otherwise, resolve the target with `flutterflow ai inspect <project_id> --page|--component <scope_name> --selector-path <selector_path> --dsl-json` and verify the returned `node_type` and `node_name` match the pasted block.
 4. **If the user is reporting a visual or runtime bug** (overflow, layout, render error, exception, "looks wrong" / "doesn't fit"): before authoring the patch, read the generated Dart for the selector's scope.
    - Look up the entity in `generated_code/.flutterflow/export_manifest.json` by `name == scope_name` (or `key == node_key`).
    - Read its `primary_files` to see the actual widget tree, constraints, and styling Flutter is rendering.

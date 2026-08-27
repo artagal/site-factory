@@ -1,8 +1,8 @@
 # GoFunMotion App Store Connect Setup
 
-Last checked: 2026-08-26. The setup instructions below remain a checklist. The
-Apple app record and subscription catalog now exist, but no signed build has been
-uploaded to TestFlight.
+Last checked: 2026-08-27. The setup instructions below remain a checklist. The
+Apple app record and subscription catalog exist, but the current browser session
+must be authenticated again before a signed build can be uploaded to TestFlight.
 
 ## Current Status
 
@@ -19,11 +19,14 @@ uploaded to TestFlight.
   (`6N8D44G6HA`) with a private key already set, and app ID `6805635040`.
 - Firebase CLI verified active iOS and Android apps for `com.gofunmotion.app`.
   The ignored `.firebase-mobile-config` files match `gofunmotion-prod`.
-- FlutterFlow still shows Firebase as not connected. Mobile Firebase files and
-  Google's callback URL scheme are still missing from the generated export.
-- The branded splash and launcher sources are selected and synced in Builder, but
-  the latest AI export still contains Flutter's default binary launcher icons.
-- App Store Connect TestFlight currently reports `No Builds`.
+- FlutterFlow Firebase setup reports complete. The fresh export has matching
+  Android/iOS Firebase identities and Google's callback URL scheme.
+- The branded splash and RGB launcher are selected and synced in Builder. Fresh
+  generated iOS and Android launcher icons are branded and contain no alpha.
+- The latest verified export is `1.0.0+2`; a local Android release AAB compiles.
+- The latest confirmed TestFlight state was `No Builds`. The current App Store
+  Connect browser session now returns `authResult=FAILED`, so re-authentication is
+  required before refreshing or changing that state.
 - Use `scripts/check-mobile-release.ps1` and `docs/FLUTTERFLOW_AI_RELEASE_QA.md` for
   current export checks. No signed IPA or TestFlight upload was produced in this task.
 - Do not submit the app for review until the FlutterFlow build is uploaded, Firebase auth is verified on device/TestFlight, screenshots are added, and App Privacy is completed.
@@ -46,7 +49,7 @@ Use these values for the Apple Developer, Firebase, FlutterFlow, and App Store C
 | Primary language | `English (U.S.)` / `en-US` |
 | Initial App Store version | `1.0` |
 | FlutterFlow app version | `1.0.0` |
-| FlutterFlow build number | `1` |
+| FlutterFlow build number | `2` |
 | Primary category | `LIFESTYLE` |
 | Secondary category | `ENTERTAINMENT` |
 | Copyright | `© 2026 GoFunMotion` |
@@ -114,7 +117,7 @@ Set these in FlutterFlow Builder:
 | iOS Bundle ID | `com.gofunmotion.app` |
 | Android Package Name | `com.gofunmotion.app` |
 | App Version / Version Name | `1.0.0` |
-| Build Number / Version Code | `1` |
+| Build Number / Version Code | `2` |
 | App Icon | `gofunmotion-ffai/assets/brand/gofunmotion-app-icon-1024.png` |
 | Splash Image | `gofunmotion-ffai/assets/brand/gofunmotion-splash.png` |
 | Animated splash page asset | `gofunmotion-ffai/assets/brand/gofunmotion-splash-motion.gif` |

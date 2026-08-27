@@ -174,7 +174,7 @@ abstract final class SignInPageWidgets {
                 ],
               ),
               ffai.ProjectWidgetHandle(
-                key: "Button_btmgww8u",
+                key: "Button_eju9waiv",
                 type: "Button",
                 path: "SignInPage.body[0].children[3]",
                 name: "GuestSignInButton",
