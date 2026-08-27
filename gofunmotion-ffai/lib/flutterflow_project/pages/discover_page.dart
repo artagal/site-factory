@@ -155,27 +155,27 @@ abstract final class DiscoverPageWidgets {
             name: "Column",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Column_8aknvkk1",
+                key: "Column_zcz32mrt",
                 type: "Column",
                 path: "DiscoverPage.body[0].children[0]",
                 name: "DealFirstDiscoveryHeader",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Text_h65z2q8c",
+                    key: "Text_nh4vhfmv",
                     type: "Text",
                     path: "DiscoverPage.body[0].children[0].children[0]",
                     name: "DealFirstDiscoveryTitle",
                     text: "Last-minute fun deals near you.",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Text_b12vs9wf",
+                    key: "Text_chhwnp0e",
                     type: "Text",
                     path: "DiscoverPage.body[0].children[0].children[1]",
                     name: "DealFirstDiscoverySubtitle",
                     text: "Save on activities, date nights, and family fun with open spots today.",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_uvqz4auh",
+                    key: "Button_er8gmh9s",
                     type: "Button",
                     path: "DiscoverPage.body[0].children[0].children[2]",
                     name: "HeroDealsButton",
@@ -197,20 +197,20 @@ abstract final class DiscoverPageWidgets {
                 ],
               ),
               ffai.ProjectWidgetHandle(
-                key: "Column_hgxtev6l",
+                key: "Column_kctca8m8",
                 type: "Column",
                 path: "DiscoverPage.body[0].children[2]",
                 name: "MarketplaceBrowsePanel",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Text_cj9klg96",
+                    key: "Text_xqo91vji",
                     type: "Text",
                     path: "DiscoverPage.body[0].children[2].children[0]",
                     name: "Text",
                     text: "Find an open spot",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_zr7ko8cu",
+                    key: "Button_b3h915o4",
                     type: "Button",
                     path: "DiscoverPage.body[0].children[2].children[1]",
                     name: "BrowseCityPicker",
@@ -219,13 +219,13 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Column_6k4pw03b",
+                    key: "Column_mmtbwn7t",
                     type: "Column",
                     path: "DiscoverPage.body[0].children[2].children[2]",
                     name: "BrowsecityOptions",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Button_7l9ehtti",
+                        key: "Button_snb2tag5",
                         type: "Button",
                         path: "DiscoverPage.body[0].children[2].children[2].children[0]",
                         name: "Button",
@@ -235,13 +235,13 @@ abstract final class DiscoverPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "ListView_4smf836q",
+                        key: "ListView_ybefu895",
                         type: "ListView",
                         path: "DiscoverPage.body[0].children[2].children[2].children[1]",
                         name: "BrowsecityOptionList",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Button_zt9i5cqs",
+                            key: "Button_ceb873y9",
                             type: "Button",
                             path: "DiscoverPage.body[0].children[2].children[2].children[1].children[0]",
                             name: "Button",
@@ -254,13 +254,13 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Row_dsaa7hz9",
+                    key: "Row_l7m9dkiy",
                     type: "Row",
                     path: "DiscoverPage.body[0].children[2].children[3]",
                     name: "Row",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "DropDown_hbhr8o1e",
+                        key: "DropDown_n5qcr78t",
                         type: "DropDown",
                         path: "DiscoverPage.body[0].children[2].children[3].children[0]",
                         name: "BrowseWhenFilter",
@@ -269,7 +269,7 @@ abstract final class DiscoverPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_ha0c0du4",
+                        key: "Button_acx436pq",
                         type: "Button",
                         path: "DiscoverPage.body[0].children[2].children[3].children[1]",
                         name: "BrowseMoreFilters",
@@ -281,7 +281,7 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_h5y1wxgk",
+                    key: "Button_wykd6ool",
                     type: "Button",
                     path: "DiscoverPage.body[0].children[2].children[4]",
                     name: "BrowseCategoryPicker",
@@ -290,13 +290,13 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Column_cs7qnzle",
+                    key: "Column_qgajj3b1",
                     type: "Column",
                     path: "DiscoverPage.body[0].children[2].children[5]",
                     name: "BrowsecategoryOptions",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Button_4gcsfw3t",
+                        key: "Button_ckm9zje8",
                         type: "Button",
                         path: "DiscoverPage.body[0].children[2].children[5].children[0]",
                         name: "Button",
@@ -306,13 +306,13 @@ abstract final class DiscoverPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "ListView_w45lzoa5",
+                        key: "ListView_s5s8yr8u",
                         type: "ListView",
                         path: "DiscoverPage.body[0].children[2].children[5].children[1]",
                         name: "BrowsecategoryOptionList",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Button_mrk2yajd",
+                            key: "Button_2bsaonwr",
                             type: "Button",
                             path: "DiscoverPage.body[0].children[2].children[5].children[1].children[0]",
                             name: "Button",
@@ -325,7 +325,7 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "DropDown_g017xfve",
+                    key: "DropDown_g8xi96ni",
                     type: "DropDown",
                     path: "DiscoverPage.body[0].children[2].children[6]",
                     name: "BrowseBudgetFilter",
@@ -334,7 +334,7 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_3zcmp4ua",
+                    key: "Button_72wyo7t0",
                     type: "Button",
                     path: "DiscoverPage.body[0].children[2].children[7]",
                     name: "Button",
@@ -344,26 +344,26 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "ProgressBar_1aok9ooi",
+                    key: "ProgressBar_g2ewy71b",
                     type: "ProgressBar",
                     path: "DiscoverPage.body[0].children[2].children[8]",
                     name: "ProgressBar",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Column_jkxlnred",
+                    key: "Column_fwgzfta7",
                     type: "Column",
                     path: "DiscoverPage.body[0].children[2].children[9]",
                     name: "BrowseLoadError",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Text_34kxej6f",
+                        key: "Text_kd8g7lrn",
                         type: "Text",
                         path: "DiscoverPage.body[0].children[2].children[9].children[0]",
                         name: "Text",
                         text: "Deals could not load. Check your connection and try again.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_zat4bkrx",
+                        key: "Button_c2jmddnm",
                         type: "Button",
                         path: "DiscoverPage.body[0].children[2].children[9].children[1]",
                         name: "Button",
@@ -373,7 +373,7 @@ abstract final class DiscoverPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_w79w7lp4",
+                        key: "Button_iuxpqr7q",
                         type: "Button",
                         path: "DiscoverPage.body[0].children[2].children[9].children[2]",
                         name: "Button",
@@ -385,27 +385,27 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Column_wjpr21iz",
+                    key: "Column_q9uoidqh",
                     type: "Column",
                     path: "DiscoverPage.body[0].children[2].children[10]",
                     name: "BrowseEmptyState",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Text_3q6ay2dl",
+                        key: "Text_rem5fvid",
                         type: "Text",
                         path: "DiscoverPage.body[0].children[2].children[10].children[0]",
                         name: "Text",
                         text: "No open deals match yet",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_htg2q7pt",
+                        key: "Text_yulzpbd5",
                         type: "Text",
                         path: "DiscoverPage.body[0].children[2].children[10].children[1]",
                         name: "Text",
                         text: "Try another time or category, or join the city waitlist.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_gba3e05k",
+                        key: "Button_lec557ro",
                         type: "Button",
                         path: "DiscoverPage.body[0].children[2].children[10].children[2]",
                         name: "Button",
@@ -417,79 +417,79 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "ListView_ru5f9xba",
+                    key: "ListView_z324qumo",
                     type: "ListView",
                     path: "DiscoverPage.body[0].children[2].children[11]",
                     name: "MarketplaceDealList",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Container_v2wai2od",
+                        key: "Container_ja71cex2",
                         type: "Container",
                         path: "DiscoverPage.body[0].children[2].children[11].children[0]",
                         name: "MarketplaceDealCard",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Column_3tqk01ff",
+                            key: "Column_g56duem9",
                             type: "Column",
                             path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0]",
                             name: "Column",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Image_t6tpfu9s",
+                                key: "Image_jj3y6zba",
                                 type: "Image",
                                 path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[0]",
                                 name: "Image",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Container_zv2mfk0h",
+                                key: "Container_frpxp3kt",
                                 type: "Container",
                                 path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[1]",
                                 name: "Container",
                                 children: <ffai.ProjectWidgetHandle>[
                                   ffai.ProjectWidgetHandle(
-                                    key: "Column_qo0defkf",
+                                    key: "Column_p2zvjtzr",
                                     type: "Column",
                                     path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[1].children[0]",
                                     name: "Column",
                                     children: <ffai.ProjectWidgetHandle>[
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_z4upxc0i",
+                                        key: "Text_0dcf8z0k",
                                         type: "Text",
                                         path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[1].children[0].children[0]",
                                         name: "Text",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_gf0sjiji",
+                                        key: "Text_jncqv7ht",
                                         type: "Text",
                                         path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[1].children[0].children[1]",
                                         name: "Text",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_qo9z3jas",
+                                        key: "Text_91dpw7dz",
                                         type: "Text",
                                         path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[1].children[0].children[2]",
                                         name: "Text",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_6ouh702h",
+                                        key: "Text_8fdtnvxv",
                                         type: "Text",
                                         path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[1].children[0].children[3]",
                                         name: "Text",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_9vuwlxao",
+                                        key: "Text_3suozrt3",
                                         type: "Text",
                                         path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[1].children[0].children[4]",
                                         name: "Text",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_lslcv2c5",
+                                        key: "Text_cw1u2epy",
                                         type: "Text",
                                         path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[1].children[0].children[5]",
                                         name: "Text",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Button_3w12070d",
+                                        key: "Button_qd9s4dc9",
                                         type: "Button",
                                         path: "DiscoverPage.body[0].children[2].children[11].children[0].children[0].children[1].children[0].children[6]",
                                         name: "BrowseOpenDeal",
@@ -509,7 +509,7 @@ abstract final class DiscoverPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_sq8e6y77",
+                    key: "Button_2ymmlamo",
                     type: "Button",
                     path: "DiscoverPage.body[0].children[2].children[12]",
                     name: "BrowseRefreshDeals",
