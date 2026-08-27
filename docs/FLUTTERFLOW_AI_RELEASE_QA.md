@@ -1,13 +1,14 @@
 # GoFunMotion Native AI Release QA
 
-Date: 2026-08-26. Project: `go-fun-motion-deals-vl4mj8`.
+Last verified: 2026-08-27. Project: `go-fun-motion-deals-vl4mj8`.
 
 ## Release Decision
 
-**Do not submit to TestFlight yet.** Native screens, subscription API and store UI are
-implemented. Apple identity, App Store records and FlutterFlow deployment metadata
-are configured, but Builder Firebase access, RevenueCat server/webhook secrets, a
-signed iOS archive, review screenshots and device QA are still gates.
+**Do not submit for App Review yet.** Native screens, subscription API, store UI,
+Firebase mobile configuration, App Store records and FlutterFlow deployment
+metadata are configured. A fresh Android release bundle now compiles, but a signed
+iOS upload, RevenueCat server/webhook secrets, review screenshots and device QA are
+still gates. App Store Connect must be signed in again before a TestFlight upload.
 
 ## Editable App Scope
 
@@ -38,33 +39,34 @@ Firebase CLI verified active iOS and Android apps in `gofunmotion-prod`, both us
 `com.gofunmotion.app`. Existing configuration files are in the ignored
 `.firebase-mobile-config` folder. Do not add those files or provider keys to Git.
 
-The generated export still needs those configuration files uploaded/regenerated in
-Builder. Google also needs the reversed client ID URL scheme in the fresh iOS
-Info.plist. The Apple entitlement exists, but it is not proof of provider setup or
-valid provisioning. Follow the official [Firebase connection instructions](https://docs.flutterflow.io/integrations/firebase/connect-to-firebase/).
+FlutterFlow Firebase setup now reports complete. The fresh export contains matching
+Android and iOS Firebase identities, Google's reversed client ID URL scheme and the
+Apple Sign-In entitlement. These files prove configuration consistency, not that
+every provider or provisioning profile works on a physical device. Follow the
+official [Firebase connection instructions](https://docs.flutterflow.io/integrations/firebase/connect-to-firebase/).
 
 ## Repeatable Checks
 
 The native subscription update adds server-verified RevenueCat purchase/restore,
-provider-safe entitlement projection and fail-closed store readiness. The final
-Builder/AI push is `c8irzdiI2I3LNsLi1jil`; the one-time state migration was pushed as
+provider-safe entitlement projection and fail-closed store readiness. The current
+Builder/AI push is `c3kcLib1hO4mHrdL3pWI`; the one-time state migration was pushed as
 `kynC72KjEKpYRVRGxHW7`. Current checks include 23 production Firestore indexes READY,
 a previously successful 22/22 Auth/Firestore Emulator suite, website typecheck,
 208 passing tests with 23 emulator-dependent skips, and a production build with
 86 routes. The native Dart suite has 25 passing tests.
-Fresh generated-runtime analysis has 0 errors, 1,057 warnings and 3,364 information
-diagnostics. `--no-fatal-infos --no-fatal-warnings` was used only to make the analyzer
-exit reflect errors; warnings remain logged. This is not a signed archive or a
-physical-device authentication test.
+Fresh generated-runtime analysis has 0 errors and 4,434 nonfatal generated warnings
+or information diagnostics. `--no-fatal-infos --no-fatal-warnings` was used only to
+make the analyzer exit reflect errors; warnings remain visible. The 25 native DSL
+tests pass.
 
-The expanded export also passed `flutter build web --no-pub --no-wasm-dry-run` on
-installed Flutter 3.35.7 after resolving dependencies with that same SDK.
-The default Flutter 3.44 build fails on the exported Font Awesome 10.12 dependency
-(`IconData` subclassing). Generated code and the global SDK were not patched.
-Match the actual FlutterFlow CI runtime before native release. The branded splash
-is present and the square launcher source is selected and synced in Builder, but a
-fresh AI export still contains Flutter's default iOS and Android launcher binaries.
-Launcher processing and Firebase configuration remain separate release gates.
+Export `1.0.0+2` compiles with the FlutterFlow-compatible Flutter `3.38.6` toolchain.
+The Android release bundle is 60,976,682 bytes with SHA-256
+`8ED0D43CB9BB63A89C6822DE6C7B3EF38E62D15140C275154EB0EB7B7599D3B2`.
+Flutter `3.44` is not the release toolchain for this export: Font Awesome v10 fails
+because `IconData` became final, while v11 is incompatible with the current
+FlutterFlow-generated `FaIconData` helpers. Do not patch generated code or upgrade
+that package independently. The fresh export contains the branded RGB launcher
+source and generated iOS/Android icons; all mobile static checks pass.
 
 Historical AI-only verification: website typecheck/build passed (86 routes), 163
 tests passed with 9 emulator-dependent cases skipped, SEO audited 48 pages with
@@ -128,15 +130,15 @@ before test collection and does not replace the last successful emulator result.
 1. Log in to Vercel in the open InApp Browser tab. Add the approved BeautyDrop
    OpenAI key directly to server env, verify Firebase Admin, set AI budget limits,
    redeploy, and verify the new mobile endpoint against that deployment.
-2. Upload/regenerate the existing matching Firebase mobile config in Builder.
-   Verify email/Google/Apple providers and Android SHA certificates. Do not enable
-   native auto-create of the old user-document shape.
+2. Verify email/Google/Apple providers and Android SHA certificates on real devices.
+   Do not enable native auto-create of the old user-document shape.
 3. Create the RevenueCat private server key and authenticated webhook, put both in
    Vercel Production, redeploy, and verify the protected subscription endpoint.
    Verify purchase, cancellation, expiry, account switching, and restore with the
    exact Firebase UID App User ID before enabling production packages.
-4. Keep the verified App Store Connect app/bundle and FlutterFlow deployment
-   metadata unchanged. No signed IPA has been supplied or created by this task.
+4. Sign back in to App Store Connect, keep the verified app/bundle metadata
+   unchanged, and use build number `2`. No signed IPA has been supplied or created
+   by this task.
 5. Complete in-app account deletion before release. The server deletion endpoint
    exists, but a native confirmation/re-authentication flow and owner/retention
    behavior still need review and testing.
