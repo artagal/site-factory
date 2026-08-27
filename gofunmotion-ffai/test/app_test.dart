@@ -14,6 +14,57 @@ import '../dsl/marketplace_experience.dart' as marketplace;
 import '../lib/flutterflow_project.dart' as ff;
 
 void main() {
+  test('GoFunMotion starter theme matches the website in both modes', () {
+    final project =
+        compileApp(buildApp(gofunmotion.buildGoFunMotionDeals)).project;
+    final colors = project.theme.colorScheme;
+
+    expect(colors.darkModeEnabled, isTrue);
+    expect(colors.primary.value.toInt(), 0xFF7C3AED);
+    expect(colors.primary.darkModeColor.value.toInt(), 0xFF7C3AED);
+    expect(colors.primaryBackground.value.toInt(), 0xFFF5F7FA);
+    expect(colors.primaryBackground.darkModeColor.value.toInt(), 0xFF070816);
+    expect(colors.secondaryBackground.value.toInt(), 0xFFFFFFFF);
+    expect(colors.secondaryBackground.darkModeColor.value.toInt(), 0xFF111232);
+    expect(colors.tertiary.darkModeColor.value.toInt(), 0xFFBEF264);
+    expect(colors.info.darkModeColor.value.toInt(), 0xFF67E8F9);
+  });
+
+  test('Appearance card offers persisted light, dark, and device modes', () {
+    final app = buildApp((app) {
+      app.page(
+        'AppearanceFixture',
+        route: '/appearance-fixture',
+        body: Scaffold(body: gofunmotionEdit.buildAppearanceSettingsCard()),
+      );
+    });
+    final project = compileApp(app).project;
+    final page = findPage(project, name: 'AppearanceFixture')!;
+
+    expect(
+      findDescendants(
+        page.node,
+        (node) => node.name == 'AppearanceSettingsCard',
+      ),
+      hasLength(1),
+    );
+    final expectedModes = {
+      'LightThemeButton': FFSetDarkModeSetting_DarkModeSetting.LIGHT,
+      'DarkThemeButton': FFSetDarkModeSetting_DarkModeSetting.DARK,
+      'SystemThemeButton': FFSetDarkModeSetting_DarkModeSetting.SYSTEM,
+    };
+    for (final entry in expectedModes.entries) {
+      final button =
+          findDescendants(page.node, (node) => node.name == entry.key).single;
+      final action = button.triggerActions
+          .expand((trigger) => _walkActions(trigger.rootAction))
+          .singleWhere((node) => node.action.hasSetDarkModeSetting());
+      expect(action.action.setDarkModeSetting.setting, entry.value);
+    }
+    expect(page.node.toProto3Json().toString(), contains('IS_LIGHT_MODE'));
+    expect(page.node.toProto3Json().toString(), contains('IS_DARK_MODE'));
+  });
+
   test('Detail reference guard uses a valid document existence condition', () {
     final initial =
         compileApp(buildApp(gofunmotion.buildGoFunMotionDeals)).project;

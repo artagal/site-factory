@@ -2234,22 +2234,22 @@ void _configureDesignSystem(App app) {
   app.darkMode(enabled: true);
   app.primaryFont('Inter');
 
-  app.themeColor('primary', 0xFF0F766E, dark: 0xFF2DD4BF);
-  app.themeColor('secondary', 0xFFEA580C, dark: 0xFFF97316);
-  app.themeColor('tertiary', 0xFF2563EB, dark: 0xFF60A5FA);
-  app.themeColor('alternate', 0xFFE5E7EB, dark: 0xFF334155);
-  app.themeColor('primaryBackground', 0xFFF8FAFC, dark: 0xFF09111F);
-  app.themeColor('secondaryBackground', 0xFFFFFFFF, dark: 0xFF111827);
-  app.themeColor('primaryText', 0xFF101827, dark: 0xFFF8FAFC);
-  app.themeColor('secondaryText', 0xFF64748B, dark: 0xFFCBD5E1);
-  app.themeColor('accent1', 0xFFE0F2FE, dark: 0xFF0F2D3F);
-  app.themeColor('accent2', 0xFFFFEDD5, dark: 0xFF3B2414);
-  app.themeColor('accent3', 0xFFDCFCE7, dark: 0xFF123524);
-  app.themeColor('accent4', 0xFFF5F3FF, dark: 0xFF241A3E);
-  app.themeColor('success', 0xFF16A34A, dark: 0xFF4ADE80);
-  app.themeColor('warning', 0xFFF59E0B, dark: 0xFFFBBF24);
-  app.themeColor('error', 0xFFDC2626, dark: 0xFFF87171);
-  app.themeColor('info', 0xFF2563EB, dark: 0xFF60A5FA);
+  app.themeColor('primary', 0xFF7C3AED, dark: 0xFF7C3AED);
+  app.themeColor('secondary', 0xFFD52B80, dark: 0xFFF72585);
+  app.themeColor('tertiary', 0xFF3F7C16, dark: 0xFFBEF264);
+  app.themeColor('alternate', 0xFFD8DEE8, dark: 0xFF30334A);
+  app.themeColor('primaryBackground', 0xFFF5F7FA, dark: 0xFF070816);
+  app.themeColor('secondaryBackground', 0xFFFFFFFF, dark: 0xFF111232);
+  app.themeColor('primaryText', 0xFF101828, dark: 0xFFFFFFFF);
+  app.themeColor('secondaryText', 0xFF5F6673, dark: 0xFFAEB4C2);
+  app.themeColor('accent1', 0xFFEEE8FF, dark: 0xFF2B1A4A);
+  app.themeColor('accent2', 0xFFFCE7F3, dark: 0xFF3A1830);
+  app.themeColor('accent3', 0xFFEEFAD7, dark: 0xFF233519);
+  app.themeColor('accent4', 0xFFE5F8FC, dark: 0xFF163340);
+  app.themeColor('success', 0xFF3F7C16, dark: 0xFFBEF264);
+  app.themeColor('warning', 0xFF92400E, dark: 0xFFFCD34D);
+  app.themeColor('error', 0xFFBE123C, dark: 0xFFFB7185);
+  app.themeColor('info', 0xFF06748F, dark: 0xFF67E8F9);
 
   app.typography(
     'headlineMedium',

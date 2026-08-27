@@ -202,6 +202,7 @@ void buildGoFunMotionDealsQueryGuard(App app) {
     onboardingPage: workspacePage('CustomerOnboardingPage'),
   );
   ensureExpandedWorkspace(app, nativeAi);
+  _ensureAppearanceControls(app);
   ensureNativeSubscription(app);
   app.raw(disableNativeAuthAutoNavigation);
   app.raw(verifyPartnerDealScreenStructure);
@@ -278,23 +279,24 @@ void _ensureGoFunMotionTheme(App app) {
   app.primaryFont('Inter');
   app.secondaryFont('Inter');
 
-  // Saturated CTA colors retain white-label contrast in both appearance modes.
-  app.themeColor('primary', 0xFF087EA4, dark: 0xFF087EA4);
-  app.themeColor('secondary', 0xFFD52B80, dark: 0xFFD52B80);
-  app.themeColor('tertiary', 0xFF527F09, dark: 0xFFBDF45A);
-  app.themeColor('alternate', 0xFFDEE3EA, dark: 0xFF30323B);
-  app.themeColor('primaryBackground', 0xFFF7F8FA, dark: 0xFF0A0A0F);
-  app.themeColor('secondaryBackground', 0xFFFFFFFF, dark: 0xFF16171D);
-  app.themeColor('primaryText', 0xFF11141B, dark: 0xFFF5F7FB);
-  app.themeColor('secondaryText', 0xFF5F6673, dark: 0xFFB5BAC6);
-  app.themeColor('accent1', 0xFFDEF7FB, dark: 0xFF123039);
-  app.themeColor('accent2', 0xFFFCE3F0, dark: 0xFF3C1930);
-  app.themeColor('accent3', 0xFFECF8D2, dark: 0xFF233519);
-  app.themeColor('accent4', 0xFFE3EEFB, dark: 0xFF162C43);
-  app.themeColor('success', 0xFF4E770D, dark: 0xFFBDF45A);
-  app.themeColor('warning', 0xFF955909, dark: 0xFFFFC864);
-  app.themeColor('error', 0xFFBC294C, dark: 0xFFFF7093);
-  app.themeColor('info', 0xFF087EA4, dark: 0xFF5DD8EF);
+  // Mirrors gofunmotion.com: purple actions, lime deals, cyan information,
+  // and the same near-black/light marketplace surfaces.
+  app.themeColor('primary', 0xFF7C3AED, dark: 0xFF7C3AED);
+  app.themeColor('secondary', 0xFFD52B80, dark: 0xFFF72585);
+  app.themeColor('tertiary', 0xFF3F7C16, dark: 0xFFBEF264);
+  app.themeColor('alternate', 0xFFD8DEE8, dark: 0xFF30334A);
+  app.themeColor('primaryBackground', 0xFFF5F7FA, dark: 0xFF070816);
+  app.themeColor('secondaryBackground', 0xFFFFFFFF, dark: 0xFF111232);
+  app.themeColor('primaryText', 0xFF101828, dark: 0xFFFFFFFF);
+  app.themeColor('secondaryText', 0xFF5F6673, dark: 0xFFAEB4C2);
+  app.themeColor('accent1', 0xFFEEE8FF, dark: 0xFF2B1A4A);
+  app.themeColor('accent2', 0xFFFCE7F3, dark: 0xFF3A1830);
+  app.themeColor('accent3', 0xFFEEFAD7, dark: 0xFF233519);
+  app.themeColor('accent4', 0xFFE5F8FC, dark: 0xFF163340);
+  app.themeColor('success', 0xFF3F7C16, dark: 0xFFBEF264);
+  app.themeColor('warning', 0xFF92400E, dark: 0xFFFCD34D);
+  app.themeColor('error', 0xFFBE123C, dark: 0xFFFB7185);
+  app.themeColor('info', 0xFF06748F, dark: 0xFF67E8F9);
 
   app.raw((project) {
     for (final slot in const [
@@ -328,6 +330,121 @@ void _ensureGoFunMotionTheme(App app) {
     }
   });
 }
+
+void _ensureAppearanceControls(App app) {
+  final existingCards =
+      ff.Pages.accountSettingsPage.widgets.all
+          .where((widget) => widget.name == 'AppearanceSettingsCard')
+          .toList();
+  final firstSettingsRow =
+      ff.Pages.accountSettingsPage.widgets.all
+          .where((widget) => widget.name == 'WorkspaceMenuRow')
+          .first;
+  app.editPage(ff.Pages.accountSettingsPage, (page) {
+    if (existingCards.isEmpty) {
+      page.ensureInsertedBefore(
+        firstSettingsRow,
+        buildAppearanceSettingsCard(),
+      );
+    } else {
+      page.ensureReplaced(existingCards.single, buildAppearanceSettingsCard());
+    }
+  });
+}
+
+DslWidget buildAppearanceSettingsCard() => Container(
+  name: 'AppearanceSettingsCard',
+  color: Colors.secondaryBackground,
+  borderColor: Colors.alternate,
+  borderWidth: 1,
+  borderRadius: 8,
+  padding: 16,
+  child: Column(
+    crossAxis: CrossAxis.start,
+    spacing: 12,
+    children: [
+      Row(
+        spacing: 12,
+        children: [
+          Icon('palette_outlined', size: 26, color: Colors.info),
+          Expanded(
+            Column(
+              crossAxis: CrossAxis.start,
+              spacing: 3,
+              children: [
+                Text('Appearance', style: Styles.titleMedium),
+                Text(
+                  'Choose the look that is easiest to read.',
+                  style: Styles.bodySmall,
+                  color: Colors.secondaryText,
+                  maxLines: 2,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      Text(
+        'Light mode is active',
+        name: 'LightThemeStatus',
+        style: Styles.labelMedium,
+        color: Colors.success,
+        visible: const Global(GlobalProperty.isLightMode),
+      ),
+      Text(
+        'Dark mode is active',
+        name: 'DarkThemeStatus',
+        style: Styles.labelMedium,
+        color: Colors.success,
+        visible: const Global(GlobalProperty.isDarkMode),
+      ),
+      Row(
+        spacing: 10,
+        children: [
+          Expanded(
+            Button(
+              'Light',
+              name: 'LightThemeButton',
+              icon: 'light_mode',
+              height: 48,
+              variant: ButtonVariant.outlined,
+              color: Colors.alternate,
+              textColor: Colors.primaryText,
+              onTap: const SetDarkMode(DarkModePreference.light),
+            ),
+          ),
+          Expanded(
+            Button(
+              'Dark',
+              name: 'DarkThemeButton',
+              icon: 'dark_mode',
+              height: 48,
+              variant: ButtonVariant.outlined,
+              color: Colors.alternate,
+              textColor: Colors.primaryText,
+              onTap: const SetDarkMode(DarkModePreference.dark),
+            ),
+          ),
+        ],
+      ),
+      Button(
+        'Use device setting',
+        name: 'SystemThemeButton',
+        icon: 'settings_suggest_outlined',
+        width: double.infinity,
+        height: 48,
+        variant: ButtonVariant.text,
+        textColor: Colors.primaryText,
+        onTap: const SetDarkMode(DarkModePreference.system),
+      ),
+      Text(
+        'Your choice is saved on this device.',
+        style: Styles.bodySmall,
+        color: Colors.secondaryText,
+      ),
+    ],
+  ),
+);
 
 void _ensureCompatibleMobileDependencies(App app) {
   app.raw((project) {
