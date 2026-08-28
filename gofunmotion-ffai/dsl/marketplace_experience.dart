@@ -281,7 +281,13 @@ DslWidget marketplaceBrowsePanel(
   crossAxis: CrossAxis.start,
   spacing: 12,
   children: [
-    Text('Find an open spot', style: Styles.titleLarge),
+    Row(
+      mainAxis: MainAxis.spaceBetween,
+      children: [
+        Text("Tonight's deals", style: Styles.titleLarge),
+        Text('Open spots', style: Styles.labelMedium, color: Colors.tertiary),
+      ],
+    ),
     Row(
       spacing: 8,
       children: [
@@ -322,7 +328,7 @@ DslWidget marketplaceBrowsePanel(
         IconButton(
           'tune',
           name: 'BrowseMoreFilters',
-          size: 48,
+          size: 32,
           fillColor: Colors.secondaryBackground,
           color: Colors.primaryText,
           borderRadius: 8,
@@ -459,25 +465,84 @@ DslWidget marketplaceBrowsePanel(
                   padding: 16,
                   child: Column(
                     crossAxis: CrossAxis.start,
-                    spacing: 8,
+                    spacing: 10,
                     children: [
+                      Row(
+                        spacing: 8,
+                        children: [
+                          Expanded(
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 7,
+                              ),
+                              borderRadius: 8,
+                              color: Colors.accent2,
+                              child: Text(
+                                item['timeLabel'],
+                                style: Styles.labelMedium,
+                                color: Colors.secondary,
+                                maxLines: 2,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 7,
+                              ),
+                              borderRadius: 8,
+                              color: Colors.accent1,
+                              child: Text(
+                                item['spotsLabel'],
+                                style: Styles.labelMedium,
+                                color: Colors.tertiary,
+                                maxLines: 2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       Text(item['title'], style: Styles.titleMedium),
-                      Text(
-                        item['priceLabel'],
-                        style: Styles.headlineSmall,
-                        color: Colors.tertiary,
-                      ),
-                      Text(
-                        item['wasLabel'],
-                        style: Styles.bodySmall,
-                        color: Colors.secondaryText,
-                        visible: Not(Equals(item['wasLabel'], '')),
-                      ),
-                      Text(item['timeLabel'], style: Styles.labelMedium),
-                      Text(
-                        item['spotsLabel'],
-                        style: Styles.labelMedium,
-                        color: Colors.secondary,
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        borderRadius: 8,
+                        color: Colors.accent1,
+                        child: Row(
+                          mainAxis: MainAxis.spaceBetween,
+                          children: [
+                            Expanded(
+                              Column(
+                                crossAxis: CrossAxis.start,
+                                spacing: 2,
+                                children: [
+                                  Text(
+                                    'NOW',
+                                    style: Styles.labelSmall,
+                                    color: Colors.tertiary,
+                                  ),
+                                  Text(
+                                    item['priceLabel'],
+                                    style: Styles.headlineSmall,
+                                    color: Colors.primaryText,
+                                    maxLines: 2,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              Text(
+                                item['wasLabel'],
+                                style: Styles.bodySmall,
+                                color: Colors.secondaryText,
+                                maxLines: 2,
+                                visible: Not(Equals(item['wasLabel'], '')),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       Text(
                         item['description'],

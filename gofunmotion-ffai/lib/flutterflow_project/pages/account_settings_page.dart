@@ -378,44 +378,44 @@ abstract final class AccountSettingsPageWidgets {
                     name: "WorkspaceReadyContent",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Container_6uqu4a24",
+                        key: "Container_5xd0yeix",
                         type: "Container",
                         path: "AccountSettingsPage.body[0].children[0].children[5].children[0]",
                         name: "AppearanceSettingsCard",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Column_s4k5oa9g",
+                            key: "Column_z7x7n0eb",
                             type: "Column",
                             path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0]",
                             name: "Column",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Row_5xm8asc9",
+                                key: "Row_1pxcv8eb",
                                 type: "Row",
                                 path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[0]",
                                 name: "Row",
                                 children: <ffai.ProjectWidgetHandle>[
                                   ffai.ProjectWidgetHandle(
-                                    key: "Icon_mlkmgz7t",
+                                    key: "Icon_5wughmx8",
                                     type: "Icon",
                                     path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[0].children[0]",
                                     name: "Icon",
                                   ),
                                   ffai.ProjectWidgetHandle(
-                                    key: "Column_53jk1a3x",
+                                    key: "Column_jq9nvr2t",
                                     type: "Column",
                                     path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[0].children[1]",
                                     name: "Column",
                                     children: <ffai.ProjectWidgetHandle>[
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_q01hlakv",
+                                        key: "Text_8uh5x8gm",
                                         type: "Text",
                                         path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[0].children[1].children[0]",
                                         name: "Text",
                                         text: "Appearance",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_827upctf",
+                                        key: "Text_jro6aug1",
                                         type: "Text",
                                         path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[0].children[1].children[1]",
                                         name: "Text",
@@ -426,27 +426,27 @@ abstract final class AccountSettingsPageWidgets {
                                 ],
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_p78t7llj",
+                                key: "Text_lbsqlo5z",
                                 type: "Text",
                                 path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[1]",
                                 name: "LightThemeStatus",
                                 text: "Light mode is active",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_udubikuu",
+                                key: "Text_sy4ajjvw",
                                 type: "Text",
                                 path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[2]",
                                 name: "DarkThemeStatus",
                                 text: "Dark mode is active",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Row_82qsj73m",
+                                key: "Row_3hzjd7gp",
                                 type: "Row",
                                 path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[3]",
                                 name: "Row",
                                 children: <ffai.ProjectWidgetHandle>[
                                   ffai.ProjectWidgetHandle(
-                                    key: "Button_cro82tkg",
+                                    key: "Button_m8de8kn8",
                                     type: "Button",
                                     path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[3].children[0]",
                                     name: "LightThemeButton",
@@ -456,7 +456,7 @@ abstract final class AccountSettingsPageWidgets {
                                     ],
                                   ),
                                   ffai.ProjectWidgetHandle(
-                                    key: "Button_8cojkv6o",
+                                    key: "Button_jl6f302v",
                                     type: "Button",
                                     path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[3].children[1]",
                                     name: "DarkThemeButton",
@@ -468,7 +468,7 @@ abstract final class AccountSettingsPageWidgets {
                                 ],
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Button_9gcgeubb",
+                                key: "Button_qeqjfbeu",
                                 type: "Button",
                                 path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[4]",
                                 name: "SystemThemeButton",
@@ -478,7 +478,7 @@ abstract final class AccountSettingsPageWidgets {
                                 ],
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Text_2yz6so60",
+                                key: "Text_h76l0gqf",
                                 type: "Text",
                                 path: "AccountSettingsPage.body[0].children[0].children[5].children[0].children[0].children[5]",
                                 name: "Text",

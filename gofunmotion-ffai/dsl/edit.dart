@@ -24,11 +24,12 @@ import 'package:flutterflow_ai/src/helpers/ensure_helpers.dart'
 import 'package:flutterflow_ai/src/helpers/project_helpers.dart'
     show setInitialPage;
 import 'package:flutterflow_ai/src/helpers/theme_helpers.dart'
-    show ffThemeColor, getTypographyStyle, setTypographyStyle;
+    show ffColor, ffThemeColor, getTypographyStyle, setTypographyStyle;
 import 'package:flutterflow_ai/src/helpers/tree_helpers.dart'
     show findDescendants;
 import 'package:flutterflow_ai/src/helpers/variable_helpers.dart'
     show generatorVarField;
+import 'package:protobuf/protobuf.dart' show GeneratedMessage;
 
 Future<void> main(List<String> args) async {
   final options = _parseCliOptions(args);
@@ -204,6 +205,7 @@ void buildGoFunMotionDealsQueryGuard(App app) {
   ensureExpandedWorkspace(app, nativeAi);
   _ensureAppearanceControls(app);
   ensureNativeSubscription(app);
+  _ensureNativeVisualSystem(app);
   app.raw(disableNativeAuthAutoNavigation);
   app.raw(verifyPartnerDealScreenStructure);
 }
@@ -245,30 +247,43 @@ void _alignDealFirstDiscovery(App app) {
       Column(
         name: 'DealFirstDiscoveryHeader',
         crossAxis: CrossAxis.start,
-        spacing: 12,
+        spacing: 10,
         children: [
+          Text(
+            'GoFunMotion Deals',
+            name: 'DealFirstDiscoveryEyebrow',
+            style: Styles.labelMedium,
+            color: Colors.tertiary,
+          ),
           Text(
             'Last-minute fun deals near you.',
             name: 'DealFirstDiscoveryTitle',
-            style: Styles.headlineSmall,
+            style: Styles.headlineMedium,
             maxLines: 3,
           ),
           Text(
             'Save on activities, date nights, and family fun with open spots today.',
             name: 'DealFirstDiscoverySubtitle',
-            style: Styles.bodyMedium,
+            style: Styles.bodyLarge,
             color: Colors.secondaryText,
           ),
-          Button(
-            "Tonight's Deals",
-            name: 'HeroDealsButton',
-            width: double.infinity,
-            height: 48,
-            borderRadius: 8,
-            icon: 'local_offer',
-            color: Colors.tertiary,
-            textColor: Colors.primaryBackground,
-            onTap: Navigate(ff.Pages.dealsPage),
+          Row(
+            spacing: 8,
+            children: [
+              const Icon(
+                'verified_outlined',
+                size: 18,
+                color: Colors.secondary,
+              ),
+              Expanded(
+                Text(
+                  'Reviewed offers. No payment until the business confirms.',
+                  style: Styles.bodySmall,
+                  color: Colors.secondaryText,
+                  maxLines: 2,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -295,20 +310,20 @@ void _ensureGoFunMotionTheme(App app) {
   app.primaryFont('Inter');
   app.secondaryFont('Inter');
 
-  // Mirrors gofunmotion.com: accessible green actions, bright lime deal CTAs,
-  // cyan information, and the same deep-navy marketplace surfaces.
-  app.themeColor('primary', 0xFF3F7C16, dark: 0xFF527E1F);
+  // Mirrors gofunmotion.com: neutral near-black marketplace surfaces, bright
+  // lime actions and cyan information. Purple is intentionally not a surface.
+  app.themeColor('primary', 0xFF3F7C16, dark: 0xFFBEF264);
   app.themeColor('secondary', 0xFF06748F, dark: 0xFF22D3EE);
   app.themeColor('tertiary', 0xFF5B8F20, dark: 0xFFBEF264);
-  app.themeColor('alternate', 0xFFD8DEE8, dark: 0xFF30334A);
-  app.themeColor('primaryBackground', 0xFFF7FAF5, dark: 0xFF070816);
-  app.themeColor('secondaryBackground', 0xFFFFFFFF, dark: 0xFF111232);
+  app.themeColor('alternate', 0xFFD8DEE8, dark: 0xFF2C3038);
+  app.themeColor('primaryBackground', 0xFFF7FAF5, dark: 0xFF0B0D11);
+  app.themeColor('secondaryBackground', 0xFFFFFFFF, dark: 0xFF16191F);
   app.themeColor('primaryText', 0xFF101828, dark: 0xFFFFFFFF);
-  app.themeColor('secondaryText', 0xFF5F6673, dark: 0xFFAEB4C2);
-  app.themeColor('accent1', 0xFFEEFAD7, dark: 0xFF233519);
-  app.themeColor('accent2', 0xFFE5F8FC, dark: 0xFF163340);
+  app.themeColor('secondaryText', 0xFF5F6673, dark: 0xFFB4BAC4);
+  app.themeColor('accent1', 0xFFEEFAD7, dark: 0xFF243119);
+  app.themeColor('accent2', 0xFFE5F8FC, dark: 0xFF123139);
   app.themeColor('accent3', 0xFFFEF3C7, dark: 0xFF3A2E12);
-  app.themeColor('accent4', 0xFFEEF1F5, dark: 0xFF202234);
+  app.themeColor('accent4', 0xFFEEF1F5, dark: 0xFF20242B);
   app.themeColor('success', 0xFF3F7C16, dark: 0xFFBEF264);
   app.themeColor('warning', 0xFF92400E, dark: 0xFFFCD34D);
   app.themeColor('error', 0xFFBE123C, dark: 0xFFFB7185);
@@ -345,6 +360,274 @@ void _ensureGoFunMotionTheme(App app) {
       setTypographyStyle(project, slot, style);
     }
   });
+}
+
+void _ensureNativeVisualSystem(App app) {
+  final menuSurface =
+      ff.Components.workspaceMenuRow.widgets.all
+          .where((widget) => widget.name == 'WorkspaceMenuRowSurface')
+          .toList();
+  final menuTarget =
+      menuSurface.isNotEmpty
+          ? menuSurface.single
+          : ff.Components.workspaceMenuRow.widgets.all.singleWhere(
+            (widget) =>
+                widget.type == 'Container' &&
+                widget.key != ff.Components.workspaceMenuRow.widgets.root.key,
+          );
+  app.editComponent(ff.Components.workspaceMenuRow, (component) {
+    component.ensureReplaced(
+      menuTarget,
+      Container(
+        name: 'WorkspaceMenuRowSurface',
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        borderRadius: 8,
+        onTap: const ParamAction('onOpen'),
+        child: Row(
+          spacing: 12,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              color: Colors.accent1,
+              child: const Icon(
+                'arrow_forward',
+                size: 19,
+                color: Colors.tertiary,
+              ),
+            ),
+            Expanded(
+              Column(
+                crossAxis: CrossAxis.start,
+                spacing: 3,
+                children: [
+                  Text(Param('label'), style: Styles.titleSmall, maxLines: 2),
+                  Text(
+                    Param('detail'),
+                    style: Styles.bodySmall,
+                    color: Colors.secondaryText,
+                    maxLines: 2,
+                    visible: Not(Equals(Param('detail'), '')),
+                  ),
+                ],
+              ),
+            ),
+            const Icon('chevron_right', size: 22, color: Colors.secondaryText),
+          ],
+        ),
+      ),
+    );
+  });
+  final statusSurface =
+      ff.Components.workspaceStatusBadge.widgets.all
+          .where((widget) => widget.name == 'WorkspaceStatusBadgeSurface')
+          .toList();
+  final statusTarget =
+      statusSurface.isNotEmpty
+          ? statusSurface.single
+          : ff.Components.workspaceStatusBadge.widgets.all.singleWhere(
+            (widget) =>
+                widget.type == 'Container' &&
+                widget.key !=
+                    ff.Components.workspaceStatusBadge.widgets.root.key,
+          );
+  app.editComponent(ff.Components.workspaceStatusBadge, (component) {
+    component.ensureReplaced(
+      statusTarget,
+      Container(
+        name: 'WorkspaceStatusBadgeSurface',
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        borderRadius: 8,
+        color: Colors.accent1,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        child: Text(
+          Param('label'),
+          style: Styles.labelMedium,
+          color: Colors.tertiary,
+          maxLines: 2,
+        ),
+      ),
+    );
+  });
+  final emptySurface =
+      ff.Components.workspaceEmptyState.widgets.all
+          .where((widget) => widget.name == 'WorkspaceEmptyStateSurface')
+          .toList();
+  final emptyTarget =
+      emptySurface.isNotEmpty
+          ? emptySurface.single
+          : ff.Components.workspaceEmptyState.widgets.all.singleWhere(
+            (widget) => widget.type == 'Column',
+          );
+  app.editComponent(ff.Components.workspaceEmptyState, (component) {
+    component.ensureReplaced(
+      emptyTarget,
+      Container(
+        name: 'WorkspaceEmptyStateSurface',
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 10,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              borderRadius: 8,
+              color: Colors.accent2,
+              child: const Icon(
+                'inbox_outlined',
+                size: 22,
+                color: Colors.secondary,
+              ),
+            ),
+            Text(Param('label'), style: Styles.titleMedium, maxLines: 3),
+          ],
+        ),
+      ),
+    );
+  });
+  app.editPage(ff.Pages.discoverPage, (page) {
+    final existingBrandTitle =
+        ff.Pages.discoverPage.widgets.all
+            .where((widget) => widget.name == 'GoFunMotionBrandTitle')
+            .toList();
+    page.ensureReplaced(
+      existingBrandTitle.isNotEmpty
+          ? existingBrandTitle.single
+          : ff.Pages.discoverPage.widgets.all.singleWhere(
+            (widget) => widget.name == 'AppBar Title',
+          ),
+      Row(
+        name: 'GoFunMotionBrandTitle',
+        spacing: 10,
+        children: [
+          Image(
+            'https://gofunmotion.com/icons/gofunmotion-icon-512.png',
+            width: 32,
+            height: 32,
+            fit: ImageFit.contain,
+          ),
+          Text('GoFunMotion', style: Styles.titleLarge),
+        ],
+      ),
+    );
+  });
+  app.raw(_polishNativeVisualSystem);
+}
+
+void _polishNativeVisualSystem(FFProject project) {
+  const rootPages = {
+    'DiscoverPage',
+    'FindPlanPage',
+    'DealsPage',
+    'SavedPage',
+    'ProfilePage',
+    'SplashPage',
+  };
+  for (final page in project.widgetClasses.values.where(
+    (widgetClass) => widgetClass.node.type == FFWidgetType.Scaffold,
+  )) {
+    for (final appBar in _visualMessages(page.node).whereType<FFAppBar>()) {
+      appBar.backgroundColorValue = FFColorValue(
+        inputValue: ffThemeColor(FFColor_ThemeColor.PRIMARY_BACKGROUND),
+      );
+      appBar.backButtonColorValue = FFColorValue(
+        inputValue: ffThemeColor(FFColor_ThemeColor.PRIMARY_TEXT),
+      );
+      appBar.elevationValue = FFDoubleValue(inputValue: 0);
+      appBar.centerTitleValue = FFBooleanValue(inputValue: false);
+      appBar.defaultBackButtonValue = FFBooleanValue(
+        inputValue: !rootPages.contains(page.name),
+      );
+    }
+    for (final button in _visualMessages(page.node).whereType<FFButton>()) {
+      final fill = button.fillColorValue.inputValue.themeColor;
+      if (fill == FFColor_ThemeColor.PRIMARY) {
+        button.fillColorValue = FFColorValue(
+          inputValue: ffThemeColor(FFColor_ThemeColor.TERTIARY),
+        );
+        button.text.colorValue = FFColorValue(inputValue: ffColor(0xFF101217));
+        if (button.hasIconValue() && button.iconValue.hasInputValue()) {
+          button.iconValue.inputValue.colorValue = FFColorValue(
+            inputValue: ffColor(0xFF101217),
+          );
+        }
+      }
+      final height = button.ensureDimensions().ensureHeight();
+      final currentHeight =
+          height.hasPixelsValue() ? height.pixelsValue.inputValue : 0;
+      if (currentHeight == 0 || currentHeight < 48) {
+        height.pixelsValue = FFDoubleValue(inputValue: 48);
+      }
+      button.borderRadius = FFBorderRadius(
+        type: FFBorderRadius_BorderRadiusType.FF_BORDER_RADIUS_ALL,
+        allValue: FFDoubleValue(inputValue: 8),
+      );
+    }
+    for (final field in _visualMessages(page.node).whereType<FFTextField>()) {
+      final decoration = field.ensureInputDecoration();
+      decoration.inputBorderType = FFInputDecoration_InputBorderType.outline;
+      decoration.borderRadius = FFBorderRadius(
+        type: FFBorderRadius_BorderRadiusType.FF_BORDER_RADIUS_ALL,
+        allValue: FFDoubleValue(inputValue: 8),
+      );
+      decoration.filledValue = FFBooleanValue(inputValue: true);
+      decoration.fillColorValue = FFColorValue(
+        inputValue: ffThemeColor(FFColor_ThemeColor.SECONDARY_BACKGROUND),
+      );
+      decoration.borderColorValue = FFColorValue(
+        inputValue: ffThemeColor(FFColor_ThemeColor.ALTERNATE),
+      );
+      decoration.focusBorderColorValue = FFColorValue(
+        inputValue: ffThemeColor(FFColor_ThemeColor.SECONDARY),
+      );
+      decoration.errorBorderColorValue = FFColorValue(
+        inputValue: ffThemeColor(FFColor_ThemeColor.ERROR),
+      );
+      decoration.borderWidthValue = FFDoubleValue(inputValue: 1);
+    }
+  }
+
+  final signIn = findPage(project, name: 'SignInPage');
+  if (signIn != null) {
+    for (final entry
+        in const {'Column_gubnb3sj': 18.0, 'Column_dgs7emev': 12.0}.entries) {
+      final columns = findDescendants(
+        signIn.node,
+        (node) => node.key == entry.key,
+      );
+      if (columns.length == 1) {
+        columns.single.props.column.listSpacing = FFListSpacing(
+          spacingValue: FFDoubleValue(inputValue: entry.value),
+        );
+      }
+    }
+  }
+}
+
+Iterable<GeneratedMessage> _visualMessages(Object? value) sync* {
+  if (value is GeneratedMessage) {
+    yield value;
+    for (final field in value.info_.fieldInfo.values) {
+      if (value.hasField(field.tagNumber)) {
+        yield* _visualMessages(value.getField(field.tagNumber));
+      }
+    }
+  } else if (value is Map) {
+    for (final entry in value.values) yield* _visualMessages(entry);
+  } else if (value is Iterable) {
+    for (final entry in value) yield* _visualMessages(entry);
+  }
 }
 
 void _ensureAppearanceControls(App app) {

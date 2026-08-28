@@ -55,13 +55,13 @@ abstract final class WorkspaceStatusBadgeWidgets {
       name: "WorkspaceStatusBadge",
       children: <ffai.ProjectWidgetHandle>[
         ffai.ProjectWidgetHandle(
-          key: "Container_yugj711a",
+          key: "Container_8sfivj5b",
           type: "Container",
           path: "WorkspaceStatusBadge.children[0]",
-          name: "Container",
+          name: "WorkspaceStatusBadgeSurface",
           children: <ffai.ProjectWidgetHandle>[
             ffai.ProjectWidgetHandle(
-              key: "Text_nm6i1ijd",
+              key: "Text_l5otus53",
               type: "Text",
               path: "WorkspaceStatusBadge.children[0].children[0]",
               name: "Text",

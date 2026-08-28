@@ -16,7 +16,6 @@ final splashPageHandle = ffai.ProjectPageHandle<SplashPageParams, SplashPageStat
 final class SplashPageParams {
   const SplashPageParams();
 }
-
 final class SplashPageState {
   const SplashPageState();
 }
@@ -40,7 +39,7 @@ abstract final class SplashPageWidgets {
             name: "Container",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Image_sfktfyyw",
+                key: "Image_p32xmvoq",
                 type: "Image",
                 path: "SplashPage.body[0].children[0]",
                 name: "GoFunMotionAnimatedSplashGif",

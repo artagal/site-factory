@@ -55,22 +55,38 @@ abstract final class WorkspaceEmptyStateWidgets {
       name: "WorkspaceEmptyState",
       children: <ffai.ProjectWidgetHandle>[
         ffai.ProjectWidgetHandle(
-          key: "Column_0zgu8lgf",
-          type: "Column",
+          key: "Container_19xq4fr6",
+          type: "Container",
           path: "WorkspaceEmptyState.children[0]",
-          name: "Column",
+          name: "WorkspaceEmptyStateSurface",
           children: <ffai.ProjectWidgetHandle>[
             ffai.ProjectWidgetHandle(
-              key: "Icon_s449q91a",
-              type: "Icon",
+              key: "Column_ouq00hoz",
+              type: "Column",
               path: "WorkspaceEmptyState.children[0].children[0]",
-              name: "Icon",
-            ),
-            ffai.ProjectWidgetHandle(
-              key: "Text_syveiu9o",
-              type: "Text",
-              path: "WorkspaceEmptyState.children[0].children[1]",
-              name: "Text",
+              name: "Column",
+              children: <ffai.ProjectWidgetHandle>[
+                ffai.ProjectWidgetHandle(
+                  key: "Container_i5vii9hj",
+                  type: "Container",
+                  path: "WorkspaceEmptyState.children[0].children[0].children[0]",
+                  name: "Container",
+                  children: <ffai.ProjectWidgetHandle>[
+                    ffai.ProjectWidgetHandle(
+                      key: "Icon_ox917vtt",
+                      type: "Icon",
+                      path: "WorkspaceEmptyState.children[0].children[0].children[0].children[0]",
+                      name: "Icon",
+                    ),
+                  ],
+                ),
+                ffai.ProjectWidgetHandle(
+                  key: "Text_p3eqfa9v",
+                  type: "Text",
+                  path: "WorkspaceEmptyState.children[0].children[0].children[1]",
+                  name: "Text",
+                ),
+              ],
             ),
           ],
         ),
