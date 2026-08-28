@@ -73,44 +73,58 @@ abstract final class WorkspaceMenuRowWidgets {
       name: "WorkspaceMenuRow",
       children: <ffai.ProjectWidgetHandle>[
         ffai.ProjectWidgetHandle(
-          key: "Container_0wulmmfh",
+          key: "Container_4a5nfkzx",
           type: "Container",
           path: "WorkspaceMenuRow.children[0]",
-          name: "Container",
+          name: "WorkspaceMenuRowSurface",
           triggers: const <String>[
             "ON_TAP",
           ],
           children: <ffai.ProjectWidgetHandle>[
             ffai.ProjectWidgetHandle(
-              key: "Row_tf4wpcy7",
+              key: "Row_yvvps8cr",
               type: "Row",
               path: "WorkspaceMenuRow.children[0].children[0]",
               name: "Row",
               children: <ffai.ProjectWidgetHandle>[
                 ffai.ProjectWidgetHandle(
-                  key: "Column_9b7viuqj",
-                  type: "Column",
+                  key: "Container_by7exljx",
+                  type: "Container",
                   path: "WorkspaceMenuRow.children[0].children[0].children[0]",
+                  name: "Container",
+                  children: <ffai.ProjectWidgetHandle>[
+                    ffai.ProjectWidgetHandle(
+                      key: "Icon_m58z9qgr",
+                      type: "Icon",
+                      path: "WorkspaceMenuRow.children[0].children[0].children[0].children[0]",
+                      name: "Icon",
+                    ),
+                  ],
+                ),
+                ffai.ProjectWidgetHandle(
+                  key: "Column_mcx7ssou",
+                  type: "Column",
+                  path: "WorkspaceMenuRow.children[0].children[0].children[1]",
                   name: "Column",
                   children: <ffai.ProjectWidgetHandle>[
                     ffai.ProjectWidgetHandle(
-                      key: "Text_806405is",
+                      key: "Text_2sz5nc05",
                       type: "Text",
-                      path: "WorkspaceMenuRow.children[0].children[0].children[0].children[0]",
+                      path: "WorkspaceMenuRow.children[0].children[0].children[1].children[0]",
                       name: "Text",
                     ),
                     ffai.ProjectWidgetHandle(
-                      key: "Text_kref7j94",
+                      key: "Text_x7a0dnge",
                       type: "Text",
-                      path: "WorkspaceMenuRow.children[0].children[0].children[0].children[1]",
+                      path: "WorkspaceMenuRow.children[0].children[0].children[1].children[1]",
                       name: "Text",
                     ),
                   ],
                 ),
                 ffai.ProjectWidgetHandle(
-                  key: "Icon_wav4daty",
+                  key: "Icon_53h481hb",
                   type: "Icon",
-                  path: "WorkspaceMenuRow.children[0].children[0].children[1]",
+                  path: "WorkspaceMenuRow.children[0].children[0].children[2]",
                   name: "Icon",
                 ),
               ],

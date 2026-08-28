@@ -650,7 +650,7 @@ final class NativeWorkspaceScreens {
     children: [
       Button(
         label,
-        height: 48,
+        height: 52,
         width: double.infinity,
         borderRadius: 8,
         icon: icon,
@@ -856,6 +856,7 @@ final class NativeWorkspaceScreens {
     String name, {
     String? section,
     List<int> fields = const [],
+    ProjectPageHandle? page,
   }) => [
     ProgressBar.circular(size: 28, visible: Equals(State('view'), 'loading')),
     ProgressBar.circular(size: 28, visible: State('busy')),
@@ -871,7 +872,7 @@ final class NativeWorkspaceScreens {
       children: [
         command(
           'Retry',
-          onLoad(name, section: section, fields: fields),
+          onLoad(name, section: section, fields: fields, page: page),
           icon: 'refresh',
         ),
         Button(

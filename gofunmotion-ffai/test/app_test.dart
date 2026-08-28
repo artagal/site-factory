@@ -21,12 +21,12 @@ void main() {
 
     expect(colors.darkModeEnabled, isTrue);
     expect(colors.primary.value.toInt(), 0xFF3F7C16);
-    expect(colors.primary.darkModeColor.value.toInt(), 0xFF527E1F);
+    expect(colors.primary.darkModeColor.value.toInt(), 0xFFBEF264);
     expect(colors.secondary.darkModeColor.value.toInt(), 0xFF22D3EE);
     expect(colors.primaryBackground.value.toInt(), 0xFFF7FAF5);
-    expect(colors.primaryBackground.darkModeColor.value.toInt(), 0xFF070816);
+    expect(colors.primaryBackground.darkModeColor.value.toInt(), 0xFF0B0D11);
     expect(colors.secondaryBackground.value.toInt(), 0xFFFFFFFF);
-    expect(colors.secondaryBackground.darkModeColor.value.toInt(), 0xFF111232);
+    expect(colors.secondaryBackground.darkModeColor.value.toInt(), 0xFF16191F);
     expect(colors.tertiary.darkModeColor.value.toInt(), 0xFFBEF264);
     expect(colors.info.darkModeColor.value.toInt(), 0xFF67E8F9);
   });
