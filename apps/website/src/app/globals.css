@@ -13,11 +13,11 @@
 :root {
   --app-header-height: 4rem;
   color-scheme: dark;
-  --background: #0c0f14;
+  --background: #070816;
   --foreground: #ffffff;
   --muted-foreground: rgba(255, 255, 255, 0.64);
   --panel: rgba(255, 255, 255, 0.06);
-  --panel-strong: rgba(22, 26, 33, 0.97);
+  --panel-strong: rgba(7, 8, 22, 0.96);
   --border-subtle: rgba(255, 255, 255, 0.1);
   --accent-lime: #bef264;
   --accent-cyan: #67e8f9;
@@ -26,7 +26,7 @@
 
 :root.theme-light {
   color-scheme: light;
-  --background: #f5f7fa;
+  --background: #f7faf5;
   --foreground: #101828;
   --muted-foreground: rgba(16, 24, 40, 0.66);
   --panel: rgba(255, 255, 255, 0.78);
@@ -96,6 +96,14 @@ h3,
     radial-gradient(circle at top left, rgba(247, 37, 133, 0.24), transparent 32%),
     radial-gradient(circle at 80% 12%, rgba(0, 212, 255, 0.18), transparent 30%),
     linear-gradient(180deg, #070816 0%, #111232 48%, #070816 100%);
+}
+
+.home-hero {
+  box-shadow: 0 28px 100px rgba(0, 0, 0, 0.36);
+}
+
+.deal-filter-bar {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
 }
 
 .motion-background__grid {

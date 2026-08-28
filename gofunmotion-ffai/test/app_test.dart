@@ -20,9 +20,10 @@ void main() {
     final colors = project.theme.colorScheme;
 
     expect(colors.darkModeEnabled, isTrue);
-    expect(colors.primary.value.toInt(), 0xFF7C3AED);
-    expect(colors.primary.darkModeColor.value.toInt(), 0xFF7C3AED);
-    expect(colors.primaryBackground.value.toInt(), 0xFFF5F7FA);
+    expect(colors.primary.value.toInt(), 0xFF3F7C16);
+    expect(colors.primary.darkModeColor.value.toInt(), 0xFF527E1F);
+    expect(colors.secondary.darkModeColor.value.toInt(), 0xFF22D3EE);
+    expect(colors.primaryBackground.value.toInt(), 0xFFF7FAF5);
     expect(colors.primaryBackground.darkModeColor.value.toInt(), 0xFF070816);
     expect(colors.secondaryBackground.value.toInt(), 0xFFFFFFFF);
     expect(colors.secondaryBackground.darkModeColor.value.toInt(), 0xFF111232);
