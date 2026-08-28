@@ -15,6 +15,31 @@ async function expectNoHorizontalOverflow(page: Page) {
 }
 
 test.describe("GoFunMotion Deals smoke", () => {
+  test("homepage keeps the premium deal-first hero and compact sticky filters", async ({ page }) => {
+    await page.goto("/");
+
+    await expect(page.getByRole("heading", { name: "Last-minute fun deals near you." })).toBeVisible();
+    await expect(page.getByRole("link", { name: "See Tonight's Deals" })).toHaveAttribute("href", "/deals?when=tonight");
+    await expect(page.getByLabel("City")).toBeVisible();
+    await expect(page.getByLabel("When")).toHaveValue("tonight");
+    await expectNoHorizontalOverflow(page);
+
+    const filterBar = page.locator(".deal-filter-bar");
+    await filterBar.scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.scrollBy(0, 700));
+    const stickyPosition = await page.evaluate(() => {
+      const header = document.querySelector("header");
+      const filters = document.querySelector(".deal-filter-bar");
+      if (!header || !filters) return null;
+      return {
+        filterTop: Math.round(filters.getBoundingClientRect().top),
+        headerBottom: Math.round(header.getBoundingClientRect().bottom)
+      };
+    });
+    expect(stickyPosition).not.toBeNull();
+    expect(Math.abs(stickyPosition!.filterTop - stickyPosition!.headerBottom)).toBeLessThanOrEqual(2);
+  });
+
   test("find plan route submits the rule-based plan form", async ({ page }) => {
     await page.goto("/find");
 
@@ -110,7 +135,7 @@ test.describe("GoFunMotion Deals smoke", () => {
 
     await page.getByRole("button", { name: "Apply to List Your Business" }).click();
 
-    await expect(page.getByText(/Application received/i)).toBeVisible();
+    await expect(page.getByText("Application received. We will review it before anything goes public.")).toBeVisible();
     expect(submittedPayload).toMatchObject({
       businessName: "E2E Smoke Studio",
       categoryId: "date-night",

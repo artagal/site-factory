@@ -68,33 +68,33 @@ abstract final class ProfilePageWidgets {
                 name: "Container",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Column_yfg3vq0w",
+                    key: "Column_6z6wd83b",
                     type: "Column",
                     path: "ProfilePage.body[0].children[0].children[0]",
                     name: "NativeSignInGate",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Icon_vfc87zma",
+                        key: "Icon_1csckuqw",
                         type: "Icon",
                         path: "ProfilePage.body[0].children[0].children[0].children[0]",
                         name: "Icon",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_tyc2x6qw",
+                        key: "Text_7x6rz3fa",
                         type: "Text",
                         path: "ProfilePage.body[0].children[0].children[0].children[1]",
                         name: "Text",
                         text: "Sign in to your account",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_e8kyhect",
+                        key: "Text_dybje63b",
                         type: "Text",
                         path: "ProfilePage.body[0].children[0].children[0].children[2]",
                         name: "Text",
                         text: "Your saved deals and booking requests, in one place.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_vdn84vty",
+                        key: "Button_sgda33b7",
                         type: "Button",
                         path: "ProfilePage.body[0].children[0].children[0].children[3]",
                         name: "GateSignInButton",
@@ -104,7 +104,7 @@ abstract final class ProfilePageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_9gqshanz",
+                        key: "Button_i2kn5fgo",
                         type: "Button",
                         path: "ProfilePage.body[0].children[0].children[0].children[4]",
                         name: "Button",
@@ -142,7 +142,7 @@ abstract final class ProfilePageWidgets {
                             name: "Avatar",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Icon_lxc363za",
+                                key: "Icon_k5hvaote",
                                 type: "Icon",
                                 path: "ProfilePage.body[0].children[1].children[0].children[0].children[0].children[0]",
                                 name: "AccountAvatarSymbol",

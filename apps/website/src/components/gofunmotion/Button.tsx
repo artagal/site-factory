@@ -19,8 +19,7 @@ type LinkButtonProps = {
 
 const variants = {
   ghost: "bg-white/5 text-white ring-1 ring-white/10 hover:bg-white/10 hover:shadow-[0_0_40px_rgba(255,255,255,0.08)]",
-  primary:
-    "bg-[linear-gradient(135deg,#f72585,#7c3aed,#00d4ff)] text-white shadow-[0_18px_60px_rgba(124,58,237,0.35)] hover:scale-[1.03] hover:shadow-[0_22px_80px_rgba(0,212,255,0.28)]",
+  primary: "bg-lime-300 text-[#101510] shadow-[0_16px_48px_rgba(190,242,100,0.18)] hover:bg-lime-200 hover:shadow-[0_20px_60px_rgba(190,242,100,0.24)]",
   secondary: "bg-white text-[#070816] hover:scale-[1.03] hover:bg-lime-200"
 };
 

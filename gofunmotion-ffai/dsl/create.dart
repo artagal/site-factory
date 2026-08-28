@@ -2234,18 +2234,18 @@ void _configureDesignSystem(App app) {
   app.darkMode(enabled: true);
   app.primaryFont('Inter');
 
-  app.themeColor('primary', 0xFF7C3AED, dark: 0xFF7C3AED);
-  app.themeColor('secondary', 0xFFD52B80, dark: 0xFFF72585);
-  app.themeColor('tertiary', 0xFF3F7C16, dark: 0xFFBEF264);
+  app.themeColor('primary', 0xFF3F7C16, dark: 0xFF527E1F);
+  app.themeColor('secondary', 0xFF06748F, dark: 0xFF22D3EE);
+  app.themeColor('tertiary', 0xFF5B8F20, dark: 0xFFBEF264);
   app.themeColor('alternate', 0xFFD8DEE8, dark: 0xFF30334A);
-  app.themeColor('primaryBackground', 0xFFF5F7FA, dark: 0xFF070816);
+  app.themeColor('primaryBackground', 0xFFF7FAF5, dark: 0xFF070816);
   app.themeColor('secondaryBackground', 0xFFFFFFFF, dark: 0xFF111232);
   app.themeColor('primaryText', 0xFF101828, dark: 0xFFFFFFFF);
   app.themeColor('secondaryText', 0xFF5F6673, dark: 0xFFAEB4C2);
-  app.themeColor('accent1', 0xFFEEE8FF, dark: 0xFF2B1A4A);
-  app.themeColor('accent2', 0xFFFCE7F3, dark: 0xFF3A1830);
-  app.themeColor('accent3', 0xFFEEFAD7, dark: 0xFF233519);
-  app.themeColor('accent4', 0xFFE5F8FC, dark: 0xFF163340);
+  app.themeColor('accent1', 0xFFEEFAD7, dark: 0xFF233519);
+  app.themeColor('accent2', 0xFFE5F8FC, dark: 0xFF163340);
+  app.themeColor('accent3', 0xFFFEF3C7, dark: 0xFF3A2E12);
+  app.themeColor('accent4', 0xFFEEF1F5, dark: 0xFF202234);
   app.themeColor('success', 0xFF3F7C16, dark: 0xFFBEF264);
   app.themeColor('warning', 0xFF92400E, dark: 0xFFFCD34D);
   app.themeColor('error', 0xFFBE123C, dark: 0xFFFB7185);

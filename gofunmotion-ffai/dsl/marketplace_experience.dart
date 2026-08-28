@@ -282,25 +282,25 @@ DslWidget marketplaceBrowsePanel(
   spacing: 12,
   children: [
     Text('Find an open spot', style: Styles.titleLarge),
-    Button(
-      State('marketCityLabel'),
-      name: 'BrowseCityPicker',
-      icon: 'place_outlined',
-      height: 48,
-      width: double.infinity,
-      borderRadius: 8,
-      color: Colors.secondaryBackground,
-      textColor: Colors.primaryText,
-      onTap: If(
-        Equals(State('marketMenu'), 'city'),
-        then: [SetState('marketMenu', '')],
-        orElse: [SetState('marketMenu', 'city')],
-      ),
-    ),
-    _optionList('city', 'All cities', 'marketCities', feed),
     Row(
-      spacing: 12,
+      spacing: 8,
       children: [
+        Expanded(
+          Button(
+            State('marketCityLabel'),
+            name: 'BrowseCityPicker',
+            icon: 'place_outlined',
+            height: 48,
+            borderRadius: 8,
+            color: Colors.secondaryBackground,
+            textColor: Colors.primaryText,
+            onTap: If(
+              Equals(State('marketMenu'), 'city'),
+              then: [SetState('marketMenu', '')],
+              orElse: [SetState('marketMenu', 'city')],
+            ),
+          ),
+        ),
         Expanded(
           Dropdown(
             name: 'BrowseWhenFilter',
@@ -319,13 +319,13 @@ DslWidget marketplaceBrowsePanel(
             ],
           ),
         ),
-        Button(
-          'Filters',
+        IconButton(
+          'tune',
           name: 'BrowseMoreFilters',
-          icon: 'tune',
-          height: 48,
-          color: Colors.secondaryBackground,
-          textColor: Colors.primaryText,
+          size: 48,
+          fillColor: Colors.secondaryBackground,
+          color: Colors.primaryText,
+          borderRadius: 8,
           onTap: [
             SetState('marketMenu', ''),
             If(
@@ -337,6 +337,7 @@ DslWidget marketplaceBrowsePanel(
         ),
       ],
     ),
+    _optionList('city', 'All cities', 'marketCities', feed),
     Button(
       State('marketCategoryLabel'),
       name: 'BrowseCategoryPicker',
@@ -424,6 +425,8 @@ DslWidget marketplaceBrowsePanel(
           'Join city waitlist',
           icon: 'notifications_none',
           height: 48,
+          color: Colors.tertiary,
+          textColor: Colors.primaryBackground,
           onTap: Navigate(ff.Pages.waitlistPage),
         ),
       ],
@@ -488,6 +491,8 @@ DslWidget marketplaceBrowsePanel(
                         height: 48,
                         width: double.infinity,
                         borderRadius: 8,
+                        color: Colors.tertiary,
+                        textColor: Colors.primaryBackground,
                         onTap: Navigate(
                           ff.Pages.dealDetailPage,
                           params: {
