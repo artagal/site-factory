@@ -10,60 +10,60 @@ const trustPoints = [
 
 export function HomeHero() {
   return (
-    <section className="home-hero relative -mx-4 min-h-[31rem] overflow-hidden border-b border-white/10 md:mx-0 md:mt-6 md:min-h-[34rem] md:rounded-lg md:border">
+    <section className="home-hero theme-locked-dark relative -mx-4 min-h-[32rem] overflow-hidden border-b border-white/10 bg-[#070816] md:mx-0 md:mt-6 md:min-h-[33rem] md:rounded-lg md:border">
       <Image
-        alt="Friends enjoying a pottery workshop together"
-        className="object-cover object-[60%_center]"
+        alt="Friends enjoying a last-minute mini-golf night"
+        className="home-hero__image object-cover object-[72%_center] md:object-center"
         fill
         priority
         sizes="(max-width: 768px) 100vw, 1200px"
-        src="/images/activities/pottery-workshop.jpg"
+        src="/images/activities/fun-deals-hero-v2.webp"
       />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,8,22,0.98)_0%,rgba(7,8,22,0.90)_42%,rgba(7,8,22,0.34)_72%,rgba(7,8,22,0.52)_100%)] md:bg-[linear-gradient(90deg,rgba(7,8,22,0.98)_0%,rgba(7,8,22,0.82)_45%,rgba(7,8,22,0.18)_78%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(7,8,22,0.88)_100%)]" />
+      <div className="home-hero__side-overlay absolute inset-0" />
+      <div className="home-hero__floor-overlay absolute inset-0" />
 
-      <div className="relative flex min-h-[31rem] max-w-3xl flex-col justify-center px-4 py-12 md:min-h-[34rem] md:px-10 lg:px-12">
-        <p className="inline-flex w-fit items-center gap-2 rounded-full border border-lime-300/25 bg-lime-300/10 px-3 py-2 text-xs font-bold !text-lime-200 backdrop-blur-md">
+      <div className="relative flex min-h-[32rem] max-w-3xl flex-col justify-center px-5 py-12 md:min-h-[33rem] md:px-10 lg:px-12">
+        <p className="home-hero__eyebrow inline-flex w-fit items-center gap-2 rounded-full px-3 py-2 text-xs font-bold">
           <Sparkles aria-hidden="true" size={15} />
-          GoFunMotion Deals
+          Local deals with open spots
         </p>
-        <h1 className="mt-5 max-w-2xl text-4xl font-black leading-[1.02] !text-white sm:text-5xl md:text-6xl">
+        <h1 className="home-hero__title mt-5 max-w-2xl text-4xl font-black leading-[1.04] sm:text-5xl md:text-6xl">
           Last-minute fun deals near you.
         </h1>
-        <p className="mt-4 max-w-xl text-base font-medium leading-7 !text-white/80 md:text-lg">
+        <p className="home-hero__summary mt-4 max-w-xl text-base font-medium leading-7 md:text-lg">
           Save on activities, date nights, family fun, and local experiences with open spots today.
         </p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <Link
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-lime-300 px-5 text-sm font-black !text-[#101510] transition hover:bg-lime-200"
+            className="home-hero__primary inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-5 text-sm font-black transition"
             href="/deals?when=tonight"
           >
-            See Tonight&apos;s Deals
+            Browse tonight&apos;s deals
             <ArrowRight aria-hidden="true" size={18} />
           </Link>
           <Link
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/15 bg-black/25 px-5 text-sm font-bold !text-white backdrop-blur-md transition hover:bg-white/10"
+            className="home-hero__secondary inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-5 text-sm font-bold transition"
             href="/find"
           >
-            Not sure? Help me choose
+            Help me choose
           </Link>
         </div>
 
-        <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2">
+        <div className="home-hero__trust mt-7 flex max-w-2xl flex-wrap gap-x-5 gap-y-3 border-t border-white/10 pt-5">
           {trustPoints.map(({ icon: Icon, label }) => (
-            <span className="inline-flex items-center gap-2 text-xs font-semibold !text-white/72" key={label}>
-              <Icon aria-hidden="true" className="text-lime-200" size={15} />
+            <span className="home-hero__trust-point inline-flex items-center gap-2 text-xs font-semibold" key={label}>
+              <Icon aria-hidden="true" className="home-hero__trust-icon" size={16} />
               {label}
             </span>
           ))}
         </div>
       </div>
 
-      <div className="absolute bottom-5 right-5 hidden items-end gap-3 md:flex">
-        <div className="rounded-lg border border-white/12 bg-[#070816]/80 px-4 py-3 text-right shadow-2xl backdrop-blur-xl">
-          <p className="text-xs font-bold uppercase !text-white/55">Open tonight</p>
-          <p className="mt-1 text-2xl font-black !text-lime-200">Save up to 50%</p>
-          <p className="mt-1 text-xs !text-white/65">Prices and availability shown on every deal</p>
+      <div className="absolute bottom-5 right-5 hidden items-end gap-3 lg:flex">
+        <div className="home-hero__offer-card rounded-lg px-4 py-3 text-right shadow-2xl backdrop-blur-xl">
+          <p className="home-hero__offer-label text-xs font-bold uppercase">Open tonight</p>
+          <p className="home-hero__offer-value mt-1 text-2xl font-black">Save up to 50%</p>
+          <p className="home-hero__offer-note mt-1 text-xs">Request first. Pay only after confirmation.</p>
         </div>
       </div>
     </section>
