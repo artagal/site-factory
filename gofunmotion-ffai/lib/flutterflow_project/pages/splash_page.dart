@@ -39,7 +39,7 @@ abstract final class SplashPageWidgets {
             name: "Container",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Image_p32xmvoq",
+                key: "Image_f1doge3h",
                 type: "Image",
                 path: "SplashPage.body[0].children[0]",
                 name: "GoFunMotionAnimatedSplashGif",

@@ -73,6 +73,36 @@ final class CustomerRequestDetailPageState {
         key: "hqo8m6kp",
         typeName: "Boolean",
       );
+  ffai.ProjectStateFieldHandle get contactEmail =>
+      const ffai.ProjectStateFieldHandle(
+        name: "contactEmail",
+        key: "3lmo4qkk",
+        typeName: "String",
+      );
+  ffai.ProjectStateFieldHandle get contactEmailUrl =>
+      const ffai.ProjectStateFieldHandle(
+        name: "contactEmailUrl",
+        key: "wnh5ujyl",
+        typeName: "String",
+      );
+  ffai.ProjectStateFieldHandle get contactName =>
+      const ffai.ProjectStateFieldHandle(
+        name: "contactName",
+        key: "761rlndz",
+        typeName: "String",
+      );
+  ffai.ProjectStateFieldHandle get contactPhone =>
+      const ffai.ProjectStateFieldHandle(
+        name: "contactPhone",
+        key: "17dzqr5x",
+        typeName: "String",
+      );
+  ffai.ProjectStateFieldHandle get contactPhoneUrl =>
+      const ffai.ProjectStateFieldHandle(
+        name: "contactPhoneUrl",
+        key: "uknnxrnv",
+        typeName: "String",
+      );
   ffai.ProjectStateFieldHandle get cursor =>
       const ffai.ProjectStateFieldHandle(
         name: "cursor",
@@ -187,6 +217,12 @@ final class CustomerRequestDetailPageState {
         key: "022al5tc",
         typeName: "String",
       );
+  ffai.ProjectStateFieldHandle get partySize =>
+      const ffai.ProjectStateFieldHandle(
+        name: "partySize",
+        key: "o2crk68j",
+        typeName: "String",
+      );
   ffai.ProjectStateFieldHandle get recordId =>
       const ffai.ProjectStateFieldHandle(
         name: "recordId",
@@ -233,6 +269,12 @@ final class CustomerRequestDetailPageState {
       const ffai.ProjectStateFieldHandle(
         name: "title",
         key: "sb35279l",
+        typeName: "String",
+      );
+  ffai.ProjectStateFieldHandle get venueAddress =>
+      const ffai.ProjectStateFieldHandle(
+        name: "venueAddress",
+        key: "ymt10hez",
         typeName: "String",
       );
   ffai.ProjectStateFieldHandle get view =>
@@ -397,28 +439,239 @@ abstract final class CustomerRequestDetailPageWidgets {
                         componentName: "WorkspaceStatusBadge",
                       ),
                       ffai.ProjectWidgetHandle(
+                        key: "Column_8xm3p2ac",
+                        type: "Column",
+                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3]",
+                        name: "RequestExperienceSection",
+                        children: <ffai.ProjectWidgetHandle>[
+                          ffai.ProjectWidgetHandle(
+                            key: "Container_ipf6rovf",
+                            type: "Container",
+                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0]",
+                            name: "RequestFactsCard",
+                            children: <ffai.ProjectWidgetHandle>[
+                              ffai.ProjectWidgetHandle(
+                                key: "Column_a68qoeit",
+                                type: "Column",
+                                path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0]",
+                                name: "Column",
+                                children: <ffai.ProjectWidgetHandle>[
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Text_apfzafuo",
+                                    type: "Text",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[0]",
+                                    name: "Text",
+                                    text: "Request details",
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Row_q8bw0npq",
+                                    type: "Row",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[1]",
+                                    name: "Row",
+                                    children: <ffai.ProjectWidgetHandle>[
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Icon_98g5eaqc",
+                                        type: "Icon",
+                                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[1].children[0]",
+                                        name: "Icon",
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Text_h7ay2gwy",
+                                        type: "Text",
+                                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[1].children[1]",
+                                        name: "Text",
+                                      ),
+                                    ],
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Row_j4102hv3",
+                                    type: "Row",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[2]",
+                                    name: "Row",
+                                    children: <ffai.ProjectWidgetHandle>[
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Icon_vnkvr1yh",
+                                        type: "Icon",
+                                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[2].children[0]",
+                                        name: "Icon",
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Text_tsq8akfi",
+                                        type: "Text",
+                                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[2].children[1]",
+                                        name: "Text",
+                                      ),
+                                    ],
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Row_qes9ipul",
+                                    type: "Row",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[3]",
+                                    name: "Row",
+                                    children: <ffai.ProjectWidgetHandle>[
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Icon_0yfrbu9x",
+                                        type: "Icon",
+                                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[3].children[0]",
+                                        name: "Icon",
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Text_mw6vvomh",
+                                        type: "Text",
+                                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[3].children[1]",
+                                        name: "Text",
+                                      ),
+                                    ],
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Text_j4bwejf0",
+                                    type: "Text",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[0].children[0].children[4]",
+                                    name: "Text",
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "Container_o3177yqf",
+                            type: "Container",
+                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1]",
+                            name: "ConfirmedPartnerContactCard",
+                            children: <ffai.ProjectWidgetHandle>[
+                              ffai.ProjectWidgetHandle(
+                                key: "Column_pce5n6dj",
+                                type: "Column",
+                                path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0]",
+                                name: "Column",
+                                children: <ffai.ProjectWidgetHandle>[
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Text_79q6n3ua",
+                                    type: "Text",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0].children[0]",
+                                    name: "Text",
+                                    text: "Confirmed partner contact",
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Text_n9jwse9h",
+                                    type: "Text",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0].children[1]",
+                                    name: "Text",
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Text_o8gfvtj4",
+                                    type: "Text",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0].children[2]",
+                                    name: "Text",
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Text_6wx8vvnw",
+                                    type: "Text",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0].children[3]",
+                                    name: "Text",
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Text_m0igxbjm",
+                                    type: "Text",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0].children[4]",
+                                    name: "Text",
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Wrap_x493thui",
+                                    type: "Wrap",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0].children[5]",
+                                    name: "Wrap",
+                                    children: <ffai.ProjectWidgetHandle>[
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Button_9kr557z0",
+                                        type: "Button",
+                                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0].children[5].children[0]",
+                                        name: "Button",
+                                        text: "Email",
+                                        triggers: const <String>[
+                                          "ON_TAP",
+                                        ],
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Button_subwbu7t",
+                                        type: "Button",
+                                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0].children[5].children[1]",
+                                        name: "Button",
+                                        text: "Call",
+                                        triggers: const <String>[
+                                          "ON_TAP",
+                                        ],
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Button_4ol4kg82",
+                                        type: "Button",
+                                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[1].children[0].children[5].children[2]",
+                                        name: "Button",
+                                        text: "Directions",
+                                        triggers: const <String>[
+                                          "ON_TAP",
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          ffai.ProjectWidgetHandle(
+                            key: "Container_bmrnbg05",
+                            type: "Container",
+                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[2]",
+                            name: "PendingPartnerContactNotice",
+                            children: <ffai.ProjectWidgetHandle>[
+                              ffai.ProjectWidgetHandle(
+                                key: "Row_x8eu1s5b",
+                                type: "Row",
+                                path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[2].children[0]",
+                                name: "Row",
+                                children: <ffai.ProjectWidgetHandle>[
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Icon_prifzj15",
+                                    type: "Icon",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[2].children[0].children[0]",
+                                    name: "Icon",
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Text_n4i3a827",
+                                    type: "Text",
+                                    path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3].children[2].children[0].children[1]",
+                                    name: "Text",
+                                    text: "Partner contact and directions unlock after the business confirms availability.",
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
                         key: "Text_6vvi776k",
                         type: "Text",
-                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[3]",
+                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[4]",
                         name: "Text",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Text_6ercr8nx",
                         type: "Text",
-                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[4]",
+                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[5]",
                         name: "Text",
                         text: "A request is only confirmed when the partner confirms availability.",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Row_v99oo5ru",
                         type: "Row",
-                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[5]",
+                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[6]",
                         name: "Toggle Row",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "Switch_xe75gyf5",
                             type: "Switch",
-                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[5].children[0]",
+                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[6].children[0]",
                             name: "Toggle",
                             triggers: const <String>[
                               "ON_TOGGLE_ON",
@@ -428,13 +681,13 @@ abstract final class CustomerRequestDetailPageWidgets {
                           ffai.ProjectWidgetHandle(
                             key: "Container_3q2zy33w",
                             type: "Container",
-                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[5].children[1]",
+                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[6].children[1]",
                             name: "Label Spacer",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "Text_07w2u0b0",
                             type: "Text",
-                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[5].children[2]",
+                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[6].children[2]",
                             name: "Label Text",
                             text: "Cancel this request",
                           ),
@@ -443,13 +696,13 @@ abstract final class CustomerRequestDetailPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Column_15t7y70o",
                         type: "Column",
-                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[6]",
+                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[7]",
                         name: "Column",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
                             key: "Button_sylk647c",
                             type: "Button",
-                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[6].children[0]",
+                            path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[7].children[0]",
                             name: "Button",
                             text: "Confirm cancellation",
                             triggers: const <String>[
@@ -461,14 +714,14 @@ abstract final class CustomerRequestDetailPageWidgets {
                       ffai.ProjectWidgetHandle(
                         key: "Container_eobhdnn0",
                         type: "Container",
-                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[7]",
+                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[8]",
                         name: "WorkspaceMenuRow",
                         componentName: "WorkspaceMenuRow",
                       ),
                       ffai.ProjectWidgetHandle(
                         key: "Container_l4d3b02i",
                         type: "Container",
-                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[8]",
+                        path: "CustomerRequestDetailPage.body[0].children[0].children[5].children[9]",
                         name: "WorkspaceMenuRow",
                         componentName: "WorkspaceMenuRow",
                       ),

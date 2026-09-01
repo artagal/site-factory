@@ -384,11 +384,11 @@ abstract final class PartnerInboxPageWidgets {
                         name: "Row",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Text_v6fvgrf0",
+                            key: "Text_q6ph2ri3",
                             type: "Text",
                             path: "PartnerInboxPage.body[0].children[0].children[5].children[0].children[0]",
-                            name: "Text",
-                            text: "Records",
+                            name: "WorkspaceListHeading",
+                            text: "Customer requests",
                           ),
                           ffai.ProjectWidgetHandle(
                             key: "IconButton_jet9bgdf",
@@ -409,63 +409,84 @@ abstract final class PartnerInboxPageWidgets {
                         componentName: "WorkspaceEmptyState",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "ListView_nt07wc7g",
+                        key: "ListView_rivtr5jz",
                         type: "ListView",
                         path: "PartnerInboxPage.body[0].children[0].children[5].children[2]",
                         name: "WorkspaceRecordList",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Container_v5l7xgod",
+                            key: "Container_6m47jnoj",
                             type: "Container",
                             path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0]",
-                            name: "Container",
+                            name: "BookingRequestCard",
                             triggers: const <String>[
                               "ON_TAP",
                             ],
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Column_stj01hdb",
+                                key: "Column_7i18t16h",
                                 type: "Column",
                                 path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0]",
                                 name: "Column",
                                 children: <ffai.ProjectWidgetHandle>[
                                   ffai.ProjectWidgetHandle(
-                                    key: "Row_x1w4xrzl",
+                                    key: "Row_mu04n5td",
                                     type: "Row",
                                     path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[0]",
                                     name: "Row",
                                     children: <ffai.ProjectWidgetHandle>[
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_f52j60x3",
+                                        key: "Text_cm64ivih",
                                         type: "Text",
                                         path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[0].children[0]",
                                         name: "Text",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Icon_kpllcg1o",
-                                        type: "Icon",
+                                        key: "Container_k7j5z2to",
+                                        type: "Container",
                                         path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[0].children[1]",
-                                        name: "Icon",
+                                        name: "WorkspaceStatusBadge",
+                                        componentName: "WorkspaceStatusBadge",
                                       ),
                                     ],
                                   ),
                                   ffai.ProjectWidgetHandle(
-                                    key: "Text_oxhzsf2q",
+                                    key: "Text_n2ca8a0h",
                                     type: "Text",
                                     path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[1]",
                                     name: "Text",
                                   ),
                                   ffai.ProjectWidgetHandle(
-                                    key: "Text_4h8w3zh7",
-                                    type: "Text",
+                                    key: "Row_o8hag2nh",
+                                    type: "Row",
                                     path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[2]",
-                                    name: "Text",
-                                  ),
-                                  ffai.ProjectWidgetHandle(
-                                    key: "Text_it3fhyed",
-                                    type: "Text",
-                                    path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[3]",
-                                    name: "Text",
+                                    name: "Row",
+                                    children: <ffai.ProjectWidgetHandle>[
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Icon_cwb47wm8",
+                                        type: "Icon",
+                                        path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[2].children[0]",
+                                        name: "Icon",
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Text_qoih783f",
+                                        type: "Text",
+                                        path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[2].children[1]",
+                                        name: "Text",
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Container_zvnxtz1u",
+                                        type: "Container",
+                                        path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[2].children[2]",
+                                        name: "Spacer",
+                                      ),
+                                      ffai.ProjectWidgetHandle(
+                                        key: "Icon_el0gqair",
+                                        type: "Icon",
+                                        path: "PartnerInboxPage.body[0].children[0].children[5].children[2].children[0].children[0].children[2].children[3]",
+                                        name: "Icon",
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

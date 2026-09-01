@@ -380,6 +380,10 @@ void main() {
         final dashboard = app.page(
           'Dashboard',
           route: '/dashboard',
+          params: {
+            'id': string.withDefault(''),
+            'businessId': string.withDefault(''),
+          },
           body: Scaffold(),
         );
         final signIn = app.page('SignIn', route: '/sign-in', body: Scaffold());
@@ -435,6 +439,7 @@ void main() {
           improveTitle: copy,
           improveDescription: copy,
           dashboard: dashboard,
+          partnerListings: dashboard,
           signIn: signIn,
         );
       });
@@ -452,6 +457,7 @@ void main() {
         isTrue,
       );
       final serialized = editor.node.toProto3Json().toString();
+      expect(serialized, contains('DealEditorReuseCard'));
       expect(serialized, contains('dateTimeToInteger'));
       expect(serialized, contains('MILLISECOND'));
       expect(serialized, contains('dateTimeFormat'));

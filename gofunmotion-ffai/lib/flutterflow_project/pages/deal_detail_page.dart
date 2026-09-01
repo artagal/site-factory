@@ -356,27 +356,27 @@ abstract final class DealDetailPageWidgets {
                 name: "BookingMessageAssistantCard",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Column_zihc7rq8",
+                    key: "Column_pqlwk66v",
                     type: "Column",
                     path: "DealDetailPage.body[0].children[9].children[0]",
                     name: "Column",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Text_cmg742eo",
+                        key: "Text_ympn3rch",
                         type: "Text",
                         path: "DealDetailPage.body[0].children[9].children[0].children[0]",
                         name: "Text",
                         text: "Need help with the message?",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_jy7e4aul",
+                        key: "Text_gzeeec68",
                         type: "Text",
                         path: "DealDetailPage.body[0].children[9].children[0].children[1]",
                         name: "Text",
                         text: "AI drafts an editable note. It never sends, confirms, or pays for anything.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_x7xan8ga",
+                        key: "Button_d5kiu4qb",
                         type: "Button",
                         path: "DealDetailPage.body[0].children[9].children[0].children[2]",
                         name: "DraftBookingMessageButton",

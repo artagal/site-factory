@@ -421,9 +421,71 @@ abstract final class PartnerListingOverviewPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Container_7a762a5p",
+                        key: "Container_0xu6wmin",
                         type: "Container",
                         path: "PartnerListingOverviewPage.body[0].children[0].children[5].children[5]",
+                        name: "DuplicateDealCard",
+                        children: <ffai.ProjectWidgetHandle>[
+                          ffai.ProjectWidgetHandle(
+                            key: "Column_8rxht3sm",
+                            type: "Column",
+                            path: "PartnerListingOverviewPage.body[0].children[0].children[5].children[5].children[0]",
+                            name: "Column",
+                            children: <ffai.ProjectWidgetHandle>[
+                              ffai.ProjectWidgetHandle(
+                                key: "Row_twyozj2g",
+                                type: "Row",
+                                path: "PartnerListingOverviewPage.body[0].children[0].children[5].children[5].children[0].children[0]",
+                                name: "Row",
+                                children: <ffai.ProjectWidgetHandle>[
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Icon_a1vpcfi6",
+                                    type: "Icon",
+                                    path: "PartnerListingOverviewPage.body[0].children[0].children[5].children[5].children[0].children[0].children[0]",
+                                    name: "Icon",
+                                  ),
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Text_npitfgek",
+                                    type: "Text",
+                                    path: "PartnerListingOverviewPage.body[0].children[0].children[5].children[5].children[0].children[0].children[1]",
+                                    name: "Text",
+                                    text: "Run this deal again",
+                                  ),
+                                ],
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Text_w1gcnm7j",
+                                type: "Text",
+                                path: "PartnerListingOverviewPage.body[0].children[0].children[5].children[5].children[0].children[1]",
+                                name: "Text",
+                                text: "Creates a private draft with the same content and prices. Availability and spots are cleared, and admin review is required again.",
+                              ),
+                              ffai.ProjectWidgetHandle(
+                                key: "Column_2a5h3vgp",
+                                type: "Column",
+                                path: "PartnerListingOverviewPage.body[0].children[0].children[5].children[5].children[0].children[2]",
+                                name: "Column",
+                                children: <ffai.ProjectWidgetHandle>[
+                                  ffai.ProjectWidgetHandle(
+                                    key: "Button_f5zegil0",
+                                    type: "Button",
+                                    path: "PartnerListingOverviewPage.body[0].children[0].children[5].children[5].children[0].children[2].children[0]",
+                                    name: "Button",
+                                    text: "Duplicate as draft",
+                                    triggers: const <String>[
+                                      "ON_TAP",
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      ffai.ProjectWidgetHandle(
+                        key: "Container_7a762a5p",
+                        type: "Container",
+                        path: "PartnerListingOverviewPage.body[0].children[0].children[5].children[6]",
                         name: "WorkspaceMenuRow",
                         componentName: "WorkspaceMenuRow",
                       ),

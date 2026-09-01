@@ -1,5 +1,7 @@
 import type { DocumentData } from "firebase-admin/firestore";
 import { canCancelRequest, canReviewRequest, mobileId, mobilePaidTier, mobileText } from "../mobile-workspace";
+import { resolvePartnerEntitlement } from "../partner-entitlements";
+import { countLimitedListings, getPartnerTierCapabilities } from "../partner-limits";
 import { slugify } from "../slug";
 import { FieldValue, getFirebaseAdminAuth } from "./firebase-admin";
 import { MobileError, mobileBooking, mobileBusiness, requireMobileAdmin, type MobileActor } from "./mobile-workspace-access";
@@ -9,7 +11,7 @@ import { sendBookingStatusNotification } from "./email";
 export type MobileCommand = { action: string; id: string; businessId: string; value1: string; value2: string; value3: string; value4: string; value5: string; value6: string; flag: boolean };
 
 const actions = new Set(["profile", "notification-settings", "notification-read", "request-cancel", "partner-status", "review-submit",
-  "business-profile", "team-save", "team-remove", "admin-application-reject", "admin-business-status", "admin-review-status", "admin-city-save", "admin-category-save"]);
+  "business-profile", "partner-listing-duplicate", "team-save", "team-remove", "admin-application-reject", "admin-business-status", "admin-review-status", "admin-city-save", "admin-category-save"]);
 
 export function parseMobileCommand(body: unknown): MobileCommand {
   if (!body || typeof body !== "object" || Array.isArray(body)) throw new MobileError("Invalid request.");
@@ -124,6 +126,55 @@ export async function writeMobileWorkspace(actor: MobileActor, command: MobileCo
         description: command.value4, addressLine1: command.value5, postalCode: command.value6, updatedAt: now });
       return { id: business.id, message: "Business profile saved." };
     }
+    case "partner-listing-duplicate": {
+      const business = await mobileBusiness(actor, command.businessId);
+      const sourceRef = db.collection("listings").doc(required(command.id, "Deal"));
+      const source = (await sourceRef.get()).data();
+      if (!source || mobileId(source.businessId) !== business.id) throw new MobileError("Deal not found.", 404);
+
+      const listings = await db.collection("listings").where("businessId", "==", business.id).get();
+      const activeCount = countLimitedListings(listings.docs.map((item) => ({ id: item.id, status: mobileText(item.data().status) })));
+      const billing = (await db.collection("businessBilling").doc(business.id).get()).data() ?? {};
+      const capabilities = getPartnerTierCapabilities(resolvePartnerEntitlement(billing));
+      if (Number.isFinite(capabilities.activeListings) && activeCount >= capabilities.activeListings) {
+        throw new MobileError(`${capabilities.label} is limited to ${capabilities.activeListings} active ${capabilities.activeListings === 1 ? "deal" : "deals"}. Upgrade or pause an existing listing.`, 402);
+      }
+
+      const copyRef = db.collection("listings").doc();
+      const copiedFields = [
+        "businessId", "businessName", "cityId", "cityName", "description", "shortDescription", "listingType",
+        "categoryIds", "vibeTags", "groupTypes", "indoorOutdoor", "durationMinutes", "price", "originalPrice", "currency",
+        "budgetTier", "capacity", "images", "terms", "cancellationNote", "bookingMode", "bookingUrl", "phone", "email",
+        "groupSize", "whyItFits", "ownerIds"
+      ] as const;
+      const copy: Record<string, unknown> = {};
+      for (const field of copiedFields) if (source[field] !== undefined) copy[field] = source[field];
+      const sourceTitle = mobileText(source.title, 120) || "Last-minute deal";
+      await copyRef.set({
+        ...copy,
+        id: copyRef.id,
+        title: `${sourceTitle.slice(0, 111)} (copy)`,
+        slug: `${slugify(sourceTitle) || "last-minute-deal"}-${copyRef.id.slice(0, 6)}`,
+        status: "draft",
+        approvalStatus: "pending",
+        availableFrom: null,
+        availableUntil: null,
+        availableDays: [],
+        availableSlots: [],
+        remainingSpots: null,
+        discountPercent: source.discountPercent ?? null,
+        featured: false,
+        promoted: false,
+        viewCount: 0,
+        saveCount: 0,
+        requestCount: 0,
+        clickCount: 0,
+        duplicatedFromListingId: sourceRef.id,
+        createdAt: now,
+        updatedAt: now
+      });
+      return { id: copyRef.id, businessId: business.id, message: "Draft copy created. Add new availability before submitting it for review." };
+    }
     case "team-save":
     case "team-remove": {
       const business = await mobileBusiness(actor, command.businessId);
@@ -217,4 +268,3 @@ export async function ensureMobileDeletionAllowed(actor: MobileActor): Promise<v
   if (!businesses.empty) throw new MobileError("Contact support to close or transfer your business before deleting your account.", 409);
   if (!getFirebaseAdminAuth()) throw new MobileError("Account deletion is unavailable.", 503);
 }
-import { resolvePartnerEntitlement } from "../partner-entitlements";

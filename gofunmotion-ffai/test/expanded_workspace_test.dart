@@ -41,7 +41,7 @@ void main() {
             );
             NativeWorkspaceScreens(
               app,
-              declareWorkspaceApi(app),
+              declareWorkspaceApi(app, reuseExistingProject: false),
               native,
               reuseExistingProject: false,
             ).build();

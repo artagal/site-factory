@@ -51,7 +51,11 @@ describeEmulated("Native workspace ownership and lifecycle", () => {
     await db.collection("admins").doc(uids.admin).set({ role: "admin" });
     await db.collection("cities").doc("native-qa-city").set({ name: "Native QA City", state: "CA", country: "US", slug: "native-qa-city", active: true, timezone: "America/Los_Angeles" });
     await db.collection("categories").doc("native-fun").set({ name: "Native Fun", active: true, slug: "native-fun" });
-    await db.collection("businesses").doc(businessId).set({ name: "Native Venue", status: "approved", isDemo: false, ownerIds: [uids.owner] });
+    await db.collection("businesses").doc(businessId).set({
+      name: "Native Venue", status: "approved", isDemo: false, ownerIds: [uids.owner],
+      email: "venue@gofunmotion.test", phone: "+1 310 555 0101", addressLine1: "10 Activity Way",
+      cityName: "Native QA City", state: "CA", latitude: 34.05, longitude: -118.24
+    });
     await db.collection("listings").doc(listingId).set({ businessId, title: "Native Activity", status: "published", approvalStatus: "approved", isDemo: false });
     await db.collection("bookingRequests").doc(bookingId).set({ userId: uids.customer, businessId, listingId, listingTitle: "Native Activity",
       businessName: "Native Venue", businessOwnerIds: [uids.owner], name: "Native Customer", email: "native-customer@gofunmotion.test",
@@ -79,6 +83,43 @@ describeEmulated("Native workspace ownership and lifecycle", () => {
     expect((await read("partner-request", "owner", bookingId)).status).toBe(403);
     expect((await write({ action: "partner-status", id: bookingId, value1: "cancelled" }, "owner")).status).toBe(403);
     await ref.update({ ownerIds: [uids.owner] });
+  });
+  it("releases the right contact details for each booking role", async () => {
+    const db = getFirebaseAdminDb()!;
+    const customer = await (await read("request", "customer", bookingId)).json();
+    expect(customer).toMatchObject({ contactName: "Native Venue", contactEmail: "venue@gofunmotion.test", partySize: "2 people" });
+    expect(customer.mapUrl).toContain("34.05,-118.24");
+    const partner = await (await read("partner-request", "owner", bookingId)).json();
+    expect(partner).toMatchObject({ contactName: "Native Customer", contactEmail: "native-customer@gofunmotion.test" });
+
+    const request = db.collection("bookingRequests").doc(bookingId);
+    await request.update({ status: "pending" });
+    expect(await (await read("request", "customer", bookingId)).json()).toMatchObject({ contactEmail: "", contactPhone: "", mapUrl: "" });
+    await request.update({ status: "confirmed" });
+  });
+  it("duplicates an owned deal only when the paid tier has capacity", async () => {
+    const db = getFirebaseAdminDb()!;
+    const command = { action: "partner-listing-duplicate", id: listingId, businessId };
+    expect((await write(command, "owner")).status).toBe(402);
+    await db.collection("businessBilling").doc(businessId).set({
+      paidAccessEnabled: true,
+      pricingTier: "growth",
+      subscriptionStatus: "active",
+      subscriptionCurrentPeriodEnd: new Date(Date.now() + 86_400_000).toISOString()
+    });
+    const response = await write(command, "owner");
+    expect(response.status).toBe(200);
+    const { id } = await response.json() as { id: string };
+    expect((await db.collection("listings").doc(id).get()).data()).toMatchObject({
+      businessId,
+      status: "draft",
+      approvalStatus: "pending",
+      availableSlots: [],
+      remainingSpots: null,
+      duplicatedFromListingId: listingId,
+      featured: false,
+      promoted: false
+    });
   });
   it("moderates one review per past confirmed booking", async () => {
     const body = { action: "review-submit", id: bookingId, value1: "5", value4: "The activity was well organised and welcoming." };
