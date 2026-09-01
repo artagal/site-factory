@@ -5,11 +5,11 @@ import { CitySelectField } from "../shared/city-select-field";
 import type { ListingSearchInput } from "../../lib/search";
 
 export function DealFilters({ input = {}, advanced = false }: { input?: ListingSearchInput; advanced?: boolean }) {
-  return <form action="/deals" className="contents">
-    <div className="deal-filter-bar sticky top-[var(--app-header-height)] z-30 grid grid-cols-[minmax(0,1fr)_minmax(6rem,0.6fr)_2.75rem] items-center gap-2 border-y border-[var(--border-subtle)] bg-[var(--panel-strong)] py-2 backdrop-blur-xl md:grid-cols-[1.2fr_1fr_auto] md:gap-3">
+  return <form action="/deals" aria-label="Find last-minute deals" className="contents">
+    <div className="deal-filter-bar sticky top-[var(--app-header-height)] z-30 grid grid-cols-[minmax(0,1fr)_minmax(6rem,0.62fr)_2.75rem] items-center gap-2 border-y border-[var(--border-subtle)] bg-[var(--panel-strong)] px-2 py-2 backdrop-blur-xl md:grid-cols-[1.2fr_1fr_auto] md:gap-3 md:px-3 md:py-3">
       <CitySelectField dense defaultCity={input.city} defaultCityId={input.cityId} required={false} />
       <Select dense label="When" name="when" value={input.when ?? ""} options={[["", "Any time"], ["tonight", "Tonight"], ["today", "Today"], ["tomorrow", "Tomorrow"], ["weekend", "Weekend"]]} />
-      <button aria-label="Show deals" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-lime-300 text-sm font-bold text-[#101510] md:mt-auto md:h-12 md:px-5" type="submit"><Search aria-hidden="true" size={18} /><span className="hidden md:inline">Show deals</span></button>
+      <button aria-label="Show deals" className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-lime-300 text-sm font-black text-[#101510] transition hover:bg-lime-200 md:mt-auto md:h-12 md:px-5" type="submit"><Search aria-hidden="true" size={18} /><span className="hidden md:inline">Show deals</span></button>
     </div>
     {advanced ? <details className="my-3 border-b border-[var(--border-subtle)] pb-3">
       <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-sm font-semibold"><SlidersHorizontal aria-hidden="true" size={17} />More filters<span className="ml-auto text-xs text-[var(--muted-foreground)]">Category, budget, group</span></summary>
@@ -31,8 +31,8 @@ export function DealFilters({ input = {}, advanced = false }: { input?: ListingS
 
 function Select({ label, name, value, options, dense = false }: { label: string; name: string; value: string; options: string[][]; dense?: boolean }) {
   return <label className="block min-w-0">
-    <span className={dense ? "sr-only md:not-sr-only md:text-xs md:font-semibold md:text-[var(--muted-foreground)]" : "text-xs font-semibold text-[var(--muted-foreground)]"}>{label}</span>
-    <select className={`w-full min-w-0 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel)] px-3 text-sm font-semibold ${dense ? "h-11 md:mt-1 md:h-12" : "mt-2 h-12"}`} defaultValue={value} name={name}>
+    <span className={dense ? "sr-only md:not-sr-only md:text-xs md:font-black md:uppercase md:tracking-[0.12em] md:text-[var(--muted-foreground)]" : "text-xs font-black uppercase tracking-[0.12em] text-[var(--muted-foreground)]"}>{label}</span>
+    <select className={`w-full min-w-0 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel)] px-3 text-sm font-bold text-[var(--foreground)] outline-none transition focus:border-[var(--accent-cyan)] ${dense ? "h-11 md:mt-1 md:h-12" : "mt-2 h-12"}`} defaultValue={value} name={name}>
       {options.map(([id, text]) => <option key={id} value={id}>{text}</option>)}
     </select>
   </label>;

@@ -32,13 +32,13 @@ export default async function HomePage() {
     <SeoJsonLd id="gofunmotion-home-schema" data={createSchemaGraph([createWebPageSchema({ title: "GoFunMotion Deals", path: "/", description: "Last-minute activity deals and local open spots." })])} />
     <HomeHero />
     <DealFilters input={{ when: "tonight" }} />
-    <nav aria-label="Activity categories" className="scrollbar-none flex gap-2 overflow-x-auto border-b border-[var(--border-subtle)] py-4">
-      {categories.map(({ id, label, icon: Icon }) => <Link className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel)] px-3 text-sm font-semibold transition hover:border-cyan-300/35 hover:bg-white/10" href={`/deals?categoryId=${id}&when=tonight`} key={id}><Icon aria-hidden="true" className="text-[var(--accent-cyan)]" size={17} />{label}</Link>)}
+    <nav aria-label="Activity categories" className="scrollbar-none flex gap-2 overflow-x-auto border-b border-[var(--border-subtle)] py-4 md:py-5">
+      {categories.map(({ id, label, icon: Icon }) => <Link className="home-category-link inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel)] px-3.5 text-sm font-semibold transition" href={`/deals?categoryId=${id}&when=tonight`} key={id}><Icon aria-hidden="true" className="text-[var(--accent-cyan)]" size={18} />{label}</Link>)}
     </nav>
     <section className="pb-12 pt-8 md:pt-12">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-bold text-[var(--accent-lime)]">Open spots worth leaving home for</p>
+          <p className="text-sm font-bold text-[var(--accent-lime)]">Open spots worth going out for</p>
           <h2 className="mt-2 text-3xl font-black md:text-4xl">Tonight&apos;s deals</h2>
         </div>
         <Link className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-[var(--accent-lime)] hover:text-[var(--foreground)]" href="/deals?when=tonight">Browse all deals <ArrowRight aria-hidden="true" size={17} /></Link>

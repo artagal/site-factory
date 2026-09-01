@@ -19,7 +19,7 @@ const links = [
 export function Logo() {
   return <Link aria-label="GoFunMotion home" className="group inline-flex min-h-11 min-w-0 shrink items-center gap-2 text-base font-black sm:text-lg" href="/">
     <span className="flex size-9 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/[0.06] shadow-[0_10px_30px_rgba(0,0,0,0.28)]"><img alt="" aria-hidden="true" className="size-full" height={36} src="/brand/gofunmotion-mark.svg" width={36} /></span>
-    <span>Go<span className="text-[var(--accent-lime)]">Fun</span><span className="max-[390px]:hidden">Motion</span></span>
+    <span>Go<span className="text-[var(--accent-lime)]">Fun</span><span className="max-[340px]:hidden">Motion</span></span>
   </Link>;
 }
 
