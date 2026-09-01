@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, SearchX } from "lucide-react";
+import { ArrowRight, MapPinned, SearchX } from "lucide-react";
 import { SmartSearch } from "../../components/ai/smart-search";
 import { DealCard } from "../../components/gofunmotion/deal-card";
 import { DealFilters } from "../../components/listings/deal-filters";
-import { getPublicListingsForServer } from "../../lib/server/public-listings";
+import { DealsMapExplorer } from "../../components/listings/deals-map-explorer";
+import { getPublicBusinessForServer, getPublicListingsForServer } from "../../lib/server/public-listings";
 import { filterListingCollection, parseListingSearchInput } from "../../lib/search";
 import { buildSeoMetadata } from "../../lib/seo";
 
@@ -18,6 +19,9 @@ export default async function DealsPage({ searchParams }: { searchParams?: Promi
   const params = (await searchParams) ?? {};
   const input = parseListingSearchInput(params);
   const results = filterListingCollection(await getPublicListingsForServer(), input);
+  const businessIds = [...new Set(results.map((listing) => listing.businessId))];
+  const businesses = (await Promise.all(businessIds.map((businessId) => getPublicBusinessForServer(businessId))))
+    .filter((business) => business !== undefined);
   const quickLink = (changes: Record<string, string>) => {
     const query = new URLSearchParams();
     for (const [key, value] of Object.entries(params)) {
@@ -36,6 +40,7 @@ export default async function DealsPage({ searchParams }: { searchParams?: Promi
     </header>
     <DealFilters advanced input={input} key={JSON.stringify(input)} />
     <nav aria-label="Quick deal filters" className="scrollbar-none flex gap-2 overflow-x-auto py-2">
+      <Link className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg border border-[var(--border-subtle)] px-3 text-sm font-semibold hover:bg-[var(--panel)]" href="#map"><MapPinned aria-hidden="true" className="text-[var(--accent-cyan)]" size={17} />Map view</Link>
       {[["Tonight", { when: "tonight" }], ["Date night", { who: "date" }], ["With friends", { who: "friends" }], ["Family", { who: "family" }], ["Under $25", { budget: "under25" }]].map(([label, changes]) =>
         <Link className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-[var(--border-subtle)] px-3 text-sm font-semibold hover:bg-[var(--panel)]" href={quickLink(changes as Record<string, string>)} key={String(label)}>{String(label)}</Link>
       )}
@@ -50,7 +55,8 @@ export default async function DealsPage({ searchParams }: { searchParams?: Promi
       <Link className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[var(--accent-cyan)]" href="/find">Help me choose <ArrowRight aria-hidden="true" size={16} /></Link>
     </div>
     {results.some((listing) => listing.isDemo) ? <p className="mb-4 text-sm text-[var(--accent-amber)]">Demo examples are not bookable. Prices and spots are illustrative.</p> : null}
-    {results.length ? <section aria-label="Matching deals" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    {results.length ? <DealsMapExplorer businesses={businesses} initialCityId={input.cityId} listings={results} /> : null}
+    {results.length ? <section aria-label="Matching deals" className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {results.map((listing) => <DealCard key={listing.id} listing={listing} />)}
     </section> : <section className="py-12 text-center">
       <SearchX aria-hidden="true" className="mx-auto text-[var(--muted-foreground)]" size={32} />

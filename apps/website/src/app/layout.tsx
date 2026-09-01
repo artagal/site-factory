@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { Footer } from "../components/layout/footer";
 import { Navbar } from "../components/layout/navbar";
