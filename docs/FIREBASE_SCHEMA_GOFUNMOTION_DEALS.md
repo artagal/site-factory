@@ -75,7 +75,7 @@ User save subcollections are read directly under a known user document and do no
 
 ## Demo Policy
 
-Local demo data is enabled outside production. Production demo rendering is off unless `NEXT_PUBLIC_ENABLE_DEMO_DATA=true`, and every rendered example remains explicitly labeled. Demo businesses/listings are never booking eligible.
+Demo fallback data is enabled while the marketplace has no approved live listings so preview and production can demonstrate the full catalog and map. Set `NEXT_PUBLIC_ENABLE_DEMO_DATA=false` to hide it. Every rendered example remains explicitly labeled, and demo businesses/listings are never booking eligible.
 
 ## City Identity
 

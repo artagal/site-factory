@@ -1,4 +1,5 @@
 import { AggregateField, FieldPath, type DocumentData, type Query } from "firebase-admin/firestore";
+import { demoBusinesses } from "../demoData";
 import { canCancelRequest, canReviewRequest, emailLink, embeddedMapLink, mapLink, mobileDate, mobileId, mobilePaidTier, mobileRow, mobileText, mobileWorkspace, phoneLink, type MobileRow, type MobileSection, type MobileWorkspace } from "../mobile-workspace";
 import { filterListingCollection, parseListingSearchInput } from "../search";
 import { getPublicListingsForServer } from "./public-listings";
@@ -65,8 +66,8 @@ async function rowsFromQuery(query: Query, collection: string, cursor: string) {
 
 export async function readPublicWorkspace(section: MobileSection, id: string, cityId: string, cursor: string): Promise<MobileWorkspace> {
   const db = getFirebaseAdminDb();
-  if (!db) throw new MobileError("Live activities are temporarily unavailable.", 503);
   if (section === "reviews") {
+    if (!db) throw new MobileError("Live activities are temporarily unavailable.", 503);
     if (!id) throw new MobileError("Choose an activity to read its reviews.");
     const listing = (await db.collection("listings").doc(id).get()).data();
     if (!listing || listing.status !== "published" || listing.approvalStatus !== "approved" || listing.isDemo === true) throw new MobileError("Activity not found.", 404);
@@ -75,22 +76,32 @@ export async function readPublicWorkspace(section: MobileSection, id: string, ci
     return mobileWorkspace({ title: mobileText(listing.title), summary: "Reviews from confirmed bookings. Attendance is not independently verified.",
       ...await rowsFromQuery(db.collection("reviews").where("listingId", "==", id).where("status", "==", "approved"), "reviews", cursor) });
   }
-  const listings = filterListingCollection((await getPublicListingsForServer()).filter((item) => !item.isDemo), parseListingSearchInput({ cityId }));
+  const listings = filterListingCollection(await getPublicListingsForServer(), parseListingSearchInput({ cityId }));
+  const isDemoCatalog = listings.some((listing) => listing.isDemo);
+  if (!db && !isDemoCatalog) throw new MobileError("Live activities are temporarily unavailable.", 503);
   const businessIds = [...new Set(listings.map((item) => item.businessId))];
-  const businesses = businessIds.length ? await db.getAll(...businessIds.map((businessId) => db.collection("businesses").doc(businessId))) : [];
-  const byId = new Map(businesses.map((business) => [business.id, business.data()]));
+  const liveBusinesses = db && !isDemoCatalog && businessIds.length
+    ? await db.getAll(...businessIds.map((businessId) => db.collection("businesses").doc(businessId)))
+    : [];
+  const byId = isDemoCatalog
+    ? new Map(demoBusinesses.filter((business) => businessIds.includes(business.id)).map((business) => [business.id, business]))
+    : new Map(liveBusinesses.map((business) => [business.id, business.data()]));
   const located = listings.flatMap((listing) => {
     const business = byId.get(listing.businessId);
-    if (!business || business.status !== "approved" || business.isDemo === true) return [];
+    if (!business || business.status !== "approved" || (business.isDemo === true && !listing.isDemo)) return [];
     const url = mapLink(business.latitude, business.longitude);
     if (!url) return [];
-    return [mobileRow(listing.id, { title: listing.title, subtitle: listing.cityName, detail: mobileText(business.addressLine1),
+    return [mobileRow(listing.id, { title: listing.title, subtitle: `${listing.cityName} | ${listing.businessName}`,
+      detail: listing.isDemo ? "Approximate demo location. This offer is not bookable." : mobileText(business.addressLine1),
+      status: listing.isDemo ? "Demo / Not bookable" : "Reviewed partner",
       value: `${listing.currency} ${listing.price}`, referenceId: listing.id, businessId: listing.businessId, mapUrl: url,
       mapEmbedUrl: embeddedMapLink(business.latitude, business.longitude) })];
   }).sort((a, b) => a.id.localeCompare(b.id));
   const start = cursor ? located.findIndex((item) => item.id === cursor) + 1 : 0;
   const rows = located.slice(start, start + 50);
-  return mobileWorkspace({ title: "Nearby activities", summary: "Venue locations supplied by approved partners.", rows,
+  return mobileWorkspace({ title: "Nearby activities", summary: isDemoCatalog
+    ? "Example offers use approximate map locations and cannot be booked."
+    : "Venue locations supplied by approved partners.", rows,
     hasMore: start + 50 < located.length, nextCursor: rows.at(-1)?.id ?? "" });
 }
 

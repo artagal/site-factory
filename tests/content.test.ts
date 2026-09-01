@@ -69,6 +69,7 @@ describe("GoFunMotion Deals marketplace content", () => {
     expect(routes).toContain("/cities/miami");
     expect(routes).toContain("/categories/date-night");
     expect(routes).toContain("/blog/date-night-ideas-under-50");
+    expect(routes.some((route) => route.startsWith("/deals/"))).toBe(false);
     expect(routes).not.toContain("/categories");
     expect(routes).not.toContain("/challenge");
     expect(routes).not.toContain("/daily");

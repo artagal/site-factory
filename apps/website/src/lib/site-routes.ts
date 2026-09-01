@@ -63,7 +63,7 @@ export function getFactoryRoutes(lastModified = defaultLastModified): SitemapRou
     priority: 0.68
   }));
 
-  const dealRoutes = listings.map((listing) => ({
+  const dealRoutes = listings.filter((listing) => !listing.isDemo).map((listing) => ({
     changeFrequency: "weekly" as const,
     lastModified,
     path: `/deals/${listing.slug}`,

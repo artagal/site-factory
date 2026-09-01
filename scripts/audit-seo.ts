@@ -224,6 +224,7 @@ export function auditSeoEntries() {
   }));
   const dealEntries: SeoEntry[] = listings.map((listing) => ({
     description: buildListingSeoDescription(listing),
+    indexable: !listing.isDemo,
     path: `/deals/${listing.slug}`,
     routeType: "deal",
     title: `${listing.title} | GoFunMotion Deals`
