@@ -42,6 +42,14 @@ export type MobileWorkspace = {
   field6: string;
   startMillis: number;
   endMillis: number;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  contactEmailUrl: string;
+  contactPhoneUrl: string;
+  mapUrl: string;
+  venueAddress: string;
+  partySize: string;
 };
 
 export function mobileText(value: unknown, max = 2000): string {
@@ -64,8 +72,21 @@ export function mobileRow(id: string, values: Partial<MobileRow> = {}): MobileRo
 export function mobileWorkspace(values: Partial<MobileWorkspace> = {}): MobileWorkspace {
   return {
     title: "", summary: "", detail: "", status: "", id: "", businessId: "", canEdit: false, flag: false,
-    rows: [], hasMore: false, nextCursor: "", field1: "", field2: "", field3: "", field4: "", field5: "", field6: "", startMillis: 0, endMillis: 0, ...values
+    rows: [], hasMore: false, nextCursor: "", field1: "", field2: "", field3: "", field4: "", field5: "", field6: "", startMillis: 0, endMillis: 0,
+    contactName: "", contactEmail: "", contactPhone: "", contactEmailUrl: "", contactPhoneUrl: "", mapUrl: "", venueAddress: "", partySize: "",
+    ...values
   };
+}
+
+export function emailLink(value: unknown): string {
+  const email = mobileText(value, 254).toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? `mailto:${email}` : "";
+}
+
+export function phoneLink(value: unknown): string {
+  const phone = mobileText(value, 80);
+  const normalized = phone.replace(/[^\d+]/g, "").replace(/(?!^)\+/g, "");
+  return normalized.replace(/\D/g, "").length >= 7 ? `tel:${normalized}` : "";
 }
 
 export function mobileDate(value: unknown): string {

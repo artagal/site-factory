@@ -89,7 +89,7 @@ final class WorkspaceApi {
   final StructHandle row, response;
 }
 
-WorkspaceApi declareWorkspaceApi(App app) {
+WorkspaceApi declareWorkspaceApi(App app, {bool reuseExistingProject = true}) {
   final row = app.struct('MobileWorkspaceRow', {
     for (final key in [
       'id',
@@ -106,31 +106,42 @@ WorkspaceApi declareWorkspaceApi(App app) {
     ])
       key: string,
   });
-  final response = app.struct('MobileWorkspaceResponse', {
-    for (final key in [
-      'title',
-      'summary',
-      'detail',
-      'status',
-      'id',
-      'businessId',
-      'nextCursor',
-      'field1',
-      'field2',
-      'field3',
-      'field4',
-      'field5',
-      'field6',
-    ])
-      key: string,
-    'rows': listOf(row),
-    'canEdit': bool_,
-    'flag': bool_,
-    'hasMore': bool_,
-    'empty': bool_,
-    'startMillis': int_,
-    'endMillis': int_,
-  });
+  final response =
+      reuseExistingProject
+          ? ff.Structs.mobileWorkspaceResponse
+          : app.struct('MobileWorkspaceResponse', {
+            for (final key in [
+              'title',
+              'summary',
+              'detail',
+              'status',
+              'id',
+              'businessId',
+              'nextCursor',
+              'field1',
+              'field2',
+              'field3',
+              'field4',
+              'field5',
+              'field6',
+              'contactName',
+              'contactEmail',
+              'contactPhone',
+              'contactEmailUrl',
+              'contactPhoneUrl',
+              'mapUrl',
+              'venueAddress',
+              'partySize',
+            ])
+              key: string,
+            'rows': listOf(row),
+            'canEdit': bool_,
+            'flag': bool_,
+            'hasMore': bool_,
+            'empty': bool_,
+            'startMillis': int_,
+            'endMillis': int_,
+          });
   final writeResponse = app.struct('MobileWorkspaceWriteResponse', {
     'message': string,
     'id': string,
@@ -292,8 +303,10 @@ WorkspaceApi declareWorkspaceApi(App app) {
 void ensureExpandedWorkspace(App app, NativeAiApi ai) {
   final api = declareWorkspaceApi(app);
   final screens = NativeWorkspaceScreens(app, api, ai);
+  screens.ensureMatureState();
   screens.build();
   screens.wireExistingEntries();
+  screens.enhanceMatureWorkflows();
   app.raw(configureExpandedWorkspace);
 }
 
@@ -340,6 +353,22 @@ void configureExpandedWorkspace(FFProject project) {
   for (final name in expandedPageNames) {
     final page = findPage(project, name: name);
     if (page == null) throw StateError('Missing native workspace page: $name');
+    if (![
+      'CustomerRequestDetailPage',
+      'PartnerRequestDetailPage',
+    ].contains(name)) {
+      page.classModel.stateFields.removeWhere(
+        (field) => [
+          'contactName',
+          'contactEmail',
+          'contactPhone',
+          'contactEmailUrl',
+          'contactPhoneUrl',
+          'venueAddress',
+          'partySize',
+        ].contains(field.parameter.identifier.name),
+      );
+    }
     setPageRequiresAuth(
       project,
       pageName: name,
@@ -557,6 +586,14 @@ final class NativeWorkspaceScreens {
       'nextCursor' => state.nextCursor,
       'startMillis' => state.startMillis,
       'endMillis' => state.endMillis,
+      'contactName' => 'contactName',
+      'contactEmail' => 'contactEmail',
+      'contactPhone' => 'contactPhone',
+      'contactEmailUrl' => 'contactEmailUrl',
+      'contactPhoneUrl' => 'contactPhoneUrl',
+      'mapUrl' => state.mapUrl,
+      'venueAddress' => 'venueAddress',
+      'partySize' => 'partySize',
       'cityId' => state.cityId,
       'cityLabel' => state.cityLabel,
       'cities' => state.cities,
@@ -617,6 +654,13 @@ final class NativeWorkspaceScreens {
     'cities': listOf(ai.city),
     'showCities': bool_.withDefault(false),
     'mapUrl': string.withDefault(''),
+    'contactName': string.withDefault(''),
+    'contactEmail': string.withDefault(''),
+    'contactPhone': string.withDefault(''),
+    'contactEmailUrl': string.withDefault(''),
+    'contactPhoneUrl': string.withDefault(''),
+    'venueAddress': string.withDefault(''),
+    'partySize': string.withDefault(''),
     for (var i = 1; i <= 6; i++) 'field$i': string.withDefault(''),
   };
 
@@ -713,6 +757,16 @@ final class NativeWorkspaceScreens {
               'field4',
               'field5',
               'field6',
+              if (section == 'request' || section == 'partner-request') ...[
+                'contactName',
+                'contactEmail',
+                'contactPhone',
+                'contactEmailUrl',
+                'contactPhoneUrl',
+                'mapUrl',
+                'venueAddress',
+                'partySize',
+              ],
             ])
               SetState(stateRef(page, key), result[key]),
             SetState(stateRef(page, 'recordId'), result['id']),
@@ -1227,6 +1281,352 @@ final class NativeWorkspaceScreens {
       ),
     ],
   );
+
+  void ensureMatureState() {
+    // These fields are intentionally page-local. BeautyDrop proved the value
+    // of the workflows, but its large global-state model is not copied here.
+    for (final page in ff.Pages.all.where(
+      (page) => [
+        'CustomerRequestDetailPage',
+        'PartnerRequestDetailPage',
+      ].contains(page.name),
+    )) {
+      app.editPageState(page, (state) {
+        state.ensureField('contactName', string);
+        state.ensureField('contactEmail', string);
+        state.ensureField('contactPhone', string);
+        state.ensureField('contactEmailUrl', string);
+        state.ensureField('contactPhoneUrl', string);
+        state.ensureField('venueAddress', string);
+        state.ensureField('partySize', string);
+      });
+    }
+  }
+
+  void enhanceMatureWorkflows() {
+    _replaceRequestList(
+      ff.Pages.partnerInboxPage,
+      target: 'PartnerRequestDetailPage',
+      heading: 'Customer requests',
+    );
+    _replaceRequestList(
+      ff.Pages.customerRequestsPage,
+      target: 'CustomerRequestDetailPage',
+      heading: 'Your requests',
+    );
+    _enhanceRequestDetail(ff.Pages.partnerRequestDetailPage, partner: true);
+    _enhanceRequestDetail(ff.Pages.customerRequestDetailPage, partner: false);
+
+    app.editPage(ff.Pages.partnerListingOverviewPage, (edit) {
+      final existing =
+          ff.Pages.partnerListingOverviewPage.widgets.all
+              .where((widget) => widget.name == 'DuplicateDealCard')
+              .toList();
+      final card = Container(
+        name: 'DuplicateDealCard',
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 10,
+          children: [
+            Row(
+              spacing: 10,
+              children: [
+                const Icon(
+                  'content_copy_outlined',
+                  size: 22,
+                  color: Colors.tertiary,
+                ),
+                Expanded(
+                  Text('Run this deal again', style: Styles.titleMedium),
+                ),
+              ],
+            ),
+            Text(
+              'Creates a private draft with the same content and prices. Availability and spots are cleared, and admin review is required again.',
+              style: Styles.bodySmall,
+              color: Colors.secondaryText,
+            ),
+            command(
+              'Duplicate as draft',
+              save('partner-listing-duplicate', after: 'PartnerListingsPage'),
+              icon: 'content_copy_outlined',
+            ),
+          ],
+        ),
+      );
+      if (existing.isNotEmpty) {
+        edit.ensureReplaced(existing.single, card);
+      } else {
+        final backRow =
+            ff.Pages.partnerListingOverviewPage.widgets.all
+                .where((widget) => widget.name == 'WorkspaceMenuRow')
+                .last;
+        edit.ensureInsertedBefore(backRow, card);
+      }
+    });
+  }
+
+  void _replaceRequestList(
+    ProjectPageHandle page, {
+    required String target,
+    required String heading,
+  }) {
+    app.editPage(page, (edit) {
+      final existing =
+          page.widgets.all
+              .where((widget) => widget.name == 'WorkspaceRecordList')
+              .single;
+      edit.ensureReplaced(
+        existing,
+        ListView(
+          name: 'WorkspaceRecordList',
+          source: State('rows'),
+          spacing: 12,
+          itemBuilder:
+              (item) => Container(
+                name: 'BookingRequestCard',
+                padding: const EdgeInsets.all(16),
+                borderRadius: 8,
+                color: Colors.secondaryBackground,
+                borderColor: Colors.alternate,
+                borderWidth: 1,
+                onTap: Navigate(
+                  workspacePage(target),
+                  params: {'id': item['id'], 'businessId': item['businessId']},
+                ),
+                child: Column(
+                  crossAxis: CrossAxis.start,
+                  spacing: 10,
+                  children: [
+                    Row(
+                      spacing: 10,
+                      children: [
+                        Expanded(
+                          Text(
+                            item['title'],
+                            style: Styles.titleMedium,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        statusBadge(label: item['status']),
+                      ],
+                    ),
+                    Text(
+                      item['subtitle'],
+                      style: Styles.bodyMedium,
+                      color: Colors.secondaryText,
+                      maxLines: 2,
+                    ),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        const Icon(
+                          'group_outlined',
+                          size: 18,
+                          color: Colors.tertiary,
+                        ),
+                        Text(item['value'], style: Styles.labelMedium),
+                        Spacer(),
+                        const Icon(
+                          'chevron_right',
+                          size: 22,
+                          color: Colors.secondaryText,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+        ),
+      );
+      final label = page.widgets.all.where(
+        (widget) => widget.type == 'Text' && widget.text == 'Records',
+      );
+      if (label.isNotEmpty) {
+        edit.ensureReplaced(
+          label.single,
+          Text(
+            heading,
+            name: 'WorkspaceListHeading',
+            style: Styles.titleMedium,
+          ),
+        );
+      }
+    });
+  }
+
+  void _enhanceRequestDetail(ProjectPageHandle page, {required bool partner}) {
+    app.editPage(page, (edit) {
+      final facts = Container(
+        name: 'RequestFactsCard',
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 10,
+          children: [
+            Text('Request details', style: Styles.titleMedium),
+            _detailLine('event_outlined', State('field5')),
+            _detailLine('schedule_outlined', State('field6')),
+            _detailLine('group_outlined', State('partySize')),
+            Text(
+              State('field4'),
+              style: Styles.bodyMedium,
+              color: Colors.secondaryText,
+              visible: Not(Equals(State('field4'), '')),
+            ),
+          ],
+        ),
+      );
+      final contact = Container(
+        name: partner ? 'CustomerContactCard' : 'ConfirmedPartnerContactCard',
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        borderRadius: 8,
+        color: Colors.secondaryBackground,
+        borderColor: Colors.alternate,
+        borderWidth: 1,
+        visible:
+            partner
+                ? Not(Equals(State('contactName'), ''))
+                : Equals(State('status'), 'confirmed'),
+        child: Column(
+          crossAxis: CrossAxis.start,
+          spacing: 10,
+          children: [
+            Text(
+              partner ? 'Customer contact' : 'Confirmed partner contact',
+              style: Styles.titleMedium,
+            ),
+            Text(State('contactName'), style: Styles.bodyLarge),
+            Text(
+              State('contactEmail'),
+              style: Styles.bodyMedium,
+              color: Colors.secondaryText,
+              visible: Not(Equals(State('contactEmail'), '')),
+            ),
+            Text(
+              State('contactPhone'),
+              style: Styles.bodyMedium,
+              color: Colors.secondaryText,
+              visible: Not(Equals(State('contactPhone'), '')),
+            ),
+            Text(
+              State('venueAddress'),
+              style: Styles.bodyMedium,
+              color: Colors.secondaryText,
+              visible: Not(Equals(State('venueAddress'), '')),
+            ),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                Button(
+                  'Email',
+                  icon: 'mail_outline',
+                  height: 48,
+                  variant: ButtonVariant.outlined,
+                  visible: Not(Equals(State('contactEmailUrl'), '')),
+                  onTap: LaunchUrl(State('contactEmailUrl')),
+                ),
+                Button(
+                  'Call',
+                  icon: 'phone_outlined',
+                  height: 48,
+                  variant: ButtonVariant.outlined,
+                  visible: Not(Equals(State('contactPhoneUrl'), '')),
+                  onTap: LaunchUrl(State('contactPhoneUrl')),
+                ),
+                if (!partner)
+                  Button(
+                    'Directions',
+                    icon: 'directions_outlined',
+                    height: 48,
+                    visible: Not(Equals(State('mapUrl'), '')),
+                    onTap: LaunchUrl(State('mapUrl')),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      );
+      DslWidget? pending;
+      if (!partner) {
+        pending = Container(
+          name: 'PendingPartnerContactNotice',
+          width: double.infinity,
+          padding: const EdgeInsets.all(14),
+          borderRadius: 8,
+          color: Colors.secondaryBackground,
+          visible: Not(Equals(State('status'), 'confirmed')),
+          child: Row(
+            spacing: 10,
+            children: [
+              const Icon(
+                'lock_clock_outlined',
+                size: 22,
+                color: Colors.secondaryText,
+              ),
+              Expanded(
+                Text(
+                  'Partner contact and directions unlock after the business confirms availability.',
+                  style: Styles.bodySmall,
+                  color: Colors.secondaryText,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+      _upsertAfterStatus(
+        edit,
+        page,
+        Column(
+          name: 'RequestExperienceSection',
+          crossAxis: CrossAxis.start,
+          spacing: 12,
+          children: [facts, contact, if (pending != null) pending],
+        ),
+      );
+    });
+  }
+
+  DslWidget _detailLine(String icon, Object value) => Row(
+    spacing: 10,
+    children: [
+      Icon(icon, size: 20, color: Colors.tertiary),
+      Expanded(Text(value, style: Styles.bodyMedium)),
+    ],
+  );
+
+  void _upsertAfterStatus(
+    EditWidgetEditor edit,
+    ProjectPageHandle page,
+    DslWidget widget,
+  ) {
+    final existing = page.widgets.all.where((node) => node.name == widget.name);
+    if (existing.isNotEmpty) {
+      edit.ensureReplaced(existing.single, widget);
+    } else {
+      edit.ensureInsertedAfter(
+        page.widgets.all
+            .where((node) => node.name == 'WorkspaceStatusBadge')
+            .single,
+        widget,
+      );
+    }
+  }
 
   void build() {
     buildOnboarding();

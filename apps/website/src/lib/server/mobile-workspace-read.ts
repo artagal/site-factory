@@ -1,5 +1,5 @@
 import { AggregateField, FieldPath, type DocumentData, type Query } from "firebase-admin/firestore";
-import { canCancelRequest, canReviewRequest, embeddedMapLink, mapLink, mobileDate, mobileId, mobilePaidTier, mobileRow, mobileText, mobileWorkspace, type MobileRow, type MobileSection, type MobileWorkspace } from "../mobile-workspace";
+import { canCancelRequest, canReviewRequest, emailLink, embeddedMapLink, mapLink, mobileDate, mobileId, mobilePaidTier, mobileRow, mobileText, mobileWorkspace, phoneLink, type MobileRow, type MobileSection, type MobileWorkspace } from "../mobile-workspace";
 import { filterListingCollection, parseListingSearchInput } from "../search";
 import { getPublicListingsForServer } from "./public-listings";
 import { getFirebaseAdminDb } from "./firebase-admin";
@@ -133,9 +133,31 @@ export async function readMobileWorkspace(actor: MobileActor, section: MobileSec
   if (section === "request" || section === "partner-request" || section === "review-request") {
     const { data } = await mobileBooking(actor, id, section === "partner-request" ? "partner" : "customer");
     const row = workspaceRecord("bookingRequests", id, data);
+    const partnerView = section === "partner-request";
+    let contactName = partnerView ? mobileText(data.name) : "";
+    let contactEmail = partnerView ? mobileText(data.email, 254) : "";
+    let contactPhone = partnerView ? mobileText(data.phone, 80) : "";
+    let venueAddress = "";
+    let directionsUrl = "";
+
+    // Customer-facing partner contact and venue directions are released only
+    // after the business confirms the request. The partner always receives the
+    // contact information the customer submitted with the request.
+    if (!partnerView && data.status === "confirmed") {
+      const business = (await db.collection("businesses").doc(mobileId(data.businessId) || "__invalid__").get()).data();
+      if (business?.status === "approved") {
+        contactName = mobileText(business.name);
+        contactEmail = mobileText(business.email, 254);
+        contactPhone = mobileText(business.phone, 80);
+        venueAddress = [mobileText(business.addressLine1), mobileText(business.cityName), mobileText(business.state)].filter(Boolean).join(", ");
+        directionsUrl = mapLink(business.latitude, business.longitude);
+      }
+    }
     return mobileWorkspace({ ...row, summary: row.subtitle, canEdit: canCancelRequest(data.status), flag: canReviewRequest(data, token.uid),
       field1: mobileText(data.name), field2: mobileText(data.email), field3: mobileText(data.phone), field4: mobileText(data.message),
-      field5: mobileText(data.requestedDate), field6: mobileText(data.requestedTime) });
+      field5: mobileText(data.requestedDate), field6: mobileText(data.requestedTime),
+      contactName, contactEmail, contactPhone, contactEmailUrl: emailLink(contactEmail), contactPhoneUrl: phoneLink(contactPhone),
+      mapUrl: directionsUrl, venueAddress, partySize: `${Math.max(1, Number(data.partySize) || 1)} people` });
   }
   const business = await mobileBusiness(actor, businessId);
   const billing = (await db.collection("businessBilling").doc(business.id).get()).data() ?? {};

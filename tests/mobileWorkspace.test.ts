@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GET, POST } from "../apps/website/src/app/api/mobile/workspace/route";
-import { canCancelRequest, canReviewRequest, mapLink, mobileId, mobilePaidTier, mobileRow, mobileSection, mobileWorkspace } from "../apps/website/src/lib/mobile-workspace";
+import { canCancelRequest, canReviewRequest, emailLink, mapLink, mobileId, mobilePaidTier, mobileRow, mobileSection, mobileWorkspace, phoneLink } from "../apps/website/src/lib/mobile-workspace";
 import { parseMobileCommand } from "../apps/website/src/lib/server/mobile-workspace-write";
 import { requireMobileAdmin, type MobileActor } from "../apps/website/src/lib/server/mobile-workspace-access";
 import { workspaceRecord } from "../apps/website/src/lib/server/mobile-workspace-read";
@@ -18,6 +18,7 @@ describe("Native workspace contracts", () => {
     expect(() => parseMobileCommand({ action: "promote-myself" })).toThrow();
     expect(() => parseMobileCommand([])).toThrow();
     expect(parseMobileCommand({ action: "profile", value1: " Name ", role: "admin" })).not.toHaveProperty("role");
+    expect(parseMobileCommand({ action: "partner-listing-duplicate", id: "deal", businessId: "business" })).toMatchObject({ action: "partner-listing-duplicate", id: "deal" });
   });
   it("never trusts a profile role for admin authorization", () => {
     expect(() => requireMobileAdmin({ isAdmin: false } as MobileActor)).toThrow("Administrator access");
@@ -62,5 +63,11 @@ describe("Native workspace contracts", () => {
     const row = workspaceRecord("businesses", "b", { name: "Venue", stripeCustomerId: "private", ownerIds: ["owner"], email: "owner@example.test" });
     expect(row).not.toHaveProperty("stripeCustomerId");
     expect(row).not.toHaveProperty("ownerIds");
+  });
+  it("creates launchable contact links only from plausible contact data", () => {
+    expect(emailLink("Partner@Example.com")).toBe("mailto:partner@example.com");
+    expect(emailLink("not-an-email")).toBe("");
+    expect(phoneLink("+1 (305) 555-0123")).toBe("tel:+13055550123");
+    expect(phoneLink("123")).toBe("");
   });
 });

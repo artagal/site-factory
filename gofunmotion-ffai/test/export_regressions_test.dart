@@ -1,8 +1,32 @@
 import 'dart:io';
 import 'package:test/test.dart';
+import '../lib/flutterflow_project.dart' as ff;
 
 // These checks inspect FlutterFlow's output, not just the authoring DSL.
 void main() {
+  test('Mature booking and deal-reuse workflows survive Builder readback', () {
+    for (final entry in [
+      (ff.Pages.partnerDealEditorPage, 'DealEditorReuseCard'),
+      (ff.Pages.partnerInboxPage, 'BookingRequestCard'),
+      (ff.Pages.customerRequestsPage, 'BookingRequestCard'),
+      (ff.Pages.partnerRequestDetailPage, 'RequestExperienceSection'),
+      (ff.Pages.customerRequestDetailPage, 'ConfirmedPartnerContactCard'),
+      (ff.Pages.partnerListingOverviewPage, 'DuplicateDealCard'),
+    ]) {
+      expect(
+        entry.$1.widgets.all.where((node) => node.name == entry.$2),
+        isNotEmpty,
+        reason: '${entry.$1.name} should retain ${entry.$2}',
+      );
+    }
+    expect(
+      File(
+        'generated_code/lib/partner/partner_listing_overview_page/partner_listing_overview_page_widget.dart',
+      ).readAsStringSync(),
+      contains('partner-listing-duplicate'),
+    );
+  });
+
   final available = Directory('generated_code/lib').existsSync();
   String page(String name) =>
       File(
@@ -18,7 +42,7 @@ void main() {
           for (final name in ['discover_page', 'deals_page']) {
             final source = page(name);
             expect(source, contains('getOpenDealFeedCall'));
-        expect(source.contains('goFunMotionListingReference'), isTrue);
+            expect(source.contains('goFunMotionListingReference'), isTrue);
             expect(source, isNot(contains('Demo Clay House')));
             expect(source, isNot(contains('onPressed: () async {}')));
             expect(source, contains('NeverScrollableScrollPhysics'));

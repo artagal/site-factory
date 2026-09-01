@@ -191,6 +191,7 @@ void buildGoFunMotionDealsQueryGuard(App app) {
     improveTitle: api.partnerCopyTitle,
     improveDescription: api.partnerCopyDescription,
     dashboard: ff.Pages.partnerDashboardPage,
+    partnerListings: workspacePage('PartnerListingsPage'),
     signIn: ff.Pages.signInPage,
   );
   _wireAiAssistants(app, api, dealEditor);
@@ -206,6 +207,13 @@ void buildGoFunMotionDealsQueryGuard(App app) {
   _ensureAppearanceControls(app);
   ensureNativeSubscription(app);
   _ensureNativeVisualSystem(app);
+  if (existingEditors.isNotEmpty) {
+    ensurePartnerDealReuseCard(
+      app,
+      existingEditors.single,
+      workspacePage('PartnerListingsPage'),
+    );
+  }
   app.raw(disableNativeAuthAutoNavigation);
   app.raw(verifyPartnerDealScreenStructure);
 }

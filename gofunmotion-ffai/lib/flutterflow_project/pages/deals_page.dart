@@ -173,26 +173,26 @@ abstract final class DealsPageWidgets {
             name: "Column",
             children: <ffai.ProjectWidgetHandle>[
               ffai.ProjectWidgetHandle(
-                key: "Column_754jxxa5",
+                key: "Column_3go9zx6y",
                 type: "Column",
                 path: "DealsPage.body[0].children[0]",
                 name: "MarketplaceBrowsePanel",
                 children: <ffai.ProjectWidgetHandle>[
                   ffai.ProjectWidgetHandle(
-                    key: "Row_4a2763mt",
+                    key: "Row_0ey5gt6s",
                     type: "Row",
                     path: "DealsPage.body[0].children[0].children[0]",
                     name: "Row",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Text_linj4n1c",
+                        key: "Text_bl5q31qx",
                         type: "Text",
                         path: "DealsPage.body[0].children[0].children[0].children[0]",
                         name: "Text",
                         text: "Tonight's deals",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_ye9q65ho",
+                        key: "Text_vwz75jt7",
                         type: "Text",
                         path: "DealsPage.body[0].children[0].children[0].children[1]",
                         name: "Text",
@@ -201,13 +201,13 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Row_1es122h4",
+                    key: "Row_5ctbkhw5",
                     type: "Row",
                     path: "DealsPage.body[0].children[0].children[1]",
                     name: "Row",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Button_nionqow9",
+                        key: "Button_2d398lqw",
                         type: "Button",
                         path: "DealsPage.body[0].children[0].children[1].children[0]",
                         name: "BrowseCityPicker",
@@ -216,7 +216,7 @@ abstract final class DealsPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "DropDown_tz7558hl",
+                        key: "DropDown_a05gjlnk",
                         type: "DropDown",
                         path: "DealsPage.body[0].children[0].children[1].children[1]",
                         name: "BrowseWhenFilter",
@@ -225,7 +225,7 @@ abstract final class DealsPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "IconButton_usqh0sga",
+                        key: "IconButton_ol70q15h",
                         type: "IconButton",
                         path: "DealsPage.body[0].children[0].children[1].children[2]",
                         name: "BrowseMoreFilters",
@@ -236,13 +236,13 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Column_jiy96u9n",
+                    key: "Column_g4h0f2xc",
                     type: "Column",
                     path: "DealsPage.body[0].children[0].children[2]",
                     name: "BrowsecityOptions",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Button_agbc5k23",
+                        key: "Button_uotq5gvf",
                         type: "Button",
                         path: "DealsPage.body[0].children[0].children[2].children[0]",
                         name: "Button",
@@ -252,13 +252,13 @@ abstract final class DealsPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "ListView_r03hkj36",
+                        key: "ListView_mfxprmlc",
                         type: "ListView",
                         path: "DealsPage.body[0].children[0].children[2].children[1]",
                         name: "BrowsecityOptionList",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Button_z7lbkuzi",
+                            key: "Button_fd8imtep",
                             type: "Button",
                             path: "DealsPage.body[0].children[0].children[2].children[1].children[0]",
                             name: "Button",
@@ -271,7 +271,7 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_rrjvdasp",
+                    key: "Button_nyav80ck",
                     type: "Button",
                     path: "DealsPage.body[0].children[0].children[3]",
                     name: "BrowseCategoryPicker",
@@ -280,13 +280,13 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Column_3mim6sf4",
+                    key: "Column_095u8fao",
                     type: "Column",
                     path: "DealsPage.body[0].children[0].children[4]",
                     name: "BrowsecategoryOptions",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Button_fz01ofi9",
+                        key: "Button_xinoj8qk",
                         type: "Button",
                         path: "DealsPage.body[0].children[0].children[4].children[0]",
                         name: "Button",
@@ -296,13 +296,13 @@ abstract final class DealsPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "ListView_vxlgu1ft",
+                        key: "ListView_duec0j20",
                         type: "ListView",
                         path: "DealsPage.body[0].children[0].children[4].children[1]",
                         name: "BrowsecategoryOptionList",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Button_1b77hxzz",
+                            key: "Button_ecybh8j2",
                             type: "Button",
                             path: "DealsPage.body[0].children[0].children[4].children[1].children[0]",
                             name: "Button",
@@ -315,7 +315,7 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "DropDown_8vkcxwlv",
+                    key: "DropDown_xbet0fu3",
                     type: "DropDown",
                     path: "DealsPage.body[0].children[0].children[5]",
                     name: "BrowseBudgetFilter",
@@ -324,7 +324,7 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_9ndpnavf",
+                    key: "Button_mbtku806",
                     type: "Button",
                     path: "DealsPage.body[0].children[0].children[6]",
                     name: "Button",
@@ -334,26 +334,26 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "ProgressBar_92v5oyw6",
+                    key: "ProgressBar_z9tac9gz",
                     type: "ProgressBar",
                     path: "DealsPage.body[0].children[0].children[7]",
                     name: "ProgressBar",
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Column_2ahy9nfw",
+                    key: "Column_w1fui9k4",
                     type: "Column",
                     path: "DealsPage.body[0].children[0].children[8]",
                     name: "BrowseLoadError",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Text_86y8ob2i",
+                        key: "Text_16rii3w1",
                         type: "Text",
                         path: "DealsPage.body[0].children[0].children[8].children[0]",
                         name: "Text",
                         text: "Deals could not load. Check your connection and try again.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_s8lval3v",
+                        key: "Button_tajc5rls",
                         type: "Button",
                         path: "DealsPage.body[0].children[0].children[8].children[1]",
                         name: "Button",
@@ -363,7 +363,7 @@ abstract final class DealsPageWidgets {
                         ],
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_x7t3m9f6",
+                        key: "Button_wdd7rrlc",
                         type: "Button",
                         path: "DealsPage.body[0].children[0].children[8].children[2]",
                         name: "Button",
@@ -375,27 +375,27 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Column_j8tlyscs",
+                    key: "Column_od63xgls",
                     type: "Column",
                     path: "DealsPage.body[0].children[0].children[9]",
                     name: "BrowseEmptyState",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Text_upci6vjl",
+                        key: "Text_jirhayt4",
                         type: "Text",
                         path: "DealsPage.body[0].children[0].children[9].children[0]",
                         name: "Text",
                         text: "No open deals match yet",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Text_de7ezemv",
+                        key: "Text_tmi1jq30",
                         type: "Text",
                         path: "DealsPage.body[0].children[0].children[9].children[1]",
                         name: "Text",
                         text: "Try another time or category, or join the city waitlist.",
                       ),
                       ffai.ProjectWidgetHandle(
-                        key: "Button_zsjvv3ni",
+                        key: "Button_kye7il5g",
                         type: "Button",
                         path: "DealsPage.body[0].children[0].children[9].children[2]",
                         name: "Button",
@@ -407,55 +407,55 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "ListView_cka9v7qm",
+                    key: "ListView_t4jbexnd",
                     type: "ListView",
                     path: "DealsPage.body[0].children[0].children[10]",
                     name: "MarketplaceDealList",
                     children: <ffai.ProjectWidgetHandle>[
                       ffai.ProjectWidgetHandle(
-                        key: "Container_6nf9iorc",
+                        key: "Container_jcgag62j",
                         type: "Container",
                         path: "DealsPage.body[0].children[0].children[10].children[0]",
                         name: "MarketplaceDealCard",
                         children: <ffai.ProjectWidgetHandle>[
                           ffai.ProjectWidgetHandle(
-                            key: "Column_tisaw547",
+                            key: "Column_vl389too",
                             type: "Column",
                             path: "DealsPage.body[0].children[0].children[10].children[0].children[0]",
                             name: "Column",
                             children: <ffai.ProjectWidgetHandle>[
                               ffai.ProjectWidgetHandle(
-                                key: "Image_tz67appw",
+                                key: "Image_9ho0hq3u",
                                 type: "Image",
                                 path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[0]",
                                 name: "Image",
                               ),
                               ffai.ProjectWidgetHandle(
-                                key: "Container_lc8eyyhv",
+                                key: "Container_m7hrcdvo",
                                 type: "Container",
                                 path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1]",
                                 name: "Container",
                                 children: <ffai.ProjectWidgetHandle>[
                                   ffai.ProjectWidgetHandle(
-                                    key: "Column_wt944nzj",
+                                    key: "Column_uifb5tv1",
                                     type: "Column",
                                     path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0]",
                                     name: "Column",
                                     children: <ffai.ProjectWidgetHandle>[
                                       ffai.ProjectWidgetHandle(
-                                        key: "Row_9ff5jacg",
+                                        key: "Row_rbx3zus9",
                                         type: "Row",
                                         path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[0]",
                                         name: "Row",
                                         children: <ffai.ProjectWidgetHandle>[
                                           ffai.ProjectWidgetHandle(
-                                            key: "Container_l1i29zyc",
+                                            key: "Container_kuciraky",
                                             type: "Container",
                                             path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[0].children[0]",
                                             name: "Container",
                                             children: <ffai.ProjectWidgetHandle>[
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_4gnzc94s",
+                                                key: "Text_9l3qgrnf",
                                                 type: "Text",
                                                 path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[0].children[0].children[0]",
                                                 name: "Text",
@@ -463,13 +463,13 @@ abstract final class DealsPageWidgets {
                                             ],
                                           ),
                                           ffai.ProjectWidgetHandle(
-                                            key: "Container_y567qqyr",
+                                            key: "Container_75d7lchy",
                                             type: "Container",
                                             path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[0].children[1]",
                                             name: "Container",
                                             children: <ffai.ProjectWidgetHandle>[
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_gpk74gk2",
+                                                key: "Text_k6vprqp8",
                                                 type: "Text",
                                                 path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[0].children[1].children[0]",
                                                 name: "Text",
@@ -479,38 +479,38 @@ abstract final class DealsPageWidgets {
                                         ],
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_g7awdqm9",
+                                        key: "Text_cg3q70ve",
                                         type: "Text",
                                         path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[1]",
                                         name: "Text",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Container_p4swibd8",
+                                        key: "Container_not7vx18",
                                         type: "Container",
                                         path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[2]",
                                         name: "Container",
                                         children: <ffai.ProjectWidgetHandle>[
                                           ffai.ProjectWidgetHandle(
-                                            key: "Row_qla5209u",
+                                            key: "Row_fvg1bz30",
                                             type: "Row",
                                             path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[2].children[0]",
                                             name: "Row",
                                             children: <ffai.ProjectWidgetHandle>[
                                               ffai.ProjectWidgetHandle(
-                                                key: "Column_6f9dlcee",
+                                                key: "Column_6vyfzydj",
                                                 type: "Column",
                                                 path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[2].children[0].children[0]",
                                                 name: "Column",
                                                 children: <ffai.ProjectWidgetHandle>[
                                                   ffai.ProjectWidgetHandle(
-                                                    key: "Text_25lf3x0m",
+                                                    key: "Text_t2c7kl1e",
                                                     type: "Text",
                                                     path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[2].children[0].children[0].children[0]",
                                                     name: "Text",
                                                     text: "NOW",
                                                   ),
                                                   ffai.ProjectWidgetHandle(
-                                                    key: "Text_8zd4ozcr",
+                                                    key: "Text_7f3i6llp",
                                                     type: "Text",
                                                     path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[2].children[0].children[0].children[1]",
                                                     name: "Text",
@@ -518,7 +518,7 @@ abstract final class DealsPageWidgets {
                                                 ],
                                               ),
                                               ffai.ProjectWidgetHandle(
-                                                key: "Text_cvh8j0g0",
+                                                key: "Text_08eqc3cd",
                                                 type: "Text",
                                                 path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[2].children[0].children[1]",
                                                 name: "Text",
@@ -528,13 +528,13 @@ abstract final class DealsPageWidgets {
                                         ],
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Text_qn9soghy",
+                                        key: "Text_g1tbzaj0",
                                         type: "Text",
                                         path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[3]",
                                         name: "Text",
                                       ),
                                       ffai.ProjectWidgetHandle(
-                                        key: "Button_9hqk5lwe",
+                                        key: "Button_gqt5oz10",
                                         type: "Button",
                                         path: "DealsPage.body[0].children[0].children[10].children[0].children[0].children[1].children[0].children[4]",
                                         name: "BrowseOpenDeal",
@@ -554,7 +554,7 @@ abstract final class DealsPageWidgets {
                     ],
                   ),
                   ffai.ProjectWidgetHandle(
-                    key: "Button_uqydzk37",
+                    key: "Button_bdl4a9uj",
                     type: "Button",
                     path: "DealsPage.body[0].children[0].children[11]",
                     name: "BrowseRefreshDeals",
@@ -566,7 +566,7 @@ abstract final class DealsPageWidgets {
                 ],
               ),
               ffai.ProjectWidgetHandle(
-                key: "Button_ydzh16od",
+                key: "Button_f50errws",
                 type: "Button",
                 path: "DealsPage.body[0].children[1]",
                 name: "MobileSmartSearchPanel",

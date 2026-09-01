@@ -24,13 +24,14 @@ Object ensurePartnerDealEditor(
   required Endpoint improveTitle,
   required Endpoint improveDescription,
   required Object dashboard,
+  required Object partnerListings,
   required Object signIn,
 }) {
   if (existingPage != null) {
-    if (!existingPage.widgets.all.any(
-      (widget) => widget.name == 'DealEditorCategoryLabel',
-    )) {
-      app.editPage(existingPage, (page) {
+    app.editPage(existingPage, (page) {
+      if (!existingPage.widgets.all.any(
+        (widget) => widget.name == 'DealEditorCategoryLabel',
+      )) {
         page.ensureInsertedBefore(
           existingPage.widgets.all.singleWhere(
             (widget) => widget.name == 'DealEditorCategoryDropdown',
@@ -41,8 +42,8 @@ Object ensurePartnerDealEditor(
             style: Styles.labelMedium,
           ),
         );
-      });
-    }
+      }
+    });
     app.raw(bindPartnerDealEditorValues);
     return existingPage;
   }
@@ -100,6 +101,7 @@ Object ensurePartnerDealEditor(
               style: Styles.bodyMedium,
               color: Colors.secondaryText,
             ),
+            _reuseDealCard(partnerListings),
             TextField(name: 'DealEditorTitleField', label: 'Title'),
             _copyButton(
               endpoint: improveTitle,
@@ -242,6 +244,70 @@ Object ensurePartnerDealEditor(
   app.raw(bindPartnerDealEditorValues);
   return page;
 }
+
+void ensurePartnerDealReuseCard(
+  App app,
+  ProjectPageHandle page,
+  Object partnerListings,
+) {
+  app.editPage(page, (edit) {
+    final reuse = page.widgets.all.where(
+      (widget) => widget.name == 'DealEditorReuseCard',
+    );
+    if (reuse.isEmpty) {
+      edit.ensureInsertedBefore(
+        page.widgets.all.singleWhere(
+          (widget) => widget.name == 'DealEditorTitleField',
+        ),
+        _reuseDealCard(partnerListings),
+      );
+    } else {
+      edit.ensureReplaced(reuse.single, _reuseDealCard(partnerListings));
+    }
+  });
+}
+
+Container _reuseDealCard(Object partnerListings) => Container(
+  name: 'DealEditorReuseCard',
+  width: double.infinity,
+  padding: const EdgeInsets.all(14),
+  borderRadius: 8,
+  color: Colors.secondaryBackground,
+  borderColor: Colors.alternate,
+  borderWidth: 1,
+  child: Column(
+    crossAxis: CrossAxis.start,
+    spacing: 10,
+    children: [
+      Row(
+        spacing: 10,
+        children: [
+          const Icon('history_outlined', size: 22, color: Colors.tertiary),
+          Expanded(Text('Reuse a past deal', style: Styles.titleSmall)),
+        ],
+      ),
+      Text(
+        'Open an existing deal, duplicate it as a private draft, then add new availability and spots.',
+        style: Styles.bodySmall,
+        color: Colors.secondaryText,
+      ),
+      Button(
+        'Choose a past deal',
+        name: 'DealEditorChoosePastDealButton',
+        icon: 'content_copy_outlined',
+        width: double.infinity,
+        height: 48,
+        borderRadius: 8,
+        variant: ButtonVariant.outlined,
+        textColor: Colors.primaryText,
+        onTap: Navigate(
+          partnerListings,
+          params: {'id': '', 'businessId': const PageParam('businessId')},
+        ),
+      ),
+    ],
+  ),
+);
 
 Button _copyButton({
   required Endpoint endpoint,
