@@ -19,6 +19,23 @@ The old challenge/XP/streak/leaderboard product is deprecated and should not be 
 
 ## FlutterFlow App Status
 
+Reliability pass, 2026-09-06: native commit `xMUPgH4ABKLseVIpyVaE` repairs
+auth return paths, server-verified role routing, independent saved-load outcomes
+and demo-map navigation, plus nested scrolling on Saved. Native changes are pushed
+and read back in a fresh export. Website improvements are live on gofunmotion.com,
+production commit `13e5ddb0`, deployment `dpl_HrNd3uVeQgvX1tQ3dGnzhAW2mPCv`.
+Read `docs/IMPROVEMENTS_2026-09-06.md` for scoped verification and gaps.
+
+Release update, 2026-09-06: new build `1.0.0 (7)` is processed (`VALID`), available
+for internal testing and submitted for external beta review (`WAITING_FOR_REVIEW`).
+Build 6 remains rejected historically under Guideline 2.1(a). The dedicated
+customer review account is saved in Apple's protected fields; its production login
+was reverified and the review reply was submitted. Partner/admin access is not
+granted to that customer account. External approval remains pending. The launcher
+alpha-channel publishing error is fixed. Read
+`docs/TESTFLIGHT_RELEASE_STATUS.md` before rebuilding or changing release assets;
+older `No Builds` statements below are historical, not current release evidence.
+
 The current app has **62 Builder-native pages and 7 components**. This includes
 customer/business onboarding, request details and inboxes, profile settings,
 notifications, account deletion, offer maps, moderated reviews, partner plan/team/
@@ -61,9 +78,10 @@ For current verification and unresolved release gates, read
 `docs/FLUTTERFLOW_AI_RELEASE_QA.md` and `docs/FLUTTERFLOW_BUILDER_FRIENDLY_AUDIT.md`.
 Apple Developer and App Store Connect now contain the exact GoFunMotion identifier,
 app record and Growth/Pro subscriptions. FlutterFlow Mobile Deployment has the
-numeric app ID and an active App Store Connect key. Mobile Firebase is still not
-connected in Builder, RevenueCat still needs its private server key/webhook in
-Vercel, and TestFlight reports no builds. The OpenAI key was validated using the
+numeric app ID and an active App Store Connect key. Mobile Firebase configuration
+has since been verified in the export, and TestFlight build `6` was uploaded.
+Current server secrets and real purchase/restore behavior still require live
+verification. The OpenAI key was validated using the
 existing BeautyDrop credential in server-process memory only; deployment still
 needs Vercel env verification.
 

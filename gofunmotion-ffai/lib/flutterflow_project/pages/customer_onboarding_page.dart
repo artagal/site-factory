@@ -27,6 +27,12 @@ final class CustomerOnboardingPageParams {
         key: "dpuxhgb8",
         typeName: "String",
       );
+  ffai.ProjectParamHandle get returnPage =>
+      const ffai.ProjectParamHandle(
+        name: "returnPage",
+        key: "hdbgvgsv",
+        typeName: "String",
+      );
 }
 
 final class CustomerOnboardingPageState {

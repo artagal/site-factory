@@ -46,6 +46,27 @@ App buildPostgresCompileOnly(App app) {
         tickets,
         outputAs: 'tickets',
         query: PostgresQuerySpec(
+          // (priority > 3 AND title != '') OR priority == 5
+          combinator: FilterCombinator.or,
+          filters: [
+            PostgresFilterGroup.and([
+              PostgresFilter(
+                'priority',
+                relation: PostgresFilterRelation.greaterThan,
+                value: 3,
+              ),
+              PostgresFilter(
+                'title',
+                relation: PostgresFilterRelation.notEqualTo,
+                value: '',
+              ),
+            ]),
+            PostgresFilter(
+              'priority',
+              relation: PostgresFilterRelation.equalTo,
+              value: 5,
+            ),
+          ],
           orderBys: const [PostgresOrderBy('priority', ascending: false)],
         ),
       ),

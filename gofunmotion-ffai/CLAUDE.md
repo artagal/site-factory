@@ -540,6 +540,41 @@ Actions.adMobRequestConsent();
 Actions.adMobCheckConsentNotRequired();
 ```
 
+### App names
+
+Set the package name and display name the app ships under. The names live on `project.allAppNames.appNames[<environment>]` — one entry per environment, so `environment` picks which; omit it to target the project's currently selected environment.
+
+`packageName` / `displayName` apply to every platform without an override, and **always** to macOS, Windows, Linux, and the web build — those platforms cannot diverge, so the shared values are never dead weight. The four overrides each fall back to their shared value when empty. Reach for one only when an app's Play Store and App Store listings genuinely differ: a name already taken on one store, an acquired app with split release history, or an iOS name shortened to survive home-screen truncation.
+
+A `null` argument leaves the stored value untouched; an empty string clears it, which for an override means falling back again.
+
+```dart
+app.appNames(
+  packageName: 'com.mycompany.nicethings',
+  displayName: 'Nice Things',
+);
+
+// Diverging identities — Android keeps the shared package name, iOS pins its own:
+app.appNames(
+  packageName: 'com.mycompany.nicethings',
+  displayName: 'Nice Things Marketplace',
+  iosBundleId: 'com.nicethings.ios',
+  iosDisplayName: 'NiceThings',
+);
+
+// A specific environment rather than the selected one:
+app.appNames(packageName: 'com.mycompany.nicethings.dev', environment: 'DEV');
+
+// Brownfield:
+//   configureAppNames(project, iosBundleId: 'com.nicethings.ios');
+//   clearPlatformAppNameOverrides(project);
+//   resolveAndroidPackageName(project); resolveIosBundleId(project);
+//   resolveAndroidAppLabel(project); resolveIosDisplayName(project);
+//   hasPlatformAppNameOverrides(project); appNamesFor(project)
+```
+
+Identifiers must be dotted, may not have a segment starting with a digit, and reject underscores everywhere except `androidPackageName` — only Google Play accepts them. Display names must be 2-30 characters. Violations throw `ArgumentError` at author time rather than surfacing as a push validation error later.
+
 ### Gemini
 
 Enable Gemini and wire the API key. The config lives on `project.appSettings.geminiSettings`. `apiKey` may be a `String` literal or a `secretRef(name)` — **prefer `secretRef` so the literal key never lands in DSL source**. Set the secret out-of-band first (`integrations.set_secret`); the compiler resolves it against the project's environment values. `apiKey` is required.

@@ -15,10 +15,28 @@ final signInPageHandle = ffai.ProjectPageHandle<SignInPageParams, SignInPageStat
 
 final class SignInPageParams {
   const SignInPageParams();
+  ffai.ProjectParamHandle get returnPage =>
+      const ffai.ProjectParamHandle(
+        name: "returnPage",
+        key: "szgjaiq2",
+        typeName: "String",
+      );
 }
 
 final class SignInPageState {
   const SignInPageState();
+  ffai.ProjectStateFieldHandle get accountEntryFailed =>
+      const ffai.ProjectStateFieldHandle(
+        name: "accountEntryFailed",
+        key: "szc6hprj",
+        typeName: "Boolean",
+      );
+  ffai.ProjectStateFieldHandle get accountNeedsOnboarding =>
+      const ffai.ProjectStateFieldHandle(
+        name: "accountNeedsOnboarding",
+        key: "1bmadhi6",
+        typeName: "Boolean",
+      );
   ffai.ProjectStateFieldHandle get displayName =>
       const ffai.ProjectStateFieldHandle(
         name: "displayName",
@@ -174,9 +192,19 @@ abstract final class SignInPageWidgets {
                 ],
               ),
               ffai.ProjectWidgetHandle(
-                key: "Button_vgx2zxkw",
+                key: "Button_225qpv7b",
                 type: "Button",
                 path: "SignInPage.body[0].children[3]",
+                name: "RetryAccountAccessButton",
+                text: "Retry account access",
+                triggers: const <String>[
+                  "ON_TAP",
+                ],
+              ),
+              ffai.ProjectWidgetHandle(
+                key: "Button_vgx2zxkw",
+                type: "Button",
+                path: "SignInPage.body[0].children[4]",
                 name: "GuestSignInButton",
                 text: "Browse without an account",
                 triggers: const <String>[
@@ -186,7 +214,7 @@ abstract final class SignInPageWidgets {
               ffai.ProjectWidgetHandle(
                 key: "Button_bek6zsus",
                 type: "Button",
-                path: "SignInPage.body[0].children[4]",
+                path: "SignInPage.body[0].children[5]",
                 name: "ForgotPasswordButton",
                 text: "Forgot Password?",
                 triggers: const <String>[

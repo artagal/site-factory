@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 type Check = {
   detail?: string;
@@ -267,6 +268,26 @@ function decodeHtml(value: string) {
     .replaceAll("&gt;", ">");
 }
 
+export function isValidPublicSearch(value: unknown): boolean {
+  if (!value || typeof value !== "object") return false;
+  const payload = value as Record<string, unknown>;
+  return payload.ok === true && Number.isInteger(payload.count) &&
+    Array.isArray(payload.listings) && payload.count === payload.listings.length &&
+    payload.listings.every((listing: unknown) => {
+      if (!listing || typeof listing !== "object") return false;
+      const item = listing as Record<string, unknown>;
+      return item.status === "published" && item.approvalStatus === "approved";
+    });
+}
+
+export function isSafeDemoPage(status: number, body: string): boolean {
+  if (status === 404) return true;
+  const robots = firstMatch(body, /<meta name="robots" content="([^"]+)"/);
+  return status === 200 && robots.includes("noindex") &&
+    body.includes("Demo, not bookable") &&
+    body.includes("Booking requests are not open for this example.");
+}
+
 async function checkHtmlPage(
   options: CliOptions,
   pathname: string,
@@ -354,14 +375,13 @@ async function smoke(options: CliOptions): Promise<Check[]> {
   checks.push(...auditEnv(options));
 
   const publicPages = [
-    { path: "/", text: "Find something fun to do today.", title: "GoFunMotion - Find Fun Things To Do Today" },
-    { path: "/find", text: "Tell us what sounds fun.", title: "Find My Plan | GoFunMotion Deals" },
+    { path: "/", text: "Last-minute fun deals near you.", title: "GoFunMotion Deals - Last-Minute Fun Deals Near You" },
+    { path: "/find", text: "Find your next plan.", title: "Find My Plan | GoFunMotion Deals" },
     { path: "/deals", text: "Last-minute fun, for less.", title: "Tonight's Last-Minute Fun Deals | GoFunMotion" },
-    { path: "/pricing", text: "No consumer checkout or paid partner checkout is enabled.", title: "Partner Pricing | GoFunMotion Deals" },
+    { path: "/pricing", text: "Partner pricing for open-slot deals.", title: "Partner Pricing | GoFunMotion Deals" },
     { path: "/partner/apply", text: "Listings stay pending until reviewed", title: "Apply To List Your Business | GoFunMotion Deals" },
     { path: "/support", text: "Help for plans, deals, and partner listings.", title: "Support | GoFunMotion" },
-    { path: "/blog/date-night-ideas-under-50", text: "Turn this article into action", title: "Date Night Ideas Under $50 | GoFunMotion" },
-    { path: "/deals/pottery-date-night-demo", text: "Request availability", title: "Pottery Date Night - 25% Off | GoFunMotion Deals" }
+    { path: "/blog/date-night-ideas-under-50", text: "Turn this article into action", title: "Date Night Ideas Under $50 | GoFunMotion" }
   ];
 
   for (const page of publicPages) {
@@ -374,6 +394,13 @@ async function smoke(options: CliOptions): Promise<Check[]> {
       }))
     );
   }
+
+  const demoResponse = await fetchText(options, "/deals/pottery-date-night-demo");
+  checks.push({
+    detail: demoResponse.error || `HTTP ${demoResponse.status}`,
+    name: "demo listing is unavailable or explicitly non-bookable and noindex",
+    ok: isSafeDemoPage(demoResponse.status, demoResponse.body)
+  });
 
   for (const page of ["/login", "/saved", "/profile", "/partner/dashboard", "/admin"]) {
     checks.push(
@@ -460,8 +487,9 @@ async function smoke(options: CliOptions): Promise<Check[]> {
   });
 
   const { body: searchBody, error: searchError, status: searchStatus } = await checkJson<{
+    ok?: boolean;
     count?: number;
-    listings?: Array<{ approvalStatus?: string; status?: string }>;
+    listings?: Array<{ approvalStatus?: string; status?: string; isDemo?: boolean }>;
   }>(options, "/api/search?cityId=miami&when=tonight&sort=featured");
   checks.push({
     detail: searchError || `HTTP ${searchStatus}`,
@@ -470,20 +498,43 @@ async function smoke(options: CliOptions): Promise<Check[]> {
   });
   checks.push({
     detail: `count=${searchBody?.count ?? "missing"}`,
-    name: "search API returns approved published listings",
-    ok: Boolean(
-      typeof searchBody?.count === "number" &&
-        searchBody.count > 0 &&
-        searchBody.listings?.every((listing) => listing.status === "published" && listing.approvalStatus === "approved")
-    )
+    name: "search API returns only approved published listings or a valid empty result",
+    ok: isValidPublicSearch(searchBody)
   });
+  if (isValidPublicSearch(searchBody) && !searchBody?.listings?.some((listing) => listing.isDemo !== true)) {
+    checks.push({ name: "live inventory for booking QA", ok: false, warning: true,
+      detail: "No matching live offers (demo examples do not count); a real approved offer is still needed for booking QA." });
+  }
 
   const checkoutResponse = await fetchText(options, "/api/checkout/partner-subscription");
   checks.push({
     detail: checkoutResponse.error || `HTTP ${checkoutResponse.status}`,
-    name: "checkout endpoint stays disabled",
+    name: "legacy checkout endpoint stays unavailable",
     ok: checkoutResponse.status === 404
   });
+
+  for (const pathname of ["/api/me/saved-plans", "/api/me/saved-listings", "/api/me/booking-requests"]) {
+    for (const invalidToken of [false, true]) {
+      const response = await fetchText(options, pathname, {
+        headers: invalidToken ? { Authorization: "Bearer release-smoke-invalid-token" } : {},
+        redirect: "manual"
+      });
+      checks.push({
+        detail: response.error || `HTTP ${response.status}`,
+        name: `${pathname} rejects ${invalidToken ? "invalid" : "missing"} authentication`,
+        ok: response.status === 401
+      });
+    }
+  }
+  // A missing session must be rejected before any provider checkout is created.
+  const billingResponse = await fetchText(options, "/api/partner/billing/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ businessId: "release-smoke-no-business", tier: "growth" }),
+    redirect: "manual"
+  });
+  checks.push({ name: "partner checkout requires authentication", ok: billingResponse.status === 401,
+    detail: billingResponse.error || `HTTP ${billingResponse.status}` });
 
   for (const redirect of [
     { from: "/challenge", to: "/find" },
@@ -536,7 +587,9 @@ async function main() {
   printResults(await smoke(options));
 }
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  });
+}
