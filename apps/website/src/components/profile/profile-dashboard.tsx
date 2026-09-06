@@ -6,6 +6,7 @@ import type { User } from "firebase/auth";
 import { Bookmark, CalendarClock, Heart, UserCircle2 } from "lucide-react";
 import { observeUser } from "../../lib/auth";
 import { SaveListingButton } from "../listings/save-listing-button";
+import { SavedPlanCard } from "./saved-plan-card";
 import { isFirebaseConfigured } from "../../lib/firebase";
 import {
   ensureUserProfile,
@@ -110,14 +111,21 @@ export function ProfileDashboard() {
       {loading ? <p className="mt-4 text-sm font-bold text-white/58">Loading saved activity...</p> : null}
       {status ? <p className="mt-4 text-sm text-[var(--accent-amber)]" role="status">{status}</p> : null}
       <button className="mt-3 min-h-11 text-sm font-semibold underline disabled:opacity-50" disabled={loading} onClick={() => setReload((value) => value + 1)} type="button">Refresh account</button>
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div aria-label="Account totals" className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
         <Metric icon={Bookmark} label="Saved plans" value={loading || status ? null : savedPlans.length} />
         <Metric icon={Heart} label="Saved deals" value={loading || status ? null : savedListings.length} />
         <Metric icon={CalendarClock} label="Requests" value={loading || status ? null : bookingRequests.length} />
       </div>
       <div className="mt-6 grid gap-4">
         <section className="border-t border-[var(--border-subtle)] py-4"><h3 className="text-lg font-bold">Saved plans</h3>
-          {savedPlans.map((item) => <details className="mt-3 border-b border-[var(--border-subtle)] pb-3" key={item.planId}><summary className="min-h-11 cursor-pointer py-3 font-semibold">{item.planSnapshot.title}</summary><p className="text-sm leading-6">{item.planSnapshot.summary}</p>{item.planSnapshot.items.map((step, index) => <p className="mt-3 text-sm leading-6" key={index}><strong>{step.title}</strong><br />{step.description}</p>)}</details>)}
+          {savedPlans.map((item) => (
+            <SavedPlanCard
+              item={item}
+              key={`${user.uid}-${item.planId}`}
+              onDeleted={(planId) => setSavedPlans((plans) => plans.filter((plan) => plan.planId !== planId))}
+              user={user}
+            />
+          ))}
           {!savedPlans.length && !status && !loading ? <p className="mt-3 text-sm text-[var(--muted-foreground)]">No saved plans yet.</p> : null}
         </section>
         <section className="border-t border-[var(--border-subtle)] py-4"><h3 className="text-lg font-bold">Saved deals</h3>
@@ -140,10 +148,10 @@ function formatProfileError(error: unknown) {
 
 function Metric({ icon: Icon, label, value }: { icon: typeof Bookmark; label: string; value: number | null }) {
   return (
-    <div className="rounded-lg bg-black/24 p-4">
-      <Icon aria-hidden="true" className="text-lime-200" size={22} />
-      <p className="mt-3 text-3xl font-black text-white">{value ?? "-"}</p>
-      <p className="mt-1 text-xs font-black uppercase tracking-[0.12em] text-white/42">{label}</p>
+    <div className="min-w-0 rounded-lg bg-[var(--panel)] px-2 py-3 sm:p-4">
+      <Icon aria-hidden="true" className="text-[var(--accent-lime)]" size={20} />
+      <p className="mt-2 break-words text-2xl font-black tabular-nums text-[var(--foreground)] sm:text-3xl">{value ?? "-"}</p>
+      <p className="mt-1 text-xs font-semibold leading-5 text-[var(--muted-foreground)]">{label}</p>
     </div>
   );
 }
