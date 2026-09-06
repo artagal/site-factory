@@ -43,14 +43,17 @@ export function parsePlanFinderInput(searchParams: Record<string, string | strin
 
 export function buildSuggestedPlan(input: PlanFinderInput, inventory: Listing[] = getPublishedListings()): SuggestedPlan {
   const cityName = input.city || "your city";
-  const directMatches = input.cityId ? filterListingCollection(inventory, input) : [];
+  const eligibleInventory = inventory.filter((listing) => Number.isFinite(listing.price) && listing.price >= 0);
+  const directMatches = input.cityId ? filterListingCollection(eligibleInventory, input) : [];
   const selected = [...new Map(directMatches.map((listing) => [listing.id, listing])).values()].slice(0, 3);
   const first = selected[0];
   const waitlistRecommended = !selected.length;
 
   return {
     backupSuggestions: buildBackups(input),
-    estimatedTotalBudget: estimateBudget(selected.map((listing) => listing.price)),
+    estimatedTotalBudget: input.budget === "free"
+      ? "Free activities; verify local access and travel costs"
+      : estimateBudget(selected.map((listing) => listing.price)),
     estimatedTotalTime: estimateTime(selected.map((listing) => listing.durationMinutes), input.timeAvailable),
     id: `plan-${cityName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${input.when}-${input.who}-${input.vibe}`,
     input,
@@ -59,7 +62,9 @@ export function buildSuggestedPlan(input: PlanFinderInput, inventory: Listing[] 
         category: "Warm-up",
         ctaLabel: "Start here",
         description: buildWarmup(input),
-        estimatedPrice: "Free",
+        estimatedPrice: input.budget !== "free" && ["date", "family", "kids"].includes(input.who)
+          ? "Varies; purchases optional"
+          : "Free",
         time: "15-30 min",
         title: `${formatWhen(input.when)} warm-up`,
         whyItFits: "It gives the plan a low-pressure start before the main activity."
@@ -90,7 +95,7 @@ export function buildSuggestedPlan(input: PlanFinderInput, inventory: Listing[] 
         category: "Backup",
         ctaLabel: "Save backup",
         description: buildBackupLine(input),
-        estimatedPrice: getBudgetRangeLabel(input.budget),
+        estimatedPrice: input.budget === "free" ? "Free idea; verify locally" : "Varies; check local prices",
         time: "30-60 min",
         title: "Backup if plans change",
         whyItFits: "A fallback keeps the night from collapsing if availability changes."
@@ -114,6 +119,13 @@ export function getBudgetRangeLabel(budget: BudgetTier | "flexible") {
 
 function buildBackups(input: PlanFinderInput) {
   const cityName = input.city || "your city";
+  if (input.budget === "free") {
+    return [
+      buildFreeBackup(input),
+      "Stay in and play a conversation or word game using what you already have.",
+      "Check free entry, opening hours, and any travel or parking costs before leaving."
+    ];
+  }
   return [
     `${cityName} coffee or dessert stop`,
     input.indoorOutdoor === "outdoor" ? "Indoor cafe backup if weather changes" : "Nearby walk if you want to extend the plan",
@@ -122,10 +134,18 @@ function buildBackups(input: PlanFinderInput) {
 }
 
 function buildBackupLine(input: PlanFinderInput) {
+  if (input.budget === "free") return buildFreeBackup(input);
   if (input.who === "family" || input.who === "kids") return "Choose a nearby indoor activity or dessert stop that keeps kids comfortable.";
   if (input.who === "date") return "Pick a cozy dessert or coffee stop nearby if the main activity is full.";
   if (input.who === "friends") return "Send the group one backup with a clear time so the decision stays easy.";
   return "Keep one low-effort option nearby so the plan still works.";
+}
+
+function buildFreeBackup(input: PlanFinderInput) {
+  if (input.indoorOutdoor === "outdoor") {
+    return "Choose a nearby public walking route with no entry fee if weather permits. Otherwise, stay in for a conversation game.";
+  }
+  return "Look for a free library exhibit or reading area nearby. Verify free entry and opening hours; a word game at home is another no-purchase option.";
 }
 
 function buildPlanTitle(input: PlanFinderInput) {
@@ -135,6 +155,13 @@ function buildPlanTitle(input: PlanFinderInput) {
 }
 
 function buildWarmup(input: PlanFinderInput) {
+  if (input.budget === "free") {
+    if (input.who === "friends") return "Send the group the free options and agree on a meeting time before leaving.";
+    if (input.who === "family" || input.who === "kids") return "Start with a quick word or imagination game at home before the main activity. No supplies or purchases needed.";
+    return input.indoorOutdoor === "indoor"
+      ? "Start with a relaxed conversation or a quiet pause at home. No purchases needed."
+      : "Start with a short neighborhood walk on a public route with no entry fee. Check access and weather before leaving.";
+  }
   if (input.who === "date") return "Start with a short walk or coffee so the plan has an easy first yes.";
   if (input.who === "friends") return "Send the group the top two options and ask for a fast vote.";
   if (input.who === "family" || input.who === "kids") return "Start with a snack or short drive buffer before the main activity.";
@@ -148,7 +175,7 @@ function estimateBudget(prices: number[]) {
 }
 
 function estimateTime(minutes: number[], timeAvailable: PlanFinderInput["timeAvailable"]) {
-  if (!minutes.length) return timeAvailable.replace("-", " ");
+  if (!minutes.length) return formatDuration({ "30min": 30, "1hour": 60, "2hours": 120, "half-day": 240, evening: 300 }[timeAvailable]);
   const total = minutes.reduce((sum, item) => sum + item, 30);
   return formatDuration(Math.min(total, 360));
 }

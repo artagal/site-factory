@@ -103,13 +103,22 @@ export function getFirebaseAdminMessaging() {
 }
 
 export async function verifyBearerToken(request: Request) {
-  const auth = getFirebaseAdminAuth();
   const header = request.headers.get("authorization") ?? "";
   const token = header.match(/^Bearer\s+(.+)$/i)?.[1];
+  if (!token) return null;
+  const auth = getFirebaseAdminAuth();
+  if (!auth) return null;
 
-  if (!auth || !token) return null;
-
-  return auth.verifyIdToken(token);
+  try {
+    return await auth.verifyIdToken(token, true);
+  } catch (error) {
+    const code = error && typeof error === "object" && "code" in error ? error.code : undefined;
+    if (typeof code === "string" && [
+      "auth/argument-error", "auth/invalid-id-token", "auth/id-token-expired",
+      "auth/id-token-revoked", "auth/user-disabled", "auth/user-not-found"
+    ].includes(code)) return null;
+    throw error;
+  }
 }
 
 export { FieldValue };

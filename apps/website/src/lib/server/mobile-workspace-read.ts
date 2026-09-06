@@ -94,7 +94,7 @@ export async function readPublicWorkspace(section: MobileSection, id: string, ci
     return [mobileRow(listing.id, { title: listing.title, subtitle: `${listing.cityName} | ${listing.businessName}`,
       detail: listing.isDemo ? "Approximate demo location. This offer is not bookable." : mobileText(business.addressLine1),
       status: listing.isDemo ? "Demo / Not bookable" : "Reviewed partner",
-      value: `${listing.currency} ${listing.price}`, referenceId: listing.id, businessId: listing.businessId, mapUrl: url,
+      value: `${listing.currency} ${listing.price}`, referenceId: listing.isDemo ? "" : listing.id, businessId: listing.businessId, mapUrl: url,
       mapEmbedUrl: embeddedMapLink(business.latitude, business.longitude) })];
   }).sort((a, b) => a.id.localeCompare(b.id));
   const start = cursor ? located.findIndex((item) => item.id === cursor) + 1 : 0;

@@ -61,9 +61,9 @@ export function HomeHero() {
 
       <div className="absolute bottom-5 right-5 hidden items-end gap-3 lg:flex">
         <div className="home-hero__offer-card rounded-lg px-4 py-3 text-right shadow-2xl backdrop-blur-xl">
-          <p className="home-hero__offer-label text-xs font-bold uppercase">Open tonight</p>
-          <p className="home-hero__offer-value mt-1 text-2xl font-black">Save up to 50%</p>
-          <p className="home-hero__offer-note mt-1 text-xs">Request first. Pay only after confirmation.</p>
+          <p className="home-hero__offer-label text-xs font-bold uppercase">Booking requests</p>
+          <p className="home-hero__offer-value mt-1 text-2xl font-black">Request your spot</p>
+          <p className="home-hero__offer-note mt-1 text-xs">The partner confirms availability.</p>
         </div>
       </div>
     </section>

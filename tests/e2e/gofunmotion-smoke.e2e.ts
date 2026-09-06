@@ -15,14 +15,16 @@ async function expectNoHorizontalOverflow(page: Page) {
 }
 
 test.describe("GoFunMotion Deals smoke", () => {
-  test("homepage keeps the premium deal-first hero and compact sticky filters", async ({ page }) => {
+  test("homepage keeps the premium deal-first hero and compact sticky filters", async ({ page }, testInfo) => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { name: "Last-minute fun deals near you." })).toBeVisible();
-    await expect(page.getByRole("link", { name: "See Tonight's Deals" })).toHaveAttribute("href", "/deals?when=tonight");
+    await expect(page.getByRole("link", { name: "Browse tonight's deals", exact: true })).toHaveAttribute("href", "/deals?when=tonight");
     await expect(page.getByLabel("City")).toBeVisible();
     await expect(page.getByLabel("When")).toHaveValue("tonight");
+    await expect(page.getByText("Save up to 50%", { exact: true })).toHaveCount(0);
     await expectNoHorizontalOverflow(page);
+    await page.screenshot({ path: testInfo.outputPath("homepage.png"), scale: "css" });
 
     const filterBar = page.locator(".deal-filter-bar");
     await filterBar.scrollIntoViewIfNeeded();
@@ -33,11 +35,14 @@ test.describe("GoFunMotion Deals smoke", () => {
       if (!header || !filters) return null;
       return {
         filterTop: Math.round(filters.getBoundingClientRect().top),
+        filterHeight: Math.round(filters.getBoundingClientRect().height),
         headerBottom: Math.round(header.getBoundingClientRect().bottom)
       };
     });
     expect(stickyPosition).not.toBeNull();
     expect(Math.abs(stickyPosition!.filterTop - stickyPosition!.headerBottom)).toBeLessThanOrEqual(2);
+    if (page.viewportSize()!.width < 768) expect(stickyPosition!.filterHeight).toBeLessThanOrEqual(84);
+    await page.screenshot({ path: testInfo.outputPath("sticky-filters.png"), scale: "css" });
   });
 
   test("find plan route submits the rule-based plan form", async ({ page }) => {
@@ -62,7 +67,7 @@ test.describe("GoFunMotion Deals smoke", () => {
     expect(page.url()).toContain("when=tonight");
     expect(page.url()).toContain("who=friends");
     await expect(page.getByRole("heading", { name: /Austin/i })).toBeVisible();
-    await expect(page.getByText("Your deal plan")).toBeVisible();
+    await expect(page.getByRole("main").getByText("Your deal plan", { exact: true })).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
 

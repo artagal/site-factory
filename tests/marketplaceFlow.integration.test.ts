@@ -14,6 +14,7 @@ import { POST as createPartnerListing } from "../apps/website/src/app/api/partne
 import { GET as searchListings } from "../apps/website/src/app/api/search/route";
 import { POST as processStripeWebhook } from "../apps/website/src/app/api/webhooks/stripe/route";
 import { getFirebaseAdminAuth, getFirebaseAdminDb } from "../apps/website/src/lib/server/firebase-admin";
+import { activePartnerTier } from "../apps/website/src/lib/partner-entitlements";
 
 const hasFirebaseEmulators = Boolean(
   process.env.FIRESTORE_EMULATOR_HOST && process.env.FIREBASE_AUTH_EMULATOR_HOST
@@ -323,11 +324,15 @@ describeWithEmulators("GoFunMotion marketplace lifecycle", () => {
     });
     expect(business.data()).toMatchObject({
       paidAccessEnabled: true,
-      pricingTier: "growth"
+      pricingTier: "growth",
+      subscriptionStatus: "active",
+      subscriptionProvider: "stripe",
+      subscriptionCurrentPeriodEnd: new Date(activeStripeEvent.data.object.items.data[0].current_period_end * 1000).toISOString()
     });
+    expect(activePartnerTier(business.data()!)).toBe("growth");
     expect(business.data()).not.toHaveProperty("stripeCustomerId");
     expect(business.data()).not.toHaveProperty("stripeSubscriptionId");
-    expect(business.data()).not.toHaveProperty("subscriptionStatus");
+    expect(business.data()).not.toHaveProperty("nativeSubscription");
     expect(customerNotifications.size).toBeGreaterThanOrEqual(2);
     expect(ownerNotifications.size).toBeGreaterThanOrEqual(1);
     expect(savedListing.exists).toBe(true);
