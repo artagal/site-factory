@@ -35,6 +35,8 @@ import 'pages/deals_page.dart' show dealsPageHandle;
 import 'pages/delete_account_page.dart' show deleteAccountPageHandle;
 import 'pages/discover_page.dart' show discoverPageHandle;
 import 'pages/edit_profile_page.dart' show editProfilePageHandle;
+import 'pages/example_activities_page.dart' show exampleActivitiesPageHandle;
+import 'pages/example_activity_page.dart' show exampleActivityPageHandle;
 import 'pages/find_plan_page.dart' show findPlanPageHandle;
 import 'pages/intro_onboarding_page.dart' show introOnboardingPageHandle;
 import 'pages/listing_reviews_page.dart' show listingReviewsPageHandle;
@@ -99,6 +101,8 @@ abstract final class Pages {
   static final deleteAccountPage = deleteAccountPageHandle;
   static final discoverPage = discoverPageHandle;
   static final editProfilePage = editProfilePageHandle;
+  static final exampleActivitiesPage = exampleActivitiesPageHandle;
+  static final exampleActivityPage = exampleActivityPageHandle;
   static final findPlanPage = findPlanPageHandle;
   static final introOnboardingPage = introOnboardingPageHandle;
   static final listingReviewsPage = listingReviewsPageHandle;
@@ -162,6 +166,8 @@ abstract final class Pages {
     deleteAccountPage,
     discoverPage,
     editProfilePage,
+    exampleActivitiesPage,
+    exampleActivityPage,
     findPlanPage,
     introOnboardingPage,
     listingReviewsPage,

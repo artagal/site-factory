@@ -11,6 +11,45 @@ abstract final class Enums {
 }
 
 abstract final class Structs {
+  static final ffai.StructHandle discoveryCatalogV1 = ffai.StructHandle(
+    "DiscoveryCatalogV1",
+    <String, ffai.DslType>{
+      "cards": ffai.listOf(Structs.discoveryOfferV1),
+      "cities": ffai.listOf(Structs.mobileAssistantCity),
+      "empty": ffai.bool_,
+      "isDemo": ffai.bool_,
+      "mapUrl": ffai.string,
+      "notice": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
+  static final ffai.StructHandle discoveryOfferV1 = ffai.StructHandle(
+    "DiscoveryOfferV1",
+    <String, ffai.DslType>{
+      "businessName": ffai.string,
+      "canRequestBooking": ffai.bool_,
+      "cityId": ffai.string,
+      "cityName": ffai.string,
+      "description": ffai.string,
+      "discountLabel": ffai.string,
+      "durationLabel": ffai.string,
+      "environmentLabel": ffai.string,
+      "groupLabel": ffai.string,
+      "hasLocation": ffai.bool_,
+      "id": ffai.string,
+      "imageUrl": ffai.string,
+      "isDemo": ffai.bool_,
+      "listingId": ffai.string,
+      "locationLabel": ffai.string,
+      "priceLabel": ffai.string,
+      "spotsLabel": ffai.string,
+      "terms": ffai.string,
+      "timeLabel": ffai.string,
+      "title": ffai.string,
+      "wasLabel": ffai.string,
+    },
+    description: ffai.generatedProjectStructDescription,
+  );
   static final ffai.StructHandle mobileAccessResponse = ffai.StructHandle(
     "MobileAccessResponse",
     <String, ffai.DslType>{
@@ -378,6 +417,8 @@ abstract final class Structs {
     description: ffai.generatedProjectStructDescription,
   );
   static final all = <ffai.StructHandle>[
+    discoveryCatalogV1,
+    discoveryOfferV1,
     mobileAccessResponse,
     mobileAccountSyncResponse,
     mobileAccountSyncResponseV2,

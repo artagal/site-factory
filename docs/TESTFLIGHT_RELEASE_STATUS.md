@@ -2,7 +2,7 @@
 
 ## Verification Dates
 
-- Last authenticated Apple API verification: 2026-09-06.
+- Last authenticated Apple API verification: 2026-09-20.
 - Public-link and tester-device checks: 2026-09-03.
 - Apple API and browser access verified. The owner signed in and the review reply
   was submitted on 2026-09-06 at 12:56 PDT; the conversation shows two messages.
@@ -28,8 +28,12 @@ statements in the setup and historical QA notes.
   scroll behavior, demo-map navigation and sandbox-only purchase/restore QA.
 - Expires: 2026-12-05 12:13:46 PST.
 
-Build 7 is not externally approved or physically device-tested by this pass.
-Do not tell external testers the public join link is installable yet.
+On 2026-09-20 Apple's API reports both internal and external build states as
+`IN_BETA_TESTING`, with auto-notify enabled. Build 7 is now approved for external
+testing. Physical-device behavior is not verified by this API check.
+
+The September 20 discovery/map changes are saved in FlutterFlow but are not in
+build 7. See `MOBILE_DISCOVERY_RELEASE_2026-09-20.md` for the new-build boundary.
 
 ## Build 6
 
@@ -58,11 +62,17 @@ External group: `GoFunMotion Early Access`
 
 Public link: <https://testflight.apple.com/join/yTeBEm32>.
 
-On 2026-09-03 the public page says: "This beta isn't accepting any new testers
-right now." The authenticated API now confirms external beta rejection. A valid
-uploaded build and internal testing do not mean external testers can install it.
+The public page was closed on 2026-09-03, before build 7 approval. That historical
+result is not the current Apple build state. Public-link installation and an
+actual iPhone smoke test still need direct verification.
 
-Last authenticated group/tester observations, 2026-09-06:
+Authenticated external-group verification on 2026-09-20:
+
+- `artagal@gmail.com`: `INSTALLED`.
+- `decadationllc@gmail.com`: `INVITED`.
+- No duplicate invitations were sent during this pass.
+
+Historical group/tester observations, 2026-09-06 (superseded above):
 
 - `artagal@gmail.com`: `INSTALLED` tester state in the internal group. The last
   device observation on September 3 was build 6 on an iPhone 16e, iOS 26.5;
@@ -75,12 +85,10 @@ Last authenticated group/tester observations, 2026-09-06:
 
 Remaining distribution steps:
 
-1. Check build `7` and its beta-review submission for approval or reviewer feedback.
-2. Confirm build `7` is available to the external group after approval.
-3. Send or resend the invitation to the exact requested external email
-   `decadationllc@gmail.com`, then verify the resulting invitation state.
-4. Verify the public link offers installation before describing it as available.
-5. Check installation and key workflows on an actual iPhone. Upload and review
+1. Build and upload the September 20 native changes through FlutterFlow.
+2. Check the exact new build's processing, compliance and beta-review state.
+3. Verify the public link offers installation of the intended build.
+4. Check installation and key workflows on an actual iPhone. Upload and review
    success are not evidence that every in-app feature works.
 
 ## Review Sign-In Remediation
