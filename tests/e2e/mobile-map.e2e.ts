@@ -53,3 +53,14 @@ test("map failure offers retry instead of silently disappearing", async ({ page 
   await expect(page.getByRole("status")).toContainText("No live locations yet");
   await expect(page.getByRole("button", { name: "Retry map" })).toBeHidden();
 });
+
+test("all-city markers stay framed after embedded map resize", async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 600 });
+  await page.goto("/maps/deals.html?catalog=examples");
+  await expect(page.locator(".price-pin")).toHaveCount(10);
+  await page.setViewportSize({ width: 358, height: 300 });
+  await expect.poll(() => page.locator(".leaflet-marker-icon").evaluateAll((nodes) => nodes.every((node) => {
+    const box = node.getBoundingClientRect();
+    return box.left >= 0 && box.right <= window.innerWidth && box.top >= 0 && box.bottom <= window.innerHeight;
+  }))).toBe(true);
+});

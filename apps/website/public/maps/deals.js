@@ -12,6 +12,15 @@
   }).addTo(map);
   tiles.on("tileerror", () => { status.textContent = "Map tiles could not load. Your offer list is still available."; });
   const markers = L.layerGroup().addTo(map);
+  let offerBounds = null;
+  function fitOffers() {
+    if (offerBounds) map.fitBounds(offerBounds, { padding: [48, 56], maxZoom: 13 });
+  }
+  // Embedded FlutterFlow WebViews can finish loading before their final layout.
+  new ResizeObserver(() => {
+    map.invalidateSize({ pan: false });
+    fitOffers();
+  }).observe(map.getContainer());
   map.on("popupopen", () => { status.hidden = true; });
   map.on("popupclose", () => { status.hidden = false; });
   function text(tag, value, className) {
@@ -58,7 +67,8 @@
         L.marker([offer.latitude, offer.longitude], { icon, alt: `${offer.title}, ${offer.priceLabel}`, keyboard: true })
           .bindPopup(popup, { maxWidth: 260, maxHeight: Math.max(120, Math.min(250, window.innerHeight - 100)), autoPanPadding: [12, 24] }).addTo(markers);
       }
-      if (offers.length) map.fitBounds(offers.map((offer) => [offer.latitude, offer.longitude]), { padding: [48, 56], maxZoom: 13 });
+      offerBounds = offers.length ? offers.map((offer) => [offer.latitude, offer.longitude]) : null;
+      fitOffers();
       status.textContent = offers.length
         ? `${offers.length} ${catalog === "examples" ? "example offers. Not bookable." : "offers on the map. Tap a price."}`
         : "No live locations yet. Explore examples or try another city.";
