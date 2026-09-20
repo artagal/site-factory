@@ -9,6 +9,15 @@ import type { Business } from "../../../../types/deals";
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
+  const response = await discoveryResponse(request);
+  // This endpoint serves only public inventory or non-bookable local examples.
+  // FlutterFlow Web Preview has a different origin from the marketplace website.
+  response.headers.set("Access-Control-Allow-Origin", "*");
+  response.headers.set("Cache-Control", "no-store");
+  return response;
+}
+
+async function discoveryResponse(request: Request) {
   const query = new URL(request.url).searchParams;
   const catalog = query.get("catalog") || "live";
   if (catalog !== "live" && catalog !== "examples") return jsonError("Choose live deals or examples.", 400);

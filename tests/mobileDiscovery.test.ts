@@ -58,6 +58,7 @@ describe("mobile map and example catalog", () => {
     expect(data.cities).toHaveLength(5);
     expect(data.mapUrl).toContain("catalog=examples&cityId=miami");
     expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(response.headers.get("access-control-allow-origin")).toBe("*");
     expect(mocks.listings).not.toHaveBeenCalled();
     expect(mocks.business).not.toHaveBeenCalled();
   });
